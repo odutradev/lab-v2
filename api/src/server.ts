@@ -3,9 +3,9 @@ import mongoose from 'mongoose'
 import 'dotenv/config'
 
 //import { connectStorage } from '@storage/connect'
-//import { connectEmail } from '@email/connect'
 import createLocalLogger from '@utils/localLogger'
 import connectMongoose from '@database/connect'
+import { connectEmail } from '@email/connect'
 import buildApp from './app'
 
 import type { Server } from 'http'
@@ -20,7 +20,7 @@ const startServer = async (): Promise<void> => {
   await Promise.all([
     connectMongoose(),
     //connectStorage(),
-    //connectEmail(),
+    connectEmail(),
   ])
 
   server.listen(port, () => {
