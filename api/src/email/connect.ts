@@ -13,22 +13,26 @@ const email: EmailModule = {
   transporter: null,
   initializeEmail: async (): Promise<EmailInstance> => {
     try {
-      requiredEnvVariables.forEach((envVar) => {
-        if (!process.env[envVar]) {
-          logger.error(`[initializeEmail] Missing environment variable: "${envVar}"`)
-          process.exit(1)
-        }
-      })
+      const host = process.env.EMAIL_HOST
+      const port = Number(process.env.EMAIL_PORT || 465)
+      const user = process.env.EMAIL_USER
+      const pass = process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD
 
-      const port = Number(process.env.EMAIL_PORT)
+      if (!host || !user || !pass) {
+        logger.error('[initializeEmail] Missing required email environment variables: EMAIL_HOST, EMAIL_USER and EMAIL_PASS/EMAIL_PASSWORD')
+        process.exit(1)
+      }
+
+      process.env.EMAIL_PORT = String(port)
+      process.env.EMAIL_PASS = pass
 
       const config: EmailConfig = {
-        host: process.env.EMAIL_HOST as string,
+        host,
         port,
         secure: port === 465,
         auth: {
-          user: process.env.EMAIL_USER as string,
-          pass: process.env.EMAIL_PASS as string
+          user,
+          pass
         }
       }
 
