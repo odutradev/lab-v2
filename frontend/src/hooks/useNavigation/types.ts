@@ -1,4 +1,4 @@
-import type { AppRoute } from '@stores/navigation/types'
+export type AppRoute = 'home' | 'auth' | 'reset-password'
 
 export interface UseNavigationReturn {
   currentRoute: AppRoute
