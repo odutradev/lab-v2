@@ -3,7 +3,7 @@ import { Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
-import useToast from '@hooks/useToast'
+import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
 import useForm from '@hooks/useForm'
 
@@ -12,7 +12,7 @@ import type { ApiError } from '@projectTypes/api'
 
 export const RegisterForm = () => {
   const { register } = useAuthStore()
-  const { showToast } = useToast()
+  const { showToast } = useToastStore()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<RegisterFormValues>({

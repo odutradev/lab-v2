@@ -6,14 +6,14 @@ import { useNavigate } from 'react-router-dom'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import { getProfileAction } from '@actions/users/profile'
+import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
-import useToast from '@hooks/useToast'
 
 export const HomePage = () => {
   const { user, token, refreshUser } = useAuthStore()
-  const { showToast } = useToast()
+  const { showToast } = useToastStore()
   const navigate = useNavigate()
   const [actionLoading, setActionLoading] = useState(false)
   const [actionResult, setActionResult] = useState<string | null>(null)

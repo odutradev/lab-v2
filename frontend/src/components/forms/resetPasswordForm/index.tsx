@@ -4,15 +4,15 @@ import { useState, type FormEvent } from 'react'
 
 import { requestCodeAction, verifyCodeAction } from '@actions/users/validation'
 import { resetPasswordAction } from '@actions/users/profile'
+import useToastStore from '@stores/toast'
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
-import useToast from '@hooks/useToast'
 
 import type { ResetPasswordFormProps, ResetPasswordStep } from './types'
 import type { ApiError } from '@projectTypes/api'
 
 export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPasswordFormProps) => {
-  const { showToast } = useToast()
+  const { showToast } = useToastStore()
 
   const [step, setStep] = useState<ResetPasswordStep>('email')
   const [email, setEmail] = useState<string>(initialEmail || '')

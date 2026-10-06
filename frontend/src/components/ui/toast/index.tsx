@@ -1,10 +1,10 @@
 import { TbCheck, TbAlertCircle, TbAlertTriangle, TbInfoCircle } from 'react-icons/tb'
 import { Notification, Stack } from '@mantine/core'
 
-import useToast from '@hooks/useToast'
+import useToastStore from '@stores/toast'
 
 export const ToastContainer = () => {
-  const { toasts, removeToast } = useToast()
+  const { toasts, removeToast } = useToastStore()
 
   if (toasts.length === 0) return null
 

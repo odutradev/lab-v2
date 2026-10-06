@@ -3,10 +3,10 @@ import { Stack, Box, Group } from '@mantine/core'
 
 import { useNavigate } from 'react-router-dom'
 
+import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
-import useToast from '@hooks/useToast'
 import useForm from '@hooks/useForm'
 
 import type { LoginFormValues, LoginFormProps } from './types'
@@ -14,7 +14,7 @@ import type { ApiError } from '@projectTypes/api'
 
 export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
   const { login } = useAuthStore()
-  const { showToast } = useToast()
+  const { showToast } = useToastStore()
   const navigate = useNavigate()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
