@@ -1,0 +1,43 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+
+pids
+results
+tmp
+
+# Build
+public/css/main.css
+dist
+
+# Coverage reports
+coverage
+
+# API keys and secrets
+.env
+.env.local
+
+# Dependency directory
+node_modules
+bower_components
+
+# Editors
+.idea
+*.iml
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# ignore yarn.lock
+yarn.lock
+
+# cache files
+cache/*
+cache-upload-files/*

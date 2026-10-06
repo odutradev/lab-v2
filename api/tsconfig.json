@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./",
+    "typeRoots": ["./node_modules/@types", "./src/types/*"],
+    "paths": {
+      "@createAuditLog": ["./src/domains/system/utils/createAuditLog.ts"],
+      "@domains/*": ["./src/domains/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@projectTypes/*": ["./src/types/*"],
+      "@factories/*": ["./src/factories/*"],
+      "@database/*": ["./src/database/*"],
+      "@email/*": ["./src/email/*"],
+      "@storage/*": ["./src/storage/*"],
+      "@config/*": ["./src/config/*"],
+      "@utils/*": ["./src/utils/*"]
+    },
+    "outDir": "./dist"
+  },
+  "include": [
+    "src/**/*",
+    "scripts/**/*"
+  ]
+}
