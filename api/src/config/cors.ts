@@ -4,15 +4,37 @@ import type { RequestHandler } from 'express'
 import type { CorsOptions } from 'cors'
 
 const buildCorsOptions = (): CorsOptions => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  if (!isProduction) return {}
   const originConfig = process.env.CORS_ORIGIN
-  if (!originConfig) return { origin: false }
-  const allowedOrigins = originConfig.split(',')
+
+  if (!originConfig || originConfig === '*') {
+    return {
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      optionsSuccessStatus: 200
+    }
+  }
+
+  const allowedOrigins = originConfig
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean)
+
   return {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: (requestOrigin, callback) => {
+      if (!requestOrigin) {
+        return callback(null, true)
+      }
+
+      const normalizedRequestOrigin = requestOrigin.replace(/\/$/, '')
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(normalizedRequestOrigin)) {
+        return callback(null, true)
+      }
+
+      return callback(null, false)
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     optionsSuccessStatus: 200
   }
 }

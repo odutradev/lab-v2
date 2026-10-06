@@ -16,6 +16,7 @@ export const createRateLimiter = (options: CreateRateLimiterOptions = {}): Reque
     standardHeaders: true,
     legacyHeaders: false,
     validate: false,
+    skip: (req: Request): boolean => req.method === 'OPTIONS',
     keyGenerator: (req: Request): string => {
       if (options.keyGenerator) {
         return options.keyGenerator(req)
