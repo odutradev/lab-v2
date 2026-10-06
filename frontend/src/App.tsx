@@ -1,9 +1,11 @@
-import { AuthProvider, ToastProvider } from './context'
+import { AuthProvider } from './context/auth'
+import { ToastProvider } from './context/toast'
 import { useAuth } from './hooks/useAuth'
-import { Navbar, PageContainer } from './components/layout'
-import { ToastContainer } from './components/ui/Toast/ToastContainer'
-import { AuthPage } from './pages/AuthPage/AuthPage'
-import { HomePage } from './pages/HomePage/HomePage'
+import { Navbar } from './components/layout/Navbar'
+import { PageContainer } from './components/layout/PageContainer'
+import { ToastContainer } from './components/ui/Toast'
+import { AuthPage } from './pages/AuthPage'
+import { HomePage } from './pages/HomePage'
 
 const AppContent = () => {
   const { isAuthenticated, isLoading } = useAuth()
