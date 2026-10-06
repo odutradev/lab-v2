@@ -10,7 +10,7 @@ export interface UseFormOptions<T> {
   onSubmit: (values: T) => Promise<void> | void
 }
 
-export const useForm = <T extends Record<string, unknown>>({
+export const useForm = <T extends object>({
   initialValues,
   validationRules = {},
   onSubmit
