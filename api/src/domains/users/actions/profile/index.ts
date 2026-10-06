@@ -1,7 +1,13 @@
 import jwt from 'jsonwebtoken'
 import fs from 'fs/promises'
 
-import { profileResponseSchema, updateProfileBodySchema, updateAvatarResponseSchema, resetPasswordBodySchema, resetPasswordResponseSchema, updateBankDetailsBodySchema, updateBankDetailsResponseSchema, accountStatusParamsSchema, accountStatusResponseSchema, activateRoleBodySchema, activateRoleResponseSchema } from '@domains/users/actions/profile/schemas'
+import {
+  profileResponseSchema,
+  updateProfileBodySchema,
+  updateAvatarResponseSchema,
+  resetPasswordBodySchema,
+  resetPasswordResponseSchema
+} from '@domains/users/actions/profile/schemas'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
 import userRepository from '@domains/users/repositories/user'
@@ -14,7 +20,10 @@ import createAuditLog from '@createAuditLog'
 import { optimizeImage } from '@utils/image'
 import { hashData } from '@utils/crypto'
 
-import type { UpdateProfileBody, ResetPasswordBody, UpdateBankDetailsBody, AccountStatusParams, ActivateRoleBody } from '@domains/users/actions/profile/types'
+import type {
+  UpdateProfileBody,
+  ResetPasswordBody
+} from '@domains/users/actions/profile/types'
 
 const logger = createLocalLogger('profile-actions')
 
@@ -222,140 +231,5 @@ export const resetPasswordAction = defineAction(
     } catch {
       return manageError({ code: 'invalid_token' })
     }
-  }
-)
-
-export const updateBankDetailsAction = defineAction(
-  {
-    method: 'put',
-    path: '/users/profile/bank-details',
-    summary: 'Atualiza os dados bancários do usuário proprietário',
-    tags: ['Profile'],
-    schema: { body: updateBankDetailsBodySchema },
-    responses: {
-      200: {
-        description: 'Dados bancários atualizados com sucesso',
-        schema: updateBankDetailsResponseSchema
-      },
-      403: {
-        description: 'Acesso negado - Apenas proprietários podem alterar dados bancários',
-        schema: errorResponseSchema
-      },
-      404: {
-        description: 'Usuário correspondente não encontrado',
-        schema: errorResponseSchema
-      }
-    },
-    middlewares: [authMiddleware]
-  },
-  async ({ ids, data, manageError }) => {
-    if (!ids.userId) return manageError({ code: 'unauthorized' })
-
-    const payload = data as UpdateBankDetailsBody
-    const user = await userRepository.findById(ids.userId)
-
-    if (!user) return manageError({ code: 'user_not_found' })
-
-    if (!user.isOwner) return manageError({ code: 'forbidden' })
-
-    const updatedUser = await userRepository.updateBankDetails(ids.userId, payload)
-
-    if (!updatedUser) return manageError({ code: 'user_not_found' })
-
-    await createAuditLog({
-      actorId: ids.userId,
-      action: 'update_bank_details',
-      entity: 'User',
-      entityId: ids.userId,
-      summary: 'Dados bancários do perfil atualizados.',
-      details: payload
-    })
-
-    return { success: true }
-  }
-)
-
-export const getAccountStatusAction = defineAction(
-  {
-    method: 'get',
-    path: '/users/profile/status/:accountType',
-    summary: 'Verifica o status de prontidão da conta por perfil (tenant ou owner)',
-    tags: ['Profile'],
-    schema: { params: accountStatusParamsSchema },
-    responses: {
-      200: {
-        description: 'Status de prontidão verificado',
-        schema: accountStatusResponseSchema
-      },
-      404: {
-        description: 'Usuário não encontrado',
-        schema: errorResponseSchema
-      }
-    },
-    middlewares: [authMiddleware]
-  },
-  async ({ ids, params, manageError }) => {
-    if (!ids.userId) return manageError({ code: 'unauthorized' })
-
-    const { accountType } = params as AccountStatusParams
-
-    const status = await userRepository.checkAccountReadiness(ids.userId, accountType)
-
-    if (!status) return manageError({ code: 'user_not_found' })
-
-    return status
-  }
-)
-
-export const activateRoleAction = defineAction(
-  {
-    method: 'post',
-    path: '/users/profile/activate-role',
-    summary: 'Ativa um perfil secundário (locatário ou proprietário) na conta do usuário',
-    tags: ['Profile'],
-    schema: { body: activateRoleBodySchema },
-    responses: {
-      200: {
-        description: 'Perfil secundário ativado com sucesso',
-        schema: activateRoleResponseSchema
-      },
-      404: {
-        description: 'Usuário correspondente não encontrado',
-        schema: errorResponseSchema
-      },
-      409: {
-        description: 'O usuário já possui este perfil ativado',
-        schema: errorResponseSchema
-      }
-    },
-    middlewares: [authMiddleware]
-  },
-  async ({ ids, data, manageError }) => {
-    if (!ids.userId) return manageError({ code: 'unauthorized' })
-
-    const payload = data as ActivateRoleBody
-    const user = await userRepository.findById(ids.userId)
-
-    if (!user) return manageError({ code: 'user_not_found' })
-
-    const isAlreadyActive = payload.role === 'tenant' ? user.isTenant : user.isOwner
-
-    if (isAlreadyActive) return manageError({ code: 'conflict' })
-
-    const updatePayload = payload.role === 'tenant' ? { isTenant: true } : { isOwner: true }
-    const updatedUser = await userRepository.update(ids.userId, updatePayload)
-
-    if (!updatedUser) return manageError({ code: 'user_not_found' })
-
-    await createAuditLog({
-      actorId: ids.userId,
-      action: 'activate_secondary_role',
-      entity: 'User',
-      entityId: ids.userId,
-      summary: `Perfil secundário de ${payload.role} ativado.`,
-      details: { activatedRole: payload.role }
-    })
-
-    return { success: true, activatedRole: payload.role }
   }
 )
