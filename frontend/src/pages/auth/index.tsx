@@ -1,23 +1,23 @@
 import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
 import { TbStack2, TbKey } from 'react-icons/tb'
-import { useState } from 'react'
 
 import ResetPasswordForm from '@pages/resetPassword/components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
 import RegisterForm from './components/registerForm'
 import LoginForm from './components/loginForm'
 import { containerStyle } from './styles'
-
-import type { AuthMode } from './types'
+import useAuthPage from './hook'
 
 export const AuthPage = () => {
-  const [authMode, setAuthMode] = useState<AuthMode>('login')
-
-  const getSubtitle = () => {
-    if (authMode === 'login') return 'Entre com suas credenciais para acessar sua conta'
-    if (authMode === 'register') return 'Preencha os dados abaixo para criar sua conta'
-    return 'Preencha as informações para redefinir o acesso à sua conta'
-  }
+  const {
+    authMode,
+    title,
+    subtitle,
+    isResetMode,
+    handleModeChange,
+    goToLogin,
+    goToReset
+  } = useAuthPage()
 
   return (
     <Box w="100%" style={containerStyle}>
@@ -28,29 +28,29 @@ export const AuthPage = () => {
           variant="gradient"
           gradient={{ from: 'indigo', to: 'cyan' }}
         >
-          {authMode === 'reset' ? <TbKey size={28} /> : <TbStack2 size={28} />}
+          {isResetMode ? <TbKey size={28} /> : <TbStack2 size={28} />}
         </ThemeIcon>
         <Title order={1} size="h2" fw={800} c="white">
-          {authMode === 'reset' ? 'Redefinir Senha' : 'LAB Portal'}
+          {title}
         </Title>
         <Text size="sm" c="dimmed">
-          {getSubtitle()}
+          {subtitle}
         </Text>
       </Stack>
 
       <Card>
         <CardContent>
-          {authMode === 'reset' ? (
+          {isResetMode ? (
             <ResetPasswordForm
-              onSuccess={() => setAuthMode('login')}
-              onCancel={() => setAuthMode('login')}
+              onSuccess={goToLogin}
+              onCancel={goToLogin}
             />
           ) : (
             <>
               <SegmentedControl
                 fullWidth
                 value={authMode}
-                onChange={(val) => setAuthMode(val as 'login' | 'register')}
+                onChange={handleModeChange}
                 data={[
                   { label: 'Entrar', value: 'login' },
                   { label: 'Cadastrar', value: 'register' }
@@ -62,7 +62,7 @@ export const AuthPage = () => {
               />
 
               {authMode === 'login' ? (
-                <LoginForm onForgotPassword={() => setAuthMode('reset')} />
+                <LoginForm onForgotPassword={goToReset} />
               ) : (
                 <RegisterForm />
               )}
