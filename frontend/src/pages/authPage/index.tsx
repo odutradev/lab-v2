@@ -2,13 +2,16 @@ import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/c
 import { TbStack2, TbKey } from 'react-icons/tb'
 import { useState } from 'react'
 
-import ResetPasswordForm from '@components/forms/resetPasswordForm'
+import ResetPasswordForm from '@pages/resetPasswordPage/components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
-import RegisterForm from '@components/forms/registerForm'
-import LoginForm from '@components/forms/loginForm'
+import RegisterForm from './components/registerForm'
+import LoginForm from './components/loginForm'
+import { containerStyle } from './styles'
+
+import type { AuthMode } from './types'
 
 export const AuthPage = () => {
-  const [authMode, setAuthMode] = useState<'login' | 'register' | 'reset'>('login')
+  const [authMode, setAuthMode] = useState<AuthMode>('login')
 
   const getSubtitle = () => {
     if (authMode === 'login') return 'Entre com suas credenciais para acessar sua conta'
@@ -17,7 +20,7 @@ export const AuthPage = () => {
   }
 
   return (
-    <Box w="100%" style={{ maxWidth: 460, margin: '0 auto' }}>
+    <Box w="100%" style={containerStyle}>
       <Stack align="center" gap="xs" mb="xl" ta="center">
         <ThemeIcon
           size={56}
