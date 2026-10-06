@@ -62,6 +62,11 @@ export interface DaySummaryResponse {
   items: DaySummaryItem[]
 }
 
+export interface RangeSummaryParams {
+  startDate: string
+  endDate: string
+}
+
 export interface HabitActionSuccessResponse {
   success: boolean
 }

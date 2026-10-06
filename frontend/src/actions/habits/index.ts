@@ -1,6 +1,6 @@
 import apiClient from '@api/client'
 
-import type { HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit } from './types'
+import type { HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, RangeSummaryParams, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit } from './types'
 
 export const createHabitAction = async (payload: CreateHabitPayload): Promise<Habit> => {
   return apiClient.post<Habit>('/habits/create', payload)
@@ -36,6 +36,10 @@ export const getDaySummaryAction = async (date?: string): Promise<DaySummaryResp
   return apiClient.get<DaySummaryResponse>(`/habits/day-summary${queryString}`)
 }
 
+export const getRangeSummaryAction = async ({ startDate, endDate }: RangeSummaryParams): Promise<DaySummaryResponse[]> => {
+  return apiClient.get<DaySummaryResponse[]>(`/habits/range-summary?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`)
+}
+
 const habitsActions = {
   createHabit: createHabitAction,
   listHabits: listHabitsAction,
@@ -43,7 +47,8 @@ const habitsActions = {
   removeHabit: removeHabitAction,
   scheduleHabit: scheduleHabitAction,
   toggleCheckin: toggleCheckinAction,
-  getDaySummary: getDaySummaryAction
+  getDaySummary: getDaySummaryAction,
+  getRangeSummary: getRangeSummaryAction
 }
 
 export default habitsActions
