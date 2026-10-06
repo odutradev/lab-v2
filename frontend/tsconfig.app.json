@@ -20,7 +20,6 @@
       "@actions/*": ["./src/actions/*"],
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@context/*": ["./src/context/*"],
       "@stores/*": ["./src/stores/*"],
       "@api/*": ["./src/api/*"],
       "@projectTypes/*": ["./src/types/*"],
