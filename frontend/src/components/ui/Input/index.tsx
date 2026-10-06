@@ -1,10 +1,9 @@
-import {
-  useState,
-  forwardRef
-} from 'react'
+import { useState, forwardRef } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
-import type { InputProps } from './types'
+
 import styles from './Input.module.css'
+
+import type { InputProps } from './types'
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -96,3 +95,5 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 )
 
 Input.displayName = 'Input'
+
+export default Input

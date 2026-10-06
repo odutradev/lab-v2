@@ -1,5 +1,6 @@
-import { API_BASE_URL, STORAGE_KEYS } from './config'
-import type { ApiError } from '../types/api'
+import { API_BASE_URL, STORAGE_KEYS } from '@api/config'
+
+import type { ApiError } from '@projectTypes/api'
 
 export interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>
@@ -93,4 +94,6 @@ export class ApiHttpClient {
   }
 }
 
-export const apiClient = new ApiHttpClient()
+const apiClient = new ApiHttpClient()
+
+export default apiClient

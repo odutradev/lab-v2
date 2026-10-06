@@ -1,4 +1,5 @@
-import { apiClient } from '../../../api/client'
+import apiClient from '@api/client'
+
 import type { UpdateProfilePayload, ProfileResponse } from './types'
 
 export const getProfileAction = async (): Promise<ProfileResponse> => {
@@ -8,3 +9,10 @@ export const getProfileAction = async (): Promise<ProfileResponse> => {
 export const updateProfileAction = async (payload: UpdateProfilePayload): Promise<ProfileResponse> => {
   return apiClient.put<ProfileResponse>('/users/profile/update', payload)
 }
+
+const profileActions = {
+  getProfile: getProfileAction,
+  updateProfile: updateProfileAction
+}
+
+export default profileActions

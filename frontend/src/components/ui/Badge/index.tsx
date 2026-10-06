@@ -1,5 +1,6 @@
-import type { BadgeProps } from './types'
 import styles from './Badge.module.css'
+
+import type { BadgeProps } from './types'
 
 export const Badge = ({
   children,
@@ -16,3 +17,5 @@ export const Badge = ({
     </span>
   )
 }
+
+export default Badge

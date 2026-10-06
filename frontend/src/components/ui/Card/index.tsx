@@ -1,13 +1,6 @@
-import type { CardProps } from './types'
 import styles from './Card.module.css'
 
-export const Card = ({ children, className = '', ...props }: CardProps) => {
-  return (
-    <div className={`${styles.card} ${className}`} {...props}>
-      {children}
-    </div>
-  )
-}
+import type { CardProps } from './types'
 
 export const CardHeader = ({ children, className = '', ...props }: CardProps) => {
   return (
@@ -48,3 +41,19 @@ export const CardFooter = ({ children, className = '', ...props }: CardProps) =>
     </div>
   )
 }
+
+export const Card = ({ children, className = '', ...props }: CardProps) => {
+  return (
+    <div className={`${styles.card} ${className}`} {...props}>
+      {children}
+    </div>
+  )
+}
+
+Card.Header = CardHeader
+Card.Title = CardTitle
+Card.Description = CardDescription
+Card.Content = CardContent
+Card.Footer = CardFooter
+
+export default Card

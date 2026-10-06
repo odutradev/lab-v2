@@ -5,3 +5,10 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: 'lab_refresh_token',
   USER: 'lab_auth_user'
 } as const
+
+const config = {
+  API_BASE_URL,
+  STORAGE_KEYS
+}
+
+export default config

@@ -1,7 +1,8 @@
 import { useState, useCallback, type ChangeEvent, type FormEvent } from 'react'
+
 import type { UseFormOptions, UseFormReturn } from './types'
 
-export const useForm = <T extends object>({
+const useForm = <T extends object>({
   initialValues,
   validationRules = {},
   onSubmit
@@ -118,3 +119,5 @@ export const useForm = <T extends object>({
     setErrors
   }
 }
+
+export default useForm

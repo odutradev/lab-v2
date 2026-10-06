@@ -1,16 +1,13 @@
 import { useState } from 'react'
-import {
-  Shield,
-  Activity,
-  Layers,
-  RefreshCw
-} from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
-import { useToast } from '../../hooks/useToast'
-import { getProfileAction } from '../../actions/users/profile'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card'
-import { Button } from '../../components/ui/Button'
-import { Badge } from '../../components/ui/Badge'
+import { Shield, Activity, Layers, RefreshCw } from 'lucide-react'
+
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card'
+import { getProfileAction } from '@actions/users/profile'
+import Button from '@components/ui/Button'
+import Badge from '@components/ui/Badge'
+import useToast from '@hooks/useToast'
+import useAuth from '@hooks/useAuth'
+
 import styles from './HomePage.module.css'
 
 export const HomePage = () => {
@@ -166,3 +163,5 @@ export const HomePage = () => {
     </div>
   )
 }
+
+export default HomePage

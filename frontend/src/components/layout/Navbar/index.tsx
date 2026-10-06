@@ -1,7 +1,9 @@
 import { LogOut, Layers } from 'lucide-react'
-import { useAuth } from '../../../hooks/useAuth'
-import { Button } from '../../ui/Button'
-import { Badge } from '../../ui/Badge'
+
+import Button from '@components/ui/Button'
+import Badge from '@components/ui/Badge'
+import useAuth from '@hooks/useAuth'
+
 import styles from './Navbar.module.css'
 
 export const Navbar = () => {
@@ -60,3 +62,5 @@ export const Navbar = () => {
     </header>
   )
 }
+
+export default Navbar

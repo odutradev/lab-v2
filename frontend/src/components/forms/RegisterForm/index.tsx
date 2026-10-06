@@ -1,13 +1,16 @@
 import { Mail, Lock, User, UserPlus, Phone, FileText } from 'lucide-react'
-import { useAuth } from '../../../hooks/useAuth'
-import { useToast } from '../../../hooks/useToast'
-import { useForm } from '../../../hooks/useForm'
-import { Input } from '../../ui/Input'
-import { Select } from '../../ui/Select'
-import { Button } from '../../ui/Button'
-import type { ApiError } from '../../../types/api'
-import type { RegisterFormValues } from './types'
+
+import Button from '@components/ui/Button'
+import Select from '@components/ui/Select'
+import Input from '@components/ui/Input'
+import useToast from '@hooks/useToast'
+import useAuth from '@hooks/useAuth'
+import useForm from '@hooks/useForm'
+
 import styles from '../forms.module.css'
+
+import type { RegisterFormValues } from './types'
+import type { ApiError } from '@projectTypes/api'
 
 export const RegisterForm = () => {
   const { register } = useAuth()
@@ -155,3 +158,5 @@ export const RegisterForm = () => {
     </form>
   )
 }
+
+export default RegisterForm

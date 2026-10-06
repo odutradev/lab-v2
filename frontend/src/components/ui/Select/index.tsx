@@ -1,10 +1,9 @@
-import {
-  useState,
-  forwardRef
-} from 'react'
+import { useState, forwardRef } from 'react'
 import { ChevronDown } from 'lucide-react'
-import type { SelectProps } from './types'
+
 import styles from './Select.module.css'
+
+import type { SelectProps } from './types'
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, required, className = '', id, onFocus, onBlur, ...props }, ref) => {
@@ -59,3 +58,5 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 )
 
 Select.displayName = 'Select'
+
+export default Select

@@ -1,5 +1,6 @@
-import type { ButtonProps } from './types'
 import styles from './Button.module.css'
+
+import type { ButtonProps } from './types'
 
 export const Button = ({
   children,
@@ -39,3 +40,5 @@ export const Button = ({
     </button>
   )
 }
+
+export default Button

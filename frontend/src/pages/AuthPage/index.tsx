@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Layers } from 'lucide-react'
-import { Card, CardContent } from '../../components/ui/Card'
-import { LoginForm } from '../../components/forms/LoginForm'
-import { RegisterForm } from '../../components/forms/RegisterForm'
+
+import RegisterForm from '@components/forms/RegisterForm'
+import LoginForm from '@components/forms/LoginForm'
+import Card, { CardContent } from '@components/ui/Card'
+
 import styles from './AuthPage.module.css'
 
 export const AuthPage = () => {
@@ -51,3 +53,5 @@ export const AuthPage = () => {
     </div>
   )
 }
+
+export default AuthPage

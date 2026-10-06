@@ -1,12 +1,12 @@
-import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react'
-import { STORAGE_KEYS } from '../../api/config'
-import { signInAction, signUpAction } from '../../actions/users/auth'
-import { getProfileAction } from '../../actions/users/profile'
-import type { SignInPayload, SignUpPayload } from '../../actions/users/auth/types'
-import type { UserProfile } from '../../types/user'
-import type { AuthContextType } from './types'
+import { useState, useEffect, useCallback, type ReactNode } from 'react'
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined)
+import { STORAGE_KEYS } from '@api/config'
+import { signInAction, signUpAction } from '@actions/users/auth'
+import { getProfileAction } from '@actions/users/profile'
+import AuthContext from './context'
+
+import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
+import type { UserProfile } from '@projectTypes/user'
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
@@ -94,3 +94,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   )
 }
+
+export default AuthProvider

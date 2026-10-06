@@ -1,5 +1,7 @@
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react'
-import { useToast } from '../../../hooks/useToast'
+
+import useToast from '@hooks/useToast'
+
 import styles from './ToastContainer.module.css'
 
 export const ToastContainer = () => {
@@ -45,3 +47,5 @@ export const ToastContainer = () => {
     </div>
   )
 }
+
+export default ToastContainer

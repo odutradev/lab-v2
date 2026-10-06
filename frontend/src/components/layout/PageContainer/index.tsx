@@ -1,5 +1,6 @@
-import type { PageContainerProps } from './types'
 import styles from './PageContainer.module.css'
+
+import type { PageContainerProps } from './types'
 
 export const PageContainer = ({
   children,
@@ -14,3 +15,5 @@ export const PageContainer = ({
     </main>
   )
 }
+
+export default PageContainer
