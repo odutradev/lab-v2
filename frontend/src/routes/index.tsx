@@ -4,7 +4,6 @@ import { ProtectedRoute, PublicRoute, AppLayout } from './components'
 import PageContainer from '@components/layout/pageContainer'
 import ResetPasswordPage from '@pages/resetPassword'
 import HabitsPage from '@pages/habits'
-import HomePage from '@pages/home'
 import AuthPage from '@pages/auth'
 
 import type { RouteItem } from './types'
@@ -12,11 +11,6 @@ import type { RouteItem } from './types'
 const routes: RouteItem[] = [
   {
     path: '/',
-    component: HomePage,
-    protected: true
-  },
-  {
-    path: '/habits',
     component: HabitsPage,
     protected: true
   },
@@ -64,6 +58,7 @@ export const Router = () => {
               element={renderRouteElement(route)}
             />
           ))}
+          <Route path="/habits" element={<Navigate to="/" replace />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
