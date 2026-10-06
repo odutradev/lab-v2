@@ -1,58 +1,23 @@
-import { useState, forwardRef } from 'react'
-import { ChevronDown } from 'lucide-react'
-
-import styles from './Select.module.css'
+import { NativeSelect } from '@mantine/core'
+import { forwardRef } from 'react'
 
 import type { SelectProps } from './types'
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, required, className = '', id, onFocus, onBlur, ...props }, ref) => {
-    const [isFocused, setIsFocused] = useState(false)
-    const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
-
-    const wrapperClassNames = [
-      styles.selectWrapper,
-      isFocused ? styles.focused : '',
-      error ? styles.hasError : ''
-    ]
-      .filter(Boolean)
-      .join(' ')
-
+  ({ label, error, options, required, className, id, size: _htmlSize, ...props }, ref) => {
     return (
-      <div className={styles.container}>
-        {label && (
-          <label htmlFor={selectId} className={styles.label}>
-            {label}
-            {required && <span className={styles.required}>*</span>}
-          </label>
-        )}
-        <div className={wrapperClassNames}>
-          <select
-            id={selectId}
-            ref={ref}
-            className={`${styles.select} ${className}`}
-            onFocus={(e) => {
-              setIsFocused(true)
-              onFocus?.(e)
-            }}
-            onBlur={(e) => {
-              setIsFocused(false)
-              onBlur?.(e)
-            }}
-            {...props}
-          >
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-          <span className={styles.arrowIcon}>
-            <ChevronDown size={18} />
-          </span>
-        </div>
-        {error && <span className={styles.errorMessage}>{error}</span>}
-      </div>
+      <NativeSelect
+        ref={ref}
+        id={id}
+        label={label}
+        error={error}
+        data={options}
+        required={required}
+        size="md"
+        radius="md"
+        className={className}
+        {...props}
+      />
     )
   }
 )

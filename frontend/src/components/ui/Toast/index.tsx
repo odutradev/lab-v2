@@ -1,8 +1,7 @@
-import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react'
+import { Check, AlertCircle, AlertTriangle, Info } from 'lucide-react'
+import { Notification, Stack } from '@mantine/core'
 
 import useToast from '@hooks/useToast'
-
-import styles from './ToastContainer.module.css'
 
 export const ToastContainer = () => {
   const { toasts, removeToast } = useToast()
@@ -12,7 +11,7 @@ export const ToastContainer = () => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'success':
-        return <CheckCircle2 size={18} />
+        return <Check size={18} />
       case 'error':
         return <AlertCircle size={18} />
       case 'warning':
@@ -23,28 +22,42 @@ export const ToastContainer = () => {
     }
   }
 
+  const getColor = (type: string) => {
+    switch (type) {
+      case 'success':
+        return 'teal'
+      case 'error':
+        return 'red'
+      case 'warning':
+        return 'yellow'
+      case 'info':
+      default:
+        return 'indigo'
+    }
+  }
+
   return (
-    <div className={styles.container}>
+    <Stack
+      pos="fixed"
+      bottom={24}
+      right={24}
+      gap="sm"
+      style={{ zIndex: 1000, maxWidth: 380, width: 'calc(100% - 48px)' }}
+    >
       {toasts.map((toast) => (
-        <div
+        <Notification
           key={toast.id}
-          className={`${styles.toast} ${styles[toast.type]}`}
+          color={getColor(toast.type)}
+          icon={getIcon(toast.type)}
+          title={toast.title}
+          onClose={() => removeToast(toast.id)}
+          radius="md"
+          withBorder
         >
-          <div className={styles.iconWrapper}>{getIcon(toast.type)}</div>
-          <div className={styles.content}>
-            {toast.title && <span className={styles.title}>{toast.title}</span>}
-            <span className={styles.message}>{toast.message}</span>
-          </div>
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={() => removeToast(toast.id)}
-          >
-            <X size={16} />
-          </button>
-        </div>
+          {toast.message}
+        </Notification>
       ))}
-    </div>
+    </Stack>
   )
 }
 

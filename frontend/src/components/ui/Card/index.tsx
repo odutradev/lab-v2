@@ -1,52 +1,73 @@
-import styles from './Card.module.css'
+import { Paper, Title, Text, Box } from '@mantine/core'
 
 import type { CardProps } from './types'
 
-export const CardHeader = ({ children, className = '', ...props }: CardProps) => {
+export const CardHeader = ({ children, className, ...props }: CardProps) => {
   return (
-    <div className={`${styles.cardHeader} ${className}`} {...props}>
+    <Box
+      mb="md"
+      pb="xs"
+      className={className}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}
+      {...props}
+    >
       {children}
-    </div>
+    </Box>
   )
 }
 
-export const CardTitle = ({ children, className = '', ...props }: CardProps) => {
+export const CardTitle = ({ children, className, ...props }: CardProps) => {
   return (
-    <h3 className={`${styles.cardTitle} ${className}`} {...props}>
+    <Title order={4} fw={600} c="white" className={className} {...props}>
       {children}
-    </h3>
+    </Title>
   )
 }
 
-export const CardDescription = ({ children, className = '', ...props }: CardProps) => {
+export const CardDescription = ({ children, className, ...props }: CardProps) => {
   return (
-    <p className={`${styles.cardDescription} ${className}`} {...props}>
+    <Text size="sm" c="dimmed" mt={4} className={className} {...props}>
       {children}
-    </p>
+    </Text>
   )
 }
 
-export const CardContent = ({ children, className = '', ...props }: CardProps) => {
+export const CardContent = ({ children, className, ...props }: CardProps) => {
   return (
-    <div className={`${styles.cardContent} ${className}`} {...props}>
+    <Box className={className} {...props}>
       {children}
-    </div>
+    </Box>
   )
 }
 
-export const CardFooter = ({ children, className = '', ...props }: CardProps) => {
+export const CardFooter = ({ children, className, ...props }: CardProps) => {
   return (
-    <div className={`${styles.cardFooter} ${className}`} {...props}>
+    <Box
+      mt="md"
+      pt="xs"
+      className={className}
+      style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
+      {...props}
+    >
       {children}
-    </div>
+    </Box>
   )
 }
 
-export const Card = ({ children, className = '', ...props }: CardProps) => {
+export const Card = ({ children, className, ...props }: CardProps) => {
   return (
-    <div className={`${styles.card} ${className}`} {...props}>
+    <Paper
+      p="xl"
+      radius="lg"
+      withBorder
+      shadow="md"
+      bg="rgba(17, 24, 39, 0.7)"
+      className={className}
+      style={{ backdropFilter: 'blur(16px)' }}
+      {...props}
+    >
       {children}
-    </div>
+    </Paper>
   )
 }
 

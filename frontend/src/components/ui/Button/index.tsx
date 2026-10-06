@@ -1,6 +1,14 @@
-import styles from './Button.module.css'
+import { Button as MantineButton, type ButtonVariant as MantineVariant } from '@mantine/core'
 
-import type { ButtonProps } from './types'
+import type { ButtonProps, ButtonVariant } from './types'
+
+const variantMap: Record<ButtonVariant, { variant: MantineVariant; color?: string }> = {
+  primary: { variant: 'filled', color: 'indigo' },
+  secondary: { variant: 'light', color: 'indigo' },
+  outline: { variant: 'outline', color: 'indigo' },
+  ghost: { variant: 'subtle', color: 'gray' },
+  danger: { variant: 'filled', color: 'red' }
+}
 
 export const Button = ({
   children,
@@ -11,33 +19,29 @@ export const Button = ({
   rightIcon,
   fullWidth = false,
   disabled,
-  className = '',
+  className,
+  type = 'button',
   ...props
 }: ButtonProps) => {
-  const classNames = [
-    styles.button,
-    styles[variant],
-    styles[size],
-    fullWidth ? styles.fullWidth : '',
-    className
-  ]
-    .filter(Boolean)
-    .join(' ')
+  const config = variantMap[variant]
 
   return (
-    <button
-      className={classNames}
-      disabled={disabled || isLoading}
+    <MantineButton
+      type={type}
+      variant={config.variant}
+      color={config.color}
+      size={size}
+      loading={isLoading}
+      leftSection={leftIcon}
+      rightSection={rightIcon}
+      fullWidth={fullWidth}
+      disabled={disabled}
+      radius="md"
+      className={className}
       {...props}
     >
-      {isLoading ? (
-        <span className={styles.spinner} />
-      ) : (
-        leftIcon && <span className={styles.icon}>{leftIcon}</span>
-      )}
-      <span>{children}</span>
-      {!isLoading && rightIcon && <span className={styles.icon}>{rightIcon}</span>}
-    </button>
+      {children}
+    </MantineButton>
   )
 }
 
