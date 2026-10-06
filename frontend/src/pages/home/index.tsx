@@ -1,9 +1,10 @@
 import { Stack, SimpleGrid } from '@mantine/core'
 
+import ActionExecutorCard from './components/actionExecutorCard'
+import HabitsBannerCard from './components/habitsBannerCard'
+import SystemStatusGrid from './components/systemStatusGrid'
 import WelcomeBanner from './components/welcomeBanner'
 import ProfileCard from './components/profileCard'
-import ActionExecutorCard from './components/actionExecutorCard'
-import SystemStatusGrid from './components/systemStatusGrid'
 import useHomePage from './hook'
 
 export const HomePage = () => {
@@ -13,12 +14,15 @@ export const HomePage = () => {
     actionLoading,
     actionResult,
     handleFetchProfile,
-    handleNavigateResetPassword
+    handleNavigateResetPassword,
+    handleNavigateHabits
   } = useHomePage()
 
   return (
     <Stack gap="xl" w="100%">
       <WelcomeBanner user={user} />
+
+      <HabitsBannerCard onNavigateHabits={handleNavigateHabits} />
 
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
         <ProfileCard

@@ -34,13 +34,18 @@ export const useHomePage = (): UseHomePageReturn => {
     navigate('/reset-password')
   }, [navigate])
 
+  const handleNavigateHabits = useCallback(() => {
+    navigate('/habits')
+  }, [navigate])
+
   return {
     user,
     token,
     actionLoading,
     actionResult,
     handleFetchProfile,
-    handleNavigateResetPassword
+    handleNavigateResetPassword,
+    handleNavigateHabits
   }
 }
 

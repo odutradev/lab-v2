@@ -1,5 +1,5 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
-import { TbLogout, TbStack2, TbKey } from 'react-icons/tb'
+import { TbCalendarCheck, TbLogout, TbStack2, TbKey } from 'react-icons/tb'
 
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ export const Navbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const isResetPassword = location.pathname === '/reset-password'
+  const isHabits = location.pathname === '/habits'
 
   const getRoleLabel = () => {
     if (!user) return ''
@@ -79,6 +80,15 @@ export const Navbar = () => {
                 </Box>
               </Box>
             </Group>
+
+            <Button
+              variant={isHabits ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => navigate('/habits')}
+              leftIcon={<TbCalendarCheck size={16} />}
+            >
+              Agenda & Metas
+            </Button>
 
             <Button
               variant="ghost"

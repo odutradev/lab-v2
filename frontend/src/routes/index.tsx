@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute, AppLayout } from './components'
 import PageContainer from '@components/layout/pageContainer'
 import ResetPasswordPage from '@pages/resetPassword'
+import HabitsPage from '@pages/habits'
 import HomePage from '@pages/home'
 import AuthPage from '@pages/auth'
 
@@ -12,6 +13,11 @@ const routes: RouteItem[] = [
   {
     path: '/',
     component: HomePage,
+    protected: true
+  },
+  {
+    path: '/habits',
+    component: HabitsPage,
     protected: true
   },
   {

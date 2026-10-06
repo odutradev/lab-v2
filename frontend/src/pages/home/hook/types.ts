@@ -7,4 +7,5 @@ export interface UseHomePageReturn {
   actionResult: string | null
   handleFetchProfile: () => Promise<void>
   handleNavigateResetPassword: () => void
+  handleNavigateHabits: () => void
 }
