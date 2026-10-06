@@ -4,14 +4,14 @@ import { Stack, Box } from '@mantine/core'
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
-import useAuth from '@hooks/useAuth'
+import useAuthStore from '@stores/auth'
 import useForm from '@hooks/useForm'
 
 import type { RegisterFormValues } from './types'
 import type { ApiError } from '@projectTypes/api'
 
 export const RegisterForm = () => {
-  const { register } = useAuth()
+  const { register } = useAuthStore()
   const { showToast } = useToast()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =

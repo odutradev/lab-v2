@@ -1,14 +1,17 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
 import { TbLogout, TbStack2, TbKey } from 'react-icons/tb'
 
-import useNavigation from '@hooks/useNavigation'
+import { useNavigate, useLocation } from 'react-router-dom'
+
+import useAuthStore from '@stores/auth'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
-import useAuth from '@hooks/useAuth'
 
 export const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth()
-  const { currentRoute, navigate } = useNavigation()
+  const { user, isAuthenticated, logout } = useAuthStore()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isResetPassword = location.pathname === '/reset-password'
 
   const getRoleLabel = () => {
     if (!user) return ''
@@ -44,7 +47,7 @@ export const Navbar = () => {
         <Group
           gap="xs"
           style={{ cursor: 'pointer' }}
-          onClick={() => navigate('home')}
+          onClick={() => navigate('/')}
         >
           <ThemeIcon
             size="md"
@@ -80,10 +83,10 @@ export const Navbar = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(currentRoute === 'reset-password' ? 'home' : 'reset-password')}
+              onClick={() => navigate(isResetPassword ? '/' : '/reset-password')}
               leftIcon={<TbKey size={16} />}
             >
-              {currentRoute === 'reset-password' ? 'Início' : 'Redefinir Senha'}
+              {isResetPassword ? 'Início' : 'Redefinir Senha'}
             </Button>
 
             <Button

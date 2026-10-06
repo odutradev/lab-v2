@@ -1,11 +1,11 @@
 import { Navigate } from 'react-router-dom'
 
-import useAuth from '@hooks/useAuth'
+import useAuthStore from '@stores/auth'
 
 import type { PublicRouteProps } from './types'
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthStore()
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />

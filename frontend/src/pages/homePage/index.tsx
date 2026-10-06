@@ -2,18 +2,19 @@ import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } fr
 import { TbShield, TbActivity, TbStack2, TbRefresh, TbKey } from 'react-icons/tb'
 import { useState } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import { getProfileAction } from '@actions/users/profile'
-import useNavigation from '@hooks/useNavigation'
+import useAuthStore from '@stores/auth'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 import useToast from '@hooks/useToast'
-import useAuth from '@hooks/useAuth'
 
 export const HomePage = () => {
-  const { user, token, refreshUser } = useAuth()
+  const { user, token, refreshUser } = useAuthStore()
   const { showToast } = useToast()
-  const { navigate } = useNavigation()
+  const navigate = useNavigate()
   const [actionLoading, setActionLoading] = useState(false)
   const [actionResult, setActionResult] = useState<string | null>(null)
 
@@ -130,7 +131,7 @@ export const HomePage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('reset-password')}
+                  onClick={() => navigate('/reset-password')}
                   leftIcon={<TbKey size={15} />}
                 >
                   Redefinir Senha

@@ -3,12 +3,12 @@ import { createRoot } from 'react-dom/client'
 import '@mantine/core/styles.css'
 import { StrictMode, useEffect } from 'react'
 
-import useAuth from '@hooks/useAuth'
+import useAuthStore from '@stores/auth'
 import theme from '@styles/theme'
 import Router from '@routes'
 
 export const App = () => {
-  const { isLoading, initializeAuth } = useAuth()
+  const { isLoading, initializeAuth } = useAuthStore()
 
   useEffect(() => {
     initializeAuth()

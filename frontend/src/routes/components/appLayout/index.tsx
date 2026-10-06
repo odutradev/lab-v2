@@ -2,12 +2,12 @@ import { Box } from '@mantine/core'
 
 import ToastContainer from '@components/ui/toast'
 import Navbar from '@components/layout/navbar'
-import useAuth from '@hooks/useAuth'
+import useAuthStore from '@stores/auth'
 
 import type { AppLayoutProps } from './types'
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthStore()
 
   return (
     <Box

@@ -1,23 +1,24 @@
 import { Box, Title, Text, Stack, ThemeIcon } from '@mantine/core'
 import { TbKey } from 'react-icons/tb'
 
+import { useNavigate } from 'react-router-dom'
+
 import ResetPasswordForm from '@components/forms/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
-import useNavigation from '@hooks/useNavigation'
-import useAuth from '@hooks/useAuth'
+import useAuthStore from '@stores/auth'
 
 import type { ResetPasswordPageProps } from './types'
 
 export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
-  const { user, isAuthenticated } = useAuth()
-  const { navigate } = useNavigation()
+  const { user, isAuthenticated } = useAuthStore()
+  const navigate = useNavigate()
 
   const handleBack = () => {
     if (onBack) {
       onBack()
       return
     }
-    navigate(isAuthenticated ? 'home' : 'auth')
+    navigate(isAuthenticated ? '/' : '/auth')
   }
 
   return (

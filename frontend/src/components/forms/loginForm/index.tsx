@@ -1,20 +1,21 @@
 import { TbMail, TbLock, TbLogin } from 'react-icons/tb'
 import { Stack, Box, Group } from '@mantine/core'
 
-import useNavigation from '@hooks/useNavigation'
+import { useNavigate } from 'react-router-dom'
+
+import useAuthStore from '@stores/auth'
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
-import useAuth from '@hooks/useAuth'
 import useForm from '@hooks/useForm'
 
 import type { LoginFormValues, LoginFormProps } from './types'
 import type { ApiError } from '@projectTypes/api'
 
 export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
-  const { login } = useAuth()
+  const { login } = useAuthStore()
   const { showToast } = useToast()
-  const { navigate } = useNavigation()
+  const navigate = useNavigate()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<LoginFormValues>({
@@ -49,7 +50,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
       onForgotPassword()
       return
     }
-    navigate('reset-password')
+    navigate('/reset-password')
   }
 
   return (
