@@ -1,18 +1,31 @@
-import styles from './PageContainer.module.css'
+import { Container, Box } from '@mantine/core'
 
 import type { PageContainerProps } from './types'
 
 export const PageContainer = ({
   children,
   center = false,
-  className = ''
+  className
 }: PageContainerProps) => {
   return (
-    <main
-      className={`${styles.container} ${center ? styles.center : ''} ${className}`}
-    >
-      {children}
-    </main>
+    <Box component="main" flex={1} display="flex" style={{ flexDirection: 'column' }}>
+      <Container
+        size="lg"
+        w="100%"
+        py="xl"
+        px="md"
+        flex={1}
+        display="flex"
+        className={className}
+        style={{
+          flexDirection: 'column',
+          justifyContent: center ? 'center' : 'flex-start',
+          alignItems: center ? 'center' : 'stretch'
+        }}
+      >
+        {children}
+      </Container>
+    </Box>
   )
 }
 

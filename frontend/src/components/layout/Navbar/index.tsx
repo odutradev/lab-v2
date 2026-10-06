@@ -1,10 +1,9 @@
+import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
 import { LogOut, Layers } from 'lucide-react'
 
 import Button from '@components/ui/Button'
 import Badge from '@components/ui/Badge'
 import useAuth from '@hooks/useAuth'
-
-import styles from './Navbar.module.css'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth()
@@ -25,28 +24,54 @@ export const Navbar = () => {
   }
 
   return (
-    <header className={styles.navbar}>
-      <div className={styles.inner}>
-        <div className={styles.brand}>
-          <div className={styles.brandBadge}>
+    <Box
+      component="header"
+      pos="sticky"
+      top={0}
+      style={{
+        zIndex: 100,
+        backdropFilter: 'blur(16px)',
+        backgroundColor: 'rgba(9, 13, 22, 0.75)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+      }}
+    >
+      <Container
+        size="lg"
+        h={64}
+        display="flex"
+        style={{ alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <Group gap="xs">
+          <ThemeIcon
+            size="md"
+            radius="md"
+            variant="gradient"
+            gradient={{ from: 'indigo', to: 'cyan' }}
+          >
             <Layers size={18} />
-          </div>
-          <span className={styles.brandText}>LAB Portal</span>
-        </div>
+          </ThemeIcon>
+          <Text fw={700} size="md" c="white" style={{ letterSpacing: '-0.02em' }}>
+            LAB Portal
+          </Text>
+        </Group>
 
         {isAuthenticated && user && (
-          <div className={styles.userSection}>
-            <div className={styles.userInfo}>
-              <div className={styles.avatar}>{getInitials(user.name)}</div>
-              <div className={styles.userMeta}>
-                <span className={styles.userName}>{user.name}</span>
-                <span className={styles.userRole}>
+          <Group gap="md">
+            <Group gap="xs">
+              <Avatar radius="xl" size="sm" color="indigo">
+                {getInitials(user.name)}
+              </Avatar>
+              <Box>
+                <Text size="sm" fw={600} lh={1.2} c="white">
+                  {user.name}
+                </Text>
+                <Box mt={2}>
                   <Badge variant={user.isOwner ? 'primary' : 'info'}>
                     {getRoleLabel()}
                   </Badge>
-                </span>
-              </div>
-            </div>
+                </Box>
+              </Box>
+            </Group>
 
             <Button
               variant="ghost"
@@ -56,10 +81,10 @@ export const Navbar = () => {
             >
               Sair
             </Button>
-          </div>
+          </Group>
         )}
-      </div>
-    </header>
+      </Container>
+    </Box>
   )
 }
 
