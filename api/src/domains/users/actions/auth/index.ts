@@ -34,13 +34,7 @@ export const signUpAction = defineAction(
     const {
       name,
       email,
-      password,
-      accountType,
-      document,
-      birthDate,
-      phone,
-      referralSource,
-      academicData
+      password
     } = data as SignUpBody
     const existingUser = await userRepository.findByEmail(email)
 
@@ -52,20 +46,11 @@ export const signUpAction = defineAction(
     }
 
     const passwordHash = hashData(password)
-    const isTenant = accountType === 'tenant'
-    const isOwner = accountType === 'owner'
 
     const newUser = await userRepository.create({
       name,
       email,
-      passwordHash,
-      isTenant,
-      isOwner,
-      document,
-      birthDate,
-      phone,
-      referralSource,
-      academicData
+      passwordHash
     })
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET as string, { expiresIn: '3d' })
     const refreshToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET as string, { expiresIn: '10d' })
