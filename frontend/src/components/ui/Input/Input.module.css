@@ -1,0 +1,117 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.inputWrapper:hover {
+  border-color: var(--color-surface-border-hover);
+}
+
+.focused {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.hasError {
+  border-color: var(--color-danger);
+}
+
+.hasError.focused {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px var(--color-danger-light);
+}
+
+.input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-main);
+  font-size: 0.925rem;
+}
+
+.input::placeholder {
+  color: var(--color-text-dim);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.withLeftIcon {
+  padding-left: 38px;
+}
+
+.withRightIcon {
+  padding-right: 38px;
+}
+
+.leftIcon {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-dim);
+  pointer-events: none;
+}
+
+.rightIcon {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-dim);
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+
+.iconButton:hover {
+  color: var(--color-text-main);
+}
+
+.errorMessage {
+  font-size: 0.775rem;
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.helperText {
+  font-size: 0.775rem;
+  color: var(--color-text-dim);
+}

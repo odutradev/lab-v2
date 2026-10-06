@@ -1,0 +1,46 @@
+.card {
+  background: var(--color-surface-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: border-color var(--transition-normal);
+}
+
+.card:hover {
+  border-color: var(--color-surface-border-hover);
+}
+
+.cardHeader {
+  padding: 24px 28px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+}
+
+.cardDescription {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.cardContent {
+  padding: 16px 28px 24px;
+}
+
+.cardFooter {
+  padding: 16px 28px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--color-surface-border);
+}
