@@ -9,7 +9,8 @@ services:
     environment:
       - PORT=80
       - NODE_ENV=production
-      - MONGOURI=${MONGOURI}
+      - MONGO_URI=${MONGO_URI:-${MONGOURI}}
+      - MONGOURI=${MONGOURI:-${MONGO_URI}}
       - MONGOURI_TEST=${MONGOURI_TEST}
       - JWT_SECRET=${JWT_SECRET:-${JWT}}
       - PRODUCTION=${PRODUCTION:-true}

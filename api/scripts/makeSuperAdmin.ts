@@ -13,7 +13,7 @@ const makeSuperAdmin = async (): Promise<void> => {
   }
 
   try {
-    const mongoUri = process.env.MONGO_URI
+    const mongoUri = process.env.MONGO_URI || process.env.MONGOURI
 
     if (!mongoUri) {
       console.error('Error: MONGO_URI is missing in your environment variables.')

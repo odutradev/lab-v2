@@ -5,20 +5,18 @@ import createLocalLogger from '@utils/localLogger'
 
 const localLogger = createLocalLogger('database')
 
-const requiredEnvVariables = ['MONGO_URI']
-
 const connectMongoose = async () => {
   try {
     mongoose.set('strictQuery', true)
 
-    requiredEnvVariables.forEach((envVar) => {
-      if (!process.env[envVar]) {
-        localLogger.error(`[connectMongoose] Missing environment variable: "${envVar}"`)
-        process.exit(1)
-      }
-    })
+    const mongoUri = process.env.MONGO_URI || process.env.MONGOURI
 
-    const connected = await mongoose.connect(process.env.MONGO_URI as string, {
+    if (!mongoUri) {
+      localLogger.error('[connectMongoose] Missing environment variable: "MONGO_URI"')
+      process.exit(1)
+    }
+
+    const connected = await mongoose.connect(mongoUri, {
       writeConcern: {
         w: 'majority'
       }
