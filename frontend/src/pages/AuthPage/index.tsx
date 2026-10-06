@@ -3,7 +3,7 @@ import { IconStack2 } from '@tabler/icons-react'
 import { useState } from 'react'
 
 import RegisterForm from '@components/forms/RegisterForm'
-import Card, { CardContent } from '@components/ui/Card'
+import Card, { CardContent } from '@components/ui/card'
 import LoginForm from '@components/forms/LoginForm'
 
 export const AuthPage = () => {

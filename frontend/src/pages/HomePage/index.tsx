@@ -2,10 +2,10 @@ import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } fr
 import { IconShield, IconActivity, IconStack2, IconRefresh } from '@tabler/icons-react'
 import { useState } from 'react'
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import { getProfileAction } from '@actions/users/profile'
-import Button from '@components/ui/Button'
-import Badge from '@components/ui/Badge'
+import Button from '@components/ui/button'
+import Badge from '@components/ui/badge'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
 

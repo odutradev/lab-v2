@@ -1,8 +1,8 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
 import { IconLogout, IconStack2 } from '@tabler/icons-react'
 
-import Button from '@components/ui/Button'
-import Badge from '@components/ui/Badge'
+import Button from '@components/ui/button'
+import Badge from '@components/ui/badge'
 import useAuth from '@hooks/useAuth'
 
 export const Navbar = () => {

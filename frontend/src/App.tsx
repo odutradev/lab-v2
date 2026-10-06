@@ -1,7 +1,7 @@
 import { MantineProvider, Center, Loader, Box } from '@mantine/core'
 
 import PageContainer from '@components/layout/PageContainer'
-import ToastContainer from '@components/ui/Toast'
+import ToastContainer from '@components/ui/toast'
 import ToastProvider from '@context/toast'
 import Navbar from '@components/layout/Navbar'
 import AuthProvider from '@context/auth'

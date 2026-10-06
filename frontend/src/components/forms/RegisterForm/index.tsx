@@ -1,9 +1,9 @@
 import { IconMail, IconLock, IconUser, IconUserPlus, IconPhone, IconFileText } from '@tabler/icons-react'
 import { SimpleGrid, Stack, Box } from '@mantine/core'
 
-import Button from '@components/ui/Button'
-import Select from '@components/ui/Select'
-import Input from '@components/ui/Input'
+import Button from '@components/ui/button'
+import Select from '@components/ui/select'
+import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
 import useForm from '@hooks/useForm'

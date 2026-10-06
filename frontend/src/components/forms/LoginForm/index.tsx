@@ -1,8 +1,8 @@
 import { IconMail, IconLock, IconLogin } from '@tabler/icons-react'
 import { Stack, Box } from '@mantine/core'
 
-import Button from '@components/ui/Button'
-import Input from '@components/ui/Input'
+import Button from '@components/ui/button'
+import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
 import useForm from '@hooks/useForm'
