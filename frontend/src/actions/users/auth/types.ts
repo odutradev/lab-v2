@@ -4,7 +4,7 @@ export interface SignUpPayload {
   name: string
   email: string
   password: string
-  accountType: AccountType
+  accountType?: AccountType
   document?: string
   birthDate?: string
   phone?: string

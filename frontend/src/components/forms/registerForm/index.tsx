@@ -1,8 +1,7 @@
-import { IconMail, IconLock, IconUser, IconUserPlus, IconPhone, IconFileText } from '@tabler/icons-react'
-import { SimpleGrid, Stack, Box } from '@mantine/core'
+import { IconMail, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react'
+import { Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/button'
-import Select from '@components/ui/select'
 import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
@@ -20,10 +19,7 @@ export const RegisterForm = () => {
       initialValues: {
         name: '',
         email: '',
-        password: '',
-        accountType: 'tenant',
-        document: '',
-        phone: ''
+        password: ''
       },
       validationRules: {
         name: (val) => {
@@ -40,10 +36,6 @@ export const RegisterForm = () => {
           if (!val) return 'Senha é obrigatória'
           if (val.length < 8) return 'Senha deve ter no mínimo 8 caracteres'
           return undefined
-        },
-        accountType: (val) => {
-          if (!val) return 'Selecione o tipo de conta'
-          return undefined
         }
       },
       onSubmit: async (formValues) => {
@@ -51,10 +43,7 @@ export const RegisterForm = () => {
           await register({
             name: formValues.name.trim(),
             email: formValues.email.trim(),
-            password: formValues.password,
-            accountType: formValues.accountType,
-            document: formValues.document.trim() || undefined,
-            phone: formValues.phone.trim() || undefined
+            password: formValues.password
           })
           showToast('Conta criada com sucesso!', 'success')
         } catch (err) {
@@ -104,44 +93,6 @@ export const RegisterForm = () => {
           leftIcon={<IconLock size={18} />}
           required
         />
-
-        <Select
-          label="Tipo de Conta"
-          name="accountType"
-          value={values.accountType}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={errors.accountType}
-          options={[
-            { value: 'tenant', label: 'Inquilino / Morador' },
-            { value: 'owner', label: 'Proprietário de Imóvel' }
-          ]}
-          required
-        />
-
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-          <Input
-            label="Documento (CPF / CNPJ)"
-            name="document"
-            placeholder="Opcional"
-            value={values.document}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.document}
-            leftIcon={<IconFileText size={18} />}
-          />
-
-          <Input
-            label="Telefone / WhatsApp"
-            name="phone"
-            placeholder="Opcional"
-            value={values.phone}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.phone}
-            leftIcon={<IconPhone size={18} />}
-          />
-        </SimpleGrid>
 
         <Box mt="xs">
           <Button
