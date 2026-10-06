@@ -6,10 +6,13 @@ import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
 import userRepository from '@domains/users/repositories/user'
 import welcomeTemplate from '@email/templates/welcome'
 import { hashData, compareHash } from '@utils/crypto'
+import createLocalLogger from '@utils/localLogger'
 import defineAction from '@factories/defineAction'
 import createAuditLog from '@createAuditLog'
 
 import type { SignUpBody, SignInBody, RefreshTokenBody } from '@domains/users/actions/auth/types'
+
+const logger = createLocalLogger('auth-actions')
 
 export const signUpAction = defineAction(
   {
@@ -26,6 +29,10 @@ export const signUpAction = defineAction(
       },
       409: {
         description: 'E-mail já cadastrado',
+        schema: errorResponseSchema
+      },
+      500: {
+        description: 'Falha no envio de e-mail de boas-vindas ou erro interno',
         schema: errorResponseSchema
       }
     }
@@ -55,20 +62,30 @@ export const signUpAction = defineAction(
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET as string, { expiresIn: '3d' })
     const refreshToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET as string, { expiresIn: '10d' })
 
-    await Promise.all([
-      createAuditLog({
-        actorId: newUser.id,
-        action: 'create_user',
-        entity: 'User',
-        entityId: newUser.id,
-        summary: `Usuário "${newUser.name}" cadastrado com sucesso.`,
-        details: { name: newUser.name, email: newUser.email }
-      }),
-      welcomeTemplate.send({
+    await createAuditLog({
+      actorId: newUser.id,
+      action: 'create_user',
+      entity: 'User',
+      entityId: newUser.id,
+      summary: `Usuário "${newUser.name}" cadastrado com sucesso.`,
+      details: { name: newUser.name, email: newUser.email }
+    })
+
+    try {
+      await welcomeTemplate.send({
         to: newUser.email,
         variables: { name: newUser.name }
       })
-    ])
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Falha no envio do e-mail de boas-vindas'
+      logger.error(`[signUpAction] Falha ao enviar e-mail de boas-vindas para "${newUser.email}": ${errorMessage}`)
+
+      return manageError({
+        code: 'internal_error',
+        error,
+        details: [{ field: 'email', message: errorMessage }]
+      })
+    }
 
     return { refreshToken, token }
   }
