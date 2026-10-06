@@ -1,13 +1,20 @@
 import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
-import { IconStack2 } from '@tabler/icons-react'
+import { IconStack2, IconKey } from '@tabler/icons-react'
 import { useState } from 'react'
 
-import RegisterForm from '@components/forms/registerForm'
+import ResetPasswordForm from '@components/forms/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
+import RegisterForm from '@components/forms/registerForm'
 import LoginForm from '@components/forms/loginForm'
 
 export const AuthPage = () => {
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
+  const [authMode, setAuthMode] = useState<'login' | 'register' | 'reset'>('login')
+
+  const getSubtitle = () => {
+    if (authMode === 'login') return 'Entre com suas credenciais para acessar sua conta'
+    if (authMode === 'register') return 'Preencha os dados abaixo para criar sua conta'
+    return 'Preencha as informações para redefinir o acesso à sua conta'
+  }
 
   return (
     <Box w="100%" style={{ maxWidth: 460, margin: '0 auto' }}>
@@ -18,35 +25,46 @@ export const AuthPage = () => {
           variant="gradient"
           gradient={{ from: 'indigo', to: 'cyan' }}
         >
-          <IconStack2 size={28} />
+          {authMode === 'reset' ? <IconKey size={28} /> : <IconStack2 size={28} />}
         </ThemeIcon>
         <Title order={1} size="h2" fw={800} c="white">
-          LAB Portal
+          {authMode === 'reset' ? 'Redefinir Senha' : 'LAB Portal'}
         </Title>
         <Text size="sm" c="dimmed">
-          {activeTab === 'login'
-            ? 'Entre com suas credenciais para acessar sua conta'
-            : 'Preencha os dados abaixo para criar sua conta'}
+          {getSubtitle()}
         </Text>
       </Stack>
 
       <Card>
         <CardContent>
-          <SegmentedControl
-            fullWidth
-            value={activeTab}
-            onChange={(val) => setActiveTab(val as 'login' | 'register')}
-            data={[
-              { label: 'Entrar', value: 'login' },
-              { label: 'Cadastrar', value: 'register' }
-            ]}
-            color="indigo"
-            radius="md"
-            size="md"
-            mb="lg"
-          />
+          {authMode === 'reset' ? (
+            <ResetPasswordForm
+              onSuccess={() => setAuthMode('login')}
+              onCancel={() => setAuthMode('login')}
+            />
+          ) : (
+            <>
+              <SegmentedControl
+                fullWidth
+                value={authMode}
+                onChange={(val) => setAuthMode(val as 'login' | 'register')}
+                data={[
+                  { label: 'Entrar', value: 'login' },
+                  { label: 'Cadastrar', value: 'register' }
+                ]}
+                color="indigo"
+                radius="md"
+                size="md"
+                mb="lg"
+              />
 
-          {activeTab === 'login' ? <LoginForm /> : <RegisterForm />}
+              {authMode === 'login' ? (
+                <LoginForm onForgotPassword={() => setAuthMode('reset')} />
+              ) : (
+                <RegisterForm />
+              )}
+            </>
+          )}
         </CardContent>
       </Card>
     </Box>

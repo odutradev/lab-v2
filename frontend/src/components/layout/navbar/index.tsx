@@ -1,12 +1,14 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
-import { IconLogout, IconStack2 } from '@tabler/icons-react'
+import { IconLogout, IconStack2, IconKey } from '@tabler/icons-react'
 
+import useNavigation from '@hooks/useNavigation'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 import useAuth from '@hooks/useAuth'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth()
+  const { currentRoute, navigate } = useNavigation()
 
   const getRoleLabel = () => {
     if (!user) return ''
@@ -39,7 +41,11 @@ export const Navbar = () => {
         display="flex"
         style={{ alignItems: 'center', justifyContent: 'space-between' }}
       >
-        <Group gap="xs">
+        <Group
+          gap="xs"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('home')}
+        >
           <ThemeIcon
             size="md"
             radius="md"
@@ -70,6 +76,15 @@ export const Navbar = () => {
                 </Box>
               </Box>
             </Group>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(currentRoute === 'reset-password' ? 'home' : 'reset-password')}
+              leftIcon={<IconKey size={16} />}
+            >
+              {currentRoute === 'reset-password' ? 'Início' : 'Redefinir Senha'}
+            </Button>
 
             <Button
               variant="ghost"

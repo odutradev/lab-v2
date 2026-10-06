@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
 import { MantineProvider, Center, Loader, Box } from '@mantine/core'
+import { useEffect } from 'react'
 
 import PageContainer from '@components/layout/pageContainer'
+import ResetPasswordPage from '@pages/resetPasswordPage'
+import useNavigation from '@hooks/useNavigation'
 import ToastContainer from '@components/ui/toast'
 import Navbar from '@components/layout/navbar'
 import AuthPage from '@pages/authPage'
@@ -11,6 +13,7 @@ import theme from '@styles/theme'
 
 const AppContent = () => {
   const { isAuthenticated, isLoading, initializeAuth } = useAuth()
+  const { currentRoute, navigate } = useNavigation()
 
   useEffect(() => {
     initializeAuth()
@@ -22,6 +25,22 @@ const AppContent = () => {
         <Loader color="indigo" size="lg" />
       </Center>
     )
+  }
+
+  const renderContent = () => {
+    if (currentRoute === 'reset-password') {
+      return (
+        <ResetPasswordPage
+          onBack={() => navigate(isAuthenticated ? 'home' : 'auth')}
+        />
+      )
+    }
+
+    if (isAuthenticated) {
+      return <HomePage />
+    }
+
+    return <AuthPage />
   }
 
   return (
@@ -37,8 +56,8 @@ const AppContent = () => {
       }}
     >
       {isAuthenticated && <Navbar />}
-      <PageContainer center={!isAuthenticated}>
-        {isAuthenticated ? <HomePage /> : <AuthPage />}
+      <PageContainer center={!isAuthenticated || currentRoute === 'reset-password'}>
+        {renderContent()}
       </PageContainer>
       <ToastContainer />
     </Box>

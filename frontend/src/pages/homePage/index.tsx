@@ -1,9 +1,10 @@
 import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } from '@mantine/core'
-import { IconShield, IconActivity, IconStack2, IconRefresh } from '@tabler/icons-react'
+import { IconShield, IconActivity, IconStack2, IconRefresh, IconKey } from '@tabler/icons-react'
 import { useState } from 'react'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import { getProfileAction } from '@actions/users/profile'
+import useNavigation from '@hooks/useNavigation'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 import useToast from '@hooks/useToast'
@@ -12,6 +13,7 @@ import useAuth from '@hooks/useAuth'
 export const HomePage = () => {
   const { user, token, refreshUser } = useAuth()
   const { showToast } = useToast()
+  const { navigate } = useNavigation()
   const [actionLoading, setActionLoading] = useState(false)
   const [actionResult, setActionResult] = useState<string | null>(null)
 
@@ -123,6 +125,17 @@ export const HomePage = () => {
                   </Text>
                 </Group>
               )}
+
+              <Box mt="xs" pt="xs" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('reset-password')}
+                  leftIcon={<IconKey size={15} />}
+                >
+                  Redefinir Senha
+                </Button>
+              </Box>
             </Stack>
           </CardContent>
         </Card>

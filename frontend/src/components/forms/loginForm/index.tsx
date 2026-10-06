@@ -1,18 +1,20 @@
 import { IconMail, IconLock, IconLogin } from '@tabler/icons-react'
-import { Stack, Box } from '@mantine/core'
+import { Stack, Box, Group } from '@mantine/core'
 
+import useNavigation from '@hooks/useNavigation'
 import Button from '@components/ui/button'
 import Input from '@components/ui/input'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
 import useForm from '@hooks/useForm'
 
-import type { LoginFormValues } from './types'
+import type { LoginFormValues, LoginFormProps } from './types'
 import type { ApiError } from '@projectTypes/api'
 
-export const LoginForm = () => {
+export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
   const { login } = useAuth()
   const { showToast } = useToast()
+  const { navigate } = useNavigation()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<LoginFormValues>({
@@ -42,6 +44,14 @@ export const LoginForm = () => {
       }
     })
 
+  const handleForgotPassword = () => {
+    if (onForgotPassword) {
+      onForgotPassword()
+      return
+    }
+    navigate('reset-password')
+  }
+
   return (
     <form onSubmit={handleSubmit} noValidate style={{ width: '100%' }}>
       <Stack gap="md">
@@ -70,6 +80,18 @@ export const LoginForm = () => {
           leftIcon={<IconLock size={18} />}
           required
         />
+
+        <Group justify="flex-end">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleForgotPassword}
+            style={{ padding: 0, height: 'auto', fontSize: '13px', color: '#818cf8' }}
+          >
+            Esqueceu sua senha?
+          </Button>
+        </Group>
 
         <Box mt="xs">
           <Button
