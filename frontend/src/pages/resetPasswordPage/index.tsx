@@ -1,10 +1,10 @@
 import { Box, Title, Text, Stack, ThemeIcon } from '@mantine/core'
+import { useNavigate } from 'react-router-dom'
 import { TbKey } from 'react-icons/tb'
 
-import { useNavigate } from 'react-router-dom'
-
-import ResetPasswordForm from '@components/forms/resetPasswordForm'
+import ResetPasswordForm from './components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
+import { containerStyle } from './styles'
 import useAuthStore from '@stores/auth'
 
 import type { ResetPasswordPageProps } from './types'
@@ -22,7 +22,7 @@ export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
   }
 
   return (
-    <Box w="100%" style={{ maxWidth: 460, margin: '0 auto' }}>
+    <Box w="100%" style={containerStyle}>
       <Stack align="center" gap="xs" mb="xl" ta="center">
         <ThemeIcon
           size={56}
