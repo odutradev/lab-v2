@@ -41,7 +41,7 @@ export const sendEmail = async ({ to, subject, template, variables, from }: Send
     logger.error(`[sendEmail] Falha ao enviar e-mail para "${recipient}": ${errorMessage}`)
     logger.clean(error)
 
-    return { success: false, error: errorMessage }
+    throw error instanceof Error ? error : new Error(errorMessage)
   }
 }
 
