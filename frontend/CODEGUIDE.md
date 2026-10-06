@@ -84,7 +84,7 @@ src/
 │           ├── index.ts  # Implementação das actions (getProfile, updateProfile)
 │           └── types.ts  # Payloads e respostas de perfil
 ├── api/                  # Infraestrutura de comunicação HTTP
-│   ├── client.ts         # Instância e métodos do ApiHttpClient
+│   ├── client.ts         # Cliente HTTP e funções utilitárias (request, get, post, put, del)
 │   └── config.ts         # URLs base e chaves de armazenamento local
 ├── components/           # Componentes reutilizáveis
 │   ├── forms/            # Formulários autocontidos com lógica e tipagem
@@ -161,8 +161,8 @@ src/
 - O arquivo `types.ts` concentra os contratos de payload e resposta esperados.
 
 ### 3.2. Cliente HTTP (`@api/client` e `@api/config`)
-- `apiClient`: Instância singleton de `ApiHttpClient` exportada como `export default`.
-- Métodos disponíveis: `.get<T>()`, `.post<T>()`, `.put<T>()`, `.delete<T>()`.
+- Funções exportadas: `request<T>()`, `get<T>()`, `post<T>()`, `put<T>()`, `del<T>()`.
+- `apiClient`: Objeto com métodos (`get`, `post`, `put`, `delete`, `request`) exportado como `export default`.
 - Injeção automática de header `Authorization: Bearer <token>` a partir do `localStorage`.
 - Opção `skipAuth: true` para rotas públicas (como `/users/signin` e `/users/signup`).
 - Normalização uniforme de erros na interface `ApiError`.
