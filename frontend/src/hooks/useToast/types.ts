@@ -1,3 +1,3 @@
-import type { ToastContextType } from '../../context/toast/types'
+import type { ToastState } from '@stores/toast/types'
 
-export type UseToastReturn = ToastContextType
+export type UseToastReturn = ToastState

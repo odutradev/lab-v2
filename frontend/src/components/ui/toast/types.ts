@@ -1,4 +1,4 @@
-import type { ToastMessage } from '../../../context/toast/types'
+import type { ToastMessage } from '@stores/toast/types'
 
 export interface ToastItemProps {
   toast: ToastMessage
