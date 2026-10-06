@@ -1,10 +1,8 @@
-import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
-import { TbStack2, TbKey } from 'react-icons/tb'
+import { Box } from '@mantine/core'
 
 import ResetPasswordForm from '@pages/resetPassword/components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
-import RegisterForm from './components/registerForm'
-import LoginForm from './components/loginForm'
+import { AuthHeader, AuthTabs, LoginForm, RegisterForm } from './components'
 import { containerStyle } from './styles'
 import useAuthPage from './hook'
 
@@ -21,22 +19,11 @@ export const AuthPage = () => {
 
   return (
     <Box w="100%" style={containerStyle}>
-      <Stack align="center" gap="xs" mb="xl" ta="center">
-        <ThemeIcon
-          size={56}
-          radius="xl"
-          variant="gradient"
-          gradient={{ from: 'indigo', to: 'cyan' }}
-        >
-          {isResetMode ? <TbKey size={28} /> : <TbStack2 size={28} />}
-        </ThemeIcon>
-        <Title order={1} size="h2" fw={800} c="white">
-          {title}
-        </Title>
-        <Text size="sm" c="dimmed">
-          {subtitle}
-        </Text>
-      </Stack>
+      <AuthHeader
+        title={title}
+        subtitle={subtitle}
+        isResetMode={isResetMode}
+      />
 
       <Card>
         <CardContent>
@@ -47,18 +34,9 @@ export const AuthPage = () => {
             />
           ) : (
             <>
-              <SegmentedControl
-                fullWidth
+              <AuthTabs
                 value={authMode}
                 onChange={handleModeChange}
-                data={[
-                  { label: 'Entrar', value: 'login' },
-                  { label: 'Cadastrar', value: 'register' }
-                ]}
-                color="indigo"
-                radius="md"
-                size="md"
-                mb="lg"
               />
 
               {authMode === 'login' ? (
