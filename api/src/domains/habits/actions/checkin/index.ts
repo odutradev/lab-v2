@@ -1,4 +1,4 @@
-import { toggleCheckinResponseSchema, daySummaryResponseSchema, toggleCheckinBodySchema, daySummaryQuerySchema } from '@domains/habits/actions/checkin/schemas'
+import { rangeSummaryResponseSchema, toggleCheckinResponseSchema, rangeSummaryQuerySchema, daySummaryResponseSchema, toggleCheckinBodySchema, daySummaryQuerySchema } from '@domains/habits/actions/checkin/schemas'
 import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import habitRepository from '@domains/habits/repositories/habit'
@@ -7,7 +7,7 @@ import { isValidObjectId } from '@database/utils'
 import defineAction from '@factories/defineAction'
 import createAuditLog from '@createAuditLog'
 
-import type { ToggleCheckinResponse, DaySummaryResponse, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from '@domains/habits/actions/checkin/types'
+import type { RangeSummaryResponse, ToggleCheckinResponse, DaySummaryResponse, RangeSummaryQuery, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from '@domains/habits/actions/checkin/types'
 
 export const toggleCheckinAction = defineAction(
   {
@@ -132,5 +132,86 @@ export const getDaySummaryAction = defineAction(
     }
 
     return summary
+  }
+)
+
+export const getRangeSummaryAction = defineAction(
+  {
+    method: 'get',
+    path: '/habits/range-summary',
+    summary: 'Calcula o resumo diário e taxa de aproveitamento das metas para um intervalo de datas',
+    tags: ['Habits'],
+    authenticate: true,
+    schema: {
+      query: rangeSummaryQuerySchema
+    },
+    responses: {
+      200: {
+        description: 'Lista de resumos e aproveitamentos no intervalo',
+        schema: rangeSummaryResponseSchema
+      }
+    },
+    middlewares: [authMiddlewareWithDocs]
+  },
+  async ({ ids, query, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const { startDate, endDate } = query as RangeSummaryQuery
+
+    const activeHabits = await habitRepository.findAllByUser(ids.userId, { active: true })
+    const checkins = await habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate)
+
+    const checkinsByDateAndHabit = new Map<string, boolean>()
+    checkins.forEach((item) => {
+      checkinsByDateAndHabit.set(`${item.date}_${item.habitId.toString()}`, item.completed)
+    })
+
+    const dates: string[] = []
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
+    const [endYear, endMonth, endDay] = endDate.split('-').map(Number)
+    const current = new Date(startYear, startMonth - 1, startDay)
+    const end = new Date(endYear, endMonth - 1, endDay)
+
+    while (current <= end) {
+      const yyyy = current.getFullYear()
+      const mm = String(current.getMonth() + 1).padStart(2, '0')
+      const dd = String(current.getDate()).padStart(2, '0')
+      dates.push(`${yyyy}-${mm}-${dd}`)
+      current.setDate(current.getDate() + 1)
+    }
+
+    const summaries: DaySummaryResponse[] = dates.map((dateStr) => {
+      const items: DaySummaryItem[] = activeHabits
+        .filter((habit) => {
+          if (habit.frequency === 'daily') return true
+          return checkinsByDateAndHabit.has(`${dateStr}_${habit.id.toString()}`)
+        })
+        .map((habit) => {
+          const habitId = habit.id.toString()
+          const completed = checkinsByDateAndHabit.get(`${dateStr}_${habitId}`) ?? false
+
+          return {
+            habitId,
+            title: habit.title,
+            description: habit.description,
+            frequency: habit.frequency,
+            completed
+          }
+        })
+
+      const totalHabits = items.length
+      const completedHabits = items.filter((item) => item.completed).length
+      const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
+
+      return {
+        date: dateStr,
+        totalHabits,
+        completedHabits,
+        completionRate,
+        items
+      }
+    })
+
+    return summaries
   }
 )

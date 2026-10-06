@@ -36,3 +36,10 @@ export const daySummaryResponseSchema = registry.register('DaySummaryResponse', 
   completionRate: z.number(),
   items: z.array(daySummaryItemSchema)
 }))
+
+export const rangeSummaryQuerySchema = registry.register('RangeSummaryQuery', z.object({
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Start date must be formatted as YYYY-MM-DD'),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be formatted as YYYY-MM-DD')
+}))
+
+export const rangeSummaryResponseSchema = registry.register('RangeSummaryResponse', z.array(daySummaryResponseSchema))

@@ -34,6 +34,14 @@ const habitCheckinRepository = {
 
     return checkins.map((item) => ({ ...item, id: item._id.toString() })) as unknown as HabitCheckinModelType[]
   },
+  findByUserAndDateRange: async (userId: string, startDate: string, endDate: string): Promise<HabitCheckinModelType[]> => {
+    const checkins = await HabitCheckinModel.find({
+      userId: toObjectId(userId),
+      date: { $gte: startDate, $lte: endDate }
+    }).lean()
+
+    return checkins.map((item) => ({ ...item, id: item._id.toString() })) as unknown as HabitCheckinModelType[]
+  },
   findByUserHabitAndDate: async (userId: string, habitId: string, date: string): Promise<HabitCheckinModelType | null> => {
     const checkin = await HabitCheckinModel.findOne({
       userId: toObjectId(userId),
