@@ -67,50 +67,52 @@ export const requestCodeAction = defineAction(
 
     logger.info(`[requestCodeAction] Código de verificação gerado para "${email}" (${purpose}). Disparando envio de e-mail...`)
 
-    const emailResult = await verificationCodeTemplate.send({
-      to: email,
-      variables: { code }
-    })
+    try {
+      const emailResult = await verificationCodeTemplate.send({
+        to: email,
+        variables: { code }
+      })
 
-    if (!emailResult.success) {
-      logger.error(`[requestCodeAction] Falha ao enviar código de verificação para "${email}": ${emailResult.error}`)
+      logger.success(`[requestCodeAction] Código de verificação (${purpose}) enviado com sucesso para "${email}". Message ID: ${emailResult.messageId}`)
+
+      await createAuditLog({
+        actorId: user.id,
+        action: 'request_verification_code',
+        entity: 'User',
+        entityId: user.id,
+        summary: `Código de verificação (${purpose}) enviado com sucesso para o e-mail: ${email}.`,
+        details: {
+          email,
+          purpose,
+          messageId: emailResult.messageId
+        }
+      })
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Falha no envio do e-mail'
+      logger.error(`[requestCodeAction] Falha ao enviar código de verificação para "${email}": ${errorMessage}`)
 
       await createAuditLog({
         actorId: user.id,
         action: 'request_verification_code_failed',
         entity: 'User',
         entityId: user.id,
-        summary: `Falha ao enviar código de verificação (${purpose}) para o e-mail: ${email}. Motivo: ${emailResult.error}`,
+        summary: `Falha ao enviar código de verificação (${purpose}) para o e-mail: ${email}. Motivo: ${errorMessage}`,
         details: {
           email,
           purpose,
-          error: emailResult.error
+          error: errorMessage
         }
       })
 
       return manageError({
         code: 'internal_error',
-        details: [{ field: 'email', message: emailResult.error || 'Falha no envio do e-mail' }]
+        error,
+        details: [{ field: 'email', message: errorMessage }]
       })
-    }
-
-    logger.success(`[requestCodeAction] Código de verificação (${purpose}) enviado com sucesso para "${email}". Message ID: ${emailResult.messageId}`)
-
-    await createAuditLog({
-      actorId: user.id,
-      action: 'request_verification_code',
-      entity: 'User',
-      entityId: user.id,
-      summary: `Código de verificação (${purpose}) enviado com sucesso para o e-mail: ${email}.`,
-      details: {
-        email,
-        purpose,
-        messageId: emailResult.messageId
-      }
-    })
-
-    return {
-      success: true
     }
   }
 )
