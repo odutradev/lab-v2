@@ -63,8 +63,9 @@ export const uploadValidationDocumentAction = defineAction(
       })
     }
 
+    const userRepo = userRepository as any
     const { role, documentType } = data as UploadValidationDocumentBody
-    const user = await userRepository.findById(ids.userId)
+    const user = (await userRepository.findById(ids.userId)) as any
 
     if (!user) return manageError({ code: 'user_not_found' })
 
@@ -108,7 +109,7 @@ export const uploadValidationDocumentAction = defineAction(
       isPublic: false
     })
 
-    await userRepository.updateUserDocument(ids.userId, role, documentType, url)
+    await (userRepository as any).updateUserDocument(ids.userId, role, documentType, url)
 
     await createAuditLog({
       actorId: ids.userId,
@@ -177,7 +178,7 @@ export const resubmitValidationDocumentAction = defineAction(
     }
 
     const { role, documentType } = data as ResubmitValidationDocumentBody
-    const user = await userRepository.findById(ids.userId)
+    const user = (await userRepository.findById(ids.userId)) as any
 
     if (!user) return manageError({ code: 'user_not_found' })
 
@@ -239,7 +240,7 @@ export const resubmitValidationDocumentAction = defineAction(
       isPublic: false
     })
 
-    await userRepository.updateUserDocument(ids.userId, role, documentType, url, true)
+    await (userRepository as any).updateUserDocument(ids.userId, role, documentType, url, true)
 
     await createAuditLog({
       actorId: ids.userId,
@@ -283,7 +284,7 @@ export const listPendingValidationDocumentsAction = defineAction(
     const paginationQuery = query as ListPendingValidationDocumentsQuery
     const { limit, offset, page } = getPaginationOptions(paginationQuery as PaginationQuery)
     
-    const result = await userRepository.listPendingDocuments({ limit, offset, type })
+    const result = await (userRepository as any).listPendingDocuments({ limit, offset, type })
     const formattedRows = result.rows.map((doc: any) => {
       const { _id, __v, ...rest } = doc
       return { id: _id?.toString(), ...rest }
@@ -328,7 +329,7 @@ export const reviewValidationDocumentAction = defineAction(
 
     if (!reviewerUser) return manageError({ code: 'unauthorized' })
 
-    const user = await userRepository.findById(userId)
+    const user = (await userRepository.findById(userId)) as any
 
     if (!user) return manageError({ code: 'user_not_found' })
 
@@ -348,7 +349,7 @@ export const reviewValidationDocumentAction = defineAction(
 
     const previousRoleStatus = user.documents?.[role]?.status
 
-    const updatedUser = await userRepository.reviewUserDocument(
+    const updatedUser = await (userRepository as any).reviewUserDocument(
       userId,
       role,
       documentType,
@@ -438,7 +439,7 @@ export const uploadOwnerContractAction = defineAction(
       })
     }
 
-    const user = await userRepository.findById(ids.userId)
+    const user = (await userRepository.findById(ids.userId)) as any
 
     if (!user) return manageError({ code: 'user_not_found' })
 
@@ -492,7 +493,7 @@ export const uploadOwnerContractAction = defineAction(
       isPublic: false
     })
 
-    await userRepository.updateOwnerContract(ids.userId, url)
+    await (userRepository as any).updateOwnerContract(ids.userId, url)
 
     await createAuditLog({
       actorId: ids.userId,

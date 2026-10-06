@@ -14,17 +14,24 @@ export const createAccountReadinessMiddleware = (role: 'tenant' | 'owner'): Requ
     }
 
     try {
-      const readiness = await userRepository.checkAccountReadiness(userId, role)
+      const user = await userRepository.findById(userId)
 
-      if (!readiness || !readiness.isReady) {
-        const issues = readiness?.issues || ['user_not_found']
-        const details = issues.map((issue) => ({ field: 'accountStatus', message: issue }))
-
+      if (!user) {
         sendError({
           code: 'account_not_ready',
           res,
           local: 'accountReadinessMiddleware',
-          details
+          details: [{ field: 'accountStatus', message: 'user_not_found' }]
+        })
+        return
+      }
+
+      if (user.accountStatus === 'blocked') {
+        sendError({
+          code: 'account_not_ready',
+          res,
+          local: 'accountReadinessMiddleware',
+          details: [{ field: 'accountStatus', message: 'account_blocked' }]
         })
         return
       }
