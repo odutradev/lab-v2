@@ -87,13 +87,6 @@ src/
 │   ├── client.ts         # Cliente HTTP e funções utilitárias (request, get, post, put, del)
 │   └── config.ts         # URLs base e chaves de armazenamento local
 ├── components/           # Componentes reutilizáveis
-│   ├── forms/            # Formulários autocontidos com lógica e tipagem
-│   │   ├── loginForm/
-│   │   │   ├── index.tsx
-│   │   │   └── types.ts
-│   │   └── registerForm/
-│   │       ├── index.tsx
-│   │       └── types.ts
 │   ├── layout/           # Componentes estruturais de layout
 │   │   ├── navbar/
 │   │   │   └── index.tsx
@@ -136,11 +129,25 @@ src/
 │   └── useToast/
 │   │   ├── index.ts      # useToast (export default)
 │   │   └── types.ts
-├── pages/                # Telas da aplicação
+├── pages/                # Telas da aplicação estruturadas em fatias modulares
 │   ├── authPage/
+│   │   ├── components/   # Componentes da página (loginForm, registerForm)
+│   │   ├── hook/         # Hooks locais da página
+│   │   ├── styles.ts     # Estilos dedicados da página
+│   │   ├── types.ts      # Tipos e contratos da página
 │   │   └── index.tsx     # AuthPage (export default)
-│   └── homePage/
-│       └── index.tsx     # HomePage (export default)
+│   ├── homePage/
+│   │   ├── components/   # Componentes locais da home
+│   │   ├── hook/         # Hooks locais da home
+│   │   ├── styles.ts     # Estilos dedicados da home
+│   │   ├── types.ts      # Tipos e contratos da home
+│   │   └── index.tsx     # HomePage (export default)
+│   └── resetPasswordPage/
+│       ├── components/   # Componentes da página (resetPasswordForm)
+│       ├── hook/         # Hooks locais da página
+│       ├── styles.ts     # Estilos dedicados da página
+│       ├── types.ts      # Tipos e contratos da página
+│       └── index.tsx     # ResetPasswordPage (export default)
 ├── styles/               # Tokens de design e variáveis globais
 │   └── design-system.css
 ├── types/                # Tipos globais e transversais do projeto
