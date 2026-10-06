@@ -7,8 +7,11 @@ import verificationCodeTemplate from '@email/templates/verificationCode'
 import userRepository from '@domains/users/repositories/user'
 import defineAction from '@factories/defineAction'
 import createAuditLog from '@createAuditLog'
+import createLocalLogger from '@utils/localLogger'
 
 import type { RequestCodeParams, RequestCodeBody, VerifyCodeParams, VerifyCodeBody } from '@domains/users/actions/validation/types'
+
+const logger = createLocalLogger('validation-actions')
 
 export const requestCodeAction = defineAction(
   {
@@ -29,15 +32,23 @@ export const requestCodeAction = defineAction(
       404: {
         description: 'Usuário não localizado no sistema',
         schema: errorResponseSchema
+      },
+      500: {
+        description: 'Falha ao enviar e-mail com código de verificação',
+        schema: errorResponseSchema
       }
     }
   },
   async ({ params, data, manageError }) => {
     const { purpose } = params as RequestCodeParams
     const { email } = data as RequestCodeBody
+
+    logger.info(`[requestCodeAction] Recebida solicitação de código de verificação para "${email}" (finalidade: "${purpose}")`)
+
     const user = await userRepository.findByEmail(email)
 
     if (!user) {
+      logger.warn(`[requestCodeAction] Usuário não localizado no sistema para o e-mail: "${email}"`)
       return manageError({ code: 'user_not_found' })
     }
 
@@ -54,22 +65,49 @@ export const requestCodeAction = defineAction(
       expiresAt
     })
 
-    await Promise.all([
-      verificationCodeTemplate.send({
-        to: email,
-        variables: { code }
-      }),
-      createAuditLog({
+    logger.info(`[requestCodeAction] Código de verificação gerado para "${email}" (${purpose}). Disparando envio de e-mail...`)
+
+    const emailResult = await verificationCodeTemplate.send({
+      to: email,
+      variables: { code }
+    })
+
+    if (!emailResult.success) {
+      logger.error(`[requestCodeAction] Falha ao enviar código de verificação para "${email}": ${emailResult.error}`)
+
+      await createAuditLog({
         actorId: user.id,
-        action: 'request_verification_code',
+        action: 'request_verification_code_failed',
         entity: 'User',
-        summary: `Código de verificação enviado para o e-mail: ${email}.`,
+        entityId: user.id,
+        summary: `Falha ao enviar código de verificação (${purpose}) para o e-mail: ${email}. Motivo: ${emailResult.error}`,
         details: {
           email,
-          purpose
+          purpose,
+          error: emailResult.error
         }
       })
-    ])
+
+      return manageError({
+        code: 'internal_error',
+        details: [{ field: 'email', message: emailResult.error || 'Falha no envio do e-mail' }]
+      })
+    }
+
+    logger.success(`[requestCodeAction] Código de verificação (${purpose}) enviado com sucesso para "${email}". Message ID: ${emailResult.messageId}`)
+
+    await createAuditLog({
+      actorId: user.id,
+      action: 'request_verification_code',
+      entity: 'User',
+      entityId: user.id,
+      summary: `Código de verificação (${purpose}) enviado com sucesso para o e-mail: ${email}.`,
+      details: {
+        email,
+        purpose,
+        messageId: emailResult.messageId
+      }
+    })
 
     return {
       success: true
@@ -91,15 +129,35 @@ export const verifyCodeAction = defineAction(
       200: {
         description: 'Código de verificação validado com sucesso',
         schema: verificationResponseSchema
+      },
+      400: {
+        description: 'Código de verificação inválido ou expirado',
+        schema: errorResponseSchema
       }
     }
   },
   async ({ params, data, manageError }) => {
     const { purpose } = params as VerifyCodeParams
     const { email, code } = data as VerifyCodeBody
+
+    logger.info(`[verifyCodeAction] Validando código para "${email}" (finalidade: "${purpose}")`)
+
     const validCode = await verificationCodeRepository.findValidCode(email, code, purpose)
 
     if (!validCode) {
+      logger.warn(`[verifyCodeAction] Código inválido ou expirado para o e-mail: "${email}" (${purpose})`)
+
+      await createAuditLog({
+        actorId: 'anonymous',
+        action: 'verify_code_failed',
+        entity: 'VerificationCode',
+        summary: `Tentativa com código de verificação inválido ou expirado para o e-mail: ${email} (${purpose}).`,
+        details: {
+          email,
+          purpose
+        }
+      })
+
       return manageError({ code: 'invalid_verification_code' })
     }
 
@@ -144,6 +202,8 @@ export const verifyCodeAction = defineAction(
         }
       })
     ])
+
+    logger.success(`[verifyCodeAction] Código validado com sucesso para "${email}" (${purpose})`)
 
     return {
       success: true,
