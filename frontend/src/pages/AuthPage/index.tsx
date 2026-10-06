@@ -1,56 +1,55 @@
+import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
 import { useState } from 'react'
 import { Layers } from 'lucide-react'
 
 import RegisterForm from '@components/forms/RegisterForm'
-import LoginForm from '@components/forms/LoginForm'
 import Card, { CardContent } from '@components/ui/Card'
-
-import styles from './AuthPage.module.css'
+import LoginForm from '@components/forms/LoginForm'
 
 export const AuthPage = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.brandHeader}>
-        <div className={styles.logoIcon}>
+    <Box w="100%" style={{ maxWidth: 460, margin: '0 auto' }}>
+      <Stack align="center" gap="xs" mb="xl" ta="center">
+        <ThemeIcon
+          size={56}
+          radius="xl"
+          variant="gradient"
+          gradient={{ from: 'indigo', to: 'cyan' }}
+        >
           <Layers size={28} />
-        </div>
-        <h1 className={styles.brandTitle}>LAB Portal</h1>
-        <p className={styles.brandSubtitle}>
+        </ThemeIcon>
+        <Title order={1} size="h2" fw={800} c="white">
+          LAB Portal
+        </Title>
+        <Text size="sm" c="dimmed">
           {activeTab === 'login'
             ? 'Entre com suas credenciais para acessar sua conta'
             : 'Preencha os dados abaixo para criar sua conta'}
-        </p>
-      </div>
+        </Text>
+      </Stack>
 
       <Card>
         <CardContent>
-          <div className={styles.tabList} role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'login'}
-              className={`${styles.tabButton} ${activeTab === 'login' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('login')}
-            >
-              Entrar
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'register'}
-              className={`${styles.tabButton} ${activeTab === 'register' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('register')}
-            >
-              Cadastrar
-            </button>
-          </div>
+          <SegmentedControl
+            fullWidth
+            value={activeTab}
+            onChange={(val) => setActiveTab(val as 'login' | 'register')}
+            data={[
+              { label: 'Entrar', value: 'login' },
+              { label: 'Cadastrar', value: 'register' }
+            ]}
+            color="indigo"
+            radius="md"
+            size="md"
+            mb="lg"
+          />
 
           {activeTab === 'login' ? <LoginForm /> : <RegisterForm />}
         </CardContent>
       </Card>
-    </div>
+    </Box>
   )
 }
 

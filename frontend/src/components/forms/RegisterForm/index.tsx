@@ -1,4 +1,5 @@
 import { Mail, Lock, User, UserPlus, Phone, FileText } from 'lucide-react'
+import { SimpleGrid, Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/Button'
 import Select from '@components/ui/Select'
@@ -6,8 +7,6 @@ import Input from '@components/ui/Input'
 import useToast from '@hooks/useToast'
 import useAuth from '@hooks/useAuth'
 import useForm from '@hooks/useForm'
-
-import styles from '../forms.module.css'
 
 import type { RegisterFormValues } from './types'
 import type { ApiError } from '@projectTypes/api'
@@ -66,95 +65,97 @@ export const RegisterForm = () => {
     })
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <Input
-        label="Nome Completo"
-        name="name"
-        placeholder="João da Silva"
-        value={values.name}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.name}
-        leftIcon={<User size={18} />}
-        required
-      />
-
-      <Input
-        label="E-mail"
-        name="email"
-        type="email"
-        placeholder="seu.email@exemplo.com"
-        value={values.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.email}
-        leftIcon={<Mail size={18} />}
-        required
-      />
-
-      <Input
-        label="Senha"
-        name="password"
-        type="password"
-        placeholder="Mínimo 8 caracteres"
-        value={values.password}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.password}
-        leftIcon={<Lock size={18} />}
-        required
-      />
-
-      <Select
-        label="Tipo de Conta"
-        name="accountType"
-        value={values.accountType}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.accountType}
-        options={[
-          { value: 'tenant', label: 'Inquilino / Morador' },
-          { value: 'owner', label: 'Proprietário de Imóvel' }
-        ]}
-        required
-      />
-
-      <div className={styles.row}>
+    <form onSubmit={handleSubmit} noValidate style={{ width: '100%' }}>
+      <Stack gap="md">
         <Input
-          label="Documento (CPF / CNPJ)"
-          name="document"
-          placeholder="Opcional"
-          value={values.document}
+          label="Nome Completo"
+          name="name"
+          placeholder="João da Silva"
+          value={values.name}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={errors.document}
-          leftIcon={<FileText size={18} />}
+          error={errors.name}
+          leftIcon={<User size={18} />}
+          required
         />
 
         <Input
-          label="Telefone / WhatsApp"
-          name="phone"
-          placeholder="Opcional"
-          value={values.phone}
+          label="E-mail"
+          name="email"
+          type="email"
+          placeholder="seu.email@exemplo.com"
+          value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={errors.phone}
-          leftIcon={<Phone size={18} />}
+          error={errors.email}
+          leftIcon={<Mail size={18} />}
+          required
         />
-      </div>
 
-      <div className={styles.actions}>
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          fullWidth
-          isLoading={isSubmitting}
-          leftIcon={<UserPlus size={18} />}
-        >
-          Criar Nova Conta
-        </Button>
-      </div>
+        <Input
+          label="Senha"
+          name="password"
+          type="password"
+          placeholder="Mínimo 8 caracteres"
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={errors.password}
+          leftIcon={<Lock size={18} />}
+          required
+        />
+
+        <Select
+          label="Tipo de Conta"
+          name="accountType"
+          value={values.accountType}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={errors.accountType}
+          options={[
+            { value: 'tenant', label: 'Inquilino / Morador' },
+            { value: 'owner', label: 'Proprietário de Imóvel' }
+          ]}
+          required
+        />
+
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          <Input
+            label="Documento (CPF / CNPJ)"
+            name="document"
+            placeholder="Opcional"
+            value={values.document}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.document}
+            leftIcon={<FileText size={18} />}
+          />
+
+          <Input
+            label="Telefone / WhatsApp"
+            name="phone"
+            placeholder="Opcional"
+            value={values.phone}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.phone}
+            leftIcon={<Phone size={18} />}
+          />
+        </SimpleGrid>
+
+        <Box mt="xs">
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            isLoading={isSubmitting}
+            leftIcon={<UserPlus size={18} />}
+          >
+            Criar Nova Conta
+          </Button>
+        </Box>
+      </Stack>
     </form>
   )
 }
