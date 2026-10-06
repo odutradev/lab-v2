@@ -11,6 +11,7 @@ export const profileResponseSchema = registry.register('ProfileResponse', z.obje
   email: z.string(),
   avatar: z.string().optional(),
   superAdmin: z.boolean(),
+  emailVerified: z.boolean().optional(),
   accountStatus: z.enum(['active', 'blocked']),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional()

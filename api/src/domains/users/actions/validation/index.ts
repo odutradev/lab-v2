@@ -106,6 +106,7 @@ export const verifyCodeAction = defineAction(
     if (purpose === 'email_verification') {
       const user = await userRepository.findByEmail(email)
       if (user) {
+        await userRepository.updateEmailVerified(user.id, true)
         await createAuditLog({
           actorId: user.id,
           action: 'verify_email',

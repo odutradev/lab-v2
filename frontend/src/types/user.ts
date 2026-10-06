@@ -4,6 +4,7 @@ export interface UserProfile {
   email: string
   avatar?: string
   superAdmin?: boolean
+  emailVerified?: boolean
   accountStatus?: 'active' | 'blocked'
   createdAt?: string
   updatedAt?: string
