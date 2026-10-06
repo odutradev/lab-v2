@@ -13,11 +13,3 @@ export const updateProfileAction = async (payload: UpdateProfilePayload): Promis
 export const resetPasswordAction = async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
   return apiClient.post<ResetPasswordResponse>('/users/profile/reset-password', payload, { skipAuth: true })
 }
-
-const profileActions = {
-  getProfile: getProfileAction,
-  updateProfile: updateProfileAction,
-  resetPassword: resetPasswordAction
-}
-
-export default profileActions

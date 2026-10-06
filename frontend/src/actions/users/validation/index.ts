@@ -15,10 +15,3 @@ export const verifyCodeAction = async (
 ): Promise<VerificationResponse> => {
   return apiClient.post<VerificationResponse>(`/users/validation/verify/${purpose}`, payload, { skipAuth: true })
 }
-
-const validationActions = {
-  requestCode: requestCodeAction,
-  verifyCode: verifyCodeAction
-}
-
-export default validationActions
