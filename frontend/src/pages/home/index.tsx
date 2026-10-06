@@ -1,11 +1,9 @@
 import { Stack, SimpleGrid } from '@mantine/core'
 
-import {
-  WelcomeBanner,
-  ProfileCard,
-  ActionExecutorCard,
-  SystemStatusGrid
-} from './components'
+import WelcomeBanner from './components/welcomeBanner'
+import ProfileCard from './components/profileCard'
+import ActionExecutorCard from './components/actionExecutorCard'
+import SystemStatusGrid from './components/systemStatusGrid'
 import useHomePage from './hook'
 
 export const HomePage = () => {

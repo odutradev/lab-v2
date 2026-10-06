@@ -2,7 +2,10 @@ import { Box } from '@mantine/core'
 
 import ResetPasswordForm from '@pages/resetPassword/components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
-import { AuthHeader, AuthTabs, LoginForm, RegisterForm } from './components'
+import AuthHeader from './components/authHeader'
+import AuthTabs from './components/authTabs'
+import LoginForm from './components/loginForm'
+import RegisterForm from './components/registerForm'
 import { containerStyle } from './styles'
 import useAuthPage from './hook'
 

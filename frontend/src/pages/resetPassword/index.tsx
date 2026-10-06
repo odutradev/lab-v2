@@ -1,7 +1,8 @@
 import { Box } from '@mantine/core'
 
 import Card, { CardContent } from '@components/ui/card'
-import { ResetPasswordHeader, ResetPasswordForm } from './components'
+import ResetPasswordHeader from './components/resetPasswordHeader'
+import ResetPasswordForm from './components/resetPasswordForm'
 import { containerStyle } from './styles'
 import useResetPassword from './hook'
 
