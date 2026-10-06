@@ -1,10 +1,10 @@
 import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } from '@mantine/core'
 import { TbShield, TbActivity, TbStack2, TbRefresh, TbKey } from 'react-icons/tb'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
-
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
+import { welcomePaperStyle, profileRowStyle, profileResetBoxStyle, actionResultCodeStyle } from './styles'
 import { getProfileAction } from '@actions/users/profile'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
@@ -40,11 +40,7 @@ export const HomePage = () => {
         p="xl"
         radius="lg"
         withBorder
-        style={{
-          background:
-            'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%)',
-          borderColor: 'rgba(99, 102, 241, 0.3)'
-        }}
+        style={welcomePaperStyle}
       >
         <Stack gap="xs">
           <Title order={1} size="h2" fw={800} c="white">
@@ -71,7 +67,7 @@ export const HomePage = () => {
               <Group
                 justify="space-between"
                 pb="xs"
-                style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}
+                style={profileRowStyle}
               >
                 <Text size="sm" c="dimmed">
                   Nome
@@ -83,7 +79,7 @@ export const HomePage = () => {
               <Group
                 justify="space-between"
                 pb="xs"
-                style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}
+                style={profileRowStyle}
               >
                 <Text size="sm" c="dimmed">
                   E-mail
@@ -95,7 +91,7 @@ export const HomePage = () => {
               <Group
                 justify="space-between"
                 pb="xs"
-                style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}
+                style={profileRowStyle}
               >
                 <Text size="sm" c="dimmed">
                   ID do Usuário
@@ -106,7 +102,7 @@ export const HomePage = () => {
                 <Group
                   justify="space-between"
                   pb="xs"
-                  style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}
+                  style={profileRowStyle}
                 >
                   <Text size="sm" c="dimmed">
                     Status da Conta
@@ -127,7 +123,7 @@ export const HomePage = () => {
                 </Group>
               )}
 
-              <Box mt="xs" pt="xs" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+              <Box mt="xs" pt="xs" style={profileResetBoxStyle}>
                 <Button
                   variant="outline"
                   size="sm"
@@ -164,7 +160,7 @@ export const HomePage = () => {
                 <Code
                   block
                   p="md"
-                  style={{ borderRadius: 8, maxHeight: 200, overflowY: 'auto' }}
+                  style={actionResultCodeStyle}
                 >
                   {actionResult}
                 </Code>
