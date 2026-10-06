@@ -51,8 +51,7 @@ export const HomePage = () => {
             Bem-vindo ao painel principal da plataforma LAB. Sua sessão está ativa e autenticada.
           </Text>
           <Group gap="xs" mt="xs">
-            {user?.isOwner && <Badge variant="primary">Proprietário</Badge>}
-            {user?.isTenant && <Badge variant="info">Inquilino</Badge>}
+            {user?.superAdmin && <Badge variant="primary">Administrador</Badge>}
             <Badge variant="success">Autenticado</Badge>
           </Group>
         </Stack>
@@ -100,27 +99,27 @@ export const HomePage = () => {
                 </Text>
                 <Code c="indigo.3">{user?.id}</Code>
               </Group>
-              {user?.phone && (
+              {user?.accountStatus && (
                 <Group
                   justify="space-between"
                   pb="xs"
                   style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}
                 >
                   <Text size="sm" c="dimmed">
-                    Telefone
+                    Status da Conta
                   </Text>
                   <Text size="sm" fw={500} c="white">
-                    {user.phone}
+                    {user.accountStatus === 'active' ? 'Ativa' : 'Bloqueada'}
                   </Text>
                 </Group>
               )}
-              {user?.document && (
+              {user?.superAdmin !== undefined && (
                 <Group justify="space-between">
                   <Text size="sm" c="dimmed">
-                    Documento
+                    Perfil de Administrador
                   </Text>
                   <Text size="sm" fw={500} c="white">
-                    {user.document}
+                    {user.superAdmin ? 'Sim' : 'Não'}
                   </Text>
                 </Group>
               )}

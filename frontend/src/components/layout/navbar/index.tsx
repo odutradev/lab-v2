@@ -10,9 +10,7 @@ export const Navbar = () => {
 
   const getRoleLabel = () => {
     if (!user) return ''
-    if (user.isOwner && user.isTenant) return 'Proprietário & Inquilino'
-    if (user.isOwner) return 'Proprietário'
-    if (user.isTenant) return 'Inquilino'
+    if (user.superAdmin) return 'Administrador'
     return 'Usuário'
   }
 
@@ -66,7 +64,7 @@ export const Navbar = () => {
                   {user.name}
                 </Text>
                 <Box mt={2}>
-                  <Badge variant={user.isOwner ? 'primary' : 'info'}>
+                  <Badge variant={user.superAdmin ? 'primary' : 'info'}>
                     {getRoleLabel()}
                   </Badge>
                 </Box>
