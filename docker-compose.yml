@@ -9,6 +9,7 @@ services:
     environment:
       - PORT=80
       - NODE_ENV=production
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
       - MONGO_URI=${MONGO_URI:-${MONGOURI}}
       - MONGOURI=${MONGOURI:-${MONGO_URI}}
       - MONGOURI_TEST=${MONGOURI_TEST}
