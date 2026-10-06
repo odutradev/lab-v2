@@ -1,25 +1,15 @@
 import { Box, Title, Text, Stack, ThemeIcon } from '@mantine/core'
-import { useNavigate } from 'react-router-dom'
 import { TbKey } from 'react-icons/tb'
 
 import ResetPasswordForm from './components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
 import { containerStyle } from './styles'
-import useAuthStore from '@stores/auth'
+import useResetPassword from './hook'
 
 import type { ResetPasswordPageProps } from './types'
 
 export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
-  const { user, isAuthenticated } = useAuthStore()
-  const navigate = useNavigate()
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack()
-      return
-    }
-    navigate(isAuthenticated ? '/' : '/auth')
-  }
+  const { initialEmail, subtitle, handleBack } = useResetPassword({ onBack })
 
   return (
     <Box w="100%" style={containerStyle}>
@@ -36,16 +26,14 @@ export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
           Redefinição de Senha
         </Title>
         <Text size="sm" c="dimmed">
-          {isAuthenticated
-            ? 'Altere com segurança a senha de acesso da sua conta'
-            : 'Preencha as informações para redefinir o acesso à sua conta'}
+          {subtitle}
         </Text>
       </Stack>
 
       <Card>
         <CardContent>
           <ResetPasswordForm
-            initialEmail={isAuthenticated ? user?.email : undefined}
+            initialEmail={initialEmail}
             onSuccess={handleBack}
             onCancel={handleBack}
           />
