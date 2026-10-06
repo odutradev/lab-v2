@@ -10,7 +10,7 @@ Responsável por interceptar requisições protegidas, decodificar e validar o t
 
 - **Injeção de Contexto:** Caso o token seja comprovado, o `userId` contido no payload é injetado localmente no objeto do Express (`res.locals.userId`). A partir daí, o middleware `manageRequest` fará a ponte entregando-o em `ids.userId` diretamente para sua Action.
 - **Integração Simplificada:** Para rotas comuns, basta setar a propriedade `authenticate: true` na configuração do `defineAction`.
-- **Precedência de Execução (IMPORTANTE):** Se você utilizar middlewares encadeados no array `middlewares` que dependem da existência prévia do `res.locals.userId` (como `superAdminMiddleware` ou `accountReadiness`), a chave `authenticate: true` não é suficiente para garantir a ordem. Você **DEVE** declarar o `authMiddlewareWithDocs` explicitamente como o primeiro item do seu array.
+- **Precedência de Execução (IMPORTANTE):** Se você utilizar middlewares encadeados no array `middlewares` que dependem da existência prévia do `res.locals.userId` (como `superAdminMiddleware`), a chave `authenticate: true` não é suficiente para garantir a ordem. Você **DEVE** declarar o `authMiddlewareWithDocs` explicitamente como o primeiro item do seu array.
 - **Auto-Documentação Swagger:** Injeta automaticamente o status HTTP `401` informando sobre token ausente, expirado ou com assinatura corrompida.
 
 ---
@@ -25,16 +25,6 @@ Atua como uma barreira de restrição administrativa, bloqueando acessos a qualq
 
 ---
 
-## 3. createAccountReadinessMiddleware (`/accountReadiness`)
-
-Implementa o padrão *Higher-Order Function* (função que retorna um middleware). Seu papel é barrar o acesso à funcionalidades críticas por contas que ainda não concluíram o fluxo de *onboarding* / cadastro completo com base no perfil.
-
-- **Comportamento e Dependências:** Assim como o administrador, depende do `authMiddleware`. Ele consulta o método `checkAccountReadiness` do `userRepository` repassando a `role` solicitada (`tenant` ou `owner`).
-- **Detalhamento do Erro:** Caso o usuário possua restrições (ex: sem documento validado), o acesso é bloqueado e as pendências são listadas dentro da chave `details` no payload do erro (Status 403).
-- **Auto-Documentação Swagger:** Injeta automaticamente o retorno `403` atrelado ao bloqueio de perfil incompleto.
-
----
-
 ## Exemplo Prático de Consumo
 
 O acoplamento destes utilitários com a Action ocorre de forma elegante, mas a ordem de declaração no array de `middlewares` é crítica sempre que há interdependência:
@@ -42,21 +32,8 @@ O acoplamento destes utilitários com a Action ocorre de forma elegante, mas a o
 ```typescript
 import defineAction from '@factories/defineAction'
 
-import { createAccountReadinessMiddleware } from '@domains/users/middlewares/accountReadiness'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import superAdminMiddleware from '@domains/users/middlewares/superAdmin'
-
-export const createLeaseIntent = defineAction({
-  method: 'post',
-  path: '/leases/intent',
-  summary: 'Cria uma intenção de locação',
-  tags: ['Leases'],
-  authenticate: true,
-  middlewares: [
-    authMiddlewareWithDocs,
-    createAccountReadinessMiddleware('tenant')
-  ]
-}, async ({ ids, data }) => {})
 
 export const banUserPlatform = defineAction({
   method: 'post',
@@ -69,3 +46,4 @@ export const banUserPlatform = defineAction({
     superAdminMiddleware
   ]
 }, async ({ params }) => {})
+```

@@ -460,9 +460,8 @@ Toda a comunicação com Mongoose é isolada na pasta `repositories`. A Action N
 ### 4.6. Middlewares de Autenticação e Segurança (`@domains/users/middlewares`)
 
 - **`authMiddleware`**: Valida o token JWT Bearer, popula `ids.userId`.
-  - **REGRA MANDATÓRIA:** Se sua rota utiliza outros middlewares no array `middlewares` que dependem do `userId` (ex: `superAdminMiddleware` ou `createAccountReadinessMiddleware`), você **DEVE** declarar o `authMiddleware` explicitamente como o primeiro item do array `middlewares`.
+  - **REGRA MANDATÓRIA:** Se sua rota utiliza outros middlewares no array `middlewares` que dependem do `userId` (ex: `superAdminMiddleware`), você **DEVE** declarar o `authMiddleware` explicitamente como o primeiro item do array `middlewares`.
 - **`superAdminMiddleware`**: Restringe a execução exclusivamente a administradores globais (`user.superAdmin`).
-- **`createAccountReadinessMiddleware(role)`**: Verifica se o perfil (`tenant` ou `owner`) concluiu os requisitos de onboarding. Caso contrário, interrompe com HTTP 403 (`account_not_ready`).
 
 ---
 
