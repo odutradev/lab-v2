@@ -1,3 +1,3 @@
-import type { AuthContextType } from '../../context/auth/types'
+import type { AuthState } from '@stores/auth/types'
 
-export type UseAuthReturn = AuthContextType
+export type UseAuthReturn = AuthState
