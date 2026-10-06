@@ -1,17 +1,20 @@
+import { useEffect } from 'react'
 import { MantineProvider, Center, Loader, Box } from '@mantine/core'
 
 import PageContainer from '@components/layout/pageContainer'
 import ToastContainer from '@components/ui/toast'
 import Navbar from '@components/layout/navbar'
-import ToastProvider from '@context/toast'
-import AuthProvider from '@context/auth'
 import AuthPage from '@pages/authPage'
 import HomePage from '@pages/homePage'
 import useAuth from '@hooks/useAuth'
 import theme from '@styles/theme'
 
 const AppContent = () => {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, initializeAuth } = useAuth()
+
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
 
   if (isLoading) {
     return (
@@ -45,11 +48,7 @@ const AppContent = () => {
 export const App = () => {
   return (
     <MantineProvider defaultColorScheme="dark" theme={theme}>
-      <ToastProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </ToastProvider>
+      <AppContent />
     </MantineProvider>
   )
 }
