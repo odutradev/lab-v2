@@ -1,5 +1,5 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
-import { LogOut, Layers } from 'lucide-react'
+import { IconLogout, IconStack2 } from '@tabler/icons-react'
 
 import Button from '@components/ui/Button'
 import Badge from '@components/ui/Badge'
@@ -48,7 +48,7 @@ export const Navbar = () => {
             variant="gradient"
             gradient={{ from: 'indigo', to: 'cyan' }}
           >
-            <Layers size={18} />
+            <IconStack2 size={18} />
           </ThemeIcon>
           <Text fw={700} size="md" c="white" style={{ letterSpacing: '-0.02em' }}>
             LAB Portal
@@ -77,7 +77,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={logout}
-              leftIcon={<LogOut size={16} />}
+              leftIcon={<IconLogout size={16} />}
             >
               Sair
             </Button>

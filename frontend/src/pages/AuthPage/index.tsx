@@ -1,6 +1,6 @@
 import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
+import { IconStack2 } from '@tabler/icons-react'
 import { useState } from 'react'
-import { Layers } from 'lucide-react'
 
 import RegisterForm from '@components/forms/RegisterForm'
 import Card, { CardContent } from '@components/ui/Card'
@@ -18,7 +18,7 @@ export const AuthPage = () => {
           variant="gradient"
           gradient={{ from: 'indigo', to: 'cyan' }}
         >
-          <Layers size={28} />
+          <IconStack2 size={28} />
         </ThemeIcon>
         <Title order={1} size="h2" fw={800} c="white">
           LAB Portal

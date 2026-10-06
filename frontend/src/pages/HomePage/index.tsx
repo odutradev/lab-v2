@@ -1,5 +1,5 @@
 import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } from '@mantine/core'
-import { Shield, Activity, Layers, RefreshCw } from 'lucide-react'
+import { IconShield, IconActivity, IconStack2, IconRefresh } from '@tabler/icons-react'
 import { useState } from 'react'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/Card'
@@ -141,7 +141,7 @@ export const HomePage = () => {
                   size="sm"
                   onClick={handleFetchProfile}
                   isLoading={actionLoading}
-                  leftIcon={<RefreshCw size={15} />}
+                  leftIcon={<IconRefresh size={15} />}
                 >
                   getProfileAction()
                 </Button>
@@ -172,7 +172,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="indigo">
-                <Shield size={22} />
+                <IconShield size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">
@@ -190,7 +190,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="cyan">
-                <Layers size={22} />
+                <IconStack2 size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">
@@ -208,7 +208,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="teal">
-                <Activity size={22} />
+                <IconActivity size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">

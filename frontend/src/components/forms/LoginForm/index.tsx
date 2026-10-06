@@ -1,4 +1,4 @@
-import { Mail, Lock, LogIn } from 'lucide-react'
+import { IconMail, IconLock, IconLogin } from '@tabler/icons-react'
 import { Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/Button'
@@ -54,7 +54,7 @@ export const LoginForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.email}
-          leftIcon={<Mail size={18} />}
+          leftIcon={<IconMail size={18} />}
           required
         />
 
@@ -67,7 +67,7 @@ export const LoginForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.password}
-          leftIcon={<Lock size={18} />}
+          leftIcon={<IconLock size={18} />}
           required
         />
 
@@ -78,7 +78,7 @@ export const LoginForm = () => {
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            leftIcon={<LogIn size={18} />}
+            leftIcon={<IconLogin size={18} />}
           >
             Entrar na Plataforma
           </Button>

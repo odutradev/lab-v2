@@ -1,4 +1,4 @@
-import { Mail, Lock, User, UserPlus, Phone, FileText } from 'lucide-react'
+import { IconMail, IconLock, IconUser, IconUserPlus, IconPhone, IconFileText } from '@tabler/icons-react'
 import { SimpleGrid, Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/Button'
@@ -75,7 +75,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.name}
-          leftIcon={<User size={18} />}
+          leftIcon={<IconUser size={18} />}
           required
         />
 
@@ -88,7 +88,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.email}
-          leftIcon={<Mail size={18} />}
+          leftIcon={<IconMail size={18} />}
           required
         />
 
@@ -101,7 +101,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.password}
-          leftIcon={<Lock size={18} />}
+          leftIcon={<IconLock size={18} />}
           required
         />
 
@@ -128,7 +128,7 @@ export const RegisterForm = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.document}
-            leftIcon={<FileText size={18} />}
+            leftIcon={<IconFileText size={18} />}
           />
 
           <Input
@@ -139,7 +139,7 @@ export const RegisterForm = () => {
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.phone}
-            leftIcon={<Phone size={18} />}
+            leftIcon={<IconPhone size={18} />}
           />
         </SimpleGrid>
 
@@ -150,7 +150,7 @@ export const RegisterForm = () => {
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            leftIcon={<UserPlus size={18} />}
+            leftIcon={<IconUserPlus size={18} />}
           >
             Criar Nova Conta
           </Button>

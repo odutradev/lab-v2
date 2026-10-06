@@ -1,4 +1,4 @@
-import { Check, AlertCircle, AlertTriangle, Info } from 'lucide-react'
+import { IconCheck, IconAlertCircle, IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react'
 import { Notification, Stack } from '@mantine/core'
 
 import useToast from '@hooks/useToast'
@@ -11,14 +11,14 @@ export const ToastContainer = () => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'success':
-        return <Check size={18} />
+        return <IconCheck size={18} />
       case 'error':
-        return <AlertCircle size={18} />
+        return <IconAlertCircle size={18} />
       case 'warning':
-        return <AlertTriangle size={18} />
+        return <IconAlertTriangle size={18} />
       case 'info':
       default:
-        return <Info size={18} />
+        return <IconInfoCircle size={18} />
     }
   }
 
