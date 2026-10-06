@@ -3,19 +3,14 @@ import { createRoot } from 'react-dom/client'
 import '@mantine/core/styles.css'
 import { StrictMode, useEffect } from 'react'
 
-import PageContainer from '@components/layout/pageContainer'
-import ResetPasswordPage from '@pages/resetPasswordPage'
-import useNavigation from '@hooks/useNavigation'
 import ToastContainer from '@components/ui/toast'
 import Navbar from '@components/layout/navbar'
-import AuthPage from '@pages/authPage'
-import HomePage from '@pages/homePage'
 import useAuth from '@hooks/useAuth'
 import theme from '@styles/theme'
+import Router from '@routes'
 
 export const App = () => {
   const { isAuthenticated, isLoading, initializeAuth } = useAuth()
-  const { currentRoute, navigate } = useNavigation()
 
   useEffect(() => {
     initializeAuth()
@@ -27,22 +22,6 @@ export const App = () => {
         <Loader color="indigo" size="lg" />
       </Center>
     )
-  }
-
-  const renderContent = () => {
-    if (currentRoute === 'reset-password') {
-      return (
-        <ResetPasswordPage
-          onBack={() => navigate(isAuthenticated ? 'home' : 'auth')}
-        />
-      )
-    }
-
-    if (isAuthenticated) {
-      return <HomePage />
-    }
-
-    return <AuthPage />
   }
 
   return (
@@ -58,9 +37,7 @@ export const App = () => {
       }}
     >
       {isAuthenticated && <Navbar />}
-      <PageContainer center={!isAuthenticated || currentRoute === 'reset-password'}>
-        {renderContent()}
-      </PageContainer>
+      <Router />
       <ToastContainer />
     </Box>
   )

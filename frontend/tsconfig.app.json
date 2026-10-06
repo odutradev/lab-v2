@@ -24,6 +24,8 @@
       "@api/*": ["./src/api/*"],
       "@projectTypes/*": ["./src/types/*"],
       "@pages/*": ["./src/pages/*"],
+      "@routes": ["./src/routes"],
+      "@routes/*": ["./src/routes/*"],
       "@styles/*": ["./src/styles/*"]
     }
   },

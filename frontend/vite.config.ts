@@ -13,6 +13,7 @@ export default defineConfig({
       '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
       '@projectTypes': fileURLToPath(new URL('./src/types', import.meta.url)),
       '@pages': fileURLToPath(new URL('./src/pages', import.meta.url)),
+      '@routes': fileURLToPath(new URL('./src/routes', import.meta.url)),
       '@styles': fileURLToPath(new URL('./src/styles', import.meta.url))
     }
   }
