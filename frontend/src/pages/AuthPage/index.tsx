@@ -2,9 +2,9 @@ import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/c
 import { IconStack2 } from '@tabler/icons-react'
 import { useState } from 'react'
 
-import RegisterForm from '@components/forms/RegisterForm'
+import RegisterForm from '@components/forms/registerForm'
 import Card, { CardContent } from '@components/ui/card'
-import LoginForm from '@components/forms/LoginForm'
+import LoginForm from '@components/forms/loginForm'
 
 export const AuthPage = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
