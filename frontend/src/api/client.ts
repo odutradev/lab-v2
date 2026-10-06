@@ -7,11 +7,11 @@ export interface RequestOptions extends RequestInit {
   skipAuth?: boolean
 }
 
-function getAuthToken(): string | null {
+const getAuthToken = (): string | null => {
   return localStorage.getItem(STORAGE_KEYS.TOKEN)
 }
 
-function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
+const buildUrl = (path: string, params?: Record<string, string | number | boolean | undefined>): string => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
   const url = new URL(`${API_BASE_URL}${normalizedPath}`)
 
@@ -26,7 +26,7 @@ function buildUrl(path: string, params?: Record<string, string | number | boolea
   return url.toString()
 }
 
-export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+export const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
   const { params, skipAuth, headers, ...restOptions } = options
   const url = buildUrl(path, params)
 
@@ -62,11 +62,11 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   return responseData as T
 }
 
-export function get<T>(path: string, options?: RequestOptions): Promise<T> {
+export const get = <T>(path: string, options?: RequestOptions): Promise<T> => {
   return request<T>(path, { ...options, method: 'GET' })
 }
 
-export function post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+export const post = <T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> => {
   return request<T>(path, {
     ...options,
     method: 'POST',
@@ -74,7 +74,7 @@ export function post<T>(path: string, body?: unknown, options?: RequestOptions):
   })
 }
 
-export function put<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+export const put = <T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> => {
   return request<T>(path, {
     ...options,
     method: 'PUT',
@@ -82,7 +82,7 @@ export function put<T>(path: string, body?: unknown, options?: RequestOptions): 
   })
 }
 
-export function del<T>(path: string, options?: RequestOptions): Promise<T> {
+export const del = <T>(path: string, options?: RequestOptions): Promise<T> => {
   return request<T>(path, { ...options, method: 'DELETE' })
 }
 
