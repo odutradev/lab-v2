@@ -1,5 +1,5 @@
 import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/core'
-import { IconStack2, IconKey } from '@tabler/icons-react'
+import { TbStack2, TbKey } from 'react-icons/tb'
 import { useState } from 'react'
 
 import ResetPasswordForm from '@components/forms/resetPasswordForm'
@@ -25,7 +25,7 @@ export const AuthPage = () => {
           variant="gradient"
           gradient={{ from: 'indigo', to: 'cyan' }}
         >
-          {authMode === 'reset' ? <IconKey size={28} /> : <IconStack2 size={28} />}
+          {authMode === 'reset' ? <TbKey size={28} /> : <TbStack2 size={28} />}
         </ThemeIcon>
         <Title order={1} size="h2" fw={800} c="white">
           {authMode === 'reset' ? 'Redefinir Senha' : 'LAB Portal'}

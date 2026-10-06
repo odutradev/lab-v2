@@ -1,5 +1,5 @@
 import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
-import { IconLogout, IconStack2, IconKey } from '@tabler/icons-react'
+import { TbLogout, TbStack2, TbKey } from 'react-icons/tb'
 
 import useNavigation from '@hooks/useNavigation'
 import Button from '@components/ui/button'
@@ -52,7 +52,7 @@ export const Navbar = () => {
             variant="gradient"
             gradient={{ from: 'indigo', to: 'cyan' }}
           >
-            <IconStack2 size={18} />
+            <TbStack2 size={18} />
           </ThemeIcon>
           <Text fw={700} size="md" c="white" style={{ letterSpacing: '-0.02em' }}>
             LAB Portal
@@ -81,7 +81,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate(currentRoute === 'reset-password' ? 'home' : 'reset-password')}
-              leftIcon={<IconKey size={16} />}
+              leftIcon={<TbKey size={16} />}
             >
               {currentRoute === 'reset-password' ? 'Início' : 'Redefinir Senha'}
             </Button>
@@ -90,7 +90,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={logout}
-              leftIcon={<IconLogout size={16} />}
+              leftIcon={<TbLogout size={16} />}
             >
               Sair
             </Button>

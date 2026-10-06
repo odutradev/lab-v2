@@ -1,5 +1,5 @@
 import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } from '@mantine/core'
-import { IconShield, IconActivity, IconStack2, IconRefresh, IconKey } from '@tabler/icons-react'
+import { TbShield, TbActivity, TbStack2, TbRefresh, TbKey } from 'react-icons/tb'
 import { useState } from 'react'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
@@ -131,7 +131,7 @@ export const HomePage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate('reset-password')}
-                  leftIcon={<IconKey size={15} />}
+                  leftIcon={<TbKey size={15} />}
                 >
                   Redefinir Senha
                 </Button>
@@ -153,7 +153,7 @@ export const HomePage = () => {
                   size="sm"
                   onClick={handleFetchProfile}
                   isLoading={actionLoading}
-                  leftIcon={<IconRefresh size={15} />}
+                  leftIcon={<TbRefresh size={15} />}
                 >
                   getProfileAction()
                 </Button>
@@ -184,7 +184,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="indigo">
-                <IconShield size={22} />
+                <TbShield size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">
@@ -202,7 +202,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="cyan">
-                <IconStack2 size={22} />
+                <TbStack2 size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">
@@ -220,7 +220,7 @@ export const HomePage = () => {
           <CardContent>
             <Group gap="md">
               <ThemeIcon size="lg" radius="md" variant="light" color="teal">
-                <IconActivity size={22} />
+                <TbActivity size={22} />
               </ThemeIcon>
               <Box>
                 <Text size="xs" c="dimmed">

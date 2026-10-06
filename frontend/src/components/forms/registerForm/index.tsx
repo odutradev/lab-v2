@@ -1,4 +1,4 @@
-import { IconMail, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react'
+import { TbMail, TbLock, TbUser, TbUserPlus } from 'react-icons/tb'
 import { Stack, Box } from '@mantine/core'
 
 import Button from '@components/ui/button'
@@ -64,7 +64,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.name}
-          leftIcon={<IconUser size={18} />}
+          leftIcon={<TbUser size={18} />}
           required
         />
 
@@ -77,7 +77,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.email}
-          leftIcon={<IconMail size={18} />}
+          leftIcon={<TbMail size={18} />}
           required
         />
 
@@ -90,7 +90,7 @@ export const RegisterForm = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.password}
-          leftIcon={<IconLock size={18} />}
+          leftIcon={<TbLock size={18} />}
           required
         />
 
@@ -101,7 +101,7 @@ export const RegisterForm = () => {
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            leftIcon={<IconUserPlus size={18} />}
+            leftIcon={<TbUserPlus size={18} />}
           >
             Criar Nova Conta
           </Button>

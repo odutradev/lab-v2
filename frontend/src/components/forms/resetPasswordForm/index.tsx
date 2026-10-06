@@ -1,4 +1,4 @@
-import { IconMail, IconLock, IconKey, IconCheck, IconArrowLeft, IconSend, IconRefresh } from '@tabler/icons-react'
+import { TbMail, TbLock, TbKey, TbCheck, TbArrowLeft, TbSend, TbRefresh } from 'react-icons/tb'
 import { Stack, Box, Group, Text, ThemeIcon, Paper } from '@mantine/core'
 import { useState, type FormEvent } from 'react'
 
@@ -145,7 +145,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
     return (
       <Stack align="center" gap="lg" py="md" w="100%">
         <ThemeIcon size={64} radius="xl" color="teal" variant="light">
-          <IconCheck size={36} />
+          <TbCheck size={36} />
         </ThemeIcon>
 
         <Stack align="center" gap="xs" ta="center">
@@ -189,7 +189,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               if (codeError) setCodeError(undefined)
             }}
             error={codeError}
-            leftIcon={<IconKey size={18} />}
+            leftIcon={<TbKey size={18} />}
             maxLength={6}
             required
           />
@@ -201,7 +201,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               size="lg"
               fullWidth
               isLoading={isLoading}
-              leftIcon={<IconCheck size={18} />}
+              leftIcon={<TbCheck size={18} />}
             >
               Validar Código
             </Button>
@@ -214,7 +214,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               size="sm"
               onClick={() => handleRequestCode()}
               disabled={isLoading}
-              leftIcon={<IconRefresh size={14} />}
+              leftIcon={<TbRefresh size={14} />}
             >
               Reenviar código
             </Button>
@@ -226,7 +226,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
                 size="sm"
                 onClick={() => setStep('email')}
                 disabled={isLoading}
-                leftIcon={<IconArrowLeft size={14} />}
+                leftIcon={<TbArrowLeft size={14} />}
               >
                 Alterar e-mail
               </Button>
@@ -252,7 +252,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               if (passwordError) setPasswordError(undefined)
             }}
             error={passwordError}
-            leftIcon={<IconLock size={18} />}
+            leftIcon={<TbLock size={18} />}
             required
           />
 
@@ -267,7 +267,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               if (confirmPasswordError) setConfirmPasswordError(undefined)
             }}
             error={confirmPasswordError}
-            leftIcon={<IconLock size={18} />}
+            leftIcon={<TbLock size={18} />}
             required
           />
 
@@ -278,7 +278,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               size="lg"
               fullWidth
               isLoading={isLoading}
-              leftIcon={<IconCheck size={18} />}
+              leftIcon={<TbCheck size={18} />}
             >
               Salvar Nova Senha
             </Button>
@@ -305,7 +305,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               </Text>
               <Group gap="xs">
                 <ThemeIcon size="sm" variant="light" color="indigo" radius="sm">
-                  <IconMail size={14} />
+                  <TbMail size={14} />
                 </ThemeIcon>
                 <Text size="sm" fw={600} c="white">
                   {initialEmail}
@@ -325,7 +325,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               if (emailError) setEmailError(undefined)
             }}
             error={emailError}
-            leftIcon={<IconMail size={18} />}
+            leftIcon={<TbMail size={18} />}
             required
           />
         )}
@@ -337,7 +337,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             size="lg"
             fullWidth
             isLoading={isLoading}
-            leftIcon={<IconSend size={18} />}
+            leftIcon={<TbSend size={18} />}
           >
             {isEmailPredefined ? 'Enviar Código para Meu E-mail' : 'Enviar Código de Recuperação'}
           </Button>
@@ -350,7 +350,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               variant="ghost"
               size="sm"
               onClick={onCancel}
-              leftIcon={<IconArrowLeft size={14} />}
+              leftIcon={<TbArrowLeft size={14} />}
             >
               Voltar
             </Button>

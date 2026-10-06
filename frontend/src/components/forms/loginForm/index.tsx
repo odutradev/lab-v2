@@ -1,4 +1,4 @@
-import { IconMail, IconLock, IconLogin } from '@tabler/icons-react'
+import { TbMail, TbLock, TbLogin } from 'react-icons/tb'
 import { Stack, Box, Group } from '@mantine/core'
 
 import useNavigation from '@hooks/useNavigation'
@@ -64,7 +64,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.email}
-          leftIcon={<IconMail size={18} />}
+          leftIcon={<TbMail size={18} />}
           required
         />
 
@@ -77,7 +77,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.password}
-          leftIcon={<IconLock size={18} />}
+          leftIcon={<TbLock size={18} />}
           required
         />
 
@@ -100,7 +100,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            leftIcon={<IconLogin size={18} />}
+            leftIcon={<TbLogin size={18} />}
           >
             Entrar na Plataforma
           </Button>

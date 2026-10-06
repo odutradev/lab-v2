@@ -1,5 +1,5 @@
 import { Box, Title, Text, Stack, ThemeIcon } from '@mantine/core'
-import { IconKey } from '@tabler/icons-react'
+import { TbKey } from 'react-icons/tb'
 
 import ResetPasswordForm from '@components/forms/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
@@ -29,7 +29,7 @@ export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
           variant="gradient"
           gradient={{ from: 'indigo', to: 'cyan' }}
         >
-          <IconKey size={28} />
+          <TbKey size={28} />
         </ThemeIcon>
         <Title order={1} size="h2" fw={800} c="white">
           Redefinição de Senha

@@ -1,4 +1,4 @@
-import { IconCheck, IconAlertCircle, IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react'
+import { TbCheck, TbAlertCircle, TbAlertTriangle, TbInfoCircle } from 'react-icons/tb'
 import { Notification, Stack } from '@mantine/core'
 
 import useToast from '@hooks/useToast'
@@ -11,14 +11,14 @@ export const ToastContainer = () => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'success':
-        return <IconCheck size={18} />
+        return <TbCheck size={18} />
       case 'error':
-        return <IconAlertCircle size={18} />
+        return <TbAlertCircle size={18} />
       case 'warning':
-        return <IconAlertTriangle size={18} />
+        return <TbAlertTriangle size={18} />
       case 'info':
       default:
-        return <IconInfoCircle size={18} />
+        return <TbInfoCircle size={18} />
     }
   }
 
