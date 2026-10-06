@@ -1,38 +1,21 @@
 import { SimpleGrid, Paper, Stack, Group, Title, Text, Code, ThemeIcon, Box } from '@mantine/core'
 import { TbShield, TbActivity, TbStack2, TbRefresh, TbKey } from 'react-icons/tb'
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import { welcomePaperStyle, profileRowStyle, profileResetBoxStyle, actionResultCodeStyle } from './styles'
-import { getProfileAction } from '@actions/users/profile'
-import useToastStore from '@stores/toast'
-import useAuthStore from '@stores/auth'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
+import useHomePage from './hook'
 
 export const HomePage = () => {
-  const { user, token, refreshUser } = useAuthStore()
-  const { showToast } = useToastStore()
-  const navigate = useNavigate()
-  const [actionLoading, setActionLoading] = useState(false)
-  const [actionResult, setActionResult] = useState<string | null>(null)
-
-  const handleFetchProfile = async () => {
-    setActionLoading(true)
-    try {
-      const data = await getProfileAction()
-      setActionResult(JSON.stringify(data, null, 2))
-      await refreshUser()
-      showToast('Perfil atualizado via getProfileAction()', 'success')
-    } catch (err: unknown) {
-      const errorMsg = (err as Error)?.message || 'Falha ao buscar perfil'
-      setActionResult(`Erro: ${errorMsg}`)
-      showToast(errorMsg, 'error')
-    } finally {
-      setActionLoading(false)
-    }
-  }
+  const {
+    user,
+    token,
+    actionLoading,
+    actionResult,
+    handleFetchProfile,
+    handleNavigateResetPassword
+  } = useHomePage()
 
   return (
     <Stack gap="xl" w="100%">
@@ -127,7 +110,7 @@ export const HomePage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/reset-password')}
+                  onClick={handleNavigateResetPassword}
                   leftIcon={<TbKey size={15} />}
                 >
                   Redefinir Senha
