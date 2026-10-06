@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@mantine/core'
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 
 import PageContainer from '@components/layout/pageContainer'
 import ResetPasswordPage from '@pages/resetPasswordPage'
@@ -9,6 +9,33 @@ import Navbar from '@components/layout/navbar'
 import AuthPage from '@pages/authPage'
 import HomePage from '@pages/homePage'
 import useAuth from '@hooks/useAuth'
+
+interface RouteItem {
+  path: string
+  component: ComponentType
+  protected?: boolean
+  publicOnly?: boolean
+  center?: boolean
+}
+
+const routes: RouteItem[] = [
+  {
+    path: '/',
+    component: HomePage,
+    protected: true
+  },
+  {
+    path: '/auth',
+    component: AuthPage,
+    publicOnly: true,
+    center: true
+  },
+  {
+    path: '/reset-password',
+    component: ResetPasswordPage,
+    center: true
+  }
+]
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuth()
@@ -48,40 +75,38 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
   )
 }
 
+const renderRouteElement = (route: RouteItem) => {
+  const Component = route.component
+  const content = (
+    <PageContainer center={route.center}>
+      <Component />
+    </PageContainer>
+  )
+
+  if (route.protected) {
+    return <ProtectedRoute>{content}</ProtectedRoute>
+  }
+
+  if (route.publicOnly) {
+    return <PublicRoute>{content}</PublicRoute>
+  }
+
+  return content
+}
+
 export const Router = () => {
   return (
     <BrowserRouter>
       <AppLayout>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <PageContainer>
-                  <HomePage />
-                </PageContainer>
-              </ProtectedRoute>
-            }
-          />
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={renderRouteElement(route)}
+            />
+          ))}
           <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route
-            path="/auth"
-            element={
-              <PublicRoute>
-                <PageContainer center>
-                  <AuthPage />
-                </PageContainer>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <PageContainer center>
-                <ResetPasswordPage />
-              </PageContainer>
-            }
-          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppLayout>
