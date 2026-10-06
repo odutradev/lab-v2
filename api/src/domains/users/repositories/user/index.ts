@@ -1,6 +1,6 @@
 import { UserModel } from '@domains/users/repositories/user/model'
 
-import type { UserModelTypeWithPassword, CreateUserPayload, UpdateUserPayload, UserModelType, BankDetails, FindAllUsersParams, UserStatsResponse } from '@domains/users/repositories/user/types'
+import type { UserModelTypeWithPassword, CreateUserPayload, UpdateUserPayload, UserModelType, FindAllUsersParams, UserStatsResponse } from '@domains/users/repositories/user/types'
 import type { PaginatedData } from '@factories/pagination/types'
 
 const userRepository = {
@@ -8,10 +8,7 @@ const userRepository = {
     return UserModel.create({
       name: payload.name,
       email: payload.email,
-      password: payload.passwordHash,
-      birthDate: payload.birthDate,
-      phone: payload.phone,
-      referralSource: payload.referralSource
+      password: payload.passwordHash
     })
   },
   update: async (id: string, payload: UpdateUserPayload): Promise<UserModelType | null> => {
@@ -22,9 +19,6 @@ const userRepository = {
   },
   updateAccountStatus: async (id: string, status: 'active' | 'blocked'): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { accountStatus: status }, { new: true })
-  },
-  updateBankDetails: async (id: string, bankDetails: BankDetails): Promise<UserModelType | null> => {
-    return UserModel.findByIdAndUpdate(id, { bankDetails }, { new: true })
   },
   findByEmail: async (email: string, select?: string): Promise<UserModelType | null> => {
     const query = UserModel.findOne({ email })
@@ -53,15 +47,13 @@ const userRepository = {
       const searchRegex = new RegExp(cleanSearch, 'i')
       query.$or = [
         { name: searchRegex },
-        { email: searchRegex },
-        { phone: searchRegex }
+        { email: searchRegex }
       ]
     }
 
     if (filters) {
       if (typeof filters.superAdmin === 'boolean') query.superAdmin = filters.superAdmin
       if (filters.accountStatus) query.accountStatus = filters.accountStatus
-      if (typeof filters.isEmailVerified === 'boolean') query.isEmailVerified = filters.isEmailVerified
     }
 
     const sortOption = sort || { createdAt: -1 }
