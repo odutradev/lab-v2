@@ -34,7 +34,7 @@ Qualquer novo email a ser disparado no projeto deve ser adicionado na pasta `/te
 import { enrichTemplate } from '@email/utils'
 
 const resetPasswordTemplate = enrichTemplate({
-  subject: 'Recuperação de Senha - Segunda Casa 🏡',
+  subject: 'Recuperação de Senha - Lab',
   markdownBody: `# Solicitação de Nova Senha
 
 Olá, {{ name }}!
