@@ -1,8 +1,7 @@
-import { Box, Title, Text, Stack, ThemeIcon } from '@mantine/core'
-import { TbKey } from 'react-icons/tb'
+import { Box } from '@mantine/core'
 
-import ResetPasswordForm from './components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
+import { ResetPasswordHeader, ResetPasswordForm } from './components'
 import { containerStyle } from './styles'
 import useResetPassword from './hook'
 
@@ -13,22 +12,7 @@ export const ResetPasswordPage = ({ onBack }: ResetPasswordPageProps) => {
 
   return (
     <Box w="100%" style={containerStyle}>
-      <Stack align="center" gap="xs" mb="xl" ta="center">
-        <ThemeIcon
-          size={56}
-          radius="xl"
-          variant="gradient"
-          gradient={{ from: 'indigo', to: 'cyan' }}
-        >
-          <TbKey size={28} />
-        </ThemeIcon>
-        <Title order={1} size="h2" fw={800} c="white">
-          Redefinição de Senha
-        </Title>
-        <Text size="sm" c="dimmed">
-          {subtitle}
-        </Text>
-      </Stack>
+      <ResetPasswordHeader subtitle={subtitle} />
 
       <Card>
         <CardContent>
