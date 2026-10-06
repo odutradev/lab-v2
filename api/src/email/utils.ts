@@ -1,6 +1,9 @@
 import email from '@email/connect'
+import createLocalLogger from '@utils/localLogger'
 
 import type { ProcessTemplateResult, ProcessTemplateParams, SendEmailResult, SendEmailParams, LocalEmailTemplate, EnrichedEmailTemplate, SendEnrichedEmailParams } from '@email/types'
+
+const logger = createLocalLogger('email')
 
 export const processTemplate = ({ template, variables = {} }: ProcessTemplateParams): ProcessTemplateResult => {
   const processed = Object.entries(variables).reduce((acc, [key, value]) => {
@@ -12,22 +15,33 @@ export const processTemplate = ({ template, variables = {} }: ProcessTemplatePar
 }
 
 export const sendEmail = async ({ to, subject, template, variables, from }: SendEmailParams): Promise<SendEmailResult> => {
+  const recipient = Array.isArray(to) ? to.join(', ') : to
+  const sender = from ?? process.env.EMAIL_FROM ?? process.env.EMAIL_USER
+
+  logger.info(`[sendEmail] Disparando e-mail para "${recipient}" | Assunto: "${subject}" | Remetente: "${sender}"`)
+
   try {
     const transporter = await email.getInstance()
     const { processed } = processTemplate({ template, variables })
 
     const mailOptions = {
-      from: from ?? process.env.EMAIL_FROM,
-      to: Array.isArray(to) ? to.join(', ') : to,
+      from: sender,
+      to: recipient,
       subject,
       markdown: processed
     }
 
     const info = await transporter.sendMail(mailOptions)
 
+    logger.success(`[sendEmail] E-mail enviado com sucesso para "${recipient}". Message ID: ${info.messageId}`)
+
     return { success: true, messageId: info.messageId }
   } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    logger.error(`[sendEmail] Falha ao enviar e-mail para "${recipient}": ${errorMessage}`)
+    logger.clean(error)
+
+    return { success: false, error: errorMessage }
   }
 }
 
