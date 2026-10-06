@@ -9,8 +9,7 @@ Este documento define as regras arquiteturais, estruturais e de padronização d
 ### 1.1. Nomenclatura e Idioma
 - **Inglês Obrigatório:** Todo o código fonte (variáveis, funções, tipagens, componentes, hooks, chaves de objetos e rotas) deve ser escrito estritamente em **Inglês**. Apenas textos apresentados na interface do usuário (UI) e mensagens para o usuário final devem estar em português (pt-BR).
 - **Formatação de Pastas e Arquivos:**
-  - Pastas de módulos e hooks de negócio usam **camelCase** (ex: `useAuth`, `useForm`, `auth`, `profile`).
-  - Pastas e arquivos de Componentes React e Páginas usam **PascalCase** (ex: `Button`, `Input`, `Card`, `AuthPage`, `HomePage`).
+  - Todas as pastas do projeto utilizam **camelCase** (ex: `button`, `input`, `card`, `loginForm`, `pageContainer`, `authPage`, `homePage`, `useAuth`, `useForm`, `auth`, `profile`). Nenhuma pasta deve iniciar com letra maiúscula.
   - Cada pasta de componente, hook, action ou contexto deve ser um módulo autocontido contendo seu ponto de entrada `index.ts` (ou `index.tsx`) e seu arquivo de tipagens dedicado `types.ts`.
 - **Zero Comentários no Código:** É expressamente proibido o uso de comentários (`//`, `/* */`, JSDoc) na lógica de código. O código deve ser declarativo, semântico e autodocumentado.
 
@@ -18,7 +17,7 @@ Este documento define as regras arquiteturais, estruturais e de padronização d
 - **Padrão Exclusivo:** Todo módulo funcional, componente, hook, contexto, cliente de API e página deve expor sua implementação principal através de **`export default`**.
 - **Consumo:** Os arquivos consumidores devem importar os módulos diretamente usando importações padrão (default imports):
   ```typescript
-  import Button from '@components/ui/Button'
+  import Button from '@components/ui/button'
   import useAuth from '@hooks/useAuth'
   import apiClient from '@api/client'
   ```
@@ -89,52 +88,44 @@ src/
 │   └── config.ts         # URLs base e chaves de armazenamento local
 ├── components/           # Componentes reutilizáveis
 │   ├── forms/            # Formulários autocontidos com lógica e tipagem
-│   │   ├── LoginForm/
+│   │   ├── loginForm/
 │   │   │   ├── index.tsx
 │   │   │   └── types.ts
-│   │   └── RegisterForm/
+│   │   └── registerForm/
 │   │       ├── index.tsx
 │   │       └── types.ts
 │   ├── layout/           # Componentes estruturais de layout
-│   │   ├── Navbar/
-│   │   │   ├── index.tsx
-│   │   │   └── Navbar.module.css
-│   │   └── PageContainer/
+│   │   ├── navbar/
+│   │   │   └── index.tsx
+│   │   └── pageContainer/
 │   │       ├── index.tsx
-│   │       ├── types.ts
-│   │       └── PageContainer.module.css
+│   │       └── types.ts
 │   └── ui/               # Componentes atômicos de interface
-│       ├── Button/
+│       ├── button/
 │       │   ├── index.tsx
-│       │   ├── types.ts
-│       │   └── Button.module.css
-│       ├── Input/
+│       │   └── types.ts
+│       ├── input/
 │       │   ├── index.tsx
-│       │   ├── types.ts
-│       │   └── Input.module.css
-│       ├── Select/
+│       │   └── types.ts
+│       ├── select/
 │       │   ├── index.tsx
-│       │   ├── types.ts
-│       │   └── Select.module.css
-│       ├── Card/
+│       │   └── types.ts
+│       ├── card/
 │       │   ├── index.tsx
-│       │   ├── types.ts
-│       │   └── Card.module.css
-│       ├── Badge/
+│       │   └── types.ts
+│       ├── badge/
 │       │   ├── index.tsx
-│       │   ├── types.ts
-│       │   └── Badge.module.css
-│       └── Toast/
+│       │   └── types.ts
+│       └── toast/
 │           ├── index.tsx
-│           ├── types.ts
-│           └── ToastContainer.module.css
+│           └── types.ts
 ├── context/              # Contextos globais do React
 │   ├── auth/
 │   │   ├── index.tsx     # AuthProvider (export default) e AuthContext
 │   │   └── types.ts      # AuthContextType
 │   └── toast/
-│       ├── index.tsx     # ToastProvider (export default) e ToastContext
-│       └── types.ts      # ToastContextType, ToastMessage, ToastType
+│   │   ├── index.tsx     # ToastProvider (export default) e ToastContext
+│   │   └── types.ts      # ToastContextType, ToastMessage, ToastType
 ├── hooks/                # Custom hooks reutilizáveis
 │   ├── useAuth/
 │   │   ├── index.ts      # useAuth (export default)
@@ -143,15 +134,13 @@ src/
 │   │   ├── index.ts      # useForm (export default)
 │   │   └── types.ts
 │   └── useToast/
-│       ├── index.ts      # useToast (export default)
-│       └── types.ts
+│   │   ├── index.ts      # useToast (export default)
+│   │   └── types.ts
 ├── pages/                # Telas da aplicação
-│   ├── AuthPage/
-│   │   ├── index.tsx     # AuthPage (export default)
-│   │   └── AuthPage.module.css
-│   └── HomePage/
-│       ├── index.tsx     # HomePage (export default)
-│       └── HomePage.module.css
+│   ├── authPage/
+│   │   └── index.tsx     # AuthPage (export default)
+│   └── homePage/
+│       └── index.tsx     # HomePage (export default)
 ├── styles/               # Tokens de design e variáveis globais
 │   └── design-system.css
 ├── types/                # Tipos globais e transversais do projeto
