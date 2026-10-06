@@ -92,6 +92,9 @@ const userRepository = {
   },
   updateSuperAdmin: async (id: string, superAdmin: boolean): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { superAdmin }, { new: true })
+  },
+  updateEmailVerified: async (id: string, emailVerified = true): Promise<UserModelType | null> => {
+    return UserModel.findByIdAndUpdate(id, { emailVerified }, { new: true })
   }
 }
 

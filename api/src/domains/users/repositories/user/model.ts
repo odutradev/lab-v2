@@ -9,6 +9,7 @@ const userSchema = new Schema<UserDocument>(
     password: { type: String, required: true, select: false },
     avatar: { type: String, required: false },
     superAdmin: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
     accountStatus: { type: String, enum: ['active', 'blocked'], default: 'active', required: true }
   },
   {

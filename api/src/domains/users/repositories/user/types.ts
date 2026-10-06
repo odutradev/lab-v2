@@ -6,6 +6,7 @@ export interface User {
   password: string
   avatar?: string
   superAdmin: boolean
+  emailVerified: boolean
   accountStatus: 'active' | 'blocked'
 }
 
