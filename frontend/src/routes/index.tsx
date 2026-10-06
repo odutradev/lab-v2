@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import PageContainer from '@components/layout/pageContainer'
-import ResetPasswordPage from '@pages/resetPasswordPage'
-import AuthPage from '@pages/authPage'
-import HomePage from '@pages/homePage'
-
 import { ProtectedRoute, PublicRoute, AppLayout } from './components'
+import PageContainer from '@components/layout/pageContainer'
+import ResetPasswordPage from '@pages/resetPassword'
+import HomePage from '@pages/home'
+import AuthPage from '@pages/auth'
+
 import type { RouteItem } from './types'
 
 const routes: RouteItem[] = [

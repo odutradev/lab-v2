@@ -9,7 +9,7 @@ Este documento define as regras arquiteturais, estruturais e de padronização d
 ### 1.1. Nomenclatura e Idioma
 - **Inglês Obrigatório:** Todo o código fonte (variáveis, funções, tipagens, componentes, hooks, chaves de objetos e rotas) deve ser escrito estritamente em **Inglês**. Apenas textos apresentados na interface do usuário (UI) e mensagens para o usuário final devem estar em português (pt-BR).
 - **Formatação de Pastas e Arquivos:**
-  - Todas as pastas do projeto utilizam **camelCase** (ex: `button`, `input`, `card`, `loginForm`, `pageContainer`, `authPage`, `homePage`, `useAuth`, `useForm`, `auth`, `profile`). Nenhuma pasta deve iniciar com letra maiúscula.
+  - Todas as pastas do projeto utilizam **camelCase** (ex: `button`, `input`, `card`, `pageContainer`, `auth`, `home`, `resetPassword`, `useAuth`, `useForm`, `profile`). Nenhuma pasta deve iniciar com letra maiúscula.
   - Cada pasta de componente, hook, action ou contexto deve ser um módulo autocontido contendo seu ponto de entrada `index.ts` (ou `index.tsx`) e seu arquivo de tipagens dedicado `types.ts`.
 - **Zero Comentários no Código:** É expressamente proibido o uso de comentários (`//`, `/* */`, JSDoc) na lógica de código. O código deve ser declarativo, semântico e autodocumentado.
 
@@ -130,19 +130,19 @@ src/
 │   │   ├── index.ts      # useToast (export default)
 │   │   └── types.ts
 ├── pages/                # Telas da aplicação estruturadas em fatias modulares
-│   ├── authPage/
+│   ├── auth/
 │   │   ├── components/   # Componentes da página (loginForm, registerForm)
 │   │   ├── hook/         # Hooks locais da página
 │   │   ├── styles.ts     # Estilos dedicados da página
 │   │   ├── types.ts      # Tipos e contratos da página
 │   │   └── index.tsx     # AuthPage (export default)
-│   ├── homePage/
+│   ├── home/
 │   │   ├── components/   # Componentes locais da home
 │   │   ├── hook/         # Hooks locais da home
 │   │   ├── styles.ts     # Estilos dedicados da home
 │   │   ├── types.ts      # Tipos e contratos da home
 │   │   └── index.tsx     # HomePage (export default)
-│   └── resetPasswordPage/
+│   └── resetPassword/
 │       ├── components/   # Componentes da página (resetPasswordForm)
 │       ├── hook/         # Hooks locais da página
 │       ├── styles.ts     # Estilos dedicados da página

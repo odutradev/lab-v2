@@ -2,7 +2,7 @@ import { Box, Title, Text, Stack, ThemeIcon, SegmentedControl } from '@mantine/c
 import { TbStack2, TbKey } from 'react-icons/tb'
 import { useState } from 'react'
 
-import ResetPasswordForm from '@pages/resetPasswordPage/components/resetPasswordForm'
+import ResetPasswordForm from '@pages/resetPassword/components/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
 import RegisterForm from './components/registerForm'
 import LoginForm from './components/loginForm'
