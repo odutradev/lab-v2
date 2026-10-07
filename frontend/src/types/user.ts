@@ -11,6 +11,8 @@ export interface UserProfile {
       connected: boolean
       email?: string
       calendarId?: string
+      calendarName?: string
+      calendarUrl?: string
       connectedAt?: string
     }
   }

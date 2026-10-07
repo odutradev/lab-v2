@@ -14,8 +14,18 @@ export const ProfilePage = () => {
     isCalendarLoading,
     isConnectingCalendar,
     isDisconnectingCalendar,
+    isSavingCalendarName,
+    isDisconnectModalOpen,
+    isEditCalendarNameModalOpen,
+    calendarNameInput,
+    setCalendarNameInput,
+    openDisconnectModal,
+    closeDisconnectModal,
+    handleConfirmDisconnect,
+    openEditCalendarNameModal,
+    closeEditCalendarNameModal,
+    handleSaveCalendarName,
     handleConnectGoogleCalendar,
-    handleDisconnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
     formatDate
@@ -45,8 +55,18 @@ export const ProfilePage = () => {
           isCalendarLoading={isCalendarLoading}
           isConnectingCalendar={isConnectingCalendar}
           isDisconnectingCalendar={isDisconnectingCalendar}
+          isSavingCalendarName={isSavingCalendarName}
+          isDisconnectModalOpen={isDisconnectModalOpen}
+          isEditCalendarNameModalOpen={isEditCalendarNameModalOpen}
+          calendarNameInput={calendarNameInput}
+          onCalendarNameInputChange={setCalendarNameInput}
           onConnectCalendar={handleConnectGoogleCalendar}
-          onDisconnectCalendar={handleDisconnectGoogleCalendar}
+          onOpenDisconnectModal={openDisconnectModal}
+          onCloseDisconnectModal={closeDisconnectModal}
+          onConfirmDisconnect={handleConfirmDisconnect}
+          onOpenEditCalendarNameModal={openEditCalendarNameModal}
+          onCloseEditCalendarNameModal={closeEditCalendarNameModal}
+          onSaveCalendarName={handleSaveCalendarName}
         />
       </Stack>
     </Box>

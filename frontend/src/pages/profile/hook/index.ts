@@ -4,14 +4,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   getGoogleCalendarAuthUrlAction,
   getGoogleCalendarStatusAction,
-  disconnectGoogleCalendarAction
+  disconnectGoogleCalendarAction,
+  updateGoogleCalendarNameAction
 } from '@actions/google/calendar'
-import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
 import { getInitials } from '@utils/string'
 
-export const useProfile = () => {
+import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
+import type { UseProfileReturn } from './types'
+
+export const useProfile = (): UseProfileReturn => {
   const { user } = useAuthStore()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -20,23 +23,18 @@ export const useProfile = () => {
   const [calendarStatus, setCalendarStatus] = useState<GoogleCalendarStatusResponse>({
     connected: !!user?.integrations?.googleCalendar?.connected,
     email: user?.integrations?.googleCalendar?.email,
-    connectedAt: user?.integrations?.googleCalendar?.connectedAt
+    calendarId: user?.integrations?.googleCalendar?.calendarId,
+    calendarName: user?.integrations?.googleCalendar?.calendarName,
+    connectedAt: user?.integrations?.googleCalendar?.connectedAt ? String(user.integrations.googleCalendar.connectedAt) : undefined
   })
-  const [isCalendarLoading, setIsCalendarLoading] = useState(false)
+  const [isCalendarLoading, setIsCalendarLoading] = useState(true)
   const [isConnectingCalendar, setIsConnectingCalendar] = useState(false)
   const [isDisconnectingCalendar, setIsDisconnectingCalendar] = useState(false)
+  const [isSavingCalendarName, setIsSavingCalendarName] = useState(false)
 
-  const reloadCalendarStatus = useCallback(() => {
-    setIsCalendarLoading(true)
-    getGoogleCalendarStatusAction()
-      .then((status) => {
-        setCalendarStatus(status)
-      })
-      .catch(() => {})
-      .finally(() => {
-        setIsCalendarLoading(false)
-      })
-  }, [])
+  const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false)
+  const [isEditCalendarNameModalOpen, setIsEditCalendarNameModalOpen] = useState(false)
+  const [calendarNameInput, setCalendarNameInput] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -46,6 +44,9 @@ export const useProfile = () => {
         if (isMounted) setCalendarStatus(status)
       })
       .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsCalendarLoading(false)
+      })
 
     return () => {
       isMounted = false
@@ -58,7 +59,11 @@ export const useProfile = () => {
 
     if (googleParam === 'connected') {
       showToast('Google Agenda vinculada com sucesso!', 'success', 'Google Agenda')
-      reloadCalendarStatus()
+      getGoogleCalendarStatusAction()
+        .then((status) => {
+          setCalendarStatus(status)
+        })
+        .catch(() => {})
     } else if (googleParam === 'invalid_state') {
       showToast('A sessão de vinculação expirou. Tente novamente.', 'error', 'Google Agenda')
     } else if (googleParam.startsWith('error')) {
@@ -66,7 +71,7 @@ export const useProfile = () => {
     }
 
     navigate('/profile', { replace: true })
-  }, [searchParams, navigate, showToast, reloadCalendarStatus])
+  }, [searchParams, navigate, showToast])
 
   const handleNavigateResetPassword = useCallback(() => {
     navigate('/reset-password')
@@ -87,18 +92,72 @@ export const useProfile = () => {
     }
   }, [showToast])
 
-  const handleDisconnectGoogleCalendar = useCallback(async () => {
-    try {
-      setIsDisconnectingCalendar(true)
-      await disconnectGoogleCalendarAction()
-      setCalendarStatus({ connected: false })
-      showToast('Google Agenda desvinculada com sucesso!', 'success', 'Google Agenda')
-    } catch {
-      showToast('Erro ao desvincular Google Agenda.', 'error', 'Google Agenda')
-    } finally {
-      setIsDisconnectingCalendar(false)
+  const openDisconnectModal = useCallback(() => {
+    setIsDisconnectModalOpen(true)
+  }, [])
+
+  const closeDisconnectModal = useCallback(() => {
+    if (!isDisconnectingCalendar) {
+      setIsDisconnectModalOpen(false)
     }
-  }, [showToast])
+  }, [isDisconnectingCalendar])
+
+  const handleConfirmDisconnect = useCallback(
+    async (deleteCalendar: boolean) => {
+      try {
+        setIsDisconnectingCalendar(true)
+        await disconnectGoogleCalendarAction({ deleteCalendar })
+        setCalendarStatus({ connected: false })
+        setIsDisconnectModalOpen(false)
+        showToast(
+          deleteCalendar
+            ? 'Google Agenda desvinculada e removida com sucesso!'
+            : 'Google Agenda desvinculada com sucesso!',
+          'success',
+          'Google Agenda'
+        )
+      } catch {
+        showToast('Erro ao desvincular Google Agenda.', 'error', 'Google Agenda')
+      } finally {
+        setIsDisconnectingCalendar(false)
+      }
+    },
+    [showToast]
+  )
+
+  const openEditCalendarNameModal = useCallback(() => {
+    setCalendarNameInput(calendarStatus.calendarName || 'Lab V2')
+    setIsEditCalendarNameModalOpen(true)
+  }, [calendarStatus.calendarName])
+
+  const closeEditCalendarNameModal = useCallback(() => {
+    if (!isSavingCalendarName) {
+      setIsEditCalendarNameModalOpen(false)
+    }
+  }, [isSavingCalendarName])
+
+  const handleSaveCalendarName = useCallback(async () => {
+    const trimmed = calendarNameInput.trim()
+    if (!trimmed) {
+      showToast('O nome da agenda não pode ficar vazio.', 'warning', 'Google Agenda')
+      return
+    }
+
+    try {
+      setIsSavingCalendarName(true)
+      const response = await updateGoogleCalendarNameAction({ name: trimmed })
+      setCalendarStatus((prev) => ({
+        ...prev,
+        calendarName: response.calendarName
+      }))
+      setIsEditCalendarNameModalOpen(false)
+      showToast('Nome da agenda atualizado com sucesso!', 'success', 'Google Agenda')
+    } catch {
+      showToast('Erro ao atualizar o nome da agenda.', 'error', 'Google Agenda')
+    } finally {
+      setIsSavingCalendarName(false)
+    }
+  }, [calendarNameInput, showToast])
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Não informado'
@@ -118,8 +177,18 @@ export const useProfile = () => {
     isCalendarLoading,
     isConnectingCalendar,
     isDisconnectingCalendar,
+    isSavingCalendarName,
+    isDisconnectModalOpen,
+    isEditCalendarNameModalOpen,
+    calendarNameInput,
+    setCalendarNameInput,
+    openDisconnectModal,
+    closeDisconnectModal,
+    handleConfirmDisconnect,
+    openEditCalendarNameModal,
+    closeEditCalendarNameModal,
+    handleSaveCalendarName,
     handleConnectGoogleCalendar,
-    handleDisconnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
     formatDate

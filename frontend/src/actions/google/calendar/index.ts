@@ -3,7 +3,10 @@ import apiClient from '@api/client'
 import type {
   GoogleCalendarAuthUrlResponse,
   GoogleCalendarStatusResponse,
-  DisconnectGoogleCalendarResponse
+  DisconnectGoogleCalendarPayload,
+  DisconnectGoogleCalendarResponse,
+  UpdateGoogleCalendarNamePayload,
+  UpdateGoogleCalendarNameResponse
 } from './types'
 
 export const getGoogleCalendarAuthUrlAction = async (): Promise<GoogleCalendarAuthUrlResponse> => {
@@ -14,6 +17,15 @@ export const getGoogleCalendarStatusAction = async (): Promise<GoogleCalendarSta
   return apiClient.get<GoogleCalendarStatusResponse>('/google/calendar/status')
 }
 
-export const disconnectGoogleCalendarAction = async (): Promise<DisconnectGoogleCalendarResponse> => {
-  return apiClient.post<DisconnectGoogleCalendarResponse>('/google/calendar/disconnect')
+export const disconnectGoogleCalendarAction = async (
+  payload?: DisconnectGoogleCalendarPayload
+): Promise<DisconnectGoogleCalendarResponse> => {
+  return apiClient.post<DisconnectGoogleCalendarResponse>('/google/calendar/disconnect', payload)
 }
+
+export const updateGoogleCalendarNameAction = async (
+  payload: UpdateGoogleCalendarNamePayload
+): Promise<UpdateGoogleCalendarNameResponse> => {
+  return apiClient.patch<UpdateGoogleCalendarNameResponse>('/google/calendar/name', payload)
+}
+
