@@ -1,7 +1,10 @@
 import { MantineProvider, Center, Loader } from '@mantine/core'
+import { registerSW } from 'virtual:pwa-register'
 import { createRoot } from 'react-dom/client'
-import '@mantine/core/styles.css'
 import { StrictMode, useEffect } from 'react'
+import '@mantine/core/styles.css'
+
+registerSW({ immediate: true })
 
 import useAuthStore from '@stores/auth'
 import theme from '@styles/theme'
