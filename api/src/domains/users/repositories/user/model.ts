@@ -10,7 +10,15 @@ const userSchema = new Schema<UserDocument>(
     avatar: { type: String, required: false },
     superAdmin: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
-    accountStatus: { type: String, enum: ['active', 'blocked'], default: 'active', required: true }
+    accountStatus: { type: String, enum: ['active', 'blocked'], default: 'active', required: true },
+    integrations: {
+      googleCalendar: {
+        connected: { type: Boolean, default: false },
+        email: { type: String, required: false },
+        refreshToken: { type: String, required: false, select: false },
+        connectedAt: { type: Date, required: false }
+      }
+    }
   },
   {
     timestamps: true,

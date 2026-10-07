@@ -95,6 +95,25 @@ const userRepository = {
   },
   updateEmailVerified: async (id: string, emailVerified = true): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { emailVerified }, { new: true })
+  },
+  updateGoogleCalendarIntegration: async (
+    id: string,
+    data: { connected: boolean; email?: string; refreshToken?: string; connectedAt?: Date }
+  ): Promise<UserModelType | null> => {
+    return UserModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          'integrations.googleCalendar': data
+        }
+      },
+      { new: true }
+    )
+  },
+  findWithGoogleCalendarRefreshToken: async (id: string): Promise<UserModelType | null> => {
+    const user = await UserModel.findById(id).select('+integrations.googleCalendar.refreshToken').lean()
+    if (!user) return null
+    return { ...user, id: user._id.toString() } as unknown as UserModelType
   }
 }
 

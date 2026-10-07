@@ -13,6 +13,13 @@ export const profileResponseSchema = registry.register('ProfileResponse', z.obje
   superAdmin: z.boolean(),
   emailVerified: z.boolean().optional(),
   accountStatus: z.enum(['active', 'blocked']),
+  integrations: z.object({
+    googleCalendar: z.object({
+      connected: z.boolean(),
+      email: z.string().optional(),
+      connectedAt: z.date().optional()
+    }).optional()
+  }).optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional()
 }))

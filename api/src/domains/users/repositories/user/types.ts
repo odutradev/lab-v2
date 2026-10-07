@@ -1,5 +1,16 @@
 import type { HydratedDocument, Document } from 'mongoose'
 
+export interface UserGoogleCalendarIntegration {
+  connected: boolean
+  email?: string
+  refreshToken?: string
+  connectedAt?: Date
+}
+
+export interface UserIntegrations {
+  googleCalendar?: UserGoogleCalendarIntegration
+}
+
 export interface User {
   name: string
   email: string
@@ -8,6 +19,7 @@ export interface User {
   superAdmin: boolean
   emailVerified: boolean
   accountStatus: 'active' | 'blocked'
+  integrations?: UserIntegrations
 }
 
 export interface UserDocument extends User, Document {
