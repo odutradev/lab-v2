@@ -1,17 +1,13 @@
-import { Group, Box, Text, Avatar, ThemeIcon, Container } from '@mantine/core'
-import { TbLogout, TbStack2, TbKey } from 'react-icons/tb'
-
-import { useNavigate, useLocation } from 'react-router-dom'
+import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton } from '@mantine/core'
+import { TbLogout, TbStack2, TbUser, TbChevronDown } from 'react-icons/tb'
+import { useNavigate } from 'react-router-dom'
 
 import useAuthStore from '@stores/auth'
-import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
-  const location = useLocation()
-  const isResetPassword = location.pathname === '/reset-password'
 
   const getRoleLabel = () => {
     if (!user) return ''
@@ -63,41 +59,57 @@ export const Navbar = () => {
         </Group>
 
         {isAuthenticated && user && (
-          <Group gap="md">
-            <Group gap="xs">
-              <Avatar radius="xl" size="sm" color="indigo">
-                {getInitials(user.name)}
-              </Avatar>
-              <Box>
-                <Text size="sm" fw={600} lh={1.2} c="white">
-                  {user.name}
-                </Text>
-                <Box mt={2}>
-                  <Badge variant={user.superAdmin ? 'primary' : 'info'}>
-                    {getRoleLabel()}
-                  </Badge>
-                </Box>
-              </Box>
-            </Group>
+          <Menu shadow="md" width={180} position="bottom-end">
+            <Menu.Target>
+              <UnstyledButton
+                p="xs"
+                style={{
+                  borderRadius: 8,
+                  transition: 'background-color 0.15s ease'
+                }}
+              >
+                <Group gap="xs">
+                  <Avatar radius="xl" size="sm" color="indigo">
+                    {getInitials(user.name)}
+                  </Avatar>
+                  <Box>
+                    <Text size="sm" fw={600} lh={1.2} c="white">
+                      {user.name}
+                    </Text>
+                    <Box mt={2}>
+                      <Badge variant={user.superAdmin ? 'primary' : 'info'}>
+                        {getRoleLabel()}
+                      </Badge>
+                    </Box>
+                  </Box>
+                  <TbChevronDown size={14} color="rgba(255, 255, 255, 0.5)" />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(isResetPassword ? '/' : '/reset-password')}
-              leftIcon={<TbKey size={16} />}
+            <Menu.Dropdown
+              style={{
+                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(16px)'
+              }}
             >
-              {isResetPassword ? 'Início' : 'Redefinir Senha'}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={logout}
-              leftIcon={<TbLogout size={16} />}
-            >
-              Sair
-            </Button>
-          </Group>
+              <Menu.Item
+                leftSection={<TbUser size={16} />}
+                onClick={() => navigate('/profile')}
+              >
+                Perfil
+              </Menu.Item>
+              <Menu.Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
+              <Menu.Item
+                color="red"
+                leftSection={<TbLogout size={16} />}
+                onClick={logout}
+              >
+                Sair
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         )}
       </Container>
     </Box>
