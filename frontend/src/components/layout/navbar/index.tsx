@@ -3,35 +3,11 @@ import { TbLogout, TbStack2, TbUser, TbChevronDown } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
 import useAuthStore from '@stores/auth'
+import { formatDisplayName, getInitials } from '@utils/string'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
-
-  const formatDisplayName = (name?: string) => {
-    if (!name) return ''
-    const parts = name.trim().split(/\s+/).filter(Boolean)
-    if (parts.length === 0) return ''
-
-    const capitalize = (word: string) =>
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-
-    if (parts.length === 1) {
-      return capitalize(parts[0])
-    }
-
-    const firstName = capitalize(parts[0])
-    const lastName = capitalize(parts[parts.length - 1])
-    return `${firstName} ${lastName}`
-  }
-
-  const getInitials = (name?: string) => {
-    if (!name) return 'U'
-    const parts = name.trim().split(/\s+/).filter(Boolean)
-    if (parts.length === 0) return 'U'
-    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase()
-    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-  }
 
   const isAdmin = Boolean(user?.superAdmin)
   const avatarBorderColor = isAdmin ? '#f59e0b' : '#ffffff'
