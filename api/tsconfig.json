@@ -19,6 +19,7 @@
       "@database/*": ["./src/database/*"],
       "@email/*": ["./src/email/*"],
       "@storage/*": ["./src/storage/*"],
+      "@google/*": ["./src/google/*"],
       "@config/*": ["./src/config/*"],
       "@utils/*": ["./src/utils/*"]
     },
