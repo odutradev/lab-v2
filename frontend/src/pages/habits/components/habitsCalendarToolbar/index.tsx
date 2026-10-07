@@ -92,7 +92,7 @@ export const HabitsCalendarToolbar = ({
             leftIcon={<TbPlus size={16} />}
             onClick={onOpenNewHabitModal}
           >
-            Nova Meta
+            Novo Item
           </Button>
         </Group>
       </Group>

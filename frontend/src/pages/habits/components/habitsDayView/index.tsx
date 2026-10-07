@@ -20,6 +20,17 @@ export const HabitsDayView = ({
   const completedHabits = daySummary?.completedHabits ?? 0
   const completionRate = daySummary?.completionRate ?? 0
 
+  const getItemTypeBadge = (category?: string) => {
+    switch (category) {
+      case 'task':
+        return <Badge variant="info">Tarefa</Badge>
+      case 'schedule':
+        return <Badge variant="warning">Agenda</Badge>
+      default:
+        return <Badge variant="primary">Hábito</Badge>
+    }
+  }
+
   const getFrequencyBadge = (freq: string) => {
     switch (freq) {
       case 'daily':
@@ -28,8 +39,10 @@ export const HabitsDayView = ({
         return <Badge variant="info">Semanal</Badge>
       case 'monthly':
         return <Badge variant="warning">Mensal</Badge>
+      case 'yearly':
+        return <Badge variant="success">Anual</Badge>
       default:
-        return <Badge variant="default">{freq}</Badge>
+        return null
     }
   }
 
@@ -48,7 +61,7 @@ export const HabitsDayView = ({
 
         {totalHabits > 0 && (
           <Badge variant={completionRate === 100 ? 'success' : completionRate >= 80 ? 'primary' : 'warning'}>
-            {completedHabits}/{totalHabits} concluídas • {completionRate}%
+            {completedHabits}/{totalHabits} concluídos • {completionRate}%
           </Badge>
         )}
       </Group>
@@ -61,7 +74,7 @@ export const HabitsDayView = ({
         ) : items.length === 0 ? (
           <Stack align="center" justify="center" py="xl" gap="xs">
             <Text size="sm" c="dimmed">
-              Nenhuma meta cadastrada para este dia.
+              Nenhum item cadastrado para este dia.
             </Text>
           </Stack>
         ) : (
@@ -119,6 +132,7 @@ export const HabitsDayView = ({
                     </Group>
 
                     <Group gap="xs" wrap="nowrap">
+                      {getItemTypeBadge(item.category)}
                       {getFrequencyBadge(item.frequency || 'daily')}
 
                       {onEditItem && (
@@ -127,7 +141,7 @@ export const HabitsDayView = ({
                           variant="subtle"
                           color="gray"
                           onClick={() => onEditItem(item.habitId, selectedDate)}
-                          aria-label="Editar meta"
+                          aria-label="Editar item"
                         >
                           <TbPencil size={15} />
                         </ActionIcon>
@@ -139,7 +153,7 @@ export const HabitsDayView = ({
                           variant="subtle"
                           color="red"
                           onClick={() => onRemoveItem(item.habitId, selectedDate)}
-                          aria-label="Excluir meta"
+                          aria-label="Excluir item"
                         >
                           <TbTrash size={15} />
                         </ActionIcon>

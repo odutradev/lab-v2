@@ -18,10 +18,10 @@ export const HabitsHeader = ({
       <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
         <Stack gap={4}>
           <Title order={2} fw={700} c="white" style={{ letterSpacing: '-0.02em' }}>
-            Agenda & Metas
+            Agenda & Hábitos
           </Title>
           <Text size="sm" c="dimmed">
-            Acompanhe suas metas diárias, semanais e mensais com cálculo em tempo real de aproveitamento.
+            Acompanhe seus hábitos, tarefas e compromissos com cálculo em tempo real de aproveitamento.
           </Text>
         </Stack>
 
@@ -30,7 +30,7 @@ export const HabitsHeader = ({
           leftIcon={<TbPlus size={18} />}
           onClick={onOpenNewHabitModal}
         >
-          Nova Meta
+          Novo Item
         </Button>
       </Group>
 

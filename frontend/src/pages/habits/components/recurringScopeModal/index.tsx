@@ -15,7 +15,7 @@ export const RecurringScopeModal = ({
 }: RecurringScopeModalProps) => {
   const [selectedMode, setSelectedMode] = useState<RecurrenceScopeMode>('this')
 
-  const title = actionType === 'delete' ? 'Excluir meta recorrente' : 'Editar meta recorrente'
+  const title = actionType === 'delete' ? 'Excluir item recorrente' : 'Editar item recorrente'
 
   const handleClose = () => {
     setSelectedMode('this')

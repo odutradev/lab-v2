@@ -82,7 +82,7 @@ export const HabitsWeekView = ({
                     </Badge>
                   ) : (
                     <Text size="xs" c="dimmed">
-                      0 metas
+                      0 itens
                     </Text>
                   )}
                 </Box>
@@ -91,19 +91,23 @@ export const HabitsWeekView = ({
               <Stack gap={6} mt="xs" style={{ flex: 1 }}>
                 {items.length === 0 ? (
                   <Text size="xs" c="dimmed" ta="center" mt="md">
-                    Sem metas
+                    Sem itens
                   </Text>
                 ) : (
                   items.map((item) => {
                     const isItemToggling = togglingId === item.habitId
+                    const isTask = item.category === 'task'
+                    const isSchedule = item.category === 'schedule'
+                    const baseBorder = isSchedule ? 'rgba(245, 158, 11, 0.3)' : isTask ? 'rgba(6, 182, 212, 0.3)' : 'rgba(99, 102, 241, 0.25)'
+                    const baseBg = isSchedule ? 'rgba(245, 158, 11, 0.1)' : isTask ? 'rgba(6, 182, 212, 0.1)' : 'rgba(99, 102, 241, 0.12)'
 
                     return (
                       <Box
                         key={item.habitId}
                         p={6}
                         style={{
-                          background: item.completed ? 'rgba(45, 212, 191, 0.12)' : 'rgba(99, 102, 241, 0.12)',
-                          border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : '1px solid rgba(99, 102, 241, 0.25)',
+                          background: item.completed ? 'rgba(45, 212, 191, 0.12)' : baseBg,
+                          border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : `1px solid ${baseBorder}`,
                           borderRadius: 6,
                           transition: 'all 0.15s ease'
                         }}
@@ -145,7 +149,7 @@ export const HabitsWeekView = ({
                               e.stopPropagation()
                               onToggleCheckin(item.habitId, dateStr)
                             }}
-                            aria-label="Concluir meta"
+                            aria-label="Concluir item"
                           >
                             {item.completed ? <TbCheck size={14} /> : <TbCircle size={14} />}
                           </ActionIcon>
