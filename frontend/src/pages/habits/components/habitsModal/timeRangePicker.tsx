@@ -102,6 +102,16 @@ export const TimeRangePicker = ({
     setIsEndMenuOpen(false)
   }
 
+  // Duração atual calculada
+  const currentDuration = useMemo(() => {
+    if (!startTime || !endTime) return null
+    const startMin = parseTimeToMinutes(startTime)
+    const endMin = parseTimeToMinutes(endTime)
+    let diff = endMin - startMin
+    if (diff <= 0) diff += 1440
+    return formatDurationLabel(diff)
+  }, [startTime, endTime])
+
   return (
     <Box>
       <Group justify="space-between" align="center" mb={6}>
@@ -121,14 +131,14 @@ export const TimeRangePicker = ({
       </Group>
 
       {!allDay ? (
-        <Group gap="xs" align="center">
+        <Group grow align="center" gap="md">
           {/* Seletor Horário Início */}
           <Popover
             opened={isStartMenuOpen}
             onChange={setIsStartMenuOpen}
             position="bottom-start"
             shadow="xl"
-            width={160}
+            width="target"
           >
             <Popover.Target>
               <Box
@@ -136,27 +146,31 @@ export const TimeRangePicker = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
+                  justifyContent: 'space-between',
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
                   border: isStartMenuOpen ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: 10,
-                  padding: '6px 12px',
+                  padding: '8px 12px',
                   cursor: 'pointer',
-                  minWidth: 100,
-                  height: 38,
+                  height: 42,
                   transition: 'all 0.15s ease'
                 }}
               >
-                <TbClock size={16} color="#9ca3af" />
-                <Text size="sm" fw={600} c={startTime ? '#ffffff' : '#9ca3af'}>
-                  {startTime || '00:00'}
+                <Group gap={8} wrap="nowrap">
+                  <TbClock size={16} color="#9ca3af" />
+                  <Text size="sm" fw={500} c={startTime ? '#ffffff' : '#9ca3af'}>
+                    {startTime || '00:00'}
+                  </Text>
+                </Group>
+                <Text size="xs" c="dimmed" fw={400}>
+                  Início
                 </Text>
               </Box>
             </Popover.Target>
             <Popover.Dropdown
               p={4}
               style={{
-                backgroundColor: '#1e1f20',
+                backgroundColor: '#1c1f26',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: 8,
                 boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)'
@@ -192,17 +206,13 @@ export const TimeRangePicker = ({
             </Popover.Dropdown>
           </Popover>
 
-          <Text size="sm" c="#6b7280" fw={600}>
-            –
-          </Text>
-
-          {/* Seletor Horário Término com Duração Relativa (estilo Google Calendar) */}
+          {/* Seletor Horário Término com Duração Relativa */}
           <Popover
             opened={isEndMenuOpen}
             onChange={setIsEndMenuOpen}
             position="bottom-start"
             shadow="xl"
-            width={210}
+            width="target"
           >
             <Popover.Target>
               <Box
@@ -211,28 +221,48 @@ export const TimeRangePicker = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
                   border: isEndMenuOpen ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: 10,
-                  padding: '6px 12px',
+                  padding: '8px 12px',
                   cursor: 'pointer',
-                  minWidth: 100,
-                  height: 38,
+                  height: 42,
                   transition: 'all 0.15s ease'
                 }}
               >
-                <Text size="sm" fw={600} c={endTime ? '#ffffff' : '#9ca3af'}>
-                  {endTime || (startTime ? minutesToTimeString(parseTimeToMinutes(startTime) + 60) : '01:00')}
+                <Group gap={8} wrap="nowrap">
+                  <Text size="sm" fw={500} c={endTime ? '#ffffff' : '#9ca3af'}>
+                    {endTime || (startTime ? minutesToTimeString(parseTimeToMinutes(startTime) + 60) : '01:00')}
+                  </Text>
+                  {currentDuration && (
+                    <Text
+                      size="xs"
+                      c="#9ca3af"
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                        padding: '1px 6px',
+                        borderRadius: 4,
+                        fontSize: 11
+                      }}
+                    >
+                      {currentDuration}
+                    </Text>
+                  )}
+                </Group>
+                <Text size="xs" c="dimmed" fw={400}>
+                  Término
                 </Text>
               </Box>
             </Popover.Target>
             <Popover.Dropdown
               p={4}
               style={{
-                backgroundColor: '#1e1f20',
+                backgroundColor: '#1c1f26',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: 8,
-                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)'
+                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)',
+                minWidth: 200
               }}
             >
               <ScrollArea.Autosize mah={240} type="auto">
@@ -246,17 +276,20 @@ export const TimeRangePicker = ({
                       style={{
                         borderRadius: 6,
                         cursor: 'pointer',
-                        backgroundColor: opt.isSelected ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                        backgroundColor: opt.isSelected ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
                         color: opt.isSelected ? '#ffffff' : '#d1d5db',
                         fontSize: 13,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: 12,
-                        transition: 'background-color 0.1s ease'
+                        transition: 'background-color 0.1s ease',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                        }
                       }}
                     >
-                      <Text size="13px" fw={opt.isSelected ? 600 : 500} c="inherit">
+                      <Text size="13px" fw={opt.isSelected ? 600 : 400} c="inherit">
                         {opt.time}
                       </Text>
                       <Text size="12px" c="dimmed">
@@ -271,18 +304,24 @@ export const TimeRangePicker = ({
         </Group>
       ) : (
         <Box
-          p="xs"
           style={{
+            height: 42,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
             backgroundColor: 'rgba(255, 255, 255, 0.02)',
-            borderRadius: 8,
-            border: '1px dashed rgba(255, 255, 255, 0.1)'
+            borderRadius: 10,
+            border: '1px dashed rgba(255, 255, 255, 0.08)'
           }}
         >
+          <TbClock size={15} color="#6b7280" />
           <Text size="xs" c="dimmed">
-            Item configurado para o dia inteiro (sem horário fixo).
+            Dia inteiro (sem horário fixo definido)
           </Text>
         </Box>
       )}
+    </Box>
     </Box>
   )
 }
