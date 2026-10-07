@@ -15,7 +15,8 @@ export const HabitsWeekView = ({
   selectedDate,
   togglingId,
   onSelectDate,
-  onToggleCheckin
+  onToggleCheckin,
+  onEditItem
 }: HabitsWeekViewProps) => {
 
   return (
@@ -102,7 +103,9 @@ export const HabitsWeekView = ({
                         }}
                         onClick={(e) => {
                           e.stopPropagation()
-                          onToggleCheckin(item.habitId, dateStr)
+                          if (onEditItem) {
+                            onEditItem(item.habitId, dateStr)
+                          }
                         }}
                       >
                         <Group justify="space-between" align="center" wrap="nowrap" gap={4}>

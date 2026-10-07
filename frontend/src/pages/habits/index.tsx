@@ -7,6 +7,7 @@ import HabitsMonthView from './components/habitsMonthView'
 import HabitsWeekView from './components/habitsWeekView'
 import HabitsModal from './components/habitsModal'
 import HabitsPool from './components/habitsPool'
+import RecurringScopeModal from './components/recurringScopeModal'
 import { containerStyle } from './styles'
 import useHabitsPage from './hook'
 
@@ -29,16 +30,22 @@ export const HabitsPage = () => {
     isScheduling,
     togglingId,
     isModalOpen,
+    editingHabit,
+    isScopeModalOpen,
+    scopeActionType,
     handleSelectDate,
     handlePreviousPeriod,
     handleNextPeriod,
     handleToday,
     handleOpenModal,
+    handleOpenEditModal,
     handleCloseModal,
-    handleCreateHabit,
+    handleSaveHabit,
     handleToggleCheckin,
     handleScheduleForDay,
-    handleRemoveHabit
+    handleRemoveHabit,
+    handleConfirmScopeAction,
+    handleCloseScopeModal
   } = useHabitsPage()
 
   const totalHabits = daySummary?.totalHabits ?? 0
@@ -74,6 +81,7 @@ export const HabitsPage = () => {
             selectedDate={selectedDate}
             onSelectDate={handleSelectDate}
             onToggleCheckin={handleToggleCheckin}
+            onEditItem={handleOpenEditModal}
           />
         )}
 
@@ -86,6 +94,7 @@ export const HabitsPage = () => {
             togglingId={togglingId}
             onSelectDate={handleSelectDate}
             onToggleCheckin={handleToggleCheckin}
+            onEditItem={handleOpenEditModal}
           />
         )}
 
@@ -95,6 +104,8 @@ export const HabitsPage = () => {
             isLoading={isLoading}
             togglingId={togglingId}
             onToggle={(habitId) => handleToggleCheckin(habitId, selectedDate)}
+            onEdit={handleOpenEditModal}
+            onRemove={handleRemoveHabit}
           />
 
           <HabitsPool
@@ -102,6 +113,7 @@ export const HabitsPage = () => {
             dayHabitIds={dayHabitIds}
             onScheduleForDay={handleScheduleForDay}
             onRemoveHabit={handleRemoveHabit}
+            onEditHabit={handleOpenEditModal}
             isScheduling={isScheduling}
           />
         </SimpleGrid>
@@ -110,8 +122,18 @@ export const HabitsPage = () => {
           isOpen={isModalOpen}
           isLoading={isCreating}
           initialDate={selectedDate}
+          initialHabit={editingHabit}
           onClose={handleCloseModal}
-          onSubmit={handleCreateHabit}
+          onSubmit={handleSaveHabit}
+          onDelete={(id) => handleRemoveHabit(id, selectedDate)}
+        />
+
+        <RecurringScopeModal
+          isOpen={isScopeModalOpen}
+          actionType={scopeActionType}
+          onClose={handleCloseScopeModal}
+          onConfirm={handleConfirmScopeAction}
+          isLoading={isCreating}
         />
       </Stack>
     </Box>
@@ -119,3 +141,4 @@ export const HabitsPage = () => {
 }
 
 export default HabitsPage
+

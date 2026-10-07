@@ -1,5 +1,5 @@
 import { Loader, ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
-import { TbCheck, TbCircle, TbInbox, TbClock } from 'react-icons/tb'
+import { TbCheck, TbCircle, TbInbox, TbClock, TbPencil, TbTrash } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
 import Card from '@components/ui/card'
@@ -10,7 +10,9 @@ export const HabitsChecklist = ({
   items,
   isLoading,
   togglingId,
-  onToggle
+  onToggle,
+  onEdit,
+  onRemove
 }: HabitsChecklistProps) => {
   const getFrequencyBadge = (freq: string) => {
     switch (freq) {
@@ -126,6 +128,36 @@ export const HabitsChecklist = ({
                       ) : null}
 
                       {getFrequencyBadge(item.frequency || 'daily')}
+
+                      {onEdit && (
+                        <ActionIcon
+                          size="md"
+                          variant="subtle"
+                          color="gray"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onEdit(item.habitId)
+                          }}
+                          aria-label="Editar meta"
+                        >
+                          <TbPencil size={15} />
+                        </ActionIcon>
+                      )}
+
+                      {onRemove && (
+                        <ActionIcon
+                          size="md"
+                          variant="subtle"
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onRemove(item.habitId)
+                          }}
+                          aria-label="Excluir meta"
+                        >
+                          <TbTrash size={15} />
+                        </ActionIcon>
+                      )}
                     </Group>
                   </Group>
                 </Box>

@@ -8,4 +8,5 @@ export interface HabitsWeekViewProps {
   togglingId: string | null
   onSelectDate: (date: string) => void
   onToggleCheckin: (habitId: string, date: string) => void
+  onEditItem?: (habitId: string, date: string) => void
 }

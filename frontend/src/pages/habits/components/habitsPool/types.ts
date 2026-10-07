@@ -5,5 +5,6 @@ export interface HabitsPoolProps {
   dayHabitIds: Set<string>
   onScheduleForDay: (habitId: string) => void
   onRemoveHabit: (habitId: string) => void
+  onEditHabit?: (habitId: string) => void
   isScheduling: boolean
 }

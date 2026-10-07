@@ -1,6 +1,7 @@
 import type { CalendarViewMode, CalendarDayCell } from '@pages/habits/types'
 import type { CreateHabitFormData } from '@pages/habits/components/habitsModal/types'
-import type { DaySummaryResponse, Habit } from '@actions/habits/types'
+import type { RecurringActionType } from '@pages/habits/components/recurringScopeModal/types'
+import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from '@actions/habits/types'
 
 export interface UseHabitsPageReturn {
   selectedDate: string
@@ -21,14 +22,20 @@ export interface UseHabitsPageReturn {
   isScheduling: boolean
   togglingId: string | null
   isModalOpen: boolean
+  editingHabit: Habit | null
+  isScopeModalOpen: boolean
+  scopeActionType: RecurringActionType
   handleSelectDate: (date: string) => void
   handlePreviousPeriod: () => void
   handleNextPeriod: () => void
   handleToday: () => void
   handleOpenModal: () => void
+  handleOpenEditModal: (habitId: string, date?: string) => void
   handleCloseModal: () => void
-  handleCreateHabit: (data: CreateHabitFormData) => Promise<void>
+  handleSaveHabit: (data: CreateHabitFormData) => Promise<void>
   handleToggleCheckin: (habitId: string, date?: string) => Promise<void>
   handleScheduleForDay: (habitId: string) => Promise<void>
-  handleRemoveHabit: (habitId: string) => Promise<void>
+  handleRemoveHabit: (habitId: string, date?: string) => Promise<void>
+  handleConfirmScopeAction: (mode: RecurrenceScopeMode) => Promise<void>
+  handleCloseScopeModal: () => void
 }

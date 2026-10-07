@@ -1,5 +1,5 @@
 import { ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
-import { TbCalendarPlus, TbTrash } from 'react-icons/tb'
+import { TbCalendarPlus, TbTrash, TbPencil } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
@@ -12,6 +12,7 @@ export const HabitsPool = ({
   dayHabitIds,
   onScheduleForDay,
   onRemoveHabit,
+  onEditHabit,
   isScheduling
 }: HabitsPoolProps) => {
   const periodicHabits = habits.filter((h) => h.frequency === 'weekly' || h.frequency === 'monthly')
@@ -86,6 +87,18 @@ export const HabitsPool = ({
                         >
                           Incluir neste dia
                         </Button>
+                      )}
+
+                      {onEditHabit && (
+                        <ActionIcon
+                          variant="subtle"
+                          color="gray"
+                          size="md"
+                          onClick={() => onEditHabit(habit.id)}
+                          aria-label="Editar meta"
+                        >
+                          <TbPencil size={16} />
+                        </ActionIcon>
                       )}
 
                       <ActionIcon

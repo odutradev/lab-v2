@@ -1,6 +1,6 @@
 import { Modal, Stack, Group, Text, TextInput, Checkbox, Textarea, Box } from '@mantine/core'
 import { useState, useMemo } from 'react'
-import { TbClock } from 'react-icons/tb'
+import { TbClock, TbTrash } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import Select from '@components/ui/select'
@@ -38,25 +38,55 @@ export const HabitsModal = ({
   isOpen,
   isLoading,
   initialDate,
+  initialHabit,
   onClose,
-  onSubmit
+  onSubmit,
+  onDelete
 }: HabitsModalProps) => {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [category, setCategory] = useState<HabitCategory>('event')
-  const [startDate, setStartDate] = useState<string>(initialDate || getTodayString())
-  const [allDay, setAllDay] = useState(false)
-  const [startTime, setStartTime] = useState('22:00')
-  const [endTime, setEndTime] = useState('23:00')
-  const [recurrenceOption, setRecurrenceOption] = useState<string>('none')
-  const [customRecurrence, setCustomRecurrence] = useState<HabitRecurrence | null>(null)
+  const [title, setTitle] = useState(initialHabit?.title || '')
+  const [description, setDescription] = useState(initialHabit?.description || '')
+  const [category, setCategory] = useState<HabitCategory>(initialHabit?.category || 'event')
+  const [startDate, setStartDate] = useState<string>(initialHabit?.startDate || initialDate || getTodayString())
+  const [allDay, setAllDay] = useState(Boolean(initialHabit?.allDay))
+  const [startTime, setStartTime] = useState(initialHabit?.startTime || '22:00')
+  const [endTime, setEndTime] = useState(initialHabit?.endTime || '23:00')
+  const [recurrenceOption, setRecurrenceOption] = useState<string>(
+    initialHabit?.recurrence?.type || (initialHabit?.frequency === 'daily' ? 'daily' : initialHabit?.frequency === 'weekly' ? 'weekly' : initialHabit?.frequency === 'monthly' ? 'monthly' : 'none')
+  )
+  const [customRecurrence, setCustomRecurrence] = useState<HabitRecurrence | null>(initialHabit?.recurrence || null)
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false)
   const [error, setError] = useState('')
+
+  const [prevInitialHabit, setPrevInitialHabit] = useState(initialHabit)
+  if (initialHabit !== prevInitialHabit) {
+    setPrevInitialHabit(initialHabit)
+    if (initialHabit) {
+      setTitle(initialHabit.title || '')
+      setDescription(initialHabit.description || '')
+      setCategory(initialHabit.category || 'event')
+      setStartDate(initialHabit.startDate || initialDate || getTodayString())
+      setAllDay(Boolean(initialHabit.allDay))
+      setStartTime(initialHabit.startTime || '22:00')
+      setEndTime(initialHabit.endTime || '23:00')
+      const recType = initialHabit.recurrence?.type || (initialHabit.frequency === 'daily' ? 'daily' : initialHabit.frequency === 'weekly' ? 'weekly' : initialHabit.frequency === 'monthly' ? 'monthly' : 'none')
+      setRecurrenceOption(recType)
+      setCustomRecurrence(initialHabit.recurrence || null)
+    } else {
+      setTitle('')
+      setDescription('')
+      setCategory('event')
+      setAllDay(false)
+      setStartTime('22:00')
+      setEndTime('23:00')
+      setRecurrenceOption('none')
+      setCustomRecurrence(null)
+    }
+  }
 
   const [prevInitialDate, setPrevInitialDate] = useState(initialDate)
   if (initialDate !== prevInitialDate) {
     setPrevInitialDate(initialDate)
-    if (initialDate) {
+    if (initialDate && !initialHabit) {
       setStartDate(initialDate)
     }
   }
@@ -357,25 +387,41 @@ export const HabitsModal = ({
             </Box>
 
             {/* Botões do Rodapé */}
-            <Group justify="flex-end" gap="sm" mt="md">
-              <Button variant="ghost" onClick={handleClose} disabled={isLoading}>
-                Cancelar
-              </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                isLoading={isLoading}
-                style={{
-                  backgroundColor: '#a8c7fa',
-                  color: '#041e49',
-                  borderRadius: 20,
-                  fontWeight: 600,
-                  paddingLeft: 22,
-                  paddingRight: 22
-                }}
-              >
-                Salvar
-              </Button>
+            <Group justify="space-between" align="center" mt="md">
+              {initialHabit && onDelete ? (
+                <Button
+                  variant="ghost"
+                  color="red"
+                  leftIcon={<TbTrash size={16} />}
+                  onClick={() => onDelete(initialHabit.id)}
+                  disabled={isLoading}
+                >
+                  Excluir
+                </Button>
+              ) : (
+                <Box />
+              )}
+
+              <Group gap="sm">
+                <Button variant="ghost" onClick={handleClose} disabled={isLoading}>
+                  Cancelar
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  isLoading={isLoading}
+                  style={{
+                    backgroundColor: '#a8c7fa',
+                    color: '#041e49',
+                    borderRadius: 20,
+                    fontWeight: 600,
+                    paddingLeft: 22,
+                    paddingRight: 22
+                  }}
+                >
+                  {initialHabit ? 'Salvar alterações' : 'Salvar'}
+                </Button>
+              </Group>
             </Group>
           </Stack>
         </form>

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 
-import { getRangeSummaryAction, scheduleHabitAction, createHabitAction, toggleCheckinAction, removeHabitAction, listHabitsAction } from '@actions/habits'
+import { getRangeSummaryAction, scheduleHabitAction, createHabitAction, updateHabitAction, toggleCheckinAction, removeHabitAction, listHabitsAction } from '@actions/habits'
 import useToastStore from '@stores/toast'
 
 import type { CalendarViewMode, CalendarDayCell } from '@pages/habits/types'
 import type { CreateHabitFormData } from '@pages/habits/components/habitsModal/types'
-import type { DaySummaryResponse, Habit } from '@actions/habits/types'
+import type { RecurringActionType } from '@pages/habits/components/recurringScopeModal/types'
+import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from '@actions/habits/types'
 import type { UseHabitsPageReturn } from './types'
 
 const formatDateToString = (date: Date): string => {
@@ -95,6 +96,17 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
   const [isScheduling, setIsScheduling] = useState<boolean>(false)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
+
+  // Estados de confirmação de escopo de recorrência (Google Calendar)
+  const [isScopeModalOpen, setIsScopeModalOpen] = useState<boolean>(false)
+  const [scopeActionType, setScopeActionType] = useState<RecurringActionType>('delete')
+  const [pendingScopeAction, setPendingScopeAction] = useState<{
+    type: RecurringActionType
+    habitId: string
+    date: string
+    payload?: CreateHabitFormData
+  } | null>(null)
 
   const { showToast } = useToastStore()
 
@@ -230,34 +242,193 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
   }
 
   const handleOpenModal = () => {
+    setEditingHabit(null)
+    setIsModalOpen(true)
+  }
+
+  const handleOpenEditModal = (habitId: string, date?: string) => {
+    const targetDate = date || selectedDate
+    setSelectedDate(targetDate)
+
+    const existingHabit = habits.find((h) => h.id === habitId)
+    if (existingHabit) {
+      setEditingHabit(existingHabit)
+    } else {
+      // Se não estiver na pool, busca nas summaries
+      let foundSummaryItem = daySummary?.items.find((item) => item.habitId === habitId)
+      if (!foundSummaryItem) {
+        for (const s of rangeSummaries) {
+          const it = s.items.find((i) => i.habitId === habitId)
+          if (it) {
+            foundSummaryItem = it
+            break
+          }
+        }
+      }
+
+      if (foundSummaryItem) {
+        setEditingHabit({
+          id: habitId,
+          userId: '',
+          title: foundSummaryItem.title,
+          description: foundSummaryItem.description,
+          category: foundSummaryItem.category || 'event',
+          frequency: foundSummaryItem.frequency || 'daily',
+          startDate: foundSummaryItem.startDate || targetDate,
+          allDay: Boolean(foundSummaryItem.allDay),
+          startTime: foundSummaryItem.startTime,
+          endTime: foundSummaryItem.endTime,
+          recurrence: { type: foundSummaryItem.frequency === 'daily' ? 'daily' : 'none' },
+          active: true
+        })
+      }
+    }
+
     setIsModalOpen(true)
   }
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+    setEditingHabit(null)
   }
 
-  const handleCreateHabit = async (data: CreateHabitFormData) => {
+  const handleSaveHabit = async (data: CreateHabitFormData) => {
     setIsCreating(true)
     try {
-      await createHabitAction({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        frequency: data.frequency,
-        startDate: data.startDate,
-        allDay: data.allDay,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        recurrence: data.recurrence
-      })
-      showToast('Meta agendada com sucesso!', 'success')
-      await reloadData(visibleRange.startDate, visibleRange.endDate)
+      if (editingHabit) {
+        const isRecurring = Boolean(
+          editingHabit.recurrence && editingHabit.recurrence.type && editingHabit.recurrence.type !== 'none'
+        )
+
+        if (isRecurring) {
+          // Abre diálogo de confirmação de escopo para eventos recorrentes
+          setIsModalOpen(false)
+          setPendingScopeAction({
+            type: 'edit',
+            habitId: editingHabit.id,
+            date: selectedDate,
+            payload: data
+          })
+          setScopeActionType('edit')
+          setIsScopeModalOpen(true)
+          return
+        }
+
+        // Evento não-recorrente: salva direto
+        await updateHabitAction(editingHabit.id, {
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          frequency: data.frequency,
+          startDate: data.startDate,
+          allDay: data.allDay,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          recurrence: data.recurrence,
+          mode: 'all'
+        })
+        showToast('Meta atualizada com sucesso!', 'success')
+        await reloadData(visibleRange.startDate, visibleRange.endDate)
+        handleCloseModal()
+      } else {
+        await createHabitAction({
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          frequency: data.frequency,
+          startDate: data.startDate,
+          allDay: data.allDay,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          recurrence: data.recurrence
+        })
+        showToast('Meta agendada com sucesso!', 'success')
+        await reloadData(visibleRange.startDate, visibleRange.endDate)
+        handleCloseModal()
+      }
     } catch {
-      showToast('Erro ao cadastrar a meta. Verifique os dados.', 'error')
+      showToast('Erro ao salvar a meta. Verifique os dados.', 'error')
     } finally {
       setIsCreating(false)
     }
+  }
+
+  const handleRemoveHabit = async (habitId: string, date?: string) => {
+    const targetDate = date || selectedDate
+    const habit = habits.find((h) => h.id === habitId) || editingHabit
+    const isRecurring = Boolean(
+      habit?.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none'
+    )
+
+    if (isRecurring) {
+      if (isModalOpen) {
+        setIsModalOpen(false)
+      }
+      setPendingScopeAction({
+        type: 'delete',
+        habitId,
+        date: targetDate
+      })
+      setScopeActionType('delete')
+      setIsScopeModalOpen(true)
+      return
+    }
+
+    // Não recorrente: exclusão direta
+    try {
+      await removeHabitAction(habitId, { mode: 'all' })
+      showToast('Meta removida com sucesso.', 'info')
+      if (isModalOpen) {
+        handleCloseModal()
+      }
+      await reloadData(visibleRange.startDate, visibleRange.endDate)
+    } catch {
+      showToast('Não foi possível remover a meta.', 'error')
+    }
+  }
+
+  const handleConfirmScopeAction = async (mode: RecurrenceScopeMode) => {
+    if (!pendingScopeAction) return
+
+    setIsCreating(true)
+    try {
+      if (pendingScopeAction.type === 'delete') {
+        await removeHabitAction(pendingScopeAction.habitId, {
+          mode,
+          date: pendingScopeAction.date
+        })
+        showToast('Evento excluído com sucesso.', 'info')
+      } else if (pendingScopeAction.type === 'edit' && pendingScopeAction.payload) {
+        const payload = pendingScopeAction.payload
+        await updateHabitAction(pendingScopeAction.habitId, {
+          title: payload.title,
+          description: payload.description,
+          category: payload.category,
+          frequency: payload.frequency,
+          startDate: payload.startDate,
+          allDay: payload.allDay,
+          startTime: payload.startTime,
+          endTime: payload.endTime,
+          recurrence: payload.recurrence,
+          mode,
+          date: pendingScopeAction.date
+        })
+        showToast('Evento atualizado com sucesso!', 'success')
+      }
+
+      await reloadData(visibleRange.startDate, visibleRange.endDate)
+      handleCloseScopeModal()
+      handleCloseModal()
+    } catch {
+      showToast('Não foi possível processar a ação.', 'error')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
+  const handleCloseScopeModal = () => {
+    setIsScopeModalOpen(false)
+    setPendingScopeAction(null)
   }
 
   const handleToggleCheckin = async (habitId: string, date: string = selectedDate) => {
@@ -314,16 +485,6 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     }
   }
 
-  const handleRemoveHabit = async (habitId: string) => {
-    try {
-      await removeHabitAction(habitId)
-      showToast('Meta removida com sucesso.', 'info')
-      await reloadData(visibleRange.startDate, visibleRange.endDate)
-    } catch {
-      showToast('Não foi possível remover a meta.', 'error')
-    }
-  }
-
   return {
     selectedDate,
     todayStr,
@@ -343,17 +504,24 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     isScheduling,
     togglingId,
     isModalOpen,
+    editingHabit,
+    isScopeModalOpen,
+    scopeActionType,
     handleSelectDate,
     handlePreviousPeriod,
     handleNextPeriod,
     handleToday,
     handleOpenModal,
+    handleOpenEditModal,
     handleCloseModal,
-    handleCreateHabit,
+    handleSaveHabit,
     handleToggleCheckin,
     handleScheduleForDay,
-    handleRemoveHabit
+    handleRemoveHabit,
+    handleConfirmScopeAction,
+    handleCloseScopeModal
   }
 }
 
 export default useHabitsPage
+

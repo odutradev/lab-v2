@@ -13,7 +13,8 @@ export const HabitsMonthView = ({
   rangeSummariesMap,
   selectedDate,
   onSelectDate,
-  onToggleCheckin
+  onToggleCheckin,
+  onEditItem
 }: HabitsMonthViewProps) => {
   return (
     <Card>
@@ -102,15 +103,25 @@ export const HabitsMonthView = ({
                     }}
                     onClick={(e) => {
                       e.stopPropagation()
-                      onToggleCheckin(item.habitId, cell.date)
+                      if (onEditItem) {
+                        onEditItem(item.habitId, cell.date)
+                      }
                     }}
                   >
                     <Group gap={4} wrap="nowrap" align="center">
-                      {item.completed ? (
-                        <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
-                      ) : (
-                        <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
-                      )}
+                      <Box
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onToggleCheckin(item.habitId, cell.date)
+                        }}
+                        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                      >
+                        {item.completed ? (
+                          <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                        ) : (
+                          <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
+                        )}
+                      </Box>
                       {item.startTime && !item.allDay && (
                         <Text
                           size="9px"
