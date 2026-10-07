@@ -1,5 +1,5 @@
 import { Loader, ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
-import { TbCheck, TbCircle, TbInbox } from 'react-icons/tb'
+import { TbCheck, TbCircle, TbInbox, TbClock } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
 import Card from '@components/ui/card'
@@ -102,7 +102,29 @@ export const HabitsChecklist = ({
                       </Box>
                     </Group>
 
-                    <Group gap="xs">
+                    <Group gap="xs" align="center">
+                      {item.startTime && !item.allDay ? (
+                        <Box
+                          px={8}
+                          py={3}
+                          style={{
+                            backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                            border: '1px solid rgba(59, 130, 246, 0.3)',
+                            borderRadius: 6,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}
+                        >
+                          <TbClock size={12} color="#93c5fd" />
+                          <Text size="11px" fw={600} c="#93c5fd">
+                            {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
+                          </Text>
+                        </Box>
+                      ) : item.allDay ? (
+                        <Badge variant="default">Dia inteiro</Badge>
+                      ) : null}
+
                       {getFrequencyBadge(item.frequency || 'daily')}
                     </Group>
                   </Group>

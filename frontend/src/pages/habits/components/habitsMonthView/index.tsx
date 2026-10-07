@@ -92,6 +92,7 @@ export const HabitsMonthView = ({
                     key={item.habitId}
                     px={4}
                     py={2}
+                    title={`${item.title}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
                     style={{
                       background: item.completed ? 'rgba(45, 212, 191, 0.14)' : 'rgba(99, 102, 241, 0.14)',
                       borderRadius: 4,
@@ -104,8 +105,22 @@ export const HabitsMonthView = ({
                       onToggleCheckin(item.habitId, cell.date)
                     }}
                   >
-                    <Group gap={3} wrap="nowrap">
-                      {item.completed ? <TbCheck size={11} color="#2dd4bf" /> : <TbCircle size={11} color="#818cf8" />}
+                    <Group gap={4} wrap="nowrap" align="center">
+                      {item.completed ? (
+                        <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                      ) : (
+                        <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
+                      )}
+                      {item.startTime && !item.allDay && (
+                        <Text
+                          size="9px"
+                          fw={700}
+                          c={item.completed ? 'dimmed' : '#93c5fd'}
+                          style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
+                        >
+                          {item.startTime}
+                        </Text>
+                      )}
                       <Text
                         size="10px"
                         fw={500}

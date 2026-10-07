@@ -106,20 +106,30 @@ export const HabitsWeekView = ({
                         }}
                       >
                         <Group justify="space-between" align="center" wrap="nowrap" gap={4}>
-                          <Text
-                            size="xs"
-                            fw={600}
-                            c={item.completed ? 'dimmed' : 'white'}
-                            style={{
-                              textDecoration: item.completed ? 'line-through' : 'none',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              flex: 1
-                            }}
-                          >
-                            {item.title}
-                          </Text>
+                          <Box style={{ flex: 1, minWidth: 0 }}>
+                            <Text
+                              size="xs"
+                              fw={600}
+                              c={item.completed ? 'dimmed' : 'white'}
+                              style={{
+                                textDecoration: item.completed ? 'line-through' : 'none',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}
+                            >
+                              {item.title}
+                            </Text>
+                            {item.startTime && !item.allDay ? (
+                              <Text size="10px" fw={700} c={item.completed ? 'dimmed' : '#93c5fd'}>
+                                {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
+                              </Text>
+                            ) : item.allDay ? (
+                              <Text size="10px" fw={500} c="dimmed">
+                                Dia todo
+                              </Text>
+                            ) : null}
+                          </Box>
 
                           <ActionIcon
                             size="xs"
