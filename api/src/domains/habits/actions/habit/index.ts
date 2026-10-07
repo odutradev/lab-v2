@@ -29,13 +29,29 @@ export const createHabitAction = defineAction(
   async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const { title, description, frequency } = data as CreateHabitBody
+    const {
+      title,
+      description,
+      category,
+      frequency,
+      startDate,
+      allDay,
+      startTime,
+      endTime,
+      recurrence
+    } = data as CreateHabitBody
 
     const createdHabit = await habitRepository.create({
       userId: ids.userId,
       title,
       description,
-      frequency
+      category,
+      frequency,
+      startDate,
+      allDay,
+      startTime,
+      endTime,
+      recurrence
     })
 
     await createAuditLog({
@@ -44,7 +60,7 @@ export const createHabitAction = defineAction(
       entity: 'Habit',
       entityId: createdHabit.id,
       summary: 'Hábito criado pelo usuário.',
-      details: { title, frequency }
+      details: { title, frequency, category, startTime, recurrence }
     })
 
     return createdHabit

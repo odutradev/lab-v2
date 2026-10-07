@@ -9,7 +9,13 @@ const habitRepository = {
       userId: toObjectId(payload.userId),
       title: payload.title,
       description: payload.description,
-      frequency: payload.frequency,
+      category: payload.category || 'event',
+      frequency: payload.frequency || 'daily',
+      startDate: payload.startDate,
+      allDay: payload.allDay ?? (!payload.startTime),
+      startTime: payload.startTime,
+      endTime: payload.endTime,
+      recurrence: payload.recurrence,
       active: true
     })
   },
@@ -26,9 +32,10 @@ const habitRepository = {
   findAllByUser: async (userId: string, filters?: ListHabitsFilters): Promise<HabitModelType[]> => {
     const query: Record<string, unknown> = { userId: toObjectId(userId) }
     if (filters?.frequency) query.frequency = filters.frequency
+    if (filters?.category) query.category = filters.category
     if (typeof filters?.active === 'boolean') query.active = filters.active
 
-    const habits = await HabitModel.find(query).sort({ createdAt: -1 }).lean()
+    const habits = await HabitModel.find(query).sort({ startTime: 1, createdAt: -1 }).lean()
     return habits.map((habit) => ({ ...habit, id: habit._id.toString() })) as unknown as HabitModelType[]
   },
   update: async (id: string, userId: string, payload: UpdateHabitPayload): Promise<HabitModelType | null> => {
@@ -47,3 +54,4 @@ const habitRepository = {
 }
 
 export default habitRepository
+

@@ -2,6 +2,7 @@ import { rangeSummaryResponseSchema, toggleCheckinResponseSchema, rangeSummaryQu
 import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import habitRepository from '@domains/habits/repositories/habit'
+import { isHabitScheduledForDate } from '@domains/habits/utils/recurrence'
 import { formatTimestamp } from '@utils/date'
 import { isValidObjectId } from '@database/utils'
 import defineAction from '@factories/defineAction'
@@ -103,8 +104,8 @@ export const getDaySummaryAction = defineAction(
 
     const items: DaySummaryItem[] = activeHabits
       .filter((habit) => {
-        if (habit.frequency === 'daily') return true
-        return checkinMap.has(habit.id.toString())
+        if (checkinMap.has(habit.id.toString())) return true
+        return isHabitScheduledForDate(habit, targetDate)
       })
       .map((habit) => {
         const habitId = habit.id.toString()
@@ -114,9 +115,19 @@ export const getDaySummaryAction = defineAction(
           habitId,
           title: habit.title,
           description: habit.description,
+          category: habit.category || 'event',
           frequency: habit.frequency,
+          startDate: habit.startDate,
+          allDay: habit.allDay,
+          startTime: habit.startTime,
+          endTime: habit.endTime,
           completed
         }
+      })
+      .sort((a, b) => {
+        if (a.allDay && !b.allDay) return -1
+        if (!a.allDay && b.allDay) return 1
+        return (a.startTime || '').localeCompare(b.startTime || '')
       })
 
     const totalHabits = items.length
@@ -183,8 +194,8 @@ export const getRangeSummaryAction = defineAction(
     const summaries: DaySummaryResponse[] = dates.map((dateStr) => {
       const items: DaySummaryItem[] = activeHabits
         .filter((habit) => {
-          if (habit.frequency === 'daily') return true
-          return checkinsByDateAndHabit.has(`${dateStr}_${habit.id.toString()}`)
+          if (checkinsByDateAndHabit.has(`${dateStr}_${habit.id.toString()}`)) return true
+          return isHabitScheduledForDate(habit, dateStr)
         })
         .map((habit) => {
           const habitId = habit.id.toString()
@@ -194,9 +205,19 @@ export const getRangeSummaryAction = defineAction(
             habitId,
             title: habit.title,
             description: habit.description,
+            category: habit.category || 'event',
             frequency: habit.frequency,
+            startDate: habit.startDate,
+            allDay: habit.allDay,
+            startTime: habit.startTime,
+            endTime: habit.endTime,
             completed
           }
+        })
+        .sort((a, b) => {
+          if (a.allDay && !b.allDay) return -1
+          if (!a.allDay && b.allDay) return 1
+          return (a.startTime || '').localeCompare(b.startTime || '')
         })
 
       const totalHabits = items.length

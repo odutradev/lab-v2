@@ -25,7 +25,12 @@ export const daySummaryItemSchema = registry.register('DaySummaryItem', z.object
   habitId: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  frequency: z.enum(['daily', 'weekly', 'monthly']),
+  category: z.enum(['event', 'task', 'schedule']).optional(),
+  frequency: z.enum(['daily', 'weekly', 'monthly', 'custom', 'none']).optional(),
+  startDate: z.string().optional(),
+  allDay: z.boolean().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
   completed: z.boolean()
 }))
 
