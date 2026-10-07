@@ -275,7 +275,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
         userId: '',
         title: foundSummaryItem.title,
         description: foundSummaryItem.description,
-        category: foundSummaryItem.category || 'event',
+        category: foundSummaryItem.category || 'habit',
         frequency: foundSummaryItem.frequency || 'daily',
         startDate: foundSummaryItem.startDate || targetDate,
         allDay: Boolean(foundSummaryItem.allDay),
@@ -331,7 +331,14 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           recurrence: data.recurrence,
           mode: 'all'
         })
-        showToast('Meta atualizada com sucesso!', 'success')
+        showToast(
+          data.category === 'task'
+            ? 'Tarefa atualizada com sucesso!'
+            : data.category === 'schedule'
+              ? 'Agenda atualizada com sucesso!'
+              : 'Hábito atualizado com sucesso!',
+          'success'
+        )
         await reloadData(visibleRange.startDate, visibleRange.endDate)
         handleCloseModal()
       } catch (err: unknown) {
@@ -339,7 +346,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
             ?.response?.data?.details?.[0]?.message ||
           (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-          'Erro ao salvar a meta. Verifique os dados.'
+          'Erro ao salvar o item. Verifique os dados.'
         showToast(errorMessage, 'error')
       } finally {
         setIsCreating(false)
@@ -360,15 +367,22 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
         endTime: data.endTime ?? undefined,
         recurrence: data.recurrence
       })
-      showToast('Meta criada com sucesso!', 'success')
+      showToast(
+        data.category === 'task'
+          ? 'Tarefa criada com sucesso!'
+          : data.category === 'schedule'
+            ? 'Item adicionado à agenda!'
+            : 'Hábito criado com sucesso!',
+        'success'
+      )
       await reloadData(visibleRange.startDate, visibleRange.endDate)
       handleCloseModal()
     } catch (err: unknown) {
       const errorMessage =
         (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
           ?.response?.data?.details?.[0]?.message ||
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Erro ao salvar a meta. Verifique os dados.'
+          (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Erro ao salvar o item. Verifique os dados.'
       showToast(errorMessage, 'error')
     } finally {
       setIsCreating(false)
@@ -400,13 +414,13 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     // Não recorrente: exclusão direta
     try {
       await removeHabitAction(habitId, { mode: 'all' })
-      showToast('Meta removida com sucesso.', 'info')
+      showToast('Item removido com sucesso.', 'info')
       if (isModalOpen) {
         handleCloseModal()
       }
       await reloadData(visibleRange.startDate, visibleRange.endDate)
     } catch {
-      showToast('Não foi possível remover a meta.', 'error')
+      showToast('Não foi possível remover o item.', 'error')
     }
   }
 
@@ -420,7 +434,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           mode,
           date: pendingScopeAction.date
         })
-        showToast('Meta excluída com sucesso.', 'info')
+        showToast('Item excluído com sucesso.', 'info')
       } else if (pendingScopeAction.type === 'edit' && pendingScopeAction.payload) {
         const payload = pendingScopeAction.payload
         await updateHabitAction(pendingScopeAction.habitId, {
@@ -436,7 +450,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           mode,
           date: pendingScopeAction.date
         })
-        showToast('Meta atualizada com sucesso!', 'success')
+        showToast('Item atualizado com sucesso!', 'success')
       }
 
       await reloadData(visibleRange.startDate, visibleRange.endDate)

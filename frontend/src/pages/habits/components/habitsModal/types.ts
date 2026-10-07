@@ -3,7 +3,7 @@ import type { Habit, HabitCategory, HabitFrequency, HabitRecurrence } from '@act
 export interface CreateHabitFormData {
   title: string
   description?: string
-  category?: HabitCategory
+  category: HabitCategory
   frequency?: HabitFrequency
   startDate: string
   allDay: boolean

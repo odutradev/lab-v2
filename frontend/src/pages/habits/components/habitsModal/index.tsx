@@ -1,11 +1,13 @@
-import { Modal, Stack, Group, Text, TextInput, Textarea, Box, SimpleGrid } from '@mantine/core'
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, SegmentedControl } from '@mantine/core'
 import { useState, useEffect } from 'react'
-import { TbCalendar, TbClock, TbTrash, TbCheck } from 'react-icons/tb'
+import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
+import TimeRangePicker from './timeRangePicker'
+import RecurrenceSelect from './recurrenceSelect'
 
 import type { HabitsModalProps } from './types'
-import type { HabitFrequency, HabitRecurrence } from '@actions/habits/types'
+import type { HabitCategory, HabitFrequency, HabitRecurrence } from '@actions/habits/types'
 
 const getTodayString = (): string => {
   const now = new Date()
@@ -15,20 +17,25 @@ const getTodayString = (): string => {
   return `${yyyy}-${mm}-${dd}`
 }
 
-const weekDayOptions = [
-  { label: 'Dom', index: 0, title: 'Domingo' },
-  { label: 'Seg', index: 1, title: 'Segunda' },
-  { label: 'Ter', index: 2, title: 'Terça' },
-  { label: 'Qua', index: 3, title: 'Quarta' },
-  { label: 'Qui', index: 4, title: 'Quinta' },
-  { label: 'Sex', index: 5, title: 'Sexta' },
-  { label: 'Sáb', index: 6, title: 'Sábado' }
-]
-
-const frequencyCards: { value: HabitFrequency; label: string; desc: string }[] = [
-  { value: 'daily', label: 'Diária', desc: 'Todos os dias' },
-  { value: 'weekly', label: 'Semanal', desc: 'Dias selecionados' },
-  { value: 'monthly', label: 'Mensal', desc: 'Uma vez ao mês' }
+const itemTypeOptions: { value: HabitCategory; label: string; icon: typeof TbRepeat; desc: string }[] = [
+  {
+    value: 'habit',
+    label: 'Hábito',
+    icon: TbRepeat,
+    desc: 'Atividades frequentes para construir consistência e rotina'
+  },
+  {
+    value: 'task',
+    label: 'Tarefa',
+    icon: TbChecklist,
+    desc: 'Itens e pendências a serem concluídos'
+  },
+  {
+    value: 'schedule',
+    label: 'Agenda',
+    icon: TbCalendarTime,
+    desc: 'Compromissos, reuniões e eventos com horário definido'
+  }
 ]
 
 export const HabitsModal = ({
@@ -40,113 +47,108 @@ export const HabitsModal = ({
   onSubmit,
   onDelete
 }: HabitsModalProps) => {
-  const [title, setTitle] = useState(initialHabit?.title || '')
-  const [description, setDescription] = useState(initialHabit?.description || '')
-  const [frequency, setFrequency] = useState<HabitFrequency>(
-    initialHabit?.frequency === 'weekly' || initialHabit?.frequency === 'monthly'
-      ? initialHabit.frequency
-      : 'daily'
-  )
-  const [startDate, setStartDate] = useState<string>(
-    initialHabit?.startDate || initialDate || getTodayString()
-  )
-  const [startTime, setStartTime] = useState(initialHabit?.startTime || '')
-  const [endTime, setEndTime] = useState(initialHabit?.endTime || '')
-  const [selectedDays, setSelectedDays] = useState<number[]>(() => {
-    if (initialHabit?.recurrence?.daysOfWeek && initialHabit.recurrence.daysOfWeek.length > 0) {
-      return initialHabit.recurrence.daysOfWeek
-    }
-    const [y, m, d] = (initialDate || getTodayString()).split('-').map(Number)
-    return [new Date(y, m - 1, d).getDay()]
-  })
+  const normalizeCategory = (cat?: string): HabitCategory => {
+    if (cat === 'task') return 'task'
+    if (cat === 'schedule') return 'schedule'
+    return 'habit'
+  }
+
+  const [category, setCategory] = useState<HabitCategory>('habit')
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [startDate, setStartDate] = useState(getTodayString())
+  const [allDay, setAllDay] = useState(false)
+  const [startTime, setStartTime] = useState('')
+  const [endTime, setEndTime] = useState('')
+  const [recurrence, setRecurrence] = useState<HabitRecurrence>({ type: 'daily', interval: 1 })
   const [error, setError] = useState('')
 
   useEffect(() => {
+    if (!isOpen) return
+
     if (initialHabit) {
+      const cat = normalizeCategory(initialHabit.category)
+      setCategory(cat)
       setTitle(initialHabit.title || '')
       setDescription(initialHabit.description || '')
-      setFrequency(
-        initialHabit.frequency === 'weekly' || initialHabit.frequency === 'monthly'
-          ? initialHabit.frequency
-          : 'daily'
-      )
       setStartDate(initialHabit.startDate || initialDate || getTodayString())
+      setAllDay(Boolean(initialHabit.allDay))
       setStartTime(initialHabit.startTime || '')
       setEndTime(initialHabit.endTime || '')
-      if (initialHabit.recurrence?.daysOfWeek && initialHabit.recurrence.daysOfWeek.length > 0) {
-        setSelectedDays(initialHabit.recurrence.daysOfWeek)
+
+      if (initialHabit.recurrence && initialHabit.recurrence.type) {
+        setRecurrence(initialHabit.recurrence)
+      } else if (initialHabit.frequency && initialHabit.frequency !== 'none') {
+        setRecurrence({ type: initialHabit.frequency as HabitRecurrence['type'], interval: 1 })
       } else {
-        const [y, m, d] = (initialHabit.startDate || initialDate || getTodayString())
-          .split('-')
-          .map(Number)
-        setSelectedDays([new Date(y, m - 1, d).getDay()])
+        setRecurrence({ type: 'none' })
       }
     } else {
+      setCategory('habit')
       setTitle('')
       setDescription('')
-      setFrequency('daily')
       const defaultDate = initialDate || getTodayString()
       setStartDate(defaultDate)
+      setAllDay(false)
       setStartTime('')
       setEndTime('')
-      const [y, m, d] = defaultDate.split('-').map(Number)
-      setSelectedDays([new Date(y, m - 1, d).getDay()])
+      // Para Hábito, padrão é repetir diariamente; para tarefa/agenda padrão é não repetir
+      setRecurrence({ type: 'daily', interval: 1 })
       setError('')
     }
   }, [initialHabit, initialDate, isOpen])
+
+  const handleCategoryChange = (newCat: HabitCategory) => {
+    setCategory(newCat)
+    if (!initialHabit) {
+      // Ajusta repetição sugerida com base no tipo
+      if (newCat === 'habit') {
+        setRecurrence({ type: 'daily', interval: 1 })
+      } else {
+        setRecurrence({ type: 'none' })
+      }
+    }
+  }
 
   const handleClose = () => {
     setError('')
     onClose()
   }
 
-  const toggleDay = (dayIndex: number) => {
-    setSelectedDays((prev) => {
-      if (prev.includes(dayIndex)) {
-        if (prev.length === 1) return prev // Mantém pelo menos um dia
-        return prev.filter((d) => d !== dayIndex)
-      }
-      return [...prev, dayIndex].sort((a, b) => a - b)
-    })
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) {
-      setError('Informe o título da meta')
+      setError(`Informe o título ${category === 'habit' ? 'do hábito' : category === 'task' ? 'da tarefa' : 'do compromisso'}`)
       return
     }
 
-    const [y, m, d] = startDate.split('-').map(Number)
-    const fallbackDay = new Date(y, m - 1, d).getDay()
+    const cleanStartTime = !allDay && startTime && startTime.trim() ? startTime.trim() : null
+    const cleanEndTime = !allDay && endTime && endTime.trim() ? endTime.trim() : null
 
-    const finalRecurrence: HabitRecurrence =
-      frequency === 'daily'
-        ? { type: 'daily', interval: 1 }
-        : frequency === 'weekly'
-          ? {
-              type: 'weekly',
-              interval: 1,
-              daysOfWeek: selectedDays.length > 0 ? selectedDays : [fallbackDay]
-            }
-          : { type: 'monthly', interval: 1 }
-
-    const cleanStartTime = startTime && startTime.trim() ? startTime.trim() : null
-    const cleanEndTime = endTime && endTime.trim() ? endTime.trim() : null
+    // Mapeia frequência para manter compatibilidade com sistemas existentes
+    let frequency: HabitFrequency = 'none'
+    if (recurrence.type === 'daily') frequency = 'daily'
+    else if (recurrence.type === 'weekly') frequency = 'weekly'
+    else if (recurrence.type === 'monthly') frequency = 'monthly'
+    else if (recurrence.type === 'yearly') frequency = 'yearly'
+    else if (recurrence.type === 'custom') frequency = 'custom'
 
     await onSubmit({
       title: title.trim(),
       description: description.trim() ? description.trim() : undefined,
+      category,
       frequency,
       startDate,
-      allDay: !cleanStartTime,
+      allDay,
       startTime: cleanStartTime,
       endTime: cleanEndTime,
-      recurrence: finalRecurrence
+      recurrence
     })
 
     handleClose()
   }
+
+  const currentTypeInfo = itemTypeOptions.find((t) => t.value === category) || itemTypeOptions[0]
 
   return (
     <Modal
@@ -155,12 +157,10 @@ export const HabitsModal = ({
       title={
         <Box>
           <Text fw={600} size="lg" c="white">
-            {initialHabit ? 'Editar Meta' : 'Nova Meta'}
+            {initialHabit ? `Editar ${currentTypeInfo.label}` : `Novo ${currentTypeInfo.label}`}
           </Text>
           <Text size="xs" c="dimmed">
-            {initialHabit
-              ? 'Atualize as configurações e a frequência da sua meta.'
-              : 'Defina os detalhes e a frequência para acompanhar sua consistência.'}
+            {currentTypeInfo.desc}
           </Text>
         </Box>
       }
@@ -185,11 +185,84 @@ export const HabitsModal = ({
     >
       <form onSubmit={handleSubmit}>
         <Stack gap="lg">
-          {/* Título da Meta */}
+          {/* Seletor de Tipo de Item: Hábito / Tarefa / Agenda */}
+          <Box>
+            <Text size="xs" fw={500} c="#d1d5db" mb={6}>
+              Tipo de item
+            </Text>
+            <SegmentedControl
+              value={category}
+              onChange={(val) => handleCategoryChange(val as HabitCategory)}
+              fullWidth
+              size="sm"
+              radius="md"
+              data={[
+                {
+                  value: 'habit',
+                  label: (
+                    <Group gap={6} justify="center" wrap="nowrap">
+                      <TbRepeat size={16} />
+                      <Text size="13px" fw={600}>Hábito</Text>
+                    </Group>
+                  )
+                },
+                {
+                  value: 'task',
+                  label: (
+                    <Group gap={6} justify="center" wrap="nowrap">
+                      <TbChecklist size={16} />
+                      <Text size="13px" fw={600}>Tarefa</Text>
+                    </Group>
+                  )
+                },
+                {
+                  value: 'schedule',
+                  label: (
+                    <Group gap={6} justify="center" wrap="nowrap">
+                      <TbCalendarTime size={16} />
+                      <Text size="13px" fw={600}>Agenda</Text>
+                    </Group>
+                  )
+                }
+              ]}
+              styles={{
+                root: {
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: 4
+                },
+                indicator: {
+                  backgroundColor: '#6366f1',
+                  boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)'
+                },
+                label: {
+                  color: '#9ca3af',
+                  transition: 'color 0.15s ease',
+                  '&[data-active]': {
+                    color: '#ffffff'
+                  }
+                }
+              }}
+            />
+          </Box>
+
+          {/* Título do Item */}
           <Box>
             <TextInput
-              label="Nome da meta"
-              placeholder="Ex: Treino de perna, Ler 20 páginas, Meditar..."
+              label={
+                category === 'habit'
+                  ? 'Nome do hábito'
+                  : category === 'task'
+                    ? 'Título da tarefa'
+                    : 'Título do compromisso'
+              }
+              placeholder={
+                category === 'habit'
+                  ? 'Ex: Meditar 15 min, Ler 20 páginas, Treino de musculação...'
+                  : category === 'task'
+                    ? 'Ex: Enviar relatório trimestral, Pagar fatura do cartão...'
+                    : 'Ex: Reunião com diretoria, Consulta médica, Alinhamento de projeto...'
+              }
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value)
@@ -219,101 +292,12 @@ export const HabitsModal = ({
             />
           </Box>
 
-          {/* Seletor Minimalista de Frequência */}
-          <Box>
-            <Text size="xs" fw={500} c="#d1d5db" mb={8}>
-              Frequência da meta
-            </Text>
-            <SimpleGrid cols={3} spacing="sm">
-              {frequencyCards.map((card) => {
-                const isSelected = frequency === card.value
-                return (
-                  <Box
-                    key={card.value}
-                    onClick={() => setFrequency(card.value)}
-                    p="sm"
-                    style={{
-                      borderRadius: 10,
-                      cursor: 'pointer',
-                      backgroundColor: isSelected
-                        ? 'rgba(99, 102, 241, 0.14)'
-                        : 'rgba(255, 255, 255, 0.02)',
-                      border: isSelected
-                        ? '1px solid #6366f1'
-                        : '1px solid rgba(255, 255, 255, 0.08)',
-                      transition: 'all 0.15s ease',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 2
-                    }}
-                  >
-                    <Group justify="space-between" align="center" wrap="nowrap">
-                      <Text
-                        size="sm"
-                        fw={600}
-                        c={isSelected ? '#ffffff' : '#e5e7eb'}
-                      >
-                        {card.label}
-                      </Text>
-                      {isSelected && <TbCheck size={16} color="#818cf8" />}
-                    </Group>
-                    <Text size="11px" c={isSelected ? '#c7d2fe' : 'dimmed'}>
-                      {card.desc}
-                    </Text>
-                  </Box>
-                )
-              })}
-            </SimpleGrid>
-          </Box>
-
-          {/* Configuração de dias para Semanal */}
-          {frequency === 'weekly' && (
-            <Box
-              p="sm"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: 10,
-                border: '1px solid rgba(255, 255, 255, 0.06)'
-              }}
-            >
-              <Text size="xs" fw={500} c="#9ca3af" mb={8}>
-                Dias da semana em que a meta se repete
-              </Text>
-              <Group gap="xs">
-                {weekDayOptions.map((opt) => {
-                  const isSelected = selectedDays.includes(opt.index)
-                  return (
-                    <Box
-                      key={opt.index}
-                      onClick={() => toggleDay(opt.index)}
-                      px={14}
-                      py={6}
-                      style={{
-                        borderRadius: 20,
-                        cursor: 'pointer',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        backgroundColor: isSelected ? '#6366f1' : 'rgba(255, 255, 255, 0.05)',
-                        color: isSelected ? '#ffffff' : '#9ca3af',
-                        border: isSelected ? '1px solid #818cf8' : '1px solid transparent',
-                        transition: 'all 0.15s ease'
-                      }}
-                      title={opt.title}
-                    >
-                      {opt.label}
-                    </Box>
-                  )
-                })}
-              </Group>
-            </Box>
-          )}
-
-          {/* Data de Início e Horários */}
-          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
+          {/* Data de Início e Regras de Repetição (estilo Google Calendar) */}
+          <Group grow align="flex-start" gap="md">
             <Box>
               <TextInput
                 type="date"
-                label="Data de início"
+                label="Data"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 size="sm"
@@ -324,6 +308,7 @@ export const HabitsModal = ({
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     color: '#ffffff',
                     fontSize: 14,
+                    height: 42,
                     borderRadius: 10
                   },
                   label: {
@@ -337,64 +322,29 @@ export const HabitsModal = ({
             </Box>
 
             <Box>
-              <TextInput
-                type="time"
-                label="Horário (opcional)"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                size="sm"
-                leftSection={<TbClock size={16} color="#9ca3af" />}
-                styles={{
-                  input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff',
-                    colorScheme: 'dark',
-                    fontSize: 14,
-                    borderRadius: 10
-                  },
-                  label: {
-                    color: '#d1d5db',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    marginBottom: 6
-                  }
-                }}
+              <RecurrenceSelect
+                startDate={startDate}
+                recurrence={recurrence}
+                onChange={setRecurrence}
               />
             </Box>
+          </Group>
 
-            <Box>
-              <TextInput
-                type="time"
-                label="Término (opcional)"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                size="sm"
-                styles={{
-                  input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff',
-                    colorScheme: 'dark',
-                    fontSize: 14,
-                    borderRadius: 10
-                  },
-                  label: {
-                    color: '#d1d5db',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    marginBottom: 6
-                  }
-                }}
-              />
-            </Box>
-          </SimpleGrid>
+          {/* Horários com cálculo de duração relativa (Imagem 1) */}
+          <TimeRangePicker
+            allDay={allDay}
+            onAllDayChange={setAllDay}
+            startTime={startTime}
+            endTime={endTime}
+            onStartTimeChange={setStartTime}
+            onEndTimeChange={setEndTime}
+          />
 
           {/* Descrição Opcional */}
           <Box>
             <Textarea
               label="Descrição ou observações (opcional)"
-              placeholder="Adicione detalhes, metas numéricas ou anotações..."
+              placeholder="Adicione detalhes, links, notas ou metas numéricas..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               minRows={2}
@@ -419,7 +369,13 @@ export const HabitsModal = ({
           </Box>
 
           {/* Rodapé com Ações */}
-          <Group justify="space-between" align="center" mt="xs" pt="md" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Group
+            justify="space-between"
+            align="center"
+            mt="xs"
+            pt="md"
+            style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}
+          >
             {initialHabit && onDelete ? (
               <Button
                 variant="ghost"
@@ -428,7 +384,7 @@ export const HabitsModal = ({
                 onClick={() => onDelete(initialHabit.id)}
                 disabled={isLoading}
               >
-                Excluir meta
+                Excluir
               </Button>
             ) : (
               <Box />
@@ -449,7 +405,7 @@ export const HabitsModal = ({
                   paddingRight: 24
                 }}
               >
-                {initialHabit ? 'Salvar alterações' : 'Criar Meta'}
+                {initialHabit ? 'Salvar alterações' : `Criar ${currentTypeInfo.label}`}
               </Button>
             </Group>
           </Group>
