@@ -5,6 +5,7 @@ import PageContainer from '@components/layout/pageContainer'
 import ResetPasswordPage from '@pages/resetPassword'
 import HabitsPage from '@pages/habits'
 import AuthPage from '@pages/auth'
+import ProfilePage from '@pages/profile'
 
 import type { RouteItem } from './types'
 
@@ -12,6 +13,11 @@ const routes: RouteItem[] = [
   {
     path: '/',
     component: HabitsPage,
+    protected: true
+  },
+  {
+    path: '/profile',
+    component: ProfilePage,
     protected: true
   },
   {
