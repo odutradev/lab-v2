@@ -1,10 +1,14 @@
-import { SegmentedControl, ActionIcon, Group, Text, Box } from '@mantine/core'
+import { Group, Text, Box } from '@mantine/core'
 import { TbChevronLeft, TbChevronRight, TbPlus } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
+import ActionIcon from '@components/ui/actionIcon'
+import SegmentedControl from '@components/ui/segmentedControl'
 
 import type { HabitsCalendarToolbarProps } from './types'
 import type { CalendarViewMode } from '@pages/habits/types'
+
+const TOOLBAR_CONTROL_HEIGHT = 34
 
 const viewModeOptions = [
   { label: 'Diário', value: 'day' },
@@ -34,6 +38,7 @@ export const HabitsCalendarToolbar = ({
           <Button
             variant={isToday ? 'outline' : 'secondary'}
             size="sm"
+            h={TOOLBAR_CONTROL_HEIGHT}
             onClick={onToday}
           >
             Hoje
@@ -42,22 +47,26 @@ export const HabitsCalendarToolbar = ({
           <Group gap={4}>
             <ActionIcon
               variant="subtle"
-              size="lg"
+              size="md"
+              h={TOOLBAR_CONTROL_HEIGHT}
+              w={TOOLBAR_CONTROL_HEIGHT}
               radius="md"
               onClick={onPrevious}
               aria-label="Período anterior"
             >
-              <TbChevronLeft size={20} />
+              <TbChevronLeft size={18} />
             </ActionIcon>
 
             <ActionIcon
               variant="subtle"
-              size="lg"
+              size="md"
+              h={TOOLBAR_CONTROL_HEIGHT}
+              w={TOOLBAR_CONTROL_HEIGHT}
               radius="md"
               onClick={onNext}
               aria-label="Próximo período"
             >
-              <TbChevronRight size={20} />
+              <TbChevronRight size={18} />
             </ActionIcon>
           </Group>
 
@@ -72,19 +81,14 @@ export const HabitsCalendarToolbar = ({
             onChange={(val) => onViewModeChange(val as CalendarViewMode)}
             data={viewModeOptions}
             size="sm"
+            height={TOOLBAR_CONTROL_HEIGHT}
             radius="md"
-            color="indigo"
-            styles={{
-              root: {
-                backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
-              }
-            }}
           />
 
           <Button
             variant="primary"
             size="sm"
+            h={TOOLBAR_CONTROL_HEIGHT}
             leftIcon={<TbPlus size={16} />}
             onClick={onOpenNewHabitModal}
           >
