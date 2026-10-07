@@ -165,6 +165,50 @@ export const updateGoogleCalendarSummary = async (
   }
 }
 
+export interface CalendarSyncStatus {
+  exists: boolean
+  summary?: string
+}
+
+export const checkGoogleCalendarStatus = async (
+  refreshToken: string,
+  calendarId: string
+): Promise<CalendarSyncStatus> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+
+    try {
+      const response = await calendar.calendars.get({ calendarId })
+      return {
+        exists: true,
+        summary: response.data.summary || undefined
+      }
+    } catch (err: unknown) {
+      const status = (err as { status?: number; code?: number })?.status || (err as { status?: number; code?: number })?.code
+      if (status === 404) {
+        return { exists: false }
+      }
+
+      const listResponse = await calendar.calendarList.get({ calendarId })
+      if (listResponse.data.deleted) {
+        return { exists: false }
+      }
+
+      return {
+        exists: true,
+        summary: listResponse.data.summary || undefined
+      }
+    }
+  } catch (error: unknown) {
+    const status = (error as { status?: number; code?: number })?.status || (error as { status?: number; code?: number })?.code
+    if (status === 404) {
+      return { exists: false }
+    }
+    logger.warn(`Could not verify Google Calendar status for "${calendarId}":`, error)
+    return { exists: true }
+  }
+}
+
 export const deleteGoogleCalendar = async (
   refreshToken: string,
   calendarId: string

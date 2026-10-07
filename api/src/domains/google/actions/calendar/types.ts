@@ -6,7 +6,8 @@ import type {
   disconnectCalendarBodySchema,
   disconnectCalendarResponseSchema,
   updateCalendarNameBodySchema,
-  updateCalendarNameResponseSchema
+  updateCalendarNameResponseSchema,
+  recreateCalendarResponseSchema
 } from './schemas'
 
 export type GetCalendarAuthUrlResponse = z.infer<typeof getCalendarAuthUrlResponseSchema>
@@ -16,6 +17,7 @@ export type DisconnectCalendarBody = z.infer<typeof disconnectCalendarBodySchema
 export type DisconnectCalendarResponse = z.infer<typeof disconnectCalendarResponseSchema>
 export type UpdateCalendarNameBody = z.infer<typeof updateCalendarNameBodySchema>
 export type UpdateCalendarNameResponse = z.infer<typeof updateCalendarNameResponseSchema>
+export type RecreateCalendarResponse = z.infer<typeof recreateCalendarResponseSchema>
 
 export interface GoogleOAuthStatePayload {
   userId: string

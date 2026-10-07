@@ -29,6 +29,7 @@ export const calendarStatusResponseSchema = registry.register(
     calendarId: z.string().optional(),
     calendarName: z.string().optional(),
     calendarUrl: z.string().optional(),
+    calendarDeleted: z.boolean().optional(),
     connectedAt: z.date().optional()
   })
 )
@@ -60,6 +61,17 @@ export const updateCalendarNameResponseSchema = registry.register(
   z.object({
     success: z.boolean(),
     calendarName: z.string(),
+    message: z.string()
+  })
+)
+
+export const recreateCalendarResponseSchema = registry.register(
+  'RecreateCalendarResponse',
+  z.object({
+    success: z.boolean(),
+    calendarId: z.string(),
+    calendarName: z.string(),
+    calendarUrl: z.string(),
     message: z.string()
   })
 )

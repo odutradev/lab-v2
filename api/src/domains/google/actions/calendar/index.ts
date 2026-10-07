@@ -7,7 +7,8 @@ import {
   disconnectCalendarBodySchema,
   disconnectCalendarResponseSchema,
   updateCalendarNameBodySchema,
-  updateCalendarNameResponseSchema
+  updateCalendarNameResponseSchema,
+  recreateCalendarResponseSchema
 } from '@domains/google/actions/calendar/schemas'
 import {
   generateGoogleAuthUrl,
@@ -17,7 +18,8 @@ import {
   revokeGoogleToken,
   getOrCreateLabCalendar,
   updateGoogleCalendarSummary,
-  deleteGoogleCalendar
+  deleteGoogleCalendar,
+  checkGoogleCalendarStatus
 } from '@google/utils'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import userRepository from '@domains/users/repositories/user'
@@ -34,6 +36,7 @@ import type {
   DisconnectCalendarResponse,
   UpdateCalendarNameBody,
   UpdateCalendarNameResponse,
+  RecreateCalendarResponse,
   GoogleOAuthStatePayload
 } from '@domains/google/actions/calendar/types'
 
@@ -230,8 +233,25 @@ export const getCalendarStatusAction = defineAction<
     const calendarIntegration = user.integrations?.googleCalendar
     const isConnected = !!calendarIntegration?.connected
     const calendarId = calendarIntegration?.calendarId
+    let calendarName = calendarIntegration?.calendarName || (isConnected ? 'Lab V2' : undefined)
+    let calendarDeleted = false
 
-    const calendarUrl = isConnected && calendarId
+    if (isConnected && calendarId) {
+      const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
+      const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
+
+      if (refreshToken) {
+        const syncStatus = await checkGoogleCalendarStatus(refreshToken, calendarId)
+        if (!syncStatus.exists) {
+          calendarDeleted = true
+        } else if (syncStatus.summary && syncStatus.summary !== calendarName) {
+          calendarName = syncStatus.summary
+          await userRepository.updateGoogleCalendarName(ids.userId, calendarName)
+        }
+      }
+    }
+
+    const calendarUrl = isConnected && calendarId && !calendarDeleted
       ? `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(calendarId)}`
       : undefined
 
@@ -239,8 +259,9 @@ export const getCalendarStatusAction = defineAction<
       connected: isConnected,
       email: calendarIntegration?.email,
       calendarId,
-      calendarName: calendarIntegration?.calendarName || (isConnected ? 'Lab V2' : undefined),
+      calendarName,
       calendarUrl,
+      calendarDeleted,
       connectedAt: calendarIntegration?.connectedAt
     }
   }
@@ -388,3 +409,70 @@ export const updateCalendarNameAction = defineAction<
     }
   }
 )
+
+export const recreateCalendarAction = defineAction<
+  { body: unknown; params: unknown; query: unknown; response: RecreateCalendarResponse }
+>(
+  {
+    method: 'post',
+    path: '/google/calendar/recreate',
+    summary: 'Recria ou restaura a agenda no Google Calendar para o usuário',
+    tags: ['Google'],
+    middlewares: [authMiddleware],
+    responses: {
+      200: {
+        description: 'Agenda recriada com sucesso',
+        schema: recreateCalendarResponseSchema
+      },
+      400: {
+        description: 'Requisição inválida ou token ausente',
+        schema: errorResponseSchema
+      },
+      401: {
+        description: 'Não autorizado',
+        schema: errorResponseSchema
+      }
+    }
+  },
+  async ({ ids, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
+    const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
+
+    if (!userWithToken?.integrations?.googleCalendar?.connected || !refreshToken) {
+      return manageError({ code: 'bad_request', message: 'Google Agenda não está conectada ou sem autorização' })
+    }
+
+    const desiredName = userWithToken.integrations.googleCalendar.calendarName || 'Lab V2'
+    const newCalendar = await getOrCreateLabCalendar(refreshToken, desiredName)
+
+    await userRepository.updateGoogleCalendarIntegration(ids.userId, {
+      connected: true,
+      email: userWithToken.integrations.googleCalendar.email,
+      refreshToken,
+      calendarId: newCalendar.id,
+      calendarName: newCalendar.summary,
+      connectedAt: new Date()
+    })
+
+    await createAuditLog({
+      actorId: ids.userId,
+      action: 'google_calendar_recreated',
+      entity: 'integrations',
+      entityId: ids.userId,
+      summary: `Agenda Google Calendar recriada com sucesso: "${newCalendar.summary}" (${newCalendar.id})`
+    })
+
+    const calendarUrl = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(newCalendar.id)}`
+
+    return {
+      success: true,
+      calendarId: newCalendar.id,
+      calendarName: newCalendar.summary,
+      calendarUrl,
+      message: 'Agenda recriada com sucesso no Google Calendar'
+    }
+  }
+)
+
