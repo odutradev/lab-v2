@@ -11,7 +11,8 @@ import {
   exchangeCodeForTokens,
   fetchGoogleUserEmail,
   createAuthenticatedClient,
-  revokeGoogleToken
+  revokeGoogleToken,
+  getOrCreateLabCalendar
 } from '@google/utils'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import userRepository from '@domains/users/repositories/user'
@@ -110,16 +111,26 @@ const handleOAuthCallback = async ({
   try {
     const tokens = await exchangeCodeForTokens(code)
 
+    let refreshToken = tokens.refresh_token
+    if (!refreshToken) {
+      const existingUser = await userRepository.findWithGoogleCalendarRefreshToken(statePayload.userId)
+      refreshToken = existingUser?.integrations?.googleCalendar?.refreshToken
+    }
+
     let googleEmail: string | undefined
-    if (tokens.refresh_token) {
-      const authClient = createAuthenticatedClient(tokens.refresh_token)
+    let labCalendarId: string | undefined
+
+    if (refreshToken) {
+      const authClient = createAuthenticatedClient(refreshToken)
       googleEmail = await fetchGoogleUserEmail(authClient)
+      labCalendarId = await getOrCreateLabCalendar(refreshToken)
     }
 
     await userRepository.updateGoogleCalendarIntegration(statePayload.userId, {
       connected: true,
       email: googleEmail,
-      refreshToken: tokens.refresh_token || undefined,
+      refreshToken: refreshToken || undefined,
+      calendarId: labCalendarId,
       connectedAt: new Date()
     })
 
@@ -128,7 +139,7 @@ const handleOAuthCallback = async ({
       action: 'google_calendar_connected',
       entity: 'integrations',
       entityId: statePayload.userId,
-      summary: `Google Calendar conectado (${googleEmail || 'email não identificado'})`
+      summary: `Google Calendar conectado (${googleEmail || 'email não identificado'}) com agenda Lab V2 (${labCalendarId || 'id não gerado'})`
     })
 
     defaultExpress.res.redirect(`${frontendUrl}/profile?google=connected`)
@@ -209,6 +220,7 @@ export const getCalendarStatusAction = defineAction<
     return {
       connected: !!calendarIntegration?.connected,
       email: calendarIntegration?.email,
+      calendarId: calendarIntegration?.calendarId,
       connectedAt: calendarIntegration?.connectedAt
     }
   }
@@ -248,6 +260,7 @@ export const disconnectCalendarAction = defineAction<
       connected: false,
       email: undefined,
       refreshToken: undefined,
+      calendarId: undefined,
       connectedAt: undefined
     })
 

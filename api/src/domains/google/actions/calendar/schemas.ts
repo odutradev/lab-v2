@@ -26,6 +26,7 @@ export const calendarStatusResponseSchema = registry.register(
   z.object({
     connected: z.boolean(),
     email: z.string().optional(),
+    calendarId: z.string().optional(),
     connectedAt: z.date().optional()
   })
 )

@@ -1,6 +1,7 @@
 export interface GoogleCalendarStatusResponse {
   connected: boolean
   email?: string
+  calendarId?: string
   connectedAt?: string
 }
 
