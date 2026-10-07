@@ -124,7 +124,10 @@ export const updateHabitAction = defineAction(
     if (!habit) return manageError({ code: 'not_found' })
 
     const { mode, date, ...updatePayload } = data as UpdateHabitBody
-    const isRecurring = Boolean(habit.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none')
+    const isRecurring = Boolean(
+      (habit.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none') ||
+      (habit.frequency && habit.frequency !== 'none')
+    )
     const targetMode = isRecurring && mode ? mode : 'all'
 
     if (targetMode === 'this' && date) {
@@ -136,6 +139,9 @@ export const updateHabitAction = defineAction(
         })
       }
 
+      // Se havia checkin na data original, busca para migrar
+      const existingCheckin = await habitCheckinRepository.findByUserHabitAndDate(ids.userId, id, date)
+
       // 2. Cria uma nova instância pontual com as alterações para este dia específico
       const createdSingleInstance = await habitRepository.create({
         userId: ids.userId,
@@ -143,12 +149,22 @@ export const updateHabitAction = defineAction(
         description: updatePayload.description !== undefined ? updatePayload.description : habit.description,
         category: updatePayload.category ?? habit.category,
         frequency: 'none',
-        startDate: updatePayload.startDate ?? date,
+        startDate: date,
         allDay: updatePayload.allDay !== undefined ? updatePayload.allDay : habit.allDay,
         startTime: updatePayload.startTime !== undefined ? updatePayload.startTime : habit.startTime,
         endTime: updatePayload.endTime !== undefined ? updatePayload.endTime : habit.endTime,
         recurrence: { type: 'none' }
       })
+
+      if (existingCheckin) {
+        await habitCheckinRepository.deleteByUserHabitAndDate(ids.userId, id, date)
+        await habitCheckinRepository.upsertCheckin({
+          userId: ids.userId,
+          habitId: createdSingleInstance.id,
+          date,
+          completed: existingCheckin.completed
+        })
+      }
 
       await createAuditLog({
         actorId: ids.userId,
@@ -178,7 +194,7 @@ export const updateHabitAction = defineAction(
         // 1. Encerra a série original no dia anterior
         await habitRepository.update(id, ids.userId, {
           recurrence: {
-            ...(habit.recurrence || { type: 'daily' }),
+            ...(habit.recurrence || { type: habit.frequency || 'daily' }),
             endType: 'on_date',
             endDate: previousDate
           }
@@ -191,12 +207,24 @@ export const updateHabitAction = defineAction(
           description: updatePayload.description !== undefined ? updatePayload.description : habit.description,
           category: updatePayload.category ?? habit.category,
           frequency: updatePayload.frequency ?? habit.frequency,
-          startDate: updatePayload.startDate ?? date,
+          startDate: date,
           allDay: updatePayload.allDay !== undefined ? updatePayload.allDay : habit.allDay,
           startTime: updatePayload.startTime !== undefined ? updatePayload.startTime : habit.startTime,
           endTime: updatePayload.endTime !== undefined ? updatePayload.endTime : habit.endTime,
           recurrence: updatePayload.recurrence ?? habit.recurrence
         })
+
+        const checkinsToMigrate = await habitCheckinRepository.findByUserAndDateRange(ids.userId, date, '2099-12-31')
+        const habitCheckins = checkinsToMigrate.filter((c) => c.habitId.toString() === id)
+        for (const c of habitCheckins) {
+          await habitCheckinRepository.deleteByUserHabitAndDate(ids.userId, id, c.date)
+          await habitCheckinRepository.upsertCheckin({
+            userId: ids.userId,
+            habitId: createdNewSeries.id,
+            date: c.date,
+            completed: c.completed
+          })
+        }
 
         await createAuditLog({
           actorId: ids.userId,
@@ -260,7 +288,10 @@ export const removeHabitAction = defineAction(
     const habit = await habitRepository.findByIdAndUser(id, ids.userId)
     if (!habit) return manageError({ code: 'not_found' })
 
-    const isRecurring = Boolean(habit.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none')
+    const isRecurring = Boolean(
+      (habit.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none') ||
+      (habit.frequency && habit.frequency !== 'none')
+    )
     const targetMode = isRecurring && mode ? mode : 'all'
 
     if (targetMode === 'this' && date) {
