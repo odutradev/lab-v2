@@ -37,8 +37,16 @@ export const HabitsWeekView = ({
               key={dateStr}
               p="sm"
               style={{
-                background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                border: isSelected ? '1px solid rgba(129, 140, 248, 0.4)' : '1px solid rgba(255, 255, 255, 0.06)',
+                background: isSelected
+                  ? 'rgba(99, 102, 241, 0.1)'
+                  : isToday
+                    ? 'rgba(99, 102, 241, 0.05)'
+                    : 'rgba(255, 255, 255, 0.02)',
+                border: isSelected
+                  ? '1px solid rgba(129, 140, 248, 0.5)'
+                  : isToday
+                    ? '1px solid rgba(129, 140, 248, 0.35)'
+                    : '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: 10,
                 minHeight: 280,
                 display: 'flex',
@@ -48,21 +56,24 @@ export const HabitsWeekView = ({
               onClick={() => onSelectDate(dateStr)}
             >
               <Stack gap={6} align="center" pb="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <Text size="xs" fw={700} c={isToday ? '#818cf8' : 'dimmed'}>
-                  {dayNames[index]}
+                <Text size="xs" fw={700} c={isToday ? '#a5b4fc' : 'dimmed'}>
+                  {dayNames[index]}{isToday ? ' • Hoje' : ''}
                 </Text>
 
                 <Box
-                  w={32}
-                  h={32}
+                  w={34}
+                  h={34}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '50%',
                     backgroundColor: isToday ? '#6366f1' : 'transparent',
+                    boxShadow: isToday
+                      ? '0 0 0 2px rgba(129, 140, 248, 0.6), 0 2px 8px rgba(99, 102, 241, 0.45)'
+                      : 'none',
                     color: isToday ? '#ffffff' : '#f3f4f6',
-                    fontWeight: isToday ? 700 : 600,
+                    fontWeight: isToday ? 800 : 600,
                     fontSize: 14
                   }}
                 >

@@ -46,13 +46,17 @@ export const HabitsMonthView = ({
               style={{
                 minHeight: 110,
                 background: isSelected
-                  ? 'rgba(99, 102, 241, 0.12)'
-                  : cell.isCurrentMonth
-                    ? 'rgba(255, 255, 255, 0.02)'
-                    : 'rgba(0, 0, 0, 0.25)',
+                  ? 'rgba(99, 102, 241, 0.14)'
+                  : cell.isToday
+                    ? 'rgba(99, 102, 241, 0.06)'
+                    : cell.isCurrentMonth
+                      ? 'rgba(255, 255, 255, 0.02)'
+                      : 'rgba(0, 0, 0, 0.25)',
                 border: isSelected
-                  ? '1px solid rgba(129, 140, 248, 0.45)'
-                  : '1px solid rgba(255, 255, 255, 0.05)',
+                  ? '1px solid rgba(129, 140, 248, 0.6)'
+                  : cell.isToday
+                    ? '1px solid rgba(129, 140, 248, 0.35)'
+                    : '1px solid rgba(255, 255, 255, 0.05)',
                 borderRadius: 8,
                 opacity: cell.isCurrentMonth ? 1 : 0.45,
                 display: 'flex',
@@ -63,22 +67,32 @@ export const HabitsMonthView = ({
               onClick={() => onSelectDate(cell.date)}
             >
               <Group justify="space-between" align="center" mb={4}>
-                <Box
-                  w={24}
-                  h={24}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '50%',
-                    backgroundColor: cell.isToday ? '#6366f1' : 'transparent',
-                    color: cell.isToday ? '#ffffff' : cell.isCurrentMonth ? '#f3f4f6' : '#9ca3af',
-                    fontWeight: cell.isToday ? 700 : 600,
-                    fontSize: 12
-                  }}
-                >
-                  {cell.dayNumber}
-                </Box>
+                <Group gap={6} align="center">
+                  <Box
+                    w={28}
+                    h={28}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%',
+                      backgroundColor: cell.isToday ? '#6366f1' : 'transparent',
+                      boxShadow: cell.isToday
+                        ? '0 0 0 2px rgba(129, 140, 248, 0.6), 0 2px 8px rgba(99, 102, 241, 0.45)'
+                        : 'none',
+                      color: cell.isToday ? '#ffffff' : cell.isCurrentMonth ? '#f3f4f6' : '#9ca3af',
+                      fontWeight: cell.isToday ? 800 : 600,
+                      fontSize: 12
+                    }}
+                  >
+                    {cell.dayNumber}
+                  </Box>
+                  {cell.isToday && (
+                    <Text size="10px" fw={700} c="#a5b4fc" style={{ letterSpacing: '0.04em' }}>
+                      Hoje
+                    </Text>
+                  )}
+                </Group>
 
                 {totalHabits > 0 && (
                   <Badge variant={completionRate === 100 ? 'success' : completionRate >= 80 ? 'primary' : 'warning'}>
