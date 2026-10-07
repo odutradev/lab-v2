@@ -10,4 +10,5 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: ReactNode
   rightIcon?: ReactNode
   fullWidth?: boolean
+  h?: number | string
 }

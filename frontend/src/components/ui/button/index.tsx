@@ -38,6 +38,10 @@ export const Button = ({
       disabled={disabled}
       radius="md"
       className={className}
+      style={{
+        ...(props.h !== undefined ? { height: props.h } : {}),
+        ...(props.style as React.CSSProperties)
+      }}
       {...props}
     >
       {children}
