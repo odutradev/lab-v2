@@ -9,6 +9,7 @@ import type { Auth } from 'googleapis'
 const logger = createLocalLogger('google-utils')
 
 const DEFAULT_SCOPES = [
+  'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/userinfo.profile',
@@ -69,14 +70,48 @@ export const revokeGoogleToken = async (token: string): Promise<boolean> => {
   }
 }
 
+export const getOrCreateLabCalendar = async (
+  refreshToken: string,
+  summary: string = 'Lab V2'
+): Promise<string> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    const listResponse = await calendar.calendarList.list()
+    const existingCalendar = listResponse.data.items?.find((item) => item.summary === summary)
+
+    if (existingCalendar?.id) {
+      logger.info(`Found existing Google Calendar "${summary}" with id: ${existingCalendar.id}`)
+      return existingCalendar.id
+    }
+
+    const created = await calendar.calendars.insert({
+      requestBody: {
+        summary,
+        description: 'Agenda sincronizada do Lab V2'
+      }
+    })
+
+    if (!created.data.id) {
+      throw new Error(`Failed to retrieve id for newly created Google Calendar "${summary}"`)
+    }
+
+    logger.info(`Created new Google Calendar "${summary}" with id: ${created.data.id}`)
+    return created.data.id
+  } catch (error) {
+    logger.error(`Error finding or creating Google Calendar "${summary}":`, error)
+    throw error
+  }
+}
+
 export const createCalendarEvent = async (
   refreshToken: string,
-  event: GoogleCalendarEventInput
+  event: GoogleCalendarEventInput,
+  calendarId: string = 'primary'
 ): Promise<string | null> => {
   try {
     const calendar = createGoogleCalendarClient(refreshToken)
     const response = await calendar.events.insert({
-      calendarId: 'primary',
+      calendarId,
       requestBody: {
         summary: event.summary,
         description: event.description,

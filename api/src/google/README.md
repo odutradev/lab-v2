@@ -13,5 +13,6 @@ Módulo responsável pela autenticação OAuth 2.0 e integração com a Google C
 - `generateGoogleAuthUrl(options)`: Cria o link de consentimento com escopos do Google Calendar e perfil.
 - `exchangeCodeForTokens(code)`: Troca o código retornado pelo consentimento por `access_token` e `refresh_token`.
 - `createGoogleCalendarClient(refreshToken)`: Cria uma instância autenticada da API de calendário pronta para operações.
-- `createCalendarEvent(refreshToken, event)`: Cria um evento no calendário primário do usuário.
+- `getOrCreateLabCalendar(refreshToken, summary)`: Localiza ou cria a agenda especificada (padrão "Lab V2") e retorna seu ID.
+- `createCalendarEvent(refreshToken, event, calendarId)`: Cria um evento no calendário especificado (ou primário) do usuário.
 - `revokeGoogleToken(token)`: Revoga permissões e tokens no Google.
