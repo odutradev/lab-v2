@@ -103,7 +103,7 @@ export const HabitsChecklist = ({
                     </Group>
 
                     <Group gap="xs">
-                      {getFrequencyBadge(item.frequency)}
+                      {getFrequencyBadge(item.frequency || 'daily')}
                     </Group>
                   </Group>
                 </Box>

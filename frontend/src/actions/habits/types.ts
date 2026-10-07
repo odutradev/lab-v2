@@ -1,11 +1,28 @@
-export type HabitFrequency = 'daily' | 'weekly' | 'monthly'
+export type HabitFrequency = 'daily' | 'weekly' | 'monthly' | 'custom' | 'none'
+export type HabitCategory = 'event' | 'task' | 'schedule'
+
+export interface HabitRecurrence {
+  type: 'none' | 'daily' | 'weekly' | 'monthly' | 'custom'
+  interval?: number
+  unit?: 'day' | 'week' | 'month'
+  daysOfWeek?: number[]
+  endType?: 'never' | 'on_date' | 'after_occurrences'
+  endDate?: string
+  occurrences?: number
+}
 
 export interface Habit {
   id: string
   userId: string
   title: string
   description?: string
+  category?: HabitCategory
   frequency: HabitFrequency
+  startDate?: string
+  allDay?: boolean
+  startTime?: string
+  endTime?: string
+  recurrence?: HabitRecurrence
   active: boolean
   createdAt?: string
   updatedAt?: string
@@ -14,18 +31,31 @@ export interface Habit {
 export interface CreateHabitPayload {
   title: string
   description?: string
-  frequency: HabitFrequency
+  category?: HabitCategory
+  frequency?: HabitFrequency
+  startDate?: string
+  allDay?: boolean
+  startTime?: string
+  endTime?: string
+  recurrence?: HabitRecurrence
 }
 
 export interface UpdateHabitPayload {
   title?: string
   description?: string
+  category?: HabitCategory
   frequency?: HabitFrequency
+  startDate?: string
+  allDay?: boolean
+  startTime?: string
+  endTime?: string
+  recurrence?: HabitRecurrence
   active?: boolean
 }
 
 export interface ListHabitsParams {
   frequency?: HabitFrequency
+  category?: HabitCategory
   active?: boolean
 }
 
@@ -50,7 +80,12 @@ export interface DaySummaryItem {
   habitId: string
   title: string
   description?: string
-  frequency: HabitFrequency
+  category?: HabitCategory
+  frequency?: HabitFrequency
+  startDate?: string
+  allDay?: boolean
+  startTime?: string
+  endTime?: string
   completed: boolean
 }
 
@@ -70,3 +105,4 @@ export interface RangeSummaryParams {
 export interface HabitActionSuccessResponse {
   success: boolean
 }
+

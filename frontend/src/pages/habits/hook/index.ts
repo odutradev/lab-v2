@@ -87,7 +87,7 @@ const calculateMonthCells = (dateStr: string, todayStr: string, selectedDateStr:
 export const useHabitsPage = (): UseHabitsPageReturn => {
   const todayStr = useMemo(() => getTodayString(), [])
   const [selectedDate, setSelectedDate] = useState<string>(todayStr)
-  const [viewMode, setViewMode] = useState<CalendarViewMode>('day')
+  const [viewMode, setViewMode] = useState<CalendarViewMode>('month')
   const [rangeSummaries, setRangeSummaries] = useState<DaySummaryResponse[]>([])
   const [habits, setHabits] = useState<Habit[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -243,9 +243,15 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
       await createHabitAction({
         title: data.title,
         description: data.description,
-        frequency: data.frequency
+        category: data.category,
+        frequency: data.frequency,
+        startDate: data.startDate,
+        allDay: data.allDay,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        recurrence: data.recurrence
       })
-      showToast('Meta criada com sucesso!', 'success')
+      showToast('Meta agendada com sucesso!', 'success')
       await reloadData(visibleRange.startDate, visibleRange.endDate)
     } catch {
       showToast('Erro ao cadastrar a meta. Verifique os dados.', 'error')

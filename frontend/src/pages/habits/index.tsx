@@ -109,6 +109,7 @@ export const HabitsPage = () => {
         <HabitsModal
           isOpen={isModalOpen}
           isLoading={isCreating}
+          initialDate={selectedDate}
           onClose={handleCloseModal}
           onSubmit={handleCreateHabit}
         />
