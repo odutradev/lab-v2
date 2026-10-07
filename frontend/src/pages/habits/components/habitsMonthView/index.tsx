@@ -67,20 +67,17 @@ export const HabitsMonthView = ({
             >
               <Group justify="space-between" align="center" mb={4}>
                 <Box
-                  w={28}
-                  h={28}
+                  w={22}
+                  h={22}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '50%',
                     backgroundColor: cell.isToday ? '#6366f1' : 'transparent',
-                    boxShadow: cell.isToday
-                      ? '0 0 0 2px rgba(129, 140, 248, 0.6), 0 2px 8px rgba(99, 102, 241, 0.45)'
-                      : 'none',
                     color: cell.isToday ? '#ffffff' : cell.isCurrentMonth ? '#f3f4f6' : '#9ca3af',
-                    fontWeight: cell.isToday ? 800 : 600,
-                    fontSize: 12
+                    fontWeight: cell.isToday ? 700 : 600,
+                    fontSize: 11
                   }}
                 >
                   {cell.dayNumber}

@@ -59,20 +59,17 @@ export const HabitsWeekView = ({
                 </Text>
 
                 <Box
-                  w={34}
-                  h={34}
+                  w={24}
+                  h={24}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '50%',
                     backgroundColor: isToday ? '#6366f1' : 'transparent',
-                    boxShadow: isToday
-                      ? '0 0 0 2px rgba(129, 140, 248, 0.6), 0 2px 8px rgba(99, 102, 241, 0.45)'
-                      : 'none',
                     color: isToday ? '#ffffff' : '#f3f4f6',
-                    fontWeight: isToday ? 800 : 600,
-                    fontSize: 14
+                    fontWeight: isToday ? 700 : 600,
+                    fontSize: 12
                   }}
                 >
                   {dayNumber}
