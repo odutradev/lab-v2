@@ -57,7 +57,7 @@ export const HabitsWeekView = ({
             >
               <Stack gap={6} align="center" pb="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
                 <Text size="xs" fw={700} c={isToday ? '#a5b4fc' : 'dimmed'}>
-                  {dayNames[index]}{isToday ? ' • Hoje' : ''}
+                  {dayNames[index]}
                 </Text>
 
                 <Box
