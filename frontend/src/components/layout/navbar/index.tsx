@@ -1,19 +1,12 @@
-import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton } from '@mantine/core'
+import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton, Tooltip } from '@mantine/core'
 import { TbLogout, TbStack2, TbUser, TbChevronDown } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
 import useAuthStore from '@stores/auth'
-import Badge from '@components/ui/badge'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
-
-  const getRoleLabel = () => {
-    if (!user) return ''
-    if (user.superAdmin) return 'Administrador'
-    return 'Usuário'
-  }
 
   const getInitials = (name?: string) => {
     if (!name) return 'U'
@@ -21,6 +14,10 @@ export const Navbar = () => {
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase()
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
   }
+
+  const isAdmin = Boolean(user?.superAdmin)
+  const avatarBorderColor = isAdmin ? '#f59e0b' : '#ffffff'
+  const roleTooltipLabel = isAdmin ? 'Administrador' : 'Usuário'
 
   return (
     <Box
@@ -68,20 +65,23 @@ export const Navbar = () => {
                   transition: 'background-color 0.15s ease'
                 }}
               >
-                <Group gap="xs">
-                  <Avatar radius="xl" size="sm" color="indigo">
-                    {getInitials(user.name)}
-                  </Avatar>
-                  <Box>
-                    <Text size="sm" fw={600} lh={1.2} c="white">
-                      {user.name}
-                    </Text>
-                    <Box mt={2}>
-                      <Badge variant={user.superAdmin ? 'primary' : 'info'}>
-                        {getRoleLabel()}
-                      </Badge>
-                    </Box>
-                  </Box>
+                <Group gap="sm" align="center">
+                  <Tooltip label={roleTooltipLabel} withArrow position="bottom">
+                    <Avatar
+                      radius="xl"
+                      size="sm"
+                      color="indigo"
+                      style={{
+                        border: `2px solid ${avatarBorderColor}`,
+                        boxShadow: isAdmin ? '0 0 8px rgba(245, 158, 11, 0.4)' : undefined
+                      }}
+                    >
+                      {getInitials(user.name)}
+                    </Avatar>
+                  </Tooltip>
+                  <Text size="sm" fw={600} c="white">
+                    {user.name}
+                  </Text>
                   <TbChevronDown size={14} color="rgba(255, 255, 255, 0.5)" />
                 </Group>
               </UnstyledButton>
