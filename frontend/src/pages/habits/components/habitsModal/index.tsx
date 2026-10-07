@@ -1,4 +1,4 @@
-import { Modal, Stack, Group, Text, TextInput, Textarea, Box, SegmentedControl } from '@mantine/core'
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton } from '@mantine/core'
 import { useState, useEffect } from 'react'
 import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from 'react-icons/tb'
 
@@ -17,26 +17,66 @@ const getTodayString = (): string => {
   return `${yyyy}-${mm}-${dd}`
 }
 
-const itemTypeOptions: { value: HabitCategory; label: string; icon: typeof TbRepeat; desc: string }[] = [
-  {
+interface ItemTypeConfig {
+  value: HabitCategory
+  label: string
+  titleNew: string
+  titleEdit: string
+  nameLabel: string
+  namePlaceholder: string
+  submitText: string
+  icon: typeof TbRepeat
+  desc: string
+}
+
+const itemTypeConfigs: Record<HabitCategory, ItemTypeConfig> = {
+  habit: {
     value: 'habit',
     label: 'Hábito',
+    titleNew: 'Novo Hábito',
+    titleEdit: 'Editar Hábito',
+    nameLabel: 'Nome do hábito',
+    namePlaceholder: 'Ex: Meditar 15 min, Ler 20 páginas, Treino diário...',
+    submitText: 'Criar Hábito',
     icon: TbRepeat,
     desc: 'Atividades frequentes para construir consistência e rotina'
   },
-  {
+  task: {
     value: 'task',
     label: 'Tarefa',
+    titleNew: 'Nova Tarefa',
+    titleEdit: 'Editar Tarefa',
+    nameLabel: 'Título da tarefa',
+    namePlaceholder: 'Ex: Enviar relatório trimestral, Pagar fatura do cartão...',
+    submitText: 'Criar Tarefa',
     icon: TbChecklist,
-    desc: 'Itens e pendências a serem concluídos'
+    desc: 'Itens e pendências pontuais a serem concluídos'
   },
-  {
+  schedule: {
     value: 'schedule',
     label: 'Agenda',
+    titleNew: 'Novo Compromisso',
+    titleEdit: 'Editar Compromisso',
+    nameLabel: 'Título do compromisso',
+    namePlaceholder: 'Ex: Reunião com diretoria, Consulta médica, Alinhamento...',
+    submitText: 'Criar Compromisso',
+    icon: TbCalendarTime,
+    desc: 'Compromissos, reuniões e eventos com horário definido'
+  },
+  event: {
+    value: 'event',
+    label: 'Agenda',
+    titleNew: 'Novo Compromisso',
+    titleEdit: 'Editar Compromisso',
+    nameLabel: 'Título do compromisso',
+    namePlaceholder: 'Ex: Reunião com diretoria, Consulta médica, Alinhamento...',
+    submitText: 'Criar Compromisso',
     icon: TbCalendarTime,
     desc: 'Compromissos, reuniões e eventos com horário definido'
   }
-]
+}
+
+const availableCategories: HabitCategory[] = ['habit', 'task', 'schedule']
 
 export const HabitsModal = ({
   isOpen,
@@ -118,7 +158,7 @@ export const HabitsModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) {
-      setError(`Informe o título ${category === 'habit' ? 'do hábito' : category === 'task' ? 'da tarefa' : 'do compromisso'}`)
+      setError(`Informe o ${category === 'habit' ? 'nome do hábito' : category === 'task' ? 'título da tarefa' : 'título do compromisso'}`)
       return
     }
 
@@ -148,7 +188,7 @@ export const HabitsModal = ({
     handleClose()
   }
 
-  const currentTypeInfo = itemTypeOptions.find((t) => t.value === category) || itemTypeOptions[0]
+  const currentType = itemTypeConfigs[category] || itemTypeConfigs.habit
 
   return (
     <Modal
@@ -157,10 +197,10 @@ export const HabitsModal = ({
       title={
         <Box>
           <Text fw={600} size="lg" c="white">
-            {initialHabit ? `Editar ${currentTypeInfo.label}` : `Novo ${currentTypeInfo.label}`}
+            {initialHabit ? currentType.titleEdit : currentType.titleNew}
           </Text>
           <Text size="xs" c="dimmed">
-            {currentTypeInfo.desc}
+            {currentType.desc}
           </Text>
         </Box>
       }
@@ -173,110 +213,88 @@ export const HabitsModal = ({
           border: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.7)',
           color: '#e5e7eb',
-          padding: '20px 24px'
+          padding: '22px 26px'
         },
         header: {
           backgroundColor: '#161922',
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           paddingBottom: 16,
-          marginBottom: 16
+          marginBottom: 18
         }
       }}
     >
       <form onSubmit={handleSubmit}>
-        <Stack gap="lg">
-          {/* Seletor de Tipo de Item: Hábito / Tarefa / Agenda */}
+        <Stack gap="md">
+          {/* Seletor de Tipo de Item: Hábito / Tarefa / Agenda (Minimalista e Harmonioso) */}
           <Box>
             <Text size="xs" fw={500} c="#d1d5db" mb={6}>
               Tipo de item
             </Text>
-            <SegmentedControl
-              value={category}
-              onChange={(val) => handleCategoryChange(val as HabitCategory)}
-              fullWidth
-              size="sm"
-              radius="md"
-              data={[
-                {
-                  value: 'habit',
-                  label: (
-                    <Group gap={6} justify="center" wrap="nowrap">
-                      <TbRepeat size={16} />
-                      <Text size="13px" fw={600}>Hábito</Text>
-                    </Group>
-                  )
-                },
-                {
-                  value: 'task',
-                  label: (
-                    <Group gap={6} justify="center" wrap="nowrap">
-                      <TbChecklist size={16} />
-                      <Text size="13px" fw={600}>Tarefa</Text>
-                    </Group>
-                  )
-                },
-                {
-                  value: 'schedule',
-                  label: (
-                    <Group gap={6} justify="center" wrap="nowrap">
-                      <TbCalendarTime size={16} />
-                      <Text size="13px" fw={600}>Agenda</Text>
-                    </Group>
-                  )
-                }
-              ]}
-              styles={{
-                root: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: 4
-                },
-                indicator: {
-                  backgroundColor: '#6366f1',
-                  boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)'
-                },
-                label: {
-                  color: '#9ca3af',
-                  transition: 'color 0.15s ease',
-                  '&[data-active]': {
-                    color: '#ffffff'
-                  }
-                }
+            <Box
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 4,
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.07)',
+                borderRadius: 10,
+                padding: 3
               }}
-            />
+            >
+              {availableCategories.map((key) => {
+                const item = itemTypeConfigs[key]
+                const isSelected = item.value === category
+                const IconComponent = item.icon
+                return (
+                  <UnstyledButton
+                    key={item.value}
+                    type="button"
+                    onClick={() => handleCategoryChange(item.value)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      height: 38,
+                      borderRadius: 8,
+                      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
+                      border: isSelected ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid transparent',
+                      color: isSelected ? '#ffffff' : '#9ca3af',
+                      boxShadow: isSelected ? '0 2px 6px rgba(0, 0, 0, 0.25)' : 'none',
+                      fontWeight: isSelected ? 600 : 500,
+                      fontSize: 13,
+                      transition: 'all 0.15s ease',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <IconComponent size={16} color={isSelected ? '#a5b4fc' : '#6b7280'} />
+                    <span>{item.label}</span>
+                  </UnstyledButton>
+                )
+              })}
+            </Box>
           </Box>
 
           {/* Título do Item */}
           <Box>
             <TextInput
-              label={
-                category === 'habit'
-                  ? 'Nome do hábito'
-                  : category === 'task'
-                    ? 'Título da tarefa'
-                    : 'Título do compromisso'
-              }
-              placeholder={
-                category === 'habit'
-                  ? 'Ex: Meditar 15 min, Ler 20 páginas, Treino de musculação...'
-                  : category === 'task'
-                    ? 'Ex: Enviar relatório trimestral, Pagar fatura do cartão...'
-                    : 'Ex: Reunião com diretoria, Consulta médica, Alinhamento de projeto...'
-              }
+              label={currentType.nameLabel}
+              placeholder={currentType.namePlaceholder}
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value)
                 if (error) setError('')
               }}
               error={error}
-              size="md"
+              size="sm"
               required
               styles={{
                 input: {
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: error ? '#ef4444' : 'rgba(255, 255, 255, 0.1)',
+                  borderColor: error ? '#ef4444' : 'rgba(255, 255, 255, 0.08)',
                   color: '#ffffff',
-                  fontSize: 15,
+                  fontSize: 14,
+                  height: 42,
                   borderRadius: 10,
                   '&:focus': {
                     borderColor: '#6366f1'
@@ -292,7 +310,7 @@ export const HabitsModal = ({
             />
           </Box>
 
-          {/* Data de Início e Regras de Repetição (estilo Google Calendar) */}
+          {/* Bloco Temporal: Data e Repetição (50% / 50%) */}
           <Group grow align="flex-start" gap="md">
             <Box>
               <TextInput
@@ -305,11 +323,12 @@ export const HabitsModal = ({
                 styles={{
                   input: {
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
                     color: '#ffffff',
                     fontSize: 14,
                     height: 42,
-                    borderRadius: 10
+                    borderRadius: 10,
+                    colorScheme: 'dark'
                   },
                   label: {
                     color: '#d1d5db',
@@ -330,7 +349,7 @@ export const HabitsModal = ({
             </Box>
           </Group>
 
-          {/* Horários com cálculo de duração relativa (Imagem 1) */}
+          {/* Bloco Temporal: Horários (Início 50% / Término 50% ou Dia Inteiro) */}
           <TimeRangePicker
             allDay={allDay}
             onAllDayChange={setAllDay}
@@ -344,7 +363,7 @@ export const HabitsModal = ({
           <Box>
             <Textarea
               label="Descrição ou observações (opcional)"
-              placeholder="Adicione detalhes, links, notas ou metas numéricas..."
+              placeholder="Adicione detalhes, notas ou metas adicionais..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               minRows={2}
@@ -353,7 +372,7 @@ export const HabitsModal = ({
               styles={{
                 input: {
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
                   color: '#e5e7eb',
                   fontSize: 14,
                   borderRadius: 10
@@ -401,11 +420,11 @@ export const HabitsModal = ({
                 style={{
                   borderRadius: 10,
                   fontWeight: 600,
-                  paddingLeft: 24,
-                  paddingRight: 24
+                  paddingLeft: 22,
+                  paddingRight: 22
                 }}
               >
-                {initialHabit ? 'Salvar alterações' : `Criar ${currentTypeInfo.label}`}
+                {initialHabit ? 'Salvar alterações' : currentType.submitText}
               </Button>
             </Group>
           </Group>
