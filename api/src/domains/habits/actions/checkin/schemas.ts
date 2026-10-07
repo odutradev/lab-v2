@@ -29,8 +29,8 @@ export const daySummaryItemSchema = registry.register('DaySummaryItem', z.object
   frequency: z.enum(['daily', 'weekly', 'monthly', 'custom', 'none']).optional(),
   startDate: z.string().optional(),
   allDay: z.boolean().optional(),
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
+  startTime: z.string().optional().nullable(),
+  endTime: z.string().optional().nullable(),
   completed: z.boolean()
 }))
 

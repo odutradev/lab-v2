@@ -298,25 +298,6 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     setIsCreating(true)
     try {
       if (editingHabit) {
-        const isRecurring = Boolean(
-          editingHabit.recurrence && editingHabit.recurrence.type && editingHabit.recurrence.type !== 'none'
-        )
-
-        if (isRecurring) {
-          // Abre diálogo de confirmação de escopo para eventos recorrentes
-          setIsModalOpen(false)
-          setPendingScopeAction({
-            type: 'edit',
-            habitId: editingHabit.id,
-            date: selectedDate,
-            payload: data
-          })
-          setScopeActionType('edit')
-          setIsScopeModalOpen(true)
-          return
-        }
-
-        // Evento não-recorrente: salva direto
         await updateHabitAction(editingHabit.id, {
           title: data.title,
           description: data.description,
@@ -324,8 +305,8 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           frequency: data.frequency,
           startDate: data.startDate,
           allDay: data.allDay,
-          startTime: data.startTime,
-          endTime: data.endTime,
+          startTime: data.startTime !== undefined ? data.startTime : null,
+          endTime: data.endTime !== undefined ? data.endTime : null,
           recurrence: data.recurrence,
           mode: 'all'
         })
@@ -340,8 +321,8 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           frequency: data.frequency,
           startDate: data.startDate,
           allDay: data.allDay,
-          startTime: data.startTime,
-          endTime: data.endTime,
+          startTime: data.startTime ?? undefined,
+          endTime: data.endTime ?? undefined,
           recurrence: data.recurrence
         })
         showToast('Meta criada com sucesso!', 'success')
@@ -414,8 +395,8 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           frequency: payload.frequency,
           startDate: payload.startDate,
           allDay: payload.allDay,
-          startTime: payload.startTime,
-          endTime: payload.endTime,
+          startTime: payload.startTime !== undefined ? payload.startTime : null,
+          endTime: payload.endTime !== undefined ? payload.endTime : null,
           recurrence: payload.recurrence,
           mode,
           date: pendingScopeAction.date

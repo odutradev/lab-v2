@@ -7,8 +7,8 @@ export interface CreateHabitFormData {
   frequency?: HabitFrequency
   startDate: string
   allDay: boolean
-  startTime?: string
-  endTime?: string
+  startTime?: string | null
+  endTime?: string | null
   recurrence?: HabitRecurrence
 }
 

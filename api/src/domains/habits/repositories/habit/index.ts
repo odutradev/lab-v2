@@ -5,20 +5,22 @@ import type { HabitModelType, CreateHabitPayload, UpdateHabitPayload, ListHabits
 
 const habitRepository = {
   create: async (payload: CreateHabitPayload): Promise<HabitModelType> => {
-    return HabitModel.create({
+    const hasTime = Boolean(payload.startTime && payload.startTime.trim())
+    const created = await HabitModel.create({
       userId: toObjectId(payload.userId),
       title: payload.title,
       description: payload.description,
       category: payload.category || 'event',
       frequency: payload.frequency || 'daily',
       startDate: payload.startDate,
-      allDay: payload.allDay ?? (!payload.startTime),
-      startTime: payload.startTime,
-      endTime: payload.endTime,
+      allDay: payload.allDay !== undefined ? payload.allDay : !hasTime,
+      startTime: hasTime ? payload.startTime?.trim() : undefined,
+      endTime: hasTime && payload.endTime ? payload.endTime.trim() : undefined,
       recurrence: payload.recurrence,
       excludedDates: payload.excludedDates || [],
       active: true
     })
+    return { ...created.toObject(), id: created._id.toString() } as unknown as HabitModelType
   },
   findById: async (id: string): Promise<HabitModelType | null> => {
     const habit = await HabitModel.findById(id).lean()
@@ -40,9 +42,26 @@ const habitRepository = {
     return habits.map((habit) => ({ ...habit, id: habit._id.toString() })) as unknown as HabitModelType[]
   },
   update: async (id: string, userId: string, payload: UpdateHabitPayload): Promise<HabitModelType | null> => {
+    const updateData: Record<string, unknown> = { ...payload }
+
+    if (payload.startTime !== undefined) {
+      if (payload.startTime && payload.startTime.trim()) {
+        updateData.startTime = payload.startTime.trim()
+        updateData.allDay = payload.allDay !== undefined ? payload.allDay : false
+      } else {
+        updateData.startTime = null
+        updateData.endTime = null
+        updateData.allDay = true
+      }
+    }
+
+    if (payload.endTime !== undefined) {
+      updateData.endTime = payload.endTime && payload.endTime.trim() ? payload.endTime.trim() : null
+    }
+
     const habit = await HabitModel.findOneAndUpdate(
       { _id: toObjectId(id), userId: toObjectId(userId) },
-      payload,
+      updateData,
       { new: true }
     ).lean()
     if (!habit) return null

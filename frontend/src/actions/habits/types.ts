@@ -22,8 +22,8 @@ export interface Habit {
   frequency: HabitFrequency
   startDate?: string
   allDay?: boolean
-  startTime?: string
-  endTime?: string
+  startTime?: string | null
+  endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
   active: boolean
@@ -38,8 +38,8 @@ export interface CreateHabitPayload {
   frequency?: HabitFrequency
   startDate?: string
   allDay?: boolean
-  startTime?: string
-  endTime?: string
+  startTime?: string | null
+  endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
 }
@@ -51,8 +51,8 @@ export interface UpdateHabitPayload {
   frequency?: HabitFrequency
   startDate?: string
   allDay?: boolean
-  startTime?: string
-  endTime?: string
+  startTime?: string | null
+  endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
   active?: boolean
@@ -96,8 +96,8 @@ export interface DaySummaryItem {
   frequency?: HabitFrequency
   startDate?: string
   allDay?: boolean
-  startTime?: string
-  endTime?: string
+  startTime?: string | null
+  endTime?: string | null
   completed: boolean
 }
 

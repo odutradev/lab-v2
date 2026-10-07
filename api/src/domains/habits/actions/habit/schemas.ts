@@ -24,8 +24,8 @@ export const habitResponseSchema = registry.register('HabitResponse', z.object({
   frequency: z.enum(['daily', 'weekly', 'monthly', 'custom', 'none']),
   startDate: z.string().optional(),
   allDay: z.boolean().optional(),
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
+  startTime: z.string().optional().nullable(),
+  endTime: z.string().optional().nullable(),
   recurrence: habitRecurrenceSchema.optional(),
   excludedDates: z.array(z.string()).optional(),
   active: z.boolean(),
@@ -35,10 +35,18 @@ export const habitResponseSchema = registry.register('HabitResponse', z.object({
 
 export const listHabitsResponseSchema = registry.register('ListHabitsResponse', z.array(habitResponseSchema))
 
-const optionalTimeSchema = z.preprocess(
-  (val) => (val === '' || val === null ? undefined : val),
-  z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Invalid time format (HH:mm)').optional()
-)
+const optionalTimeSchema = z.preprocess((val) => {
+  if (val === '' || val === null || val === undefined) return undefined
+  if (typeof val === 'string') {
+    const trimmed = val.trim()
+    if (!trimmed) return undefined
+    if (/^\d:[0-5]\d$/.test(trimmed)) {
+      return `0${trimmed}`
+    }
+    return trimmed
+  }
+  return val
+}, z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Invalid time format (HH:mm)').optional().nullable())
 
 export const createHabitBodySchema = registry.register('CreateHabitBody', z.object({
   title: z.string().min(1, 'Title is required').max(120),

@@ -131,8 +131,8 @@ export const HabitsModal = ({
             }
           : { type: 'monthly', interval: 1 }
 
-    const cleanStartTime = startTime && startTime.trim() ? startTime.trim() : undefined
-    const cleanEndTime = endTime && endTime.trim() ? endTime.trim() : undefined
+    const cleanStartTime = startTime && startTime.trim() ? startTime.trim() : null
+    const cleanEndTime = endTime && endTime.trim() ? endTime.trim() : null
 
     await onSubmit({
       title: title.trim(),
@@ -349,6 +349,7 @@ export const HabitsModal = ({
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     color: '#ffffff',
+                    colorScheme: 'dark',
                     fontSize: 14,
                     borderRadius: 10
                   },
@@ -374,6 +375,7 @@ export const HabitsModal = ({
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     color: '#ffffff',
+                    colorScheme: 'dark',
                     fontSize: 14,
                     borderRadius: 10
                   },
