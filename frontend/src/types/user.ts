@@ -10,6 +10,7 @@ export interface UserProfile {
     googleCalendar?: {
       connected: boolean
       email?: string
+      calendarId?: string
       connectedAt?: string
     }
   }

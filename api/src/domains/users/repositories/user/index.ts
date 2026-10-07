@@ -98,7 +98,7 @@ const userRepository = {
   },
   updateGoogleCalendarIntegration: async (
     id: string,
-    data: { connected: boolean; email?: string; refreshToken?: string; connectedAt?: Date }
+    data: { connected: boolean; email?: string; refreshToken?: string; calendarId?: string; connectedAt?: Date }
   ): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(
       id,

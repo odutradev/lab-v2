@@ -16,6 +16,7 @@ const userSchema = new Schema<UserDocument>(
         connected: { type: Boolean, default: false },
         email: { type: String, required: false },
         refreshToken: { type: String, required: false, select: false },
+        calendarId: { type: String, required: false },
         connectedAt: { type: Date, required: false }
       }
     }

@@ -17,6 +17,7 @@ export const profileResponseSchema = registry.register('ProfileResponse', z.obje
     googleCalendar: z.object({
       connected: z.boolean(),
       email: z.string().optional(),
+      calendarId: z.string().optional(),
       connectedAt: z.date().optional()
     }).optional()
   }).optional(),
