@@ -1,29 +1,25 @@
 import 'dotenv/config'
 import mongoose from 'mongoose'
 
+import connectMongoose from '@database/connect'
 import { UserModel } from '@domains/users/repositories/user/model'
 
 const makeSuperAdmin = async (): Promise<void> => {
-  const email = process.argv[2]
+  const rawEmail = process.argv[2]
 
-  if (!email) {
+  if (!rawEmail) {
     console.error('Error: Please provide the user email as a parameter.')
-    console.info('Usage: npx tsx scripts/makeSuperAdmin.ts <email>')
+    console.info('Usage: npm run make:superadmin <email> or npx tsx scripts/makeSuperAdmin.ts <email>')
     process.exit(1)
   }
 
+  const email = rawEmail.trim()
+
   try {
-    const mongoUri = process.env.MONGO_URI || process.env.MONGOURI
-
-    if (!mongoUri) {
-      console.error('Error: MONGO_URI is missing in your environment variables.')
-      process.exit(1)
-    }
-
-    await mongoose.connect(mongoUri)
+    await connectMongoose()
 
     const user = await UserModel.findOneAndUpdate(
-      { email },
+      { email: { $regex: new RegExp(`^${email}$`, 'i') } },
       { superAdmin: true },
       { new: true }
     )
