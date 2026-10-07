@@ -17,14 +17,20 @@ export const RecurringScopeModal = ({
 
   const title = actionType === 'delete' ? 'Excluir meta recorrente' : 'Editar meta recorrente'
 
+  const handleClose = () => {
+    setSelectedMode('this')
+    onClose()
+  }
+
   const handleConfirm = () => {
     onConfirm(selectedMode)
+    setSelectedMode('this')
   }
 
   return (
     <Modal
       opened={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={title}
       centered
       radius="lg"

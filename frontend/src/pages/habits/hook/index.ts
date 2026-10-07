@@ -295,9 +295,30 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
   }
 
   const handleSaveHabit = async (data: CreateHabitFormData) => {
-    setIsCreating(true)
-    try {
-      if (editingHabit) {
+    if (editingHabit) {
+      const habit = habits.find((h) => h.id === editingHabit.id) || editingHabit
+      const isRecurring = Boolean(
+        (habit?.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none') ||
+        (habit?.frequency && habit.frequency !== 'none')
+      )
+
+      if (isRecurring) {
+        if (isModalOpen) {
+          setIsModalOpen(false)
+        }
+        setPendingScopeAction({
+          type: 'edit',
+          habitId: editingHabit.id,
+          date: selectedDate,
+          payload: data
+        })
+        setScopeActionType('edit')
+        setIsScopeModalOpen(true)
+        return
+      }
+
+      setIsCreating(true)
+      try {
         await updateHabitAction(editingHabit.id, {
           title: data.title,
           description: data.description,
@@ -313,22 +334,35 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
         showToast('Meta atualizada com sucesso!', 'success')
         await reloadData(visibleRange.startDate, visibleRange.endDate)
         handleCloseModal()
-      } else {
-        await createHabitAction({
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          frequency: data.frequency,
-          startDate: data.startDate,
-          allDay: data.allDay,
-          startTime: data.startTime ?? undefined,
-          endTime: data.endTime ?? undefined,
-          recurrence: data.recurrence
-        })
-        showToast('Meta criada com sucesso!', 'success')
-        await reloadData(visibleRange.startDate, visibleRange.endDate)
-        handleCloseModal()
+      } catch (err: unknown) {
+        const errorMessage =
+          (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
+            ?.response?.data?.details?.[0]?.message ||
+          (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Erro ao salvar a meta. Verifique os dados.'
+        showToast(errorMessage, 'error')
+      } finally {
+        setIsCreating(false)
       }
+      return
+    }
+
+    setIsCreating(true)
+    try {
+      await createHabitAction({
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        frequency: data.frequency,
+        startDate: data.startDate,
+        allDay: data.allDay,
+        startTime: data.startTime ?? undefined,
+        endTime: data.endTime ?? undefined,
+        recurrence: data.recurrence
+      })
+      showToast('Meta criada com sucesso!', 'success')
+      await reloadData(visibleRange.startDate, visibleRange.endDate)
+      handleCloseModal()
     } catch (err: unknown) {
       const errorMessage =
         (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
@@ -345,7 +379,8 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     const targetDate = date || selectedDate
     const habit = habits.find((h) => h.id === habitId) || editingHabit
     const isRecurring = Boolean(
-      habit?.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none'
+      (habit?.recurrence && habit.recurrence.type && habit.recurrence.type !== 'none') ||
+      (habit?.frequency && habit.frequency !== 'none')
     )
 
     if (isRecurring) {
@@ -392,12 +427,12 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           title: payload.title,
           description: payload.description,
           category: payload.category,
-          frequency: payload.frequency,
-          startDate: payload.startDate,
+          frequency: mode === 'this' ? 'none' : payload.frequency,
+          startDate: mode === 'all' ? payload.startDate : pendingScopeAction.date,
           allDay: payload.allDay,
           startTime: payload.startTime !== undefined ? payload.startTime : null,
           endTime: payload.endTime !== undefined ? payload.endTime : null,
-          recurrence: payload.recurrence,
+          recurrence: mode === 'this' ? { type: 'none' } : payload.recurrence,
           mode,
           date: pendingScopeAction.date
         })
@@ -407,8 +442,13 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
       await reloadData(visibleRange.startDate, visibleRange.endDate)
       handleCloseScopeModal()
       handleCloseModal()
-    } catch {
-      showToast('Não foi possível processar a ação.', 'error')
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
+          ?.response?.data?.details?.[0]?.message ||
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Não foi possível processar a ação.'
+      showToast(errorMessage, 'error')
     } finally {
       setIsCreating(false)
     }
