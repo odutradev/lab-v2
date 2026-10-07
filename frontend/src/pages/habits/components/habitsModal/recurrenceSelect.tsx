@@ -211,7 +211,7 @@ export const RecurrenceSelect = ({
         <Popover.Dropdown
           p={6}
           style={{
-            backgroundColor: '#1e1f20',
+            backgroundColor: '#1c1f26',
             border: '1px solid rgba(255, 255, 255, 0.12)',
             borderRadius: 8,
             boxShadow: '0 16px 36px rgba(0, 0, 0, 0.7)',
@@ -226,11 +226,11 @@ export const RecurrenceSelect = ({
                   key={opt.id}
                   onClick={() => handleSelectPreset(opt.recurrence)}
                   px="md"
-                  py={9}
+                  py={8}
                   style={{
                     borderRadius: 6,
                     cursor: 'pointer',
-                    backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                    backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
                     color: isSelected ? '#ffffff' : '#d1d5db',
                     fontSize: 13,
                     fontWeight: isSelected ? 600 : 400,
@@ -259,15 +259,18 @@ export const RecurrenceSelect = ({
             <Box
               onClick={handleOpenCustom}
               px="md"
-              py={9}
+              py={8}
               style={{
                 borderRadius: 6,
                 cursor: 'pointer',
-                backgroundColor: recurrence?.type === 'custom' ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                backgroundColor: recurrence?.type === 'custom' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
                 color: recurrence?.type === 'custom' ? '#818cf8' : '#d1d5db',
                 fontSize: 13,
                 fontWeight: 500,
-                transition: 'background-color 0.1s ease'
+                transition: 'background-color 0.1s ease',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                }
               }}
             >
               <Group justify="space-between" align="center">
