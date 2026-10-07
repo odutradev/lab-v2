@@ -28,6 +28,7 @@ export const habitResponseSchema = registry.register('HabitResponse', z.object({
   endTime: z.string().optional().nullable(),
   recurrence: habitRecurrenceSchema.optional(),
   excludedDates: z.array(z.string()).optional(),
+  googleEventId: z.string().optional().nullable(),
   active: z.boolean(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional()

@@ -237,12 +237,61 @@ export const createCalendarEvent = async (
         summary: event.summary,
         description: event.description,
         start: event.start,
-        end: event.end
+        end: event.end,
+        recurrence: event.recurrence
       }
     })
     return response.data.id || null
   } catch (error) {
     logger.error('Failed to create calendar event:', error)
     throw error
+  }
+}
+
+export const updateCalendarEvent = async (
+  refreshToken: string,
+  calendarId: string,
+  eventId: string,
+  event: GoogleCalendarEventInput
+): Promise<string | null> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    const response = await calendar.events.update({
+      calendarId,
+      eventId,
+      requestBody: {
+        summary: event.summary,
+        description: event.description,
+        start: event.start,
+        end: event.end,
+        recurrence: event.recurrence
+      }
+    })
+    return response.data.id || null
+  } catch (error) {
+    logger.error(`Failed to update calendar event "${eventId}":`, error)
+    throw error
+  }
+}
+
+export const deleteCalendarEvent = async (
+  refreshToken: string,
+  calendarId: string,
+  eventId: string
+): Promise<boolean> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    await calendar.events.delete({
+      calendarId,
+      eventId
+    })
+    return true
+  } catch (error: unknown) {
+    const status = (error as { status?: number; code?: number })?.status || (error as { status?: number; code?: number })?.code
+    if (status === 404 || status === 410) {
+      return true
+    }
+    logger.error(`Failed to delete calendar event "${eventId}":`, error)
+    return false
   }
 }

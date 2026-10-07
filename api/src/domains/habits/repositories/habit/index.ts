@@ -18,6 +18,7 @@ const habitRepository = {
       endTime: hasTime && payload.endTime ? payload.endTime.trim() : undefined,
       recurrence: payload.recurrence,
       excludedDates: payload.excludedDates || [],
+      googleEventId: payload.googleEventId || undefined,
       active: true
     })
     return { ...created.toObject(), id: created._id.toString() } as unknown as HabitModelType

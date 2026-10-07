@@ -22,6 +22,7 @@ import {
   checkGoogleCalendarStatus
 } from '@google/utils'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
+import { syncAllUserHabitsToGoogle } from '@domains/habits/utils/googleSync'
 import userRepository from '@domains/users/repositories/user'
 import authMiddleware from '@domains/users/middlewares/auth'
 import createLocalLogger from '@utils/localLogger'
@@ -156,6 +157,10 @@ const handleOAuthCallback = async ({
       entityId: statePayload.userId,
       summary: `Google Calendar conectado (${googleEmail || 'email não identificado'}) com agenda "${labCalendarName || 'Lab V2'}" (${labCalendarId || 'id não gerado'})`
     })
+
+    if (statePayload.userId) {
+      await syncAllUserHabitsToGoogle(statePayload.userId)
+    }
 
     defaultExpress.res.redirect(`${frontendUrl}/profile?google=connected`)
   } catch (err) {
@@ -463,6 +468,8 @@ export const recreateCalendarAction = defineAction<
       entityId: ids.userId,
       summary: `Agenda Google Calendar recriada com sucesso: "${newCalendar.summary}" (${newCalendar.id})`
     })
+
+    await syncAllUserHabitsToGoogle(ids.userId)
 
     const calendarUrl = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(newCalendar.id)}`
 

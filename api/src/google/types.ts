@@ -28,6 +28,7 @@ export interface GoogleCalendarEventInput {
     date?: string
     timeZone?: string
   }
+  recurrence?: string[]
 }
 
 export type GoogleCalendarInstance = calendar_v3.Calendar

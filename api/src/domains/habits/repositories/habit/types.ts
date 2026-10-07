@@ -25,6 +25,7 @@ export interface Habit {
   endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
+  googleEventId?: string | null
   active: boolean
 }
 
@@ -47,6 +48,7 @@ export type CreateHabitPayload = {
   endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
+  googleEventId?: string | null
 }
 
 export type UpdateHabitPayload = {
@@ -60,6 +62,7 @@ export type UpdateHabitPayload = {
   endTime?: string | null
   recurrence?: HabitRecurrence
   excludedDates?: string[]
+  googleEventId?: string | null
   active?: boolean
 }
 

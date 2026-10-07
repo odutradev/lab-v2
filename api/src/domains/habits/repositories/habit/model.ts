@@ -28,6 +28,7 @@ const habitSchema = new Schema<HabitDocument>(
     endTime: { type: String, required: false },
     recurrence: { type: recurrenceSchema, required: false },
     excludedDates: { type: [String], default: [] },
+    googleEventId: { type: String, required: false },
     active: { type: Boolean, default: true, required: true }
   },
   {

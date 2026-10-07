@@ -1,4 +1,5 @@
 import { removeHabitQuerySchema, habitActionSuccessResponseSchema, listHabitsResponseSchema, scheduleHabitBodySchema, removeHabitParamsSchema, updateHabitParamsSchema, updateHabitBodySchema, createHabitBodySchema, habitResponseSchema } from '@domains/habits/actions/habit/schemas'
+import { syncHabitToGoogle, removeHabitFromGoogle } from '@domains/habits/utils/googleSync'
 import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import habitRepository from '@domains/habits/repositories/habit'
@@ -62,6 +63,8 @@ export const createHabitAction = defineAction(
       summary: 'Hábito criado pelo usuário.',
       details: { title, frequency, category, startTime, recurrence }
     })
+
+    await syncHabitToGoogle(ids.userId, createdHabit)
 
     return createdHabit
   }
@@ -175,6 +178,8 @@ export const updateHabitAction = defineAction(
         details: { parentHabitId: id, date }
       })
 
+      await syncHabitToGoogle(ids.userId, createdSingleInstance)
+
       return createdSingleInstance
     }
 
@@ -189,6 +194,7 @@ export const updateHabitAction = defineAction(
       if (habit.startDate && habit.startDate >= date) {
         // Se a série original inicia nesta data ou depois, apenas atualiza
         const updated = await habitRepository.update(id, ids.userId, updatePayload)
+        if (updated) await syncHabitToGoogle(ids.userId, updated)
         return updated
       } else {
         // 1. Encerra a série original no dia anterior
@@ -235,6 +241,10 @@ export const updateHabitAction = defineAction(
           details: { parentHabitId: id, splitDate: date }
         })
 
+        const oldUpdated = await habitRepository.findByIdAndUser(id, ids.userId)
+        if (oldUpdated) await syncHabitToGoogle(ids.userId, oldUpdated)
+        await syncHabitToGoogle(ids.userId, createdNewSeries)
+
         return createdNewSeries
       }
     }
@@ -251,6 +261,8 @@ export const updateHabitAction = defineAction(
       summary: 'Hábito atualizado pelo usuário.',
       details: updatePayload
     })
+
+    await syncHabitToGoogle(ids.userId, updated)
 
     return updated
   }
@@ -329,6 +341,7 @@ export const removeHabitAction = defineAction(
         // Se começava nesta data ou depois, exclui tudo
         await habitRepository.delete(id, ids.userId)
         await habitCheckinRepository.deleteByHabitId(id)
+        await removeHabitFromGoogle(ids.userId, habit.googleEventId)
       } else {
         await habitRepository.update(id, ids.userId, {
           recurrence: {
@@ -338,6 +351,8 @@ export const removeHabitAction = defineAction(
           }
         })
         await habitCheckinRepository.deleteByUserHabitAndDateFrom(ids.userId, id, date)
+        const updated = await habitRepository.findByIdAndUser(id, ids.userId)
+        if (updated) await syncHabitToGoogle(ids.userId, updated)
       }
 
       await createAuditLog({
@@ -357,6 +372,7 @@ export const removeHabitAction = defineAction(
     if (!removed) return manageError({ code: 'not_found' })
 
     await habitCheckinRepository.deleteByHabitId(id)
+    await removeHabitFromGoogle(ids.userId, habit.googleEventId)
 
     await createAuditLog({
       actorId: ids.userId,
