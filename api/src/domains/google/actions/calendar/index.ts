@@ -267,13 +267,14 @@ export const disconnectCalendarAction = defineAction<
       }
     }
   },
-  async ({ ids, body, manageError }) => {
+  async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
+    const payload = data as DisconnectCalendarBody | undefined
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
     const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
     const calendarId = userWithToken?.integrations?.googleCalendar?.calendarId
-    const shouldDelete = !!body?.deleteCalendar
+    const shouldDelete = !!payload?.deleteCalendar
     let calendarDeleted = false
 
     if (shouldDelete && refreshToken && calendarId) {
@@ -341,8 +342,13 @@ export const updateCalendarNameAction = defineAction<
       }
     }
   },
-  async ({ ids, body, manageError }) => {
+  async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const payload = data as UpdateCalendarNameBody | undefined
+    if (!payload?.name?.trim()) {
+      return manageError({ code: 'bad_request', message: 'O nome da agenda é obrigatório' })
+    }
 
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
     if (!userWithToken?.integrations?.googleCalendar?.connected || !userWithToken.integrations.googleCalendar.calendarId) {
@@ -350,11 +356,19 @@ export const updateCalendarNameAction = defineAction<
     }
 
     const { refreshToken, calendarId } = userWithToken.integrations.googleCalendar
-    const newName = body.name.trim()
+    const newName = payload.name.trim()
 
     let updatedSummary = newName
     if (refreshToken) {
-      updatedSummary = await updateGoogleCalendarSummary(refreshToken, calendarId, newName)
+      try {
+        updatedSummary = await updateGoogleCalendarSummary(refreshToken, calendarId, newName)
+      } catch (error) {
+        logger.error('Error updating Google Calendar name on Google API:', error)
+        return manageError({
+          code: 'bad_request',
+          message: 'Não foi possível alterar o nome da agenda no Google Calendar'
+        })
+      }
     }
 
     await userRepository.updateGoogleCalendarName(ids.userId, updatedSummary)

@@ -137,16 +137,28 @@ export const updateGoogleCalendarSummary = async (
 ): Promise<string> => {
   try {
     const calendar = createGoogleCalendarClient(refreshToken)
-    const response = await calendar.calendars.patch({
-      calendarId,
-      requestBody: {
-        summary
-      }
-    })
-
-    const updatedSummary = response.data.summary || summary
-    logger.info(`Google Calendar "${calendarId}" renamed to "${updatedSummary}"`)
-    return updatedSummary
+    try {
+      const response = await calendar.calendars.patch({
+        calendarId,
+        requestBody: {
+          summary
+        }
+      })
+      const updatedSummary = response.data.summary || summary
+      logger.info(`Google Calendar "${calendarId}" renamed via calendars.patch to "${updatedSummary}"`)
+      return updatedSummary
+    } catch (patchError) {
+      logger.warn(`calendars.patch failed for "${calendarId}", attempting calendarList.patch:`, patchError)
+      const listResponse = await calendar.calendarList.patch({
+        calendarId,
+        requestBody: {
+          summary
+        }
+      })
+      const updatedSummary = listResponse.data.summary || summary
+      logger.info(`Google Calendar "${calendarId}" renamed via calendarList.patch to "${updatedSummary}"`)
+      return updatedSummary
+    }
   } catch (error) {
     logger.error(`Error renaming Google Calendar "${calendarId}":`, error)
     throw error
