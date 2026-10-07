@@ -1,5 +1,6 @@
 import { Stack, Box } from '@mantine/core'
 
+import Card from '@components/ui/card'
 import HabitsCalendarToolbar from './components/habitsCalendarToolbar'
 import HabitsMonthView from './components/habitsMonthView'
 import HabitsWeekView from './components/habitsWeekView'
@@ -44,73 +45,75 @@ export const HabitsPage = () => {
 
   return (
     <Box style={containerStyle}>
-      <Stack gap="xl">
-        <HabitsCalendarToolbar
-          headerTitle={headerTitle}
-          viewMode={viewMode}
-          isToday={isToday}
-          onViewModeChange={setViewMode}
-          onPrevious={handlePreviousPeriod}
-          onNext={handleNextPeriod}
-          onToday={handleToday}
-          onOpenNewHabitModal={handleOpenModal}
-        />
-
-        {viewMode === 'month' && (
-          <HabitsMonthView
-            monthCells={monthCells}
-            rangeSummariesMap={rangeSummariesMap}
-            selectedDate={selectedDate}
-            onSelectDate={handleSelectDate}
-            onToggleCheckin={handleToggleCheckin}
-            onEditItem={handleOpenEditModal}
-          />
-        )}
-
-        {viewMode === 'week' && (
-          <HabitsWeekView
-            weekDays={weekDays}
-            todayStr={todayStr}
-            rangeSummariesMap={rangeSummariesMap}
-            selectedDate={selectedDate}
-            togglingId={togglingId}
-            onSelectDate={handleSelectDate}
-            onToggleCheckin={handleToggleCheckin}
-            onEditItem={handleOpenEditModal}
-          />
-        )}
-
-        {viewMode === 'day' && (
-          <HabitsDayView
-            selectedDate={selectedDate}
+      <Card>
+        <Stack gap="lg">
+          <HabitsCalendarToolbar
+            headerTitle={headerTitle}
+            viewMode={viewMode}
             isToday={isToday}
-            daySummary={daySummary}
-            isLoading={isLoading}
-            togglingId={togglingId}
-            onToggleCheckin={handleToggleCheckin}
-            onEditItem={handleOpenEditModal}
-            onRemoveItem={handleRemoveHabit}
+            onViewModeChange={setViewMode}
+            onPrevious={handlePreviousPeriod}
+            onNext={handleNextPeriod}
+            onToday={handleToday}
+            onOpenNewHabitModal={handleOpenModal}
           />
-        )}
 
-        <HabitsModal
-          isOpen={isModalOpen}
-          isLoading={isCreating}
-          initialDate={selectedDate}
-          initialHabit={editingHabit}
-          onClose={handleCloseModal}
-          onSubmit={handleSaveHabit}
-          onDelete={(id) => handleRemoveHabit(id, selectedDate)}
-        />
+          {viewMode === 'month' && (
+            <HabitsMonthView
+              monthCells={monthCells}
+              rangeSummariesMap={rangeSummariesMap}
+              selectedDate={selectedDate}
+              onSelectDate={handleSelectDate}
+              onToggleCheckin={handleToggleCheckin}
+              onEditItem={handleOpenEditModal}
+            />
+          )}
 
-        <RecurringScopeModal
-          isOpen={isScopeModalOpen}
-          actionType={scopeActionType}
-          onClose={handleCloseScopeModal}
-          onConfirm={handleConfirmScopeAction}
-          isLoading={isCreating}
-        />
-      </Stack>
+          {viewMode === 'week' && (
+            <HabitsWeekView
+              weekDays={weekDays}
+              todayStr={todayStr}
+              rangeSummariesMap={rangeSummariesMap}
+              selectedDate={selectedDate}
+              togglingId={togglingId}
+              onSelectDate={handleSelectDate}
+              onToggleCheckin={handleToggleCheckin}
+              onEditItem={handleOpenEditModal}
+            />
+          )}
+
+          {viewMode === 'day' && (
+            <HabitsDayView
+              selectedDate={selectedDate}
+              isToday={isToday}
+              daySummary={daySummary}
+              isLoading={isLoading}
+              togglingId={togglingId}
+              onToggleCheckin={handleToggleCheckin}
+              onEditItem={handleOpenEditModal}
+              onRemoveItem={handleRemoveHabit}
+            />
+          )}
+        </Stack>
+      </Card>
+
+      <HabitsModal
+        isOpen={isModalOpen}
+        isLoading={isCreating}
+        initialDate={selectedDate}
+        initialHabit={editingHabit}
+        onClose={handleCloseModal}
+        onSubmit={handleSaveHabit}
+        onDelete={(id) => handleRemoveHabit(id, selectedDate)}
+      />
+
+      <RecurringScopeModal
+        isOpen={isScopeModalOpen}
+        actionType={scopeActionType}
+        onClose={handleCloseScopeModal}
+        onConfirm={handleConfirmScopeAction}
+        isLoading={isCreating}
+      />
     </Box>
   )
 }

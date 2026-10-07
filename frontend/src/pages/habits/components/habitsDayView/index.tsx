@@ -2,7 +2,6 @@ import { ActionIcon, Stack, Group, Text, Box, Loader } from '@mantine/core'
 import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
-import Card from '@components/ui/card'
 
 import type { HabitsDayViewProps } from './types'
 
@@ -35,7 +34,7 @@ export const HabitsDayView = ({
   }
 
   return (
-    <Card>
+    <Box>
       <Group justify="space-between" align="center" pb="sm" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
         <Group gap="xs">
           <TbCalendarEvent size={20} color="#818cf8" />
@@ -153,7 +152,7 @@ export const HabitsDayView = ({
           </Stack>
         )}
       </Box>
-    </Card>
+    </Box>
   )
 }
 

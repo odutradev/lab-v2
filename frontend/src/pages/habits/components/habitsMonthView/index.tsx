@@ -2,7 +2,6 @@ import { SimpleGrid, Stack, Group, Text, Box } from '@mantine/core'
 import { TbCheck, TbCircle } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
-import Card from '@components/ui/card'
 
 import type { HabitsMonthViewProps } from './types'
 
@@ -17,7 +16,7 @@ export const HabitsMonthView = ({
   onEditItem
 }: HabitsMonthViewProps) => {
   return (
-    <Card>
+    <Box>
       <SimpleGrid cols={7} spacing={4} mb="xs">
         {weekHeaders.map((header) => (
           <Box key={header} ta="center" py={4}>
@@ -166,7 +165,7 @@ export const HabitsMonthView = ({
           )
         })}
       </SimpleGrid>
-    </Card>
+    </Box>
   )
 }
 

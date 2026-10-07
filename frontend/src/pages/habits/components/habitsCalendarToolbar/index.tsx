@@ -24,12 +24,9 @@ export const HabitsCalendarToolbar = ({
 }: HabitsCalendarToolbarProps) => {
   return (
     <Box
-      p="sm"
+      pb="md"
       style={{
-        background: 'rgba(17, 24, 39, 0.7)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: 12,
-        backdropFilter: 'blur(16px)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
       }}
     >
       <Group justify="space-between" align="center" wrap="wrap" gap="sm">

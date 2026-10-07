@@ -2,7 +2,6 @@ import { SimpleGrid, ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
 import { TbCheck, TbCircle } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
-import Card from '@components/ui/card'
 
 import type { HabitsWeekViewProps } from './types'
 
@@ -20,8 +19,7 @@ export const HabitsWeekView = ({
 }: HabitsWeekViewProps) => {
 
   return (
-    <Card>
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 7 }} spacing="xs">
+    <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 7 }} spacing="xs">
         {weekDays.map((dateStr, index) => {
           const summary = rangeSummariesMap.get(dateStr)
           const items = summary?.items ?? []
@@ -164,7 +162,6 @@ export const HabitsWeekView = ({
           )
         })}
       </SimpleGrid>
-    </Card>
   )
 }
 
