@@ -1,6 +1,6 @@
 import apiClient from '@api/client'
 
-import type { HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, RangeSummaryParams, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit } from './types'
+import type { RemoveHabitOptions, HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, RangeSummaryParams, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit } from './types'
 
 export const createHabitAction = async (payload: CreateHabitPayload): Promise<Habit> => {
   return apiClient.post<Habit>('/habits/create', payload)
@@ -19,8 +19,12 @@ export const updateHabitAction = async (id: string, payload: UpdateHabitPayload)
   return apiClient.patch<Habit>(`/habits/${id}/update`, payload)
 }
 
-export const removeHabitAction = async (id: string): Promise<HabitActionSuccessResponse> => {
-  return apiClient.delete<HabitActionSuccessResponse>(`/habits/${id}/remove`)
+export const removeHabitAction = async (id: string, options?: RemoveHabitOptions): Promise<HabitActionSuccessResponse> => {
+  const query = new URLSearchParams()
+  if (options?.mode) query.append('mode', options.mode)
+  if (options?.date) query.append('date', options.date)
+  const queryString = query.toString() ? `?${query.toString()}` : ''
+  return apiClient.delete<HabitActionSuccessResponse>(`/habits/${id}/remove${queryString}`)
 }
 
 export const scheduleHabitAction = async (payload: ScheduleHabitPayload): Promise<HabitActionSuccessResponse> => {

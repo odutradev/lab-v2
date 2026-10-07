@@ -11,6 +11,8 @@ export interface HabitRecurrence {
   occurrences?: number
 }
 
+export type RecurrenceScopeMode = 'this' | 'following' | 'all'
+
 export interface Habit {
   id: string
   userId: string
@@ -23,6 +25,7 @@ export interface Habit {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
   active: boolean
   createdAt?: string
   updatedAt?: string
@@ -38,6 +41,7 @@ export interface CreateHabitPayload {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
 }
 
 export interface UpdateHabitPayload {
@@ -50,7 +54,15 @@ export interface UpdateHabitPayload {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
   active?: boolean
+  mode?: RecurrenceScopeMode
+  date?: string
+}
+
+export interface RemoveHabitOptions {
+  mode?: RecurrenceScopeMode
+  date?: string
 }
 
 export interface ListHabitsParams {
