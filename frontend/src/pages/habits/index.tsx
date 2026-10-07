@@ -1,12 +1,10 @@
-import { SimpleGrid, Stack, Box } from '@mantine/core'
+import { Stack, Box } from '@mantine/core'
 
 import HabitsCalendarToolbar from './components/habitsCalendarToolbar'
-import HabitsScoreCard from './components/habitsScoreCard'
-import HabitsChecklist from './components/habitsChecklist'
 import HabitsMonthView from './components/habitsMonthView'
 import HabitsWeekView from './components/habitsWeekView'
+import HabitsDayView from './components/habitsDayView'
 import HabitsModal from './components/habitsModal'
-import HabitsPool from './components/habitsPool'
 import RecurringScopeModal from './components/recurringScopeModal'
 import { containerStyle } from './styles'
 import useHabitsPage from './hook'
@@ -20,14 +18,11 @@ export const HabitsPage = () => {
     viewMode,
     setViewMode,
     daySummary,
-    habits,
-    dayHabitIds,
     rangeSummariesMap,
     weekDays,
     monthCells,
     isLoading,
     isCreating,
-    isScheduling,
     togglingId,
     isModalOpen,
     editingHabit,
@@ -42,16 +37,10 @@ export const HabitsPage = () => {
     handleCloseModal,
     handleSaveHabit,
     handleToggleCheckin,
-    handleScheduleForDay,
     handleRemoveHabit,
     handleConfirmScopeAction,
     handleCloseScopeModal
   } = useHabitsPage()
-
-  const totalHabits = daySummary?.totalHabits ?? 0
-  const completedHabits = daySummary?.completedHabits ?? 0
-  const completionRate = daySummary?.completionRate ?? 0
-  const items = daySummary?.items ?? []
 
   return (
     <Box style={containerStyle}>
@@ -65,13 +54,6 @@ export const HabitsPage = () => {
           onNext={handleNextPeriod}
           onToday={handleToday}
           onOpenNewHabitModal={handleOpenModal}
-        />
-
-        <HabitsScoreCard
-          totalHabits={totalHabits}
-          completedHabits={completedHabits}
-          completionRate={completionRate}
-          isLoading={isLoading}
         />
 
         {viewMode === 'month' && (
@@ -98,25 +80,18 @@ export const HabitsPage = () => {
           />
         )}
 
-        <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-          <HabitsChecklist
-            items={items}
+        {viewMode === 'day' && (
+          <HabitsDayView
+            selectedDate={selectedDate}
+            isToday={isToday}
+            daySummary={daySummary}
             isLoading={isLoading}
             togglingId={togglingId}
-            onToggle={(habitId) => handleToggleCheckin(habitId, selectedDate)}
-            onEdit={handleOpenEditModal}
-            onRemove={handleRemoveHabit}
+            onToggleCheckin={handleToggleCheckin}
+            onEditItem={handleOpenEditModal}
+            onRemoveItem={handleRemoveHabit}
           />
-
-          <HabitsPool
-            habits={habits}
-            dayHabitIds={dayHabitIds}
-            onScheduleForDay={handleScheduleForDay}
-            onRemoveHabit={handleRemoveHabit}
-            onEditHabit={handleOpenEditModal}
-            isScheduling={isScheduling}
-          />
-        </SimpleGrid>
+        )}
 
         <HabitsModal
           isOpen={isModalOpen}
