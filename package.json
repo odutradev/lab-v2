@@ -1,0 +1,19 @@
+{
+  "name": "lab-v2",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lab V2 monorepo workspace",
+  "scripts": {
+    "dev": "concurrently -n \"api,frontend\" -c \"cyan,green\" \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:api": "npm --prefix api run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm run build:api && npm run build:frontend",
+    "build:api": "npm --prefix api run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "start": "npm --prefix api run start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
