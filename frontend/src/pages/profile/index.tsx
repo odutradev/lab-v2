@@ -15,6 +15,7 @@ export const ProfilePage = () => {
     isConnectingCalendar,
     isDisconnectingCalendar,
     isSavingCalendarName,
+    isRecreatingCalendar,
     isDisconnectModalOpen,
     isEditCalendarNameModalOpen,
     calendarNameInput,
@@ -25,6 +26,7 @@ export const ProfilePage = () => {
     openEditCalendarNameModal,
     closeEditCalendarNameModal,
     handleSaveCalendarName,
+    handleRecreateCalendar,
     handleConnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
@@ -56,6 +58,7 @@ export const ProfilePage = () => {
           isConnectingCalendar={isConnectingCalendar}
           isDisconnectingCalendar={isDisconnectingCalendar}
           isSavingCalendarName={isSavingCalendarName}
+          isRecreatingCalendar={isRecreatingCalendar}
           isDisconnectModalOpen={isDisconnectModalOpen}
           isEditCalendarNameModalOpen={isEditCalendarNameModalOpen}
           calendarNameInput={calendarNameInput}
@@ -67,6 +70,7 @@ export const ProfilePage = () => {
           onOpenEditCalendarNameModal={openEditCalendarNameModal}
           onCloseEditCalendarNameModal={closeEditCalendarNameModal}
           onSaveCalendarName={handleSaveCalendarName}
+          onRecreateCalendar={handleRecreateCalendar}
         />
       </Stack>
     </Box>

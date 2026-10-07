@@ -4,7 +4,16 @@ export interface GoogleCalendarStatusResponse {
   calendarId?: string
   calendarName?: string
   calendarUrl?: string
+  calendarDeleted?: boolean
   connectedAt?: string
+}
+
+export interface RecreateGoogleCalendarResponse {
+  success: boolean
+  calendarId: string
+  calendarName: string
+  calendarUrl: string
+  message: string
 }
 
 export interface GoogleCalendarAuthUrlResponse {

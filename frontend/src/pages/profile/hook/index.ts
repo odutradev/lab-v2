@@ -5,7 +5,8 @@ import {
   getGoogleCalendarAuthUrlAction,
   getGoogleCalendarStatusAction,
   disconnectGoogleCalendarAction,
-  updateGoogleCalendarNameAction
+  updateGoogleCalendarNameAction,
+  recreateGoogleCalendarAction
 } from '@actions/google/calendar'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
@@ -31,6 +32,7 @@ export const useProfile = (): UseProfileReturn => {
   const [isConnectingCalendar, setIsConnectingCalendar] = useState(false)
   const [isDisconnectingCalendar, setIsDisconnectingCalendar] = useState(false)
   const [isSavingCalendarName, setIsSavingCalendarName] = useState(false)
+  const [isRecreatingCalendar, setIsRecreatingCalendar] = useState(false)
 
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false)
   const [isEditCalendarNameModalOpen, setIsEditCalendarNameModalOpen] = useState(false)
@@ -159,6 +161,26 @@ export const useProfile = (): UseProfileReturn => {
     }
   }, [calendarNameInput, showToast])
 
+  const handleRecreateCalendar = useCallback(async () => {
+    try {
+      setIsRecreatingCalendar(true)
+      const response = await recreateGoogleCalendarAction()
+      setCalendarStatus((prev) => ({
+        ...prev,
+        connected: true,
+        calendarId: response.calendarId,
+        calendarName: response.calendarName,
+        calendarUrl: response.calendarUrl,
+        calendarDeleted: false
+      }))
+      showToast('Agenda recriada com sucesso no Google Agenda!', 'success', 'Google Agenda')
+    } catch {
+      showToast('Erro ao recriar a agenda no Google Agenda.', 'error', 'Google Agenda')
+    } finally {
+      setIsRecreatingCalendar(false)
+    }
+  }, [showToast])
+
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Não informado'
     const date = new Date(dateStr)
@@ -178,6 +200,7 @@ export const useProfile = (): UseProfileReturn => {
     isConnectingCalendar,
     isDisconnectingCalendar,
     isSavingCalendarName,
+    isRecreatingCalendar,
     isDisconnectModalOpen,
     isEditCalendarNameModalOpen,
     calendarNameInput,
@@ -188,6 +211,7 @@ export const useProfile = (): UseProfileReturn => {
     openEditCalendarNameModal,
     closeEditCalendarNameModal,
     handleSaveCalendarName,
+    handleRecreateCalendar,
     handleConnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,

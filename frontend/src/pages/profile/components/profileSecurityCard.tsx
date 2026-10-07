@@ -1,5 +1,15 @@
 import { Group, Box, Text, ThemeIcon, Stack, Divider, ActionIcon, Tooltip, Anchor } from '@mantine/core'
-import { TbKey, TbCalendarEvent, TbUnlink, TbBrandGoogle, TbEdit, TbExternalLink, TbTrash } from 'react-icons/tb'
+import {
+  TbKey,
+  TbCalendarEvent,
+  TbUnlink,
+  TbBrandGoogle,
+  TbEdit,
+  TbExternalLink,
+  TbTrash,
+  TbPlus,
+  TbAlertTriangle
+} from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import Button from '@components/ui/button'
@@ -16,6 +26,7 @@ interface ProfileSecurityCardProps {
   isConnectingCalendar?: boolean
   isDisconnectingCalendar?: boolean
   isSavingCalendarName?: boolean
+  isRecreatingCalendar?: boolean
   isDisconnectModalOpen: boolean
   isEditCalendarNameModalOpen: boolean
   calendarNameInput: string
@@ -27,6 +38,7 @@ interface ProfileSecurityCardProps {
   onOpenEditCalendarNameModal: () => void
   onCloseEditCalendarNameModal: () => void
   onSaveCalendarName: () => void
+  onRecreateCalendar?: () => void
 }
 
 export const ProfileSecurityCard = ({
@@ -36,6 +48,7 @@ export const ProfileSecurityCard = ({
   isConnectingCalendar = false,
   isDisconnectingCalendar = false,
   isSavingCalendarName = false,
+  isRecreatingCalendar = false,
   isDisconnectModalOpen,
   isEditCalendarNameModalOpen,
   calendarNameInput,
@@ -46,9 +59,11 @@ export const ProfileSecurityCard = ({
   onConfirmDisconnect,
   onOpenEditCalendarNameModal,
   onCloseEditCalendarNameModal,
-  onSaveCalendarName
+  onSaveCalendarName,
+  onRecreateCalendar
 }: ProfileSecurityCardProps) => {
   const isConnected = !!calendarStatus?.connected
+  const isCalendarDeleted = !!calendarStatus?.calendarDeleted
   const calendarName = calendarStatus?.calendarName || 'Lab V2'
   const calendarUrl = calendarStatus?.calendarUrl
 
@@ -87,8 +102,19 @@ export const ProfileSecurityCard = ({
           <Stack gap="lg">
             <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
               <Group gap="md" align="flex-start">
-                <ThemeIcon size="lg" radius="md" variant="light" color={isConnected ? 'teal' : 'indigo'}>
-                  {isConnected ? <TbBrandGoogle size={20} /> : <TbCalendarEvent size={20} />}
+                <ThemeIcon
+                  size="lg"
+                  radius="md"
+                  variant="light"
+                  color={!isConnected ? 'indigo' : isCalendarDeleted ? 'yellow' : 'teal'}
+                >
+                  {!isConnected ? (
+                    <TbCalendarEvent size={20} />
+                  ) : isCalendarDeleted ? (
+                    <TbAlertTriangle size={20} />
+                  ) : (
+                    <TbBrandGoogle size={20} />
+                  )}
                 </ThemeIcon>
                 <Box>
                   <Group gap="xs" align="center">
@@ -96,18 +122,21 @@ export const ProfileSecurityCard = ({
                       Google Agenda
                     </Text>
                     {isConnected && (
-                      <Badge variant="success">
-                        Conectado
+                      <Badge variant={isCalendarDeleted ? 'warning' : 'success'}>
+                        {isCalendarDeleted ? 'Agenda Apagada no Google' : 'Conectado'}
                       </Badge>
                     )}
                   </Group>
+
                   <Text size="xs" c="dimmed" mt={2}>
-                    {isConnected
-                      ? `Sincronização ativa com ${calendarStatus?.email || 'sua conta Google'}`
-                      : 'Vincule sua conta Google para sincronizar seus hábitos com sua agenda'}
+                    {!isConnected
+                      ? 'Vincule sua conta Google para sincronizar seus hábitos com sua agenda'
+                      : isCalendarDeleted
+                      ? `A agenda "${calendarName}" foi excluída no Google Calendar. Recrie-a para voltar a sincronizar seus hábitos.`
+                      : `Sincronização ativa com ${calendarStatus?.email || 'sua conta Google'}`}
                   </Text>
 
-                  {isConnected && (
+                  {isConnected && !isCalendarDeleted && (
                     <Stack gap="xs" mt="sm">
                       <Group gap="xs" align="center">
                         <Text size="xs" c="gray.4" fw={500}>
@@ -158,16 +187,30 @@ export const ProfileSecurityCard = ({
               </Group>
 
               {isConnected ? (
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={onOpenDisconnectModal}
-                  isLoading={isDisconnectingCalendar}
-                  disabled={isCalendarLoading}
-                  leftIcon={<TbUnlink size={16} />}
-                >
-                  Desvincular
-                </Button>
+                <Group gap="xs">
+                  {isCalendarDeleted && (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={onRecreateCalendar}
+                      isLoading={isRecreatingCalendar}
+                      disabled={isCalendarLoading}
+                      leftIcon={<TbPlus size={16} />}
+                    >
+                      Criar Novamente
+                    </Button>
+                  )}
+                  <Button
+                    variant={isCalendarDeleted ? 'ghost' : 'danger'}
+                    size="sm"
+                    onClick={onOpenDisconnectModal}
+                    isLoading={isDisconnectingCalendar}
+                    disabled={isCalendarLoading}
+                    leftIcon={<TbUnlink size={16} />}
+                  >
+                    Desvincular
+                  </Button>
+                </Group>
               ) : (
                 <Button
                   variant="outline"

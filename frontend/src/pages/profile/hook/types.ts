@@ -9,6 +9,7 @@ export interface UseProfileReturn {
   isConnectingCalendar: boolean
   isDisconnectingCalendar: boolean
   isSavingCalendarName: boolean
+  isRecreatingCalendar: boolean
   isDisconnectModalOpen: boolean
   isEditCalendarNameModalOpen: boolean
   calendarNameInput: string
@@ -19,6 +20,7 @@ export interface UseProfileReturn {
   openEditCalendarNameModal: () => void
   closeEditCalendarNameModal: () => void
   handleSaveCalendarName: () => Promise<void>
+  handleRecreateCalendar: () => Promise<void>
   handleConnectGoogleCalendar: () => Promise<void>
   handleNavigateResetPassword: () => void
   handleNavigateHome: () => void
