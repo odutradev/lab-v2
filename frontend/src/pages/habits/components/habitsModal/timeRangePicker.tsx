@@ -322,7 +322,6 @@ export const TimeRangePicker = ({
         </Box>
       )}
     </Box>
-    </Box>
   )
 }
 
