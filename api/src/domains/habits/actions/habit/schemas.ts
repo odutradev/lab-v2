@@ -27,6 +27,7 @@ export const habitResponseSchema = registry.register('HabitResponse', z.object({
   startTime: z.string().optional(),
   endTime: z.string().optional(),
   recurrence: habitRecurrenceSchema.optional(),
+  excludedDates: z.array(z.string()).optional(),
   active: z.boolean(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional()
@@ -60,11 +61,19 @@ export const updateHabitBodySchema = registry.register('UpdateHabitBody', z.obje
   startTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Invalid time format (HH:mm)').optional(),
   endTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Invalid time format (HH:mm)').optional(),
   recurrence: habitRecurrenceSchema.optional(),
-  active: z.boolean().optional()
+  excludedDates: z.array(z.string()).optional(),
+  active: z.boolean().optional(),
+  mode: z.enum(['this', 'following', 'all']).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be formatted as YYYY-MM-DD').optional()
 }))
 
 export const removeHabitParamsSchema = registry.register('RemoveHabitParams', z.object({
   id: z.string().min(1, 'Habit ID is required')
+}))
+
+export const removeHabitQuerySchema = registry.register('RemoveHabitQuery', z.object({
+  mode: z.enum(['this', 'following', 'all']).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be formatted as YYYY-MM-DD').optional()
 }))
 
 export const listHabitsQuerySchema = registry.register('ListHabitsQuery', z.object({

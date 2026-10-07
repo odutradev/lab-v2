@@ -27,6 +27,7 @@ const habitSchema = new Schema<HabitDocument>(
     startTime: { type: String, required: false },
     endTime: { type: String, required: false },
     recurrence: { type: recurrenceSchema, required: false },
+    excludedDates: { type: [String], default: [] },
     active: { type: Boolean, default: true, required: true }
   },
   {

@@ -24,6 +24,7 @@ export interface Habit {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
   active: boolean
 }
 
@@ -45,6 +46,7 @@ export type CreateHabitPayload = {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
 }
 
 export type UpdateHabitPayload = {
@@ -57,6 +59,7 @@ export type UpdateHabitPayload = {
   startTime?: string
   endTime?: string
   recurrence?: HabitRecurrence
+  excludedDates?: string[]
   active?: boolean
 }
 

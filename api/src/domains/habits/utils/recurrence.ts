@@ -12,6 +12,7 @@ export interface HabitSchedulable {
   frequency?: string
   startDate?: string
   recurrence?: HabitRecurrenceRule
+  excludedDates?: string[]
 }
 
 const parseDateParts = (dateStr: string): [number, number, number] => {
@@ -33,6 +34,11 @@ const getDaysDiff = (startStr: string, targetStr: string): number => {
 }
 
 export const isHabitScheduledForDate = (habit: HabitSchedulable, targetDateStr: string): boolean => {
+  // Se a data específica foi excluída (ex: "Excluir este evento")
+  if (Array.isArray(habit.excludedDates) && habit.excludedDates.includes(targetDateStr)) {
+    return false
+  }
+
   const startDate = habit.startDate
 
   // Se tiver startDate e a data do calendário for anterior ao início, não está agendado

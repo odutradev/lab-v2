@@ -63,6 +63,14 @@ const habitCheckinRepository = {
       date
     })
     return result.deletedCount > 0
+  },
+  deleteByUserHabitAndDateFrom: async (userId: string, habitId: string, fromDate: string): Promise<number> => {
+    const result = await HabitCheckinModel.deleteMany({
+      userId: toObjectId(userId),
+      habitId: toObjectId(habitId),
+      date: { $gte: fromDate }
+    })
+    return result.deletedCount
   }
 }
 

@@ -16,6 +16,7 @@ const habitRepository = {
       startTime: payload.startTime,
       endTime: payload.endTime,
       recurrence: payload.recurrence,
+      excludedDates: payload.excludedDates || [],
       active: true
     })
   },
