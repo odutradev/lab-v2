@@ -1,5 +1,5 @@
 import { ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
-import { TbCalendarPlus, TbTrash, TbPencil } from 'react-icons/tb'
+import { TbCalendarPlus, TbTrash, TbPencil, TbClock } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
@@ -63,6 +63,25 @@ export const HabitsPool = ({
                         <Text fw={600} size="sm" c="white">
                           {habit.title}
                         </Text>
+                        {habit.startTime && (
+                          <Box
+                            px={8}
+                            py={2}
+                            style={{
+                              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                              border: '1px solid rgba(99, 102, 241, 0.3)',
+                              borderRadius: 6,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4
+                            }}
+                          >
+                            <TbClock size={12} color="#a5b4fc" />
+                            <Text size="11px" fw={600} c="#a5b4fc">
+                              {habit.startTime}{habit.endTime ? ` – ${habit.endTime}` : ''}
+                            </Text>
+                          </Box>
+                        )}
                         {getFrequencyBadge(habit.frequency)}
                       </Group>
                       {habit.description && (

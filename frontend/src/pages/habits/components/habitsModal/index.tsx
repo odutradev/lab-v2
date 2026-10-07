@@ -1,4 +1,4 @@
-import { Modal, Stack, Group, Text, TextInput, Checkbox, Textarea, Box, SimpleGrid } from '@mantine/core'
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, SimpleGrid } from '@mantine/core'
 import { useState, useEffect } from 'react'
 import { TbCalendar, TbClock, TbTrash, TbCheck } from 'react-icons/tb'
 
@@ -50,11 +50,8 @@ export const HabitsModal = ({
   const [startDate, setStartDate] = useState<string>(
     initialHabit?.startDate || initialDate || getTodayString()
   )
-  const [hasTime, setHasTime] = useState(
-    Boolean(initialHabit?.startTime && !initialHabit?.allDay)
-  )
-  const [startTime, setStartTime] = useState(initialHabit?.startTime || '08:00')
-  const [endTime, setEndTime] = useState(initialHabit?.endTime || '09:00')
+  const [startTime, setStartTime] = useState(initialHabit?.startTime || '')
+  const [endTime, setEndTime] = useState(initialHabit?.endTime || '')
   const [selectedDays, setSelectedDays] = useState<number[]>(() => {
     if (initialHabit?.recurrence?.daysOfWeek && initialHabit.recurrence.daysOfWeek.length > 0) {
       return initialHabit.recurrence.daysOfWeek
@@ -74,9 +71,8 @@ export const HabitsModal = ({
           : 'daily'
       )
       setStartDate(initialHabit.startDate || initialDate || getTodayString())
-      setHasTime(Boolean(initialHabit.startTime && !initialHabit.allDay))
-      setStartTime(initialHabit.startTime || '08:00')
-      setEndTime(initialHabit.endTime || '09:00')
+      setStartTime(initialHabit.startTime || '')
+      setEndTime(initialHabit.endTime || '')
       if (initialHabit.recurrence?.daysOfWeek && initialHabit.recurrence.daysOfWeek.length > 0) {
         setSelectedDays(initialHabit.recurrence.daysOfWeek)
       } else {
@@ -91,9 +87,8 @@ export const HabitsModal = ({
       setFrequency('daily')
       const defaultDate = initialDate || getTodayString()
       setStartDate(defaultDate)
-      setHasTime(false)
-      setStartTime('08:00')
-      setEndTime('09:00')
+      setStartTime('')
+      setEndTime('')
       const [y, m, d] = defaultDate.split('-').map(Number)
       setSelectedDays([new Date(y, m - 1, d).getDay()])
       setError('')
@@ -136,14 +131,17 @@ export const HabitsModal = ({
             }
           : { type: 'monthly', interval: 1 }
 
+    const cleanStartTime = startTime && startTime.trim() ? startTime.trim() : undefined
+    const cleanEndTime = endTime && endTime.trim() ? endTime.trim() : undefined
+
     await onSubmit({
       title: title.trim(),
       description: description.trim() ? description.trim() : undefined,
       frequency,
       startDate,
-      allDay: !hasTime,
-      startTime: hasTime && startTime ? startTime : undefined,
-      endTime: hasTime && endTime ? endTime : undefined,
+      allDay: !cleanStartTime,
+      startTime: cleanStartTime,
+      endTime: cleanEndTime,
       recurrence: finalRecurrence
     })
 
@@ -310,8 +308,8 @@ export const HabitsModal = ({
             </Box>
           )}
 
-          {/* Data de Início e Horário */}
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          {/* Data de Início e Horários */}
+          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
             <Box>
               <TextInput
                 type="date"
@@ -339,63 +337,54 @@ export const HabitsModal = ({
             </Box>
 
             <Box>
-              <Box mb={6}>
-                <Text size="xs" fw={500} c="#d1d5db" mb={6}>
-                  Horário
-                </Text>
-                <Checkbox
-                  label="Definir horário planejado"
-                  checked={hasTime}
-                  onChange={(e) => setHasTime(e.currentTarget.checked)}
-                  styles={{
-                    label: { color: '#e5e7eb', fontSize: 13, cursor: 'pointer' },
-                    input: { cursor: 'pointer' }
-                  }}
-                />
-              </Box>
+              <TextInput
+                type="time"
+                label="Horário (opcional)"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                size="sm"
+                leftSection={<TbClock size={16} color="#9ca3af" />}
+                styles={{
+                  input: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                    fontSize: 14,
+                    borderRadius: 10
+                  },
+                  label: {
+                    color: '#d1d5db',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    marginBottom: 6
+                  }
+                }}
+              />
+            </Box>
 
-              {hasTime && (
-                <Group gap="xs" mt={8}>
-                  <TextInput
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    size="xs"
-                    w={100}
-                    leftSection={<TbClock size={14} color="#9ca3af" />}
-                    styles={{
-                      input: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        color: '#ffffff',
-                        fontSize: 13,
-                        textAlign: 'center',
-                        borderRadius: 8
-                      }
-                    }}
-                  />
-                  <Text size="xs" c="dimmed">
-                    até
-                  </Text>
-                  <TextInput
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    size="xs"
-                    w={100}
-                    styles={{
-                      input: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        color: '#ffffff',
-                        fontSize: 13,
-                        textAlign: 'center',
-                        borderRadius: 8
-                      }
-                    }}
-                  />
-                </Group>
-              )}
+            <Box>
+              <TextInput
+                type="time"
+                label="Término (opcional)"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                size="sm"
+                styles={{
+                  input: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                    fontSize: 14,
+                    borderRadius: 10
+                  },
+                  label: {
+                    color: '#d1d5db',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    marginBottom: 6
+                  }
+                }}
+              />
             </Box>
           </SimpleGrid>
 

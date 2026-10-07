@@ -123,13 +123,9 @@ export const HabitsWeekView = ({
                             >
                               {item.title}
                             </Text>
-                            {item.startTime && !item.allDay ? (
+                            {item.startTime ? (
                               <Text size="10px" fw={700} c={item.completed ? 'dimmed' : '#93c5fd'}>
                                 {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
-                              </Text>
-                            ) : item.allDay ? (
-                              <Text size="10px" fw={500} c="dimmed">
-                                Dia todo
                               </Text>
                             ) : null}
                           </Box>

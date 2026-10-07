@@ -122,7 +122,7 @@ export const HabitsMonthView = ({
                           <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
                         )}
                       </Box>
-                      {item.startTime && !item.allDay && (
+                      {item.startTime && (
                         <Text
                           size="9px"
                           fw={700}

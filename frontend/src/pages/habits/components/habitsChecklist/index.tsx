@@ -105,26 +105,24 @@ export const HabitsChecklist = ({
                     </Group>
 
                     <Group gap="xs" align="center">
-                      {item.startTime && !item.allDay ? (
+                      {item.startTime ? (
                         <Box
                           px={8}
                           py={3}
                           style={{
-                            backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                            border: '1px solid rgba(59, 130, 246, 0.3)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
                             borderRadius: 6,
                             display: 'flex',
                             alignItems: 'center',
                             gap: 4
                           }}
                         >
-                          <TbClock size={12} color="#93c5fd" />
-                          <Text size="11px" fw={600} c="#93c5fd">
+                          <TbClock size={12} color="#a5b4fc" />
+                          <Text size="11px" fw={600} c="#a5b4fc">
                             {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
                           </Text>
                         </Box>
-                      ) : item.allDay ? (
-                        <Badge variant="default">Dia inteiro</Badge>
                       ) : null}
 
                       {getFrequencyBadge(item.frequency || 'daily')}

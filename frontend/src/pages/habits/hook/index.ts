@@ -251,37 +251,39 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     setSelectedDate(targetDate)
 
     const existingHabit = habits.find((h) => h.id === habitId)
-    if (existingHabit) {
-      setEditingHabit(existingHabit)
-    } else {
-      // Se não estiver na pool, busca nas summaries
-      let foundSummaryItem = daySummary?.items.find((item) => item.habitId === habitId)
-      if (!foundSummaryItem) {
-        for (const s of rangeSummaries) {
-          const it = s.items.find((i) => i.habitId === habitId)
-          if (it) {
-            foundSummaryItem = it
-            break
-          }
+    let foundSummaryItem = daySummary?.items.find((item) => item.habitId === habitId)
+    if (!foundSummaryItem) {
+      for (const s of rangeSummaries) {
+        const it = s.items.find((i) => i.habitId === habitId)
+        if (it) {
+          foundSummaryItem = it
+          break
         }
       }
+    }
 
-      if (foundSummaryItem) {
-        setEditingHabit({
-          id: habitId,
-          userId: '',
-          title: foundSummaryItem.title,
-          description: foundSummaryItem.description,
-          category: foundSummaryItem.category || 'event',
-          frequency: foundSummaryItem.frequency || 'daily',
-          startDate: foundSummaryItem.startDate || targetDate,
-          allDay: Boolean(foundSummaryItem.allDay),
-          startTime: foundSummaryItem.startTime,
-          endTime: foundSummaryItem.endTime,
-          recurrence: { type: foundSummaryItem.frequency === 'daily' ? 'daily' : 'none' },
-          active: true
-        })
-      }
+    if (existingHabit) {
+      setEditingHabit({
+        ...existingHabit,
+        startTime: existingHabit.startTime ?? foundSummaryItem?.startTime,
+        endTime: existingHabit.endTime ?? foundSummaryItem?.endTime,
+        startDate: existingHabit.startDate || targetDate
+      })
+    } else if (foundSummaryItem) {
+      setEditingHabit({
+        id: habitId,
+        userId: '',
+        title: foundSummaryItem.title,
+        description: foundSummaryItem.description,
+        category: foundSummaryItem.category || 'event',
+        frequency: foundSummaryItem.frequency || 'daily',
+        startDate: foundSummaryItem.startDate || targetDate,
+        allDay: Boolean(foundSummaryItem.allDay),
+        startTime: foundSummaryItem.startTime,
+        endTime: foundSummaryItem.endTime,
+        recurrence: { type: foundSummaryItem.frequency === 'daily' ? 'daily' : 'none' },
+        active: true
+      })
     }
 
     setIsModalOpen(true)
