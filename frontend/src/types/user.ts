@@ -6,6 +6,13 @@ export interface UserProfile {
   superAdmin?: boolean
   emailVerified?: boolean
   accountStatus?: 'active' | 'blocked'
+  integrations?: {
+    googleCalendar?: {
+      connected: boolean
+      email?: string
+      connectedAt?: string
+    }
+  }
   createdAt?: string
   updatedAt?: string
 }

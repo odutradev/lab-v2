@@ -10,6 +10,12 @@ export const ProfilePage = () => {
   const {
     user,
     initials,
+    calendarStatus,
+    isCalendarLoading,
+    isConnectingCalendar,
+    isDisconnectingCalendar,
+    handleConnectGoogleCalendar,
+    handleDisconnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
     formatDate
@@ -35,6 +41,12 @@ export const ProfilePage = () => {
 
         <ProfileSecurityCard
           onNavigateResetPassword={handleNavigateResetPassword}
+          calendarStatus={calendarStatus}
+          isCalendarLoading={isCalendarLoading}
+          isConnectingCalendar={isConnectingCalendar}
+          isDisconnectingCalendar={isDisconnectingCalendar}
+          onConnectCalendar={handleConnectGoogleCalendar}
+          onDisconnectCalendar={handleDisconnectGoogleCalendar}
         />
       </Stack>
     </Box>
