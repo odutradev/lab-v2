@@ -15,7 +15,7 @@ export const RecurringScopeModal = ({
 }: RecurringScopeModalProps) => {
   const [selectedMode, setSelectedMode] = useState<RecurrenceScopeMode>('this')
 
-  const title = actionType === 'delete' ? 'Excluir evento recorrente' : 'Editar evento recorrente'
+  const title = actionType === 'delete' ? 'Excluir meta recorrente' : 'Editar meta recorrente'
 
   const handleConfirm = () => {
     onConfirm(selectedMode)
@@ -56,7 +56,7 @@ export const RecurringScopeModal = ({
           <Stack gap="md">
             <Radio
               value="this"
-              label="Este evento"
+              label="Esta ocorrência"
               styles={{
                 label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }
@@ -64,7 +64,7 @@ export const RecurringScopeModal = ({
             />
             <Radio
               value="following"
-              label="Este e os eventos seguintes"
+              label="Esta e as ocorrências seguintes"
               styles={{
                 label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }
@@ -72,7 +72,7 @@ export const RecurringScopeModal = ({
             />
             <Radio
               value="all"
-              label="Todos os eventos"
+              label="Todas as ocorrências"
               styles={{
                 label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }

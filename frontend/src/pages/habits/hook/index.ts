@@ -342,12 +342,17 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           endTime: data.endTime,
           recurrence: data.recurrence
         })
-        showToast('Meta agendada com sucesso!', 'success')
+        showToast('Meta criada com sucesso!', 'success')
         await reloadData(visibleRange.startDate, visibleRange.endDate)
         handleCloseModal()
       }
-    } catch {
-      showToast('Erro ao salvar a meta. Verifique os dados.', 'error')
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as { response?: { data?: { message?: string; details?: { message: string }[] } } })
+          ?.response?.data?.details?.[0]?.message ||
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao salvar a meta. Verifique os dados.'
+      showToast(errorMessage, 'error')
     } finally {
       setIsCreating(false)
     }
@@ -397,7 +402,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           mode,
           date: pendingScopeAction.date
         })
-        showToast('Evento excluído com sucesso.', 'info')
+        showToast('Meta excluída com sucesso.', 'info')
       } else if (pendingScopeAction.type === 'edit' && pendingScopeAction.payload) {
         const payload = pendingScopeAction.payload
         await updateHabitAction(pendingScopeAction.habitId, {
@@ -413,7 +418,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
           mode,
           date: pendingScopeAction.date
         })
-        showToast('Evento atualizado com sucesso!', 'success')
+        showToast('Meta atualizada com sucesso!', 'success')
       }
 
       await reloadData(visibleRange.startDate, visibleRange.endDate)
