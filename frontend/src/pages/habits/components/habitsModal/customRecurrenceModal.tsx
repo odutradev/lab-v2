@@ -27,7 +27,8 @@ const dayLetters = [
 const unitOptions = [
   { value: 'day', label: 'dia' },
   { value: 'week', label: 'semana' },
-  { value: 'month', label: 'mês' }
+  { value: 'month', label: 'mês' },
+  { value: 'year', label: 'ano' }
 ]
 
 export const CustomRecurrenceModal = ({
@@ -38,7 +39,7 @@ export const CustomRecurrenceModal = ({
   onConfirm
 }: CustomRecurrenceModalProps) => {
   const [interval, setInterval] = useState<number>(initialRecurrence?.interval ?? 1)
-  const [unit, setUnit] = useState<'day' | 'week' | 'month'>(initialRecurrence?.unit ?? 'week')
+  const [unit, setUnit] = useState<'day' | 'week' | 'month' | 'year'>(initialRecurrence?.unit ?? 'week')
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(() => {
     if (initialRecurrence?.daysOfWeek && initialRecurrence.daysOfWeek.length > 0) {
       return initialRecurrence.daysOfWeek

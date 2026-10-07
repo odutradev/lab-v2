@@ -1,7 +1,7 @@
 export interface HabitRecurrenceRule {
-  type?: 'none' | 'daily' | 'weekly' | 'monthly' | 'custom'
+  type?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom'
   interval?: number
-  unit?: 'day' | 'week' | 'month'
+  unit?: 'day' | 'week' | 'month' | 'year'
   daysOfWeek?: number[]
   endType?: 'never' | 'on_date' | 'after_occurrences'
   endDate?: string
@@ -103,6 +103,20 @@ export const isHabitScheduledForDate = (habit: HabitSchedulable, targetDateStr: 
       const [ty, tm] = parseDateParts(targetDateStr)
       const diffMonths = (ty - sy) * 12 + (tm - sm)
       if (diffMonths % interval !== 0) return false
+    }
+
+    return true
+  }
+
+  if (type === 'yearly' || (type === 'custom' && recurrence.unit === 'year')) {
+    const [ty, tm, targetDay] = parseDateParts(targetDateStr)
+    const [sy, sm, startDay] = parseDateParts(baseStart)
+
+    if (targetDay !== startDay || tm !== sm) return false
+
+    if (interval > 1) {
+      const diffYears = ty - sy
+      if (diffYears % interval !== 0) return false
     }
 
     return true

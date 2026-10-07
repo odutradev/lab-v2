@@ -4,9 +4,9 @@ import type { HabitDocument } from '@domains/habits/repositories/habit/types'
 
 const recurrenceSchema = new Schema(
   {
-    type: { type: String, enum: ['none', 'daily', 'weekly', 'monthly', 'custom'], default: 'none' },
+    type: { type: String, enum: ['none', 'daily', 'weekly', 'monthly', 'yearly', 'custom'], default: 'none' },
     interval: { type: Number, default: 1 },
-    unit: { type: String, enum: ['day', 'week', 'month'], default: 'week' },
+    unit: { type: String, enum: ['day', 'week', 'month', 'year'], default: 'week' },
     daysOfWeek: { type: [Number], default: [] },
     endType: { type: String, enum: ['never', 'on_date', 'after_occurrences'], default: 'never' },
     endDate: { type: String, required: false },
@@ -20,8 +20,8 @@ const habitSchema = new Schema<HabitDocument>(
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: false },
-    category: { type: String, enum: ['event', 'task', 'schedule'], default: 'event' },
-    frequency: { type: String, enum: ['daily', 'weekly', 'monthly', 'custom', 'none'], default: 'daily' },
+    category: { type: String, enum: ['event', 'habit', 'task', 'schedule'], default: 'habit' },
+    frequency: { type: String, enum: ['daily', 'weekly', 'monthly', 'yearly', 'custom', 'none'], default: 'daily' },
     startDate: { type: String, required: false },
     allDay: { type: Boolean, default: false },
     startTime: { type: String, required: false },

@@ -1,10 +1,10 @@
-export type HabitFrequency = 'daily' | 'weekly' | 'monthly' | 'custom' | 'none'
-export type HabitCategory = 'event' | 'task' | 'schedule'
+export type HabitFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom' | 'none'
+export type HabitCategory = 'habit' | 'task' | 'schedule' | 'event'
 
 export interface HabitRecurrence {
-  type: 'none' | 'daily' | 'weekly' | 'monthly' | 'custom'
+  type: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom'
   interval?: number
-  unit?: 'day' | 'week' | 'month'
+  unit?: 'day' | 'week' | 'month' | 'year'
   daysOfWeek?: number[]
   endType?: 'never' | 'on_date' | 'after_occurrences'
   endDate?: string

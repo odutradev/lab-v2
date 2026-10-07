@@ -34,6 +34,8 @@ const buildRecurrenceRule = (habit: HabitModelType): string[] | undefined => {
     freq = 'WEEKLY'
   } else if (type === 'monthly' || (type === 'custom' && rec?.unit === 'month')) {
     freq = 'MONTHLY'
+  } else if (type === 'yearly' || (type === 'custom' && rec?.unit === 'year')) {
+    freq = 'YEARLY'
   }
 
   const parts = [`RRULE:FREQ=${freq}`]
