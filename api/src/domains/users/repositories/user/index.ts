@@ -98,13 +98,31 @@ const userRepository = {
   },
   updateGoogleCalendarIntegration: async (
     id: string,
-    data: { connected: boolean; email?: string; refreshToken?: string; calendarId?: string; connectedAt?: Date }
+    data: {
+      connected: boolean
+      email?: string
+      refreshToken?: string
+      calendarId?: string
+      calendarName?: string
+      connectedAt?: Date
+    }
   ): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(
       id,
       {
         $set: {
           'integrations.googleCalendar': data
+        }
+      },
+      { new: true }
+    )
+  },
+  updateGoogleCalendarName: async (id: string, calendarName: string): Promise<UserModelType | null> => {
+    return UserModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          'integrations.googleCalendar.calendarName': calendarName
         }
       },
       { new: true }

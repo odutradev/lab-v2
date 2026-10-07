@@ -17,6 +17,7 @@ const userSchema = new Schema<UserDocument>(
         email: { type: String, required: false },
         refreshToken: { type: String, required: false, select: false },
         calendarId: { type: String, required: false },
+        calendarName: { type: String, required: false },
         connectedAt: { type: Date, required: false }
       }
     }

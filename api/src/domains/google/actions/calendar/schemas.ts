@@ -27,7 +27,16 @@ export const calendarStatusResponseSchema = registry.register(
     connected: z.boolean(),
     email: z.string().optional(),
     calendarId: z.string().optional(),
+    calendarName: z.string().optional(),
+    calendarUrl: z.string().optional(),
     connectedAt: z.date().optional()
+  })
+)
+
+export const disconnectCalendarBodySchema = registry.register(
+  'DisconnectCalendarBody',
+  z.object({
+    deleteCalendar: z.boolean().optional()
   })
 )
 
@@ -38,3 +47,20 @@ export const disconnectCalendarResponseSchema = registry.register(
     message: z.string()
   })
 )
+
+export const updateCalendarNameBodySchema = registry.register(
+  'UpdateCalendarNameBody',
+  z.object({
+    name: z.string().min(1, 'O nome da agenda é obrigatório').max(100, 'O nome da agenda deve ter no máximo 100 caracteres')
+  })
+)
+
+export const updateCalendarNameResponseSchema = registry.register(
+  'UpdateCalendarNameResponse',
+  z.object({
+    success: z.boolean(),
+    calendarName: z.string(),
+    message: z.string()
+  })
+)
+

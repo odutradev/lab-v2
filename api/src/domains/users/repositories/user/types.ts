@@ -5,6 +5,7 @@ export interface UserGoogleCalendarIntegration {
   email?: string
   refreshToken?: string
   calendarId?: string
+  calendarName?: string
   connectedAt?: Date
 }
 

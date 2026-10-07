@@ -70,19 +70,42 @@ export const revokeGoogleToken = async (token: string): Promise<boolean> => {
   }
 }
 
+export interface GoogleCalendarDetails {
+  id: string
+  summary: string
+}
+
 export const getOrCreateLabCalendar = async (
   refreshToken: string,
   summary: string = 'Lab V2'
-): Promise<string> => {
+): Promise<GoogleCalendarDetails> => {
   try {
     const calendar = createGoogleCalendarClient(refreshToken)
-    const listResponse = await calendar.calendarList.list()
-    const existingCalendar = listResponse.data.items?.find((item) => item.summary === summary)
+    const normalizedTarget = summary.trim().toLowerCase()
+    let pageToken: string | undefined = undefined
 
-    if (existingCalendar?.id) {
-      logger.info(`Found existing Google Calendar "${summary}" with id: ${existingCalendar.id}`)
-      return existingCalendar.id
-    }
+    do {
+      const listResponse = await calendar.calendarList.list({
+        pageToken,
+        maxResults: 100
+      })
+
+      const items = listResponse.data.items || []
+      const existingCalendar = items.find((item) => {
+        if (!item.summary || item.deleted) return false
+        return item.summary.trim().toLowerCase() === normalizedTarget
+      })
+
+      if (existingCalendar?.id && existingCalendar.summary) {
+        logger.info(`Found existing Google Calendar "${existingCalendar.summary}" with id: ${existingCalendar.id}`)
+        return {
+          id: existingCalendar.id,
+          summary: existingCalendar.summary
+        }
+      }
+
+      pageToken = listResponse.data.nextPageToken || undefined
+    } while (pageToken)
 
     const created = await calendar.calendars.insert({
       requestBody: {
@@ -95,11 +118,53 @@ export const getOrCreateLabCalendar = async (
       throw new Error(`Failed to retrieve id for newly created Google Calendar "${summary}"`)
     }
 
-    logger.info(`Created new Google Calendar "${summary}" with id: ${created.data.id}`)
-    return created.data.id
+    const createdSummary = created.data.summary || summary
+    logger.info(`Created new Google Calendar "${createdSummary}" with id: ${created.data.id}`)
+    return {
+      id: created.data.id,
+      summary: createdSummary
+    }
   } catch (error) {
     logger.error(`Error finding or creating Google Calendar "${summary}":`, error)
     throw error
+  }
+}
+
+export const updateGoogleCalendarSummary = async (
+  refreshToken: string,
+  calendarId: string,
+  summary: string
+): Promise<string> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    const response = await calendar.calendars.patch({
+      calendarId,
+      requestBody: {
+        summary
+      }
+    })
+
+    const updatedSummary = response.data.summary || summary
+    logger.info(`Google Calendar "${calendarId}" renamed to "${updatedSummary}"`)
+    return updatedSummary
+  } catch (error) {
+    logger.error(`Error renaming Google Calendar "${calendarId}":`, error)
+    throw error
+  }
+}
+
+export const deleteGoogleCalendar = async (
+  refreshToken: string,
+  calendarId: string
+): Promise<boolean> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    await calendar.calendars.delete({ calendarId })
+    logger.info(`Google Calendar "${calendarId}" deleted successfully`)
+    return true
+  } catch (error) {
+    logger.error(`Error deleting Google Calendar "${calendarId}":`, error)
+    return false
   }
 }
 
