@@ -9,18 +9,18 @@ import {
 import {
   TbScale,
   TbCalendarCheck,
-  TbChevronLeft,
-  TbChevronRight,
   TbCheck
 } from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
 import ActionIcon from '@components/ui/actionIcon'
+import SegmentedControl from '@components/ui/segmentedControl'
 import Modal, { ModalBody, ModalFooter } from '@components/ui/modal'
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
 import { calculateImc, getTodayDateString, formatDateDisplay } from '@stores/health/utils'
 import { WeightHistoryChart } from './weightHistoryChart'
+import { ImcGaugeChart } from './imcGaugeChart'
 import type { WeightImcCardProps } from './types'
 
 export const WeightImcCard = ({
@@ -31,35 +31,22 @@ export const WeightImcCard = ({
 }: WeightImcCardProps) => {
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
+  const activeDate = selectedDate || todayStr
 
-  // Controle de navegação do mês
-  const [currentDate, setCurrentDate] = useState(() => {
-    if (selectedDate) {
-      const parts = selectedDate.split('-').map(Number)
-      if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        return new Date(parts[0], parts[1] - 1, parts[2] || 1)
-      }
-    }
-    return new Date()
-  })
-  const [prevSelectedDate, setPrevSelectedDate] = useState(selectedDate)
+  // O mês e ano do gráfico acompanham estritamente o mês do calendário
+  const [selectedYear, selectedMonth] = useMemo(() => {
+    const parts = activeDate.split('-').map(Number)
+    const y = parts[0] || 2026
+    const m = (parts[1] || 1) - 1
+    return [y, m]
+  }, [activeDate])
 
-  if (selectedDate !== prevSelectedDate) {
-    setPrevSelectedDate(selectedDate)
-    if (selectedDate) {
-      const parts = selectedDate.split('-').map(Number)
-      if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        setCurrentDate(new Date(parts[0], parts[1] - 1, parts[2] || 1))
-      }
-    }
-  }
-
-  const selectedYear = currentDate.getFullYear()
-  const selectedMonth = currentDate.getMonth()
+  // Tipo de visualização: Linha mensal de evolução ou Medidor de Classificação de IMC
+  const [chartType, setChartType] = useState<'line' | 'gauge'>('line')
 
   // Modal de Check-in do dia
   const [isCheckinModalOpen, setIsCheckinModalOpen] = useState(false)
-  const [targetCheckinDate, setTargetCheckinDate] = useState(selectedDate || todayStr)
+  const [targetCheckinDate, setTargetCheckinDate] = useState(activeDate)
   const [inputWeight, setInputWeight] = useState<number | string>('')
 
   const latestRecord = useMemo(() => {
@@ -67,19 +54,21 @@ export const WeightImcCard = ({
     return weightHistory[weightHistory.length - 1]
   }, [weightHistory])
 
-  // Formatação do nome do mês atual
-  const monthName = useMemo(() => {
-    const raw = currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-    return raw.charAt(0).toUpperCase() + raw.slice(1)
-  }, [currentDate])
+  // Registro ativo para o medidor de IMC
+  const activeRecord = useMemo(() => {
+    if (selectedDate) {
+      const found = weightHistory.find((r) => r.date === selectedDate)
+      if (found) return found
+    }
+    return latestRecord
+  }, [weightHistory, selectedDate, latestRecord])
 
-  const handlePrevMonth = () => {
-    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
-  }
+  const activeWeight = activeRecord ? activeRecord.weight : undefined
 
-  const handleNextMonth = () => {
-    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
-  }
+  const activeImcResult = useMemo(() => {
+    if (!activeWeight || !heightCm) return null
+    return calculateImc(activeWeight, heightCm)
+  }, [activeWeight, heightCm])
 
   const handleOpenCheckin = (date?: string) => {
     const dateToUse = date || selectedDate || todayStr
@@ -123,7 +112,7 @@ export const WeightImcCard = ({
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
         <CardHeader>
           <Group justify="space-between" align="center" wrap="nowrap">
-            {/* Título e Navegação de Mês */}
+            {/* Título */}
             <Group gap="sm" align="center">
               <ThemeIcon
                 size="md"
@@ -136,63 +125,56 @@ export const WeightImcCard = ({
               </ThemeIcon>
 
               <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso & IMC</CardTitle>
-
-              {/* Seletor Minimalista do Mês */}
-              <Group gap={4} align="center" ml={4}>
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="gray"
-                  onClick={handlePrevMonth}
-                  title="Mês anterior"
-                >
-                  <TbChevronLeft size={14} />
-                </ActionIcon>
-
-                <Text size="xs" fw={600} c="dimmed" style={{ minWidth: 105, textAlign: 'center' }}>
-                  {monthName}
-                </Text>
-
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="gray"
-                  onClick={handleNextMonth}
-                  title="Próximo mês"
-                >
-                  <TbChevronRight size={14} />
-                </ActionIcon>
-              </Group>
             </Group>
 
-            {/* Ícone de Ação de Check-in */}
-            <ActionIcon
-              size="lg"
-              radius="md"
-              variant="outline"
-              onClick={() => handleOpenCheckin()}
-              title="Fazer Check-in de Peso"
-              style={{
-                backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                borderColor: 'rgba(56, 189, 248, 0.35)',
-                color: '#38bdf8'
-              }}
-            >
-              <TbCalendarCheck size={18} />
-            </ActionIcon>
+            {/* Alternador de Gráficos e Check-in */}
+            <Group gap="xs" align="center">
+              <SegmentedControl
+                size="xs"
+                value={chartType}
+                onChange={(val) => setChartType(val as 'line' | 'gauge')}
+                data={[
+                  { label: 'Evolução', value: 'line' },
+                  { label: 'Classificação', value: 'gauge' }
+                ]}
+              />
+
+              <ActionIcon
+                size="lg"
+                radius="md"
+                variant="outline"
+                onClick={() => handleOpenCheckin()}
+                title="Fazer Check-in de Peso"
+                style={{
+                  backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                  borderColor: 'rgba(56, 189, 248, 0.35)',
+                  color: '#38bdf8'
+                }}
+              >
+                <TbCalendarCheck size={18} />
+              </ActionIcon>
+            </Group>
           </Group>
         </CardHeader>
 
-        {/* Conteúdo Exclusivo: Gráfico de Linha do Mês com Peso e IMC */}
+        {/* Conteúdo Dinâmico: Gráfico de Linha ou Medidor de IMC */}
         <CardContent>
-          <WeightHistoryChart
-            records={weightHistory}
-            height={heightCm}
-            selectedYear={selectedYear}
-            selectedMonth={selectedMonth}
-            targetDate={selectedDate}
-            onOpenCheckinModal={handleOpenCheckin}
-          />
+          {chartType === 'line' ? (
+            <WeightHistoryChart
+              records={weightHistory}
+              height={heightCm}
+              selectedYear={selectedYear}
+              selectedMonth={selectedMonth}
+              targetDate={selectedDate}
+              onOpenCheckinModal={handleOpenCheckin}
+            />
+          ) : (
+            <ImcGaugeChart
+              imcResult={activeImcResult}
+              heightCm={heightCm}
+              currentWeight={activeWeight}
+            />
+          )}
         </CardContent>
       </Card>
 
