@@ -37,7 +37,7 @@ export const CompactWaterCard = ({
   const { showToast } = useToastStore()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-  const { targetMl, targetBottles, standardBottles } = useMemo(() => {
+  const { targetBottles, standardBottles } = useMemo(() => {
     return calculateDailyWaterGoal(
       currentWeight,
       extraBottlesTarget,
@@ -49,13 +49,15 @@ export const CompactWaterCard = ({
   }, [currentWeight, extraBottlesTarget, bottleMl, currentAge, currentHeight])
 
   const totalConsumedMl = consumedBottles * bottleMl
-  const progressPercent = Math.min(100, Math.round((totalConsumedMl / targetMl) * 100))
-  const isGoalReached = totalConsumedMl >= targetMl && targetMl > 0
+  const standardMl = standardBottles * bottleMl
+  const extraTargetMl = extraBottlesTarget * bottleMl
+  const isGoalReached = totalConsumedMl >= standardMl && standardMl > 0
+  const progressPercent = Math.min(100, Math.round((totalConsumedMl / standardMl) * 100))
 
   const handleBottleClick = (index: number) => {
     onToggleBottle(index)
     const nextConsumed = (consumedBottles === index + 1 ? index : index + 1) * bottleMl
-    if (nextConsumed >= targetMl && totalConsumedMl < targetMl) {
+    if (nextConsumed >= standardMl && totalConsumedMl < standardMl) {
       showToast('🎉 Parabéns! Você bateu a meta de água do dia!', 'success')
     }
   }
@@ -95,8 +97,8 @@ export const CompactWaterCard = ({
               </Text>
             </Group>
 
-            <Group gap={6} align="center">
-              {isGoalReached ? (
+            <Group gap={6} align="center" wrap="nowrap">
+              {isGoalReached && (
                 <MantineBadge
                   variant="gradient"
                   gradient={{ from: 'grape', to: 'violet' }}
@@ -106,9 +108,16 @@ export const CompactWaterCard = ({
                 >
                   Meta Atingida!
                 </MantineBadge>
-              ) : (
-                <Text size="11px" c="dimmed" fw={600}>
-                  {totalConsumedMl}ml / {targetMl}ml ({progressPercent}%)
+              )}
+
+              <Text size="11px" c="dimmed" fw={600}>
+                {totalConsumedMl}ml / {standardMl}ml
+                {!isGoalReached && ` (${progressPercent}%)`}
+              </Text>
+
+              {extraBottlesTarget > 0 && (
+                <Text size="11px" c="#c084fc" fw={700}>
+                  (+{extraTargetMl}ml extra)
                 </Text>
               )}
 
@@ -118,7 +127,7 @@ export const CompactWaterCard = ({
                   variant="subtle"
                   size="xs"
                   onClick={() => setIsEditModalOpen(true)}
-                  title="Editar volume e meta de garrafas"
+                  title="Configurar tamanho da garrafa"
                   style={{ width: 20, height: 20 }}
                 >
                   <TbPencil size={12} />
