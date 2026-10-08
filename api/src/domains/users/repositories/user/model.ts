@@ -32,6 +32,14 @@ const userSchema = new Schema<UserDocument>(
           weight: { type: Number, required: true }
         }
       ],
+      sleepHistory: [
+        {
+          _id: false,
+          date: { type: String, required: true },
+          hours: { type: Number, required: true },
+          quality: { type: Number, required: true }
+        }
+      ],
       waterDailyMap: { type: Schema.Types.Mixed, default: {} },
       waterExtraTargetMap: { type: Schema.Types.Mixed, default: {} },
       waterBottleMl: { type: Number, default: 500 },

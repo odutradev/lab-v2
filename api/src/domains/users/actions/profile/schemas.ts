@@ -10,11 +10,18 @@ export const userWeightRecordSchema = registry.register('UserWeightRecord', z.ob
   weight: z.number()
 }))
 
+export const userSleepRecordSchema = registry.register('UserSleepRecord', z.object({
+  date: z.string(),
+  hours: z.number(),
+  quality: z.number().min(1).max(5)
+}))
+
 export const userHealthSchema = registry.register('UserHealth', z.object({
   height: z.number().optional(),
   age: z.number().optional(),
   characterId: z.string().optional(),
   weightHistory: z.array(userWeightRecordSchema).optional(),
+  sleepHistory: z.array(userSleepRecordSchema).optional(),
   waterDailyMap: z.record(z.string(), z.number()).optional(),
   waterExtraTargetMap: z.record(z.string(), z.number()).optional(),
   waterBottleMl: z.number().optional(),
