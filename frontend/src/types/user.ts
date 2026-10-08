@@ -16,8 +16,25 @@ export interface UserProfile {
       connectedAt?: string
     }
   }
+  health?: UserHealth
   createdAt?: string
   updatedAt?: string
+}
+
+export interface UserWeightRecord {
+  date: string
+  weight: number
+}
+
+export interface UserHealth {
+  height?: number
+  age?: number
+  characterId?: string
+  weightHistory?: UserWeightRecord[]
+  waterDailyMap?: Record<string, number>
+  waterExtraTargetMap?: Record<string, number>
+  waterBottleMl?: number
+  waterTargetBottles?: number
 }
 
 export interface AuthTokens {
