@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Group, Text, Box, Tooltip, Badge } from '@mantine/core'
-import { TbActivity, TbInfoCircle, TbFlame, TbTrophy, TbDroplet } from 'react-icons/tb'
+import { TbActivity, TbInfoCircle } from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
 import type { MonthlyMetricsResponse } from '@actions/habits/types'
@@ -22,8 +22,6 @@ export const GeneralPerformanceCard = ({
   const stats = useMemo(() => {
     return {
       average: metrics?.averageOverallRate ?? 0,
-      perfectDays: metrics?.perfectDaysCount ?? 0,
-      trackedDays: metrics?.trackedDaysCount ?? 0,
       monthLabel: metrics?.monthLabel ?? 'Mês Atual'
     }
   }, [metrics])
@@ -193,32 +191,6 @@ export const GeneralPerformanceCard = ({
             </Group>
           )}
         </Box>
-
-        {/* Resumo compacto no rodapé */}
-        <Group justify="space-between" align="center" mt="xs" pt={6} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-          <Group gap={14}>
-            <Group gap={4} align="center">
-              <TbTrophy size={13} color="#f59e0b" />
-              <Text size="11px" c="dimmed">
-                <span style={{ color: '#fff', fontWeight: 600 }}>{stats.perfectDays}</span> dias perfeitos
-              </Text>
-            </Group>
-
-            <Group gap={4} align="center">
-              <TbFlame size={13} color="#ef4444" />
-              <Text size="11px" c="dimmed">
-                <span style={{ color: '#fff', fontWeight: 600 }}>{stats.trackedDays}</span> rastreados
-              </Text>
-            </Group>
-          </Group>
-
-          <Group gap={4} align="center">
-            <TbDroplet size={13} color="#38bdf8" />
-            <Text size="10px" c="#38bdf8" fw={500}>
-              Água inclusa
-            </Text>
-          </Group>
-        </Group>
       </CardContent>
     </Card>
   )
