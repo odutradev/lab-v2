@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 
 import { getProfileAction } from '@actions/users/profile'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
+import useHealthStore from '@stores/health'
+import { getTodayDateString } from '@stores/health/utils'
 
 import type { UseHomePageReturn } from './types'
 
@@ -13,6 +15,28 @@ export const useHomePage = (): UseHomePageReturn => {
   const navigate = useNavigate()
   const [actionLoading, setActionLoading] = useState(false)
   const [actionResult, setActionResult] = useState<string | null>(null)
+
+  const {
+    profile: healthProfile,
+    weightHistory,
+    waterDailyMap,
+    waterExtraTargetMap,
+    updateProfile: handleUpdateHealthProfile,
+    saveWeightRecord: handleSaveWeight,
+    toggleWaterBottle: handleToggleWaterBottle,
+    addExtraWaterBottle: handleAddExtraWaterBottle,
+    resetTodayWater: handleResetTodayWater
+  } = useHealthStore()
+
+  const todayStr = useMemo(() => getTodayDateString(), [])
+
+  const consumedWaterBottles = waterDailyMap[todayStr] || 0
+  const extraWaterBottlesTarget = waterExtraTargetMap[todayStr] || 0
+
+  const latestWeight = useMemo(() => {
+    if (weightHistory.length === 0) return undefined
+    return weightHistory[weightHistory.length - 1].weight
+  }, [weightHistory])
 
   const handleFetchProfile = useCallback(async () => {
     setActionLoading(true)
@@ -45,7 +69,18 @@ export const useHomePage = (): UseHomePageReturn => {
     actionResult,
     handleFetchProfile,
     handleNavigateResetPassword,
-    handleNavigateHabits
+    handleNavigateHabits,
+
+    healthProfile,
+    weightHistory,
+    latestWeight,
+    consumedWaterBottles,
+    extraWaterBottlesTarget,
+    handleUpdateHealthProfile,
+    handleSaveWeight,
+    handleToggleWaterBottle,
+    handleAddExtraWaterBottle,
+    handleResetTodayWater
   }
 }
 

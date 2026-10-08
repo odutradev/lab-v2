@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Stack, Group, Text, Box, SimpleGrid, UnstyledButton, NumberInput } from '@mantine/core'
 import { TbUser, TbRulerMeasure, TbCalendar, TbSparkles } from 'react-icons/tb'
 
@@ -6,28 +6,21 @@ import Modal from '@components/ui/modal'
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
 import { CHARACTERS } from '@stores/health/utils'
-import type { CharacterId } from '@stores/health/types'
+import type { CharacterId, HealthProfile } from '@stores/health/types'
 import { CharacterAvatar } from './characterAvatars'
 import type { EditPhysicalInfoModalProps } from './types'
 
-export const EditPhysicalInfoModal = ({
-  opened,
-  onClose,
-  currentProfile,
-  onSave
-}: EditPhysicalInfoModalProps) => {
+interface FormContentProps {
+  currentProfile: HealthProfile
+  onSave: (data: Partial<HealthProfile>) => void
+  onClose: () => void
+}
+
+const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormContentProps) => {
   const { showToast } = useToastStore()
   const [age, setAge] = useState<number | string>(currentProfile.age || '')
   const [height, setHeight] = useState<number | string>(currentProfile.height || '')
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterId>(currentProfile.characterId || 'spark')
-
-  useEffect(() => {
-    if (opened) {
-      setAge(currentProfile.age || '')
-      setHeight(currentProfile.height || '')
-      setSelectedCharacter(currentProfile.characterId || 'spark')
-    }
-  }, [opened, currentProfile])
 
   const handleConfirm = () => {
     const ageNum = Number(age)
@@ -54,6 +47,120 @@ export const EditPhysicalInfoModal = ({
   }
 
   return (
+    <Stack gap="md">
+      <Box>
+        <Text size="xs" fw={600} c="dimmed" mb="xs" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Escolha seu Personagem
+        </Text>
+        <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
+          {CHARACTERS.map((char) => {
+            const isSelected = selectedCharacter === char.id
+            return (
+              <UnstyledButton
+                key={char.id}
+                onClick={() => setSelectedCharacter(char.id)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: '12px 8px',
+                  borderRadius: 12,
+                  background: isSelected
+                    ? 'rgba(99, 102, 241, 0.15)'
+                    : 'rgba(255, 255, 255, 0.03)',
+                  border: isSelected
+                    ? '2px solid rgba(129, 140, 248, 0.9)'
+                    : '1px solid rgba(255, 255, 255, 0.08)',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+              >
+                <CharacterAvatar id={char.id} size={58} interactive={false} />
+                <Text size="xs" fw={700} c={isSelected ? 'indigo.3' : 'white'} mt={6}>
+                  {char.name}
+                </Text>
+                <Text size="10px" c="dimmed" ta="center">
+                  {char.title}
+                </Text>
+              </UnstyledButton>
+            )
+          })}
+        </SimpleGrid>
+      </Box>
+
+      <Group grow align="flex-start" gap="md">
+        <NumberInput
+          label="Idade (anos)"
+          description="Ex: 26"
+          placeholder="Ex: 26"
+          value={age}
+          onChange={(val) => setAge(typeof val === 'number' ? val : '')}
+          min={1}
+          max={120}
+          leftSection={<TbCalendar size={18} color="rgba(255, 255, 255, 0.5)" />}
+          styles={{
+            input: {
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+              color: '#fff'
+            }
+          }}
+        />
+
+        <NumberInput
+          label="Altura (cm)"
+          description="Ex: 175 para 1,75 m"
+          placeholder="Ex: 175"
+          value={height}
+          onChange={(val) => setHeight(typeof val === 'number' ? val : '')}
+          min={50}
+          max={260}
+          leftSection={<TbRulerMeasure size={18} color="rgba(255, 255, 255, 0.5)" />}
+          styles={{
+            input: {
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+              color: '#fff'
+            }
+          }}
+        />
+      </Group>
+
+      <Box
+        p="xs"
+        style={{
+          borderRadius: 8,
+          backgroundColor: 'rgba(99, 102, 241, 0.08)',
+          border: '1px solid rgba(99, 102, 241, 0.2)'
+        }}
+      >
+        <Group gap="xs" wrap="nowrap" align="flex-start">
+          <TbSparkles size={18} color="#818cf8" style={{ flexShrink: 0, marginTop: 2 }} />
+          <Text size="xs" c="indigo.2">
+            Sua altura e idade serão usadas para o cálculo real de IMC (OMS) e para a recomendação ideal de hidratação diária.
+          </Text>
+        </Group>
+      </Box>
+
+      <Group justify="flex-end" gap="sm" mt="md">
+        <Button variant="ghost" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button variant="primary" onClick={handleConfirm} leftIcon={<TbUser size={16} />}>
+          Salvar Informações
+        </Button>
+      </Group>
+    </Stack>
+  )
+}
+
+export const EditPhysicalInfoModal = ({
+  opened,
+  onClose,
+  currentProfile,
+  onSave
+}: EditPhysicalInfoModalProps) => {
+  return (
     <Modal
       opened={opened}
       onClose={onClose}
@@ -62,110 +169,13 @@ export const EditPhysicalInfoModal = ({
       variant="indigo"
       size="md"
     >
-      <Stack gap="md">
-        <Box>
-          <Text size="xs" fw={600} c="dimmed" mb="xs" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            Escolha seu Personagem
-          </Text>
-          <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
-            {CHARACTERS.map((char) => {
-              const isSelected = selectedCharacter === char.id
-              return (
-                <UnstyledButton
-                  key={char.id}
-                  onClick={() => setSelectedCharacter(char.id)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '12px 8px',
-                    borderRadius: 12,
-                    background: isSelected
-                      ? 'rgba(99, 102, 241, 0.15)'
-                      : 'rgba(255, 255, 255, 0.03)',
-                    border: isSelected
-                      ? '2px solid rgba(129, 140, 248, 0.9)'
-                      : '1px solid rgba(255, 255, 255, 0.08)',
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <CharacterAvatar id={char.id} size={58} interactive={false} />
-                  <Text size="xs" fw={700} c={isSelected ? 'indigo.3' : 'white'} mt={6}>
-                    {char.name}
-                  </Text>
-                  <Text size="10px" c="dimmed" ta="center">
-                    {char.title}
-                  </Text>
-                </UnstyledButton>
-              )
-            })}
-          </SimpleGrid>
-        </Box>
-
-        <Group grow align="flex-start" gap="md">
-          <NumberInput
-            label="Idade (anos)"
-            description="Ex: 26"
-            placeholder="Ex: 26"
-            value={age}
-            onChange={(val) => setAge(typeof val === 'number' ? val : '')}
-            min={1}
-            max={120}
-            leftSection={<TbCalendar size={18} color="rgba(255, 255, 255, 0.5)" />}
-            styles={{
-              input: {
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'rgba(255, 255, 255, 0.12)',
-                color: '#fff'
-              }
-            }}
-          />
-
-          <NumberInput
-            label="Altura (cm)"
-            description="Ex: 175 para 1,75 m"
-            placeholder="Ex: 175"
-            value={height}
-            onChange={(val) => setHeight(typeof val === 'number' ? val : '')}
-            min={50}
-            max={260}
-            leftSection={<TbRulerMeasure size={18} color="rgba(255, 255, 255, 0.5)" />}
-            styles={{
-              input: {
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'rgba(255, 255, 255, 0.12)',
-                color: '#fff'
-              }
-            }}
-          />
-        </Group>
-
-        <Box
-          p="xs"
-          style={{
-            borderRadius: 8,
-            backgroundColor: 'rgba(99, 102, 241, 0.08)',
-            border: '1px solid rgba(99, 102, 241, 0.2)'
-          }}
-        >
-          <Group gap="xs" wrap="nowrap" align="flex-start">
-            <TbSparkles size={18} color="#818cf8" style={{ flexShrink: 0, marginTop: 2 }} />
-            <Text size="xs" c="indigo.2">
-              Sua altura e idade serão usadas para o cálculo real de IMC (OMS) e para a recomendação ideal de hidratação diária.
-            </Text>
-          </Group>
-        </Box>
-
-        <Group justify="flex-end" gap="sm" mt="md">
-          <Button variant="ghost" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleConfirm} leftIcon={<TbUser size={16} />}>
-            Salvar Informações
-          </Button>
-        </Group>
-      </Stack>
+      {opened && (
+        <PhysicalInfoFormContent
+          currentProfile={currentProfile}
+          onSave={onSave}
+          onClose={onClose}
+        />
+      )}
     </Modal>
   )
 }
