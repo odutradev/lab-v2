@@ -112,7 +112,6 @@ export const CustomRecurrenceModal = ({
       }}
     >
       <Stack gap="lg" mt="xs">
-        {/* Repetir a cada: [ 1 ] [ semana v ] */}
         <Group align="center" gap="xs">
           <Text size="sm" c="#c4c7c5">
             Repetir a cada:
@@ -141,7 +140,6 @@ export const CustomRecurrenceModal = ({
           </Box>
         </Group>
 
-        {/* Repetir dias (se semana) */}
         {unit === 'week' && (
           <Stack gap={8}>
             <Text size="sm" c="#c4c7c5">
@@ -174,7 +172,6 @@ export const CustomRecurrenceModal = ({
           </Stack>
         )}
 
-        {/* Termina em */}
         <Stack gap="xs">
           <Text size="sm" c="#c4c7c5">
             Termina em
@@ -248,7 +245,6 @@ export const CustomRecurrenceModal = ({
           </Radio.Group>
         </Stack>
 
-        {/* Rodapé Cancelar / Concluir */}
         <Group justify="flex-end" gap="sm" mt="sm">
           <Button variant="ghost" onClick={onClose}>
             Cancelar

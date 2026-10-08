@@ -41,7 +41,6 @@ export const SleepTrackerCard = ({
   const todayStr = getTodayDateString()
   const activeDate = selectedDate || todayStr
 
-  // O mês e ano do gráfico acompanham estritamente o mês ativo
   const [selectedYear, selectedMonth] = useMemo(() => {
     const parts = activeDate.split('-').map(Number)
     const y = parts[0] || 2026
@@ -49,13 +48,11 @@ export const SleepTrackerCard = ({
     return [y, m]
   }, [activeDate])
 
-  // Modal de Check-in
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [targetDate, setTargetDate] = useState(activeDate)
   const [inputHours, setInputHours] = useState<number>(8)
   const [inputQuality, setInputQuality] = useState<number>(4)
 
-  // Registro ativo (da data selecionada ou de hoje)
   const activeRecord = useMemo(() => {
     if (selectedDate) {
       const found = sleepHistory.find((r) => r.date === selectedDate)
@@ -98,7 +95,6 @@ export const SleepTrackerCard = ({
     )
   }
 
-  // Preview de status no modal conforme o slider se move
   const modalStatus = useMemo(() => getSleepStatus(inputHours), [inputHours])
 
   return (
@@ -106,7 +102,6 @@ export const SleepTrackerCard = ({
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
         <CardHeader>
           <Group justify="space-between" align="center" wrap="nowrap">
-            {/* Título e Ícone */}
             <Group gap="sm" align="center">
               <ThemeIcon
                 size="md"
@@ -123,7 +118,6 @@ export const SleepTrackerCard = ({
               </CardTitle>
             </Group>
 
-            {/* Ações do Header */}
             <Group gap="xs" align="center">
               {activeRecord && (
                 <MantineBadge
@@ -154,7 +148,6 @@ export const SleepTrackerCard = ({
           </Group>
         </CardHeader>
 
-        {/* O CARD EM SI É O GRÁFICO */}
         <CardContent>
           <SleepHistoryChart
             records={sleepHistory}
@@ -166,7 +159,6 @@ export const SleepTrackerCard = ({
         </CardContent>
       </Card>
 
-      {/* Modal de Check-in de Sono (Mesmo pressuposto do peso: slider de horas e qualidade de 1 a 5 com emojis) */}
       <Modal
         opened={isModalOpen}
         onClose={handleCloseModal}
@@ -181,7 +173,6 @@ export const SleepTrackerCard = ({
       >
         <ModalBody>
           <Stack gap="lg" pt="xs">
-            {/* Slider com Horas de Sono */}
             <Box>
               <Group justify="space-between" align="baseline" mb="xs">
                 <Group gap={6} align="center">
@@ -246,7 +237,6 @@ export const SleepTrackerCard = ({
               </Text>
             </Box>
 
-            {/* Avaliação de Qualidade de 1 a 5 com Emojis (Muito Ruim a Muito Bom) */}
             <Box>
               <Text size="sm" fw={600} c="#fff" mb="xs">
                 Qualidade da Noite (1 a 5)

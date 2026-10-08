@@ -46,7 +46,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
           transition: 'all 0.15s ease'
         }}
       >
-        {/* SVG da Garrafa Compacta */}
         <Box style={{ width: 18, height: 32, position: 'relative' }}>
           <svg
             viewBox="0 0 20 36"
@@ -62,7 +61,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               </linearGradient>
             </defs>
 
-            {/* Tampa */}
             <rect
               x="7"
               y="1"
@@ -72,7 +70,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               fill={isFilled ? '#38bdf8' : 'rgba(255, 255, 255, 0.25)'}
             />
 
-            {/* Gargalo */}
             <rect
               x="6"
               y="4"
@@ -82,7 +79,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               fill={isFilled ? '#0284c7' : 'rgba(255, 255, 255, 0.15)'}
             />
 
-            {/* Corpo */}
             <path
               d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
               fill={isFilled ? `url(#compactWater-${index})` : 'rgba(255, 255, 255, 0.03)'}
@@ -113,7 +109,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
           )}
         </Box>
 
-        {/* Indicador numérico */}
         <Text
           size="9px"
           fw={600}
@@ -124,7 +119,6 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
         </Text>
       </UnstyledButton>
 
-      {/* Botão de remoção para garrafas extras */}
       {isExtra && onRemove && (
         <UnstyledButton
           onClick={(e) => {
@@ -200,7 +194,6 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Tampa */}
           <rect
             x="7"
             y="1"
@@ -211,7 +204,6 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             strokeDasharray="2 2"
             strokeWidth="1"
           />
-          {/* Gargalo */}
           <rect
             x="6"
             y="4"
@@ -222,7 +214,6 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             strokeDasharray="2 2"
             strokeWidth="1"
           />
-          {/* Corpo Pontilhado */}
           <path
             d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
             stroke="rgba(255, 255, 255, 0.3)"

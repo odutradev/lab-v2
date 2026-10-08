@@ -12,13 +12,13 @@ export interface CharacterInfo {
 
 export interface HealthProfile {
   age?: number
-  height?: number // em cm (ex: 175)
+  height?: number
   characterId: CharacterId
 }
 
 export interface WeightRecord {
-  date: string // YYYY-MM-DD
-  weight: number // em kg
+  date: string
+  weight: number
 }
 
 export type ImcCategoryKey = 'underweight' | 'normal' | 'overweight' | 'obesity1' | 'obesity2'
@@ -37,7 +37,7 @@ export interface ImcResult {
   classification: ImcClassification
   minIdealWeight: number
   maxIdealWeight: number
-  positionPercent: number // 0% a 100% para o medidor visual
+  positionPercent: number
 }
 
 export interface WaterDayData {
@@ -50,9 +50,9 @@ export interface WaterDayData {
 }
 
 export interface SleepRecord {
-  date: string // YYYY-MM-DD
-  hours: number // Horas de sono (ex: 7.5)
-  quality: number // 1 a 5 (Muito ruim a Muito bom)
+  date: string
+  hours: number
+  quality: number
 }
 
 export interface SleepQualityOption {
@@ -66,10 +66,10 @@ export interface HealthStoreState {
   profile: HealthProfile
   weightHistory: WeightRecord[]
   sleepHistory: SleepRecord[]
-  waterDailyMap: Record<string, number> // YYYY-MM-DD -> garrafas consumidas
-  waterExtraTargetMap: Record<string, number> // YYYY-MM-DD -> garrafas extras adicionadas à meta
-  waterBottleMl: number // ml por garrafa (default: 500)
-  waterTargetBottles?: number // quantidade fixa de garrafas de meta (se definida)
+  waterDailyMap: Record<string, number>
+  waterExtraTargetMap: Record<string, number>
+  waterBottleMl: number
+  waterTargetBottles?: number
 
   syncFromApi: (data?: Partial<UserHealth>) => void
   updateProfile: (data: Partial<HealthProfile>) => Promise<void>

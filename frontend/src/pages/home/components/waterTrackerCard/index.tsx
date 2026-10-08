@@ -33,7 +33,6 @@ export const WaterTrackerCard = ({
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
 
-  // Meta calculada com base no peso (35ml/kg)
   const { targetMl, targetBottles, standardBottles } = useMemo(() => {
     return calculateDailyWaterGoal(currentWeight, extraBottlesTarget)
   }, [currentWeight, extraBottlesTarget])
@@ -96,7 +95,6 @@ export const WaterTrackerCard = ({
 
       <CardContent>
         <Stack gap="md">
-          {/* Barra de Progresso e Métricas Numéricas Minimalistas */}
           <Box
             style={{
               borderRadius: 10,
@@ -139,7 +137,6 @@ export const WaterTrackerCard = ({
             />
           </Box>
 
-          {/* Garrafinhas Interativas Compactas */}
           <Box>
             <Group justify="space-between" align="center" mb={8}>
               <Text size="xs" fw={600} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -178,7 +175,6 @@ export const WaterTrackerCard = ({
             </Box>
           </Box>
 
-          {/* Ações Rápidas no Rodapé */}
           <Group justify="space-between" align="center" pt={4} wrap="wrap">
             <Button
               variant="outline"

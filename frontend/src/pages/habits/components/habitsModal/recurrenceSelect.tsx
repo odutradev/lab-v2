@@ -52,7 +52,6 @@ export const RecurrenceSelect = ({
   const [isOpen, setIsOpen] = useState(false)
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false)
 
-  // Informações calculadas a partir da data de início
   const dateInfo = useMemo(() => {
     const [y, m, d] = (startDate || '2026-01-01').split('-').map(Number)
     const dateObj = new Date(y, m - 1, d)
@@ -70,7 +69,6 @@ export const RecurrenceSelect = ({
     }
   }, [startDate])
 
-  // Opções pré-definidas estilo Google Calendar
   const presetOptions = useMemo(() => {
     return [
       {
@@ -114,7 +112,6 @@ export const RecurrenceSelect = ({
     ]
   }, [dateInfo])
 
-  // Label atual do seletor
   const currentLabel = useMemo(() => {
     if (!recurrence || recurrence.type === 'none') {
       return 'Não se repete'
@@ -255,7 +252,6 @@ export const RecurrenceSelect = ({
               }}
             />
 
-            {/* Opção Personalizar... estilo Google Calendar */}
             <Box
               onClick={handleOpenCustom}
               px="md"
@@ -283,7 +279,6 @@ export const RecurrenceSelect = ({
         </Popover.Dropdown>
       </Popover>
 
-      {/* Modal de Personalização estilo Google */}
       <CustomRecurrenceModal
         isOpen={isCustomModalOpen}
         initialRecurrence={recurrence}

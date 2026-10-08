@@ -3,7 +3,6 @@ import { Box, Text, Group } from '@mantine/core'
 import { getTodayDateString, calculateImc } from '@stores/health/utils'
 import type { WeightHistoryChartProps } from './types'
 
-// Gera caminho Bézier suave (Catmull-Rom para Bézier cúbico)
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return ''
   if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
@@ -66,18 +65,15 @@ export const WeightHistoryChart = ({
     imcAreaD,
     axisTicks
   } = useMemo(() => {
-    // Quantidade de dias no mês selecionado
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate()
     const monthPrefix = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`
 
-    // Registros específicos desse mês ordenados por data
     const filtered = records
       .filter((r) => r.date.startsWith(monthPrefix))
       .sort((a, b) => a.date.localeCompare(b.date))
 
     const effectiveHeight = heightCm && heightCm > 0 ? heightCm : 170
 
-    // Mapeamento dos dias com registros
     const recordedDays = filtered.map((r) => {
       const dayNum = parseInt(r.date.split('-')[2], 10)
       const imcResult = calculateImc(r.weight, effectiveHeight)
@@ -117,13 +113,10 @@ export const WeightHistoryChart = ({
     const innerW = w - pX * 2
     const innerH = h - pTop - pBottom
 
-    // Zona superior para Peso (42%) e inferior para IMC (42%)
     const zoneH = innerH * 0.42
     const zoneSpacing = innerH * 0.16
 
-    // Mapeia coordenadas dos pontos registrados ao longo dos dias do mês
     const pointsWithCoords = recordedDays.map((d) => {
-      // Coordenada X baseada no dia do mês (1 a daysInMonth)
       const x = pX + ((d.day - 1) / (daysInMonth - 1)) * innerW
       const weightY = pTop + zoneH - ((d.weight - chartMinW) / rangeW) * zoneH
       const imcY = pTop + zoneH + zoneSpacing + zoneH - ((d.imc - chartMinI) / rangeI) * zoneH
@@ -153,7 +146,6 @@ export const WeightHistoryChart = ({
 
     const todayP = pointsWithCoords.find((p) => p.isToday) || null
 
-    // Ticks para o eixo X (dias 1, 5, 10, 15, 20, 25, fim do mês)
     const ticks: { day: number; x: number }[] = []
     const step = 5
     for (let day = 1; day <= daysInMonth; day += step) {
@@ -191,7 +183,6 @@ export const WeightHistoryChart = ({
 
   return (
     <Box>
-      {/* Legenda das Linhas do Mês */}
       <Group justify="space-between" align="center" mb={10}>
         <Group gap="md" align="center">
           <Group gap={6} align="center">
@@ -221,7 +212,6 @@ export const WeightHistoryChart = ({
         )}
       </Group>
 
-      {/* Gráfico SVG de Linha do Mês */}
       <Box
         style={{
           borderRadius: 12,
@@ -238,7 +228,6 @@ export const WeightHistoryChart = ({
           onMouseLeave={() => setHoveredDay(null)}
         >
           <defs>
-            {/* Gradiente da Linha de Peso */}
             <linearGradient id="monthWeightAreaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.20" />
               <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
@@ -248,7 +237,6 @@ export const WeightHistoryChart = ({
               <stop offset="100%" stopColor="#38bdf8" />
             </linearGradient>
 
-            {/* Gradiente da Linha de IMC */}
             <linearGradient id="monthImcAreaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#c084fc" stopOpacity="0.16" />
               <stop offset="100%" stopColor="#c084fc" stopOpacity="0.0" />
@@ -266,7 +254,6 @@ export const WeightHistoryChart = ({
             </filter>
           </defs>
 
-          {/* Linhas guias horizontais */}
           <line
             x1={paddingX}
             y1={paddingTop}
@@ -291,7 +278,6 @@ export const WeightHistoryChart = ({
             stroke="rgba(255, 255, 255, 0.06)"
           />
 
-          {/* Guias verticais para os ticks do mês */}
           {axisTicks.map((tick) => (
             <g key={tick.day}>
               <line
@@ -314,11 +300,9 @@ export const WeightHistoryChart = ({
             </g>
           ))}
 
-          {/* Áreas preenchidas */}
           {weightAreaD && <path d={weightAreaD} fill="url(#monthWeightAreaGrad)" />}
           {imcAreaD && <path d={imcAreaD} fill="url(#monthImcAreaGrad)" />}
 
-          {/* LINHA 1: PESO DO MÊS */}
           {weightPathD && (
             <path
               d={weightPathD}
@@ -330,7 +314,6 @@ export const WeightHistoryChart = ({
             />
           )}
 
-          {/* LINHA 2: IMC DO MÊS */}
           {imcPathD && (
             <path
               d={imcPathD}
@@ -342,7 +325,6 @@ export const WeightHistoryChart = ({
             />
           )}
 
-          {/* Pontos de cada dia registrado no mês */}
           {activePoints.map((p) => {
             const isHighlighted = p.isTarget || (p.isToday && !targetDate)
 
@@ -353,7 +335,6 @@ export const WeightHistoryChart = ({
                 onMouseEnter={() => setHoveredDay(p)}
                 onClick={() => onOpenCheckinModal(p.date)}
               >
-                {/* Linha vertical conectando Peso e IMC naquele dia */}
                 <line
                   x1={p.x}
                   y1={p.weightY}
@@ -363,12 +344,10 @@ export const WeightHistoryChart = ({
                   strokeDasharray="1 2"
                 />
 
-                {/* PONTO DE PESO */}
                 {isHighlighted ? (
                   <g filter="url(#monthGlowWeight)">
                     <circle cx={p.x} cy={p.weightY} r="6" fill="#0b1329" stroke="#38bdf8" strokeWidth="2.4" />
                     <circle cx={p.x} cy={p.weightY} r="2" fill="#ffffff" />
-                    {/* Tag de Peso com valor */}
                     <g>
                       <rect
                         x={p.x - 22}
@@ -406,12 +385,10 @@ export const WeightHistoryChart = ({
                   </g>
                 )}
 
-                {/* PONTO DE IMC */}
                 {isHighlighted ? (
                   <g filter="url(#monthGlowImc)">
                     <circle cx={p.x} cy={p.imcY} r="5.5" fill="#0b1329" stroke="#c084fc" strokeWidth="2.2" />
                     <circle cx={p.x} cy={p.imcY} r="1.8" fill="#ffffff" />
-                    {/* Tag de IMC com valor */}
                     <g>
                       <rect
                         x={p.x - 20}
@@ -452,7 +429,6 @@ export const WeightHistoryChart = ({
             )
           })}
 
-          {/* Destaque flutuante ao passar o mouse sobre o ponto */}
           {hoveredDay && (
             <g pointerEvents="none">
               <line
@@ -488,7 +464,6 @@ export const WeightHistoryChart = ({
             </g>
           )}
 
-          {/* Mensagem quando não houver nenhum check-in no mês */}
           {!hasData && (
             <g>
               <text

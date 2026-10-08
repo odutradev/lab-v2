@@ -33,7 +33,6 @@ export const WeightImcCard = ({
   const todayStr = getTodayDateString()
   const activeDate = selectedDate || todayStr
 
-  // O mês e ano do gráfico acompanham estritamente o mês do calendário
   const [selectedYear, selectedMonth] = useMemo(() => {
     const parts = activeDate.split('-').map(Number)
     const y = parts[0] || 2026
@@ -41,10 +40,8 @@ export const WeightImcCard = ({
     return [y, m]
   }, [activeDate])
 
-  // Tipo de visualização: Linha mensal de evolução ou Medidor de Classificação de IMC
   const [chartType, setChartType] = useState<'line' | 'gauge'>('line')
 
-  // Modal de Check-in do dia
   const [isCheckinModalOpen, setIsCheckinModalOpen] = useState(false)
   const [targetCheckinDate, setTargetCheckinDate] = useState(activeDate)
   const [inputWeight, setInputWeight] = useState<number | string>('')
@@ -54,7 +51,6 @@ export const WeightImcCard = ({
     return weightHistory[weightHistory.length - 1]
   }, [weightHistory])
 
-  // Registro ativo para o medidor de IMC
   const activeRecord = useMemo(() => {
     if (selectedDate) {
       const found = weightHistory.find((r) => r.date === selectedDate)
@@ -100,7 +96,6 @@ export const WeightImcCard = ({
     )
   }
 
-  // Preview de IMC em tempo real dentro do modal
   const previewImc = useMemo(() => {
     const w = Number(inputWeight)
     if (!w || !heightCm) return null
@@ -112,7 +107,6 @@ export const WeightImcCard = ({
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
         <CardHeader>
           <Group justify="space-between" align="center" wrap="nowrap">
-            {/* Título */}
             <Group gap="sm" align="center">
               <ThemeIcon
                 size="md"
@@ -127,7 +121,6 @@ export const WeightImcCard = ({
               <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso & IMC</CardTitle>
             </Group>
 
-            {/* Alternador de Gráficos e Check-in */}
             <Group gap="xs" align="center">
               <SegmentedControl
                 size="xs"
@@ -157,7 +150,6 @@ export const WeightImcCard = ({
           </Group>
         </CardHeader>
 
-        {/* Conteúdo Dinâmico: Gráfico de Linha ou Medidor de IMC */}
         <CardContent>
           {chartType === 'line' ? (
             <WeightHistoryChart
@@ -178,7 +170,6 @@ export const WeightImcCard = ({
         </CardContent>
       </Card>
 
-      {/* Modal Minimalista de Check-in */}
       <Modal
         opened={isCheckinModalOpen}
         onClose={handleCloseCheckin}

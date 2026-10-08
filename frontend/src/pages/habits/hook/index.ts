@@ -97,8 +97,6 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
-
-  // Estados de confirmação de escopo de recorrência (Google Calendar)
   const [isScopeModalOpen, setIsScopeModalOpen] = useState<boolean>(false)
   const [scopeActionType, setScopeActionType] = useState<RecurringActionType>('delete')
   const [pendingScopeAction, setPendingScopeAction] = useState<{
@@ -411,7 +409,6 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
       return
     }
 
-    // Não recorrente: exclusão direta
     try {
       await removeHabitAction(habitId, { mode: 'all' })
       showToast('Item removido com sucesso.', 'info')

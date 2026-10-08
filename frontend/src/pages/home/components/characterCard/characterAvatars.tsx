@@ -77,85 +77,58 @@ export const CharacterAvatar = ({
           </filter>
         </defs>
 
-        {/* Personagem Spark (Padrão: Robô Companheiro Futurista) */}
         {id === 'spark' && (
           <g>
-            {/* Antena / topo */}
             <circle cx="50" cy="18" r="4.5" fill="#38bdf8" filter="url(#glow)" />
             <path d="M50 22 V30" stroke="#818cf8" strokeWidth="3" strokeLinecap="round" />
-            {/* Orelhas / fones */}
             <rect x="18" y="44" width="6" height="16" rx="3" fill="#6366f1" />
             <rect x="76" y="44" width="6" height="16" rx="3" fill="#6366f1" />
-            {/* Cabeça */}
             <rect x="23" y="30" width="54" height="44" rx="14" fill="url(#bodyGradSpark)" />
-            {/* Visor */}
             <rect x="30" y="40" width="40" height="22" rx="8" fill="#0f172a" />
-            {/* Olhos cibernéticos alegres */}
             <circle cx="41" cy="51" r="4" fill="url(#visorGradSpark)" filter="url(#glow)" />
             <circle cx="59" cy="51" r="4" fill="url(#visorGradSpark)" filter="url(#glow)" />
             <circle cx="42.5" cy="49.5" r="1.5" fill="#ffffff" />
             <circle cx="60.5" cy="49.5" r="1.5" fill="#ffffff" />
-            {/* Sorriso do visor */}
             <path d="M47 56 Q50 59 53 56" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
-            {/* Corpo / Ombros */}
             <path d="M30 76 C30 72 38 72 50 72 C62 72 70 72 70 76 C76 83 78 92 78 96 H22 C22 92 24 83 30 76 Z" fill="#312e81" />
             <circle cx="50" cy="84" r="3.5" fill="#38bdf8" filter="url(#glow)" />
           </g>
         )}
 
-        {/* Personagem Atlas (Atleta & Força) */}
         {id === 'athlete' && (
           <g>
-            {/* Faixa na cabeça */}
             <path d="M26 40 Q50 36 74 40" stroke="#34d399" strokeWidth="7" strokeLinecap="round" />
-            {/* Cabeça */}
             <ellipse cx="50" cy="48" rx="24" ry="26" fill="url(#bodyGradAtlas)" />
-            {/* Olhos focados */}
             <ellipse cx="40" cy="47" rx="3.5" ry="4" fill="#064e3b" />
             <ellipse cx="60" cy="47" rx="3.5" ry="4" fill="#064e3b" />
             <circle cx="41" cy="45.5" r="1.2" fill="#fff" />
             <circle cx="61" cy="45.5" r="1.2" fill="#fff" />
-            {/* Sorriso confiante */}
             <path d="M44 57 Q50 63 56 57" stroke="#064e3b" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Ombros fortes */}
             <path d="M22 75 C16 83 14 92 14 96 H86 C86 92 84 83 78 75 C70 70 60 72 50 72 C40 72 30 70 22 75 Z" fill="#047857" />
             <path d="M42 76 L50 84 L58 76" stroke="#34d399" strokeWidth="3" strokeLinecap="round" />
           </g>
         )}
 
-        {/* Personagem Luna (Zen & Mente) */}
         {id === 'zen' && (
           <g>
-            {/* Halo sutil */}
             <ellipse cx="50" cy="22" rx="16" ry="4" stroke="#e9d5ff" strokeWidth="2" filter="url(#glow)" />
-            {/* Cabelo suave */}
             <path d="M26 50 C24 32 36 26 50 26 C64 26 76 32 74 50 C74 58 70 66 70 66 C70 66 65 52 50 52 C35 52 30 66 30 66 C30 66 26 58 26 50 Z" fill="url(#bodyGradLuna)" />
-            {/* Rosto */}
             <circle cx="50" cy="48" r="21" fill="#fae8ff" />
-            {/* Olhos serenos fechados em meditação */}
             <path d="M38 48 Q43 52 46 48" stroke="#7e22ce" strokeWidth="2.5" strokeLinecap="round" />
             <path d="M54 48 Q57 52 62 48" stroke="#7e22ce" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Sorriso leve */}
             <path d="M46 56 Q50 59 54 56" stroke="#7e22ce" strokeWidth="2" strokeLinecap="round" />
-            {/* Ombros elegantes */}
             <path d="M25 76 C20 84 18 92 18 96 H82 C82 92 80 84 75 76 C68 70 58 72 50 72 C42 72 32 70 25 76 Z" fill="#6b21a8" />
             <circle cx="50" cy="80" r="3" fill="#e9d5ff" filter="url(#glow)" />
           </g>
         )}
 
-        {/* Personagem Neo (Cyber & Performance) */}
         {id === 'cyber' && (
           <g>
-            {/* Elmo cyberpunk */}
             <path d="M24 38 C24 28 35 22 50 22 C65 22 76 28 76 38 V66 C76 72 65 76 50 76 C35 76 24 72 24 66 V38 Z" fill="#0f172a" />
-            {/* Linhas de néon laterais */}
             <path d="M20 46 V58" stroke="#00f2fe" strokeWidth="3" strokeLinecap="round" filter="url(#glow)" />
             <path d="M80 46 V58" stroke="#00f2fe" strokeWidth="3" strokeLinecap="round" filter="url(#glow)" />
-            {/* Visor envolvente */}
             <path d="M27 42 H73 V56 H27 Z" fill="url(#bodyGradNeo)" filter="url(#glow)" />
-            {/* Pulso digital no visor */}
             <path d="M33 49 H43 L46 45 L49 53 L52 47 L55 51 H67" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            {/* Ombros com armadura */}
             <path d="M20 78 L34 72 L50 76 L66 72 L80 78 L84 96 H16 L20 78 Z" fill="#1e293b" stroke="#0ea5e9" strokeWidth="1.5" />
           </g>
         )}

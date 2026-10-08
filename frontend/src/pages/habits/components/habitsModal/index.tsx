@@ -132,7 +132,6 @@ export const HabitsModal = ({
       setAllDay(false)
       setStartTime('')
       setEndTime('')
-      // Para Hábito, padrão é repetir diariamente; para tarefa/agenda padrão é não repetir
       setRecurrence({ type: 'daily', interval: 1 })
       setError('')
     }
@@ -141,7 +140,6 @@ export const HabitsModal = ({
   const handleCategoryChange = (newCat: HabitCategory) => {
     setCategory(newCat)
     if (!initialHabit) {
-      // Ajusta repetição sugerida com base no tipo
       if (newCat === 'habit') {
         setRecurrence({ type: 'daily', interval: 1 })
       } else {
@@ -165,7 +163,6 @@ export const HabitsModal = ({
     const cleanStartTime = !allDay && startTime && startTime.trim() ? startTime.trim() : null
     const cleanEndTime = !allDay && endTime && endTime.trim() ? endTime.trim() : null
 
-    // Mapeia frequência para manter compatibilidade com sistemas existentes
     let frequency: HabitFrequency = 'none'
     if (recurrence.type === 'daily') frequency = 'daily'
     else if (recurrence.type === 'weekly') frequency = 'weekly'
@@ -225,7 +222,6 @@ export const HabitsModal = ({
     >
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
-          {/* Seletor de Tipo de Item: Hábito / Tarefa / Agenda (Minimalista e Harmonioso) */}
           <Box>
             <Text size="xs" fw={500} c="#d1d5db" mb={6}>
               Tipo de item
@@ -275,7 +271,6 @@ export const HabitsModal = ({
             </Box>
           </Box>
 
-          {/* Título do Item */}
           <Box>
             <TextInput
               label={currentType.nameLabel}
@@ -310,7 +305,6 @@ export const HabitsModal = ({
             />
           </Box>
 
-          {/* Bloco Temporal: Data e Repetição (50% / 50%) */}
           <Group grow align="flex-start" gap="md">
             <Box>
               <TextInput
@@ -349,7 +343,6 @@ export const HabitsModal = ({
             </Box>
           </Group>
 
-          {/* Bloco Temporal: Horários (Início 50% / Término 50% ou Dia Inteiro) */}
           <TimeRangePicker
             allDay={allDay}
             onAllDayChange={setAllDay}
@@ -359,7 +352,6 @@ export const HabitsModal = ({
             onEndTimeChange={setEndTime}
           />
 
-          {/* Descrição Opcional */}
           <Box>
             <Textarea
               label="Descrição ou observações (opcional)"
@@ -387,7 +379,6 @@ export const HabitsModal = ({
             />
           </Box>
 
-          {/* Rodapé com Ações */}
           <Group
             justify="space-between"
             align="center"

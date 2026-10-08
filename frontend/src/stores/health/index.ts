@@ -157,7 +157,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const date = customDate || getTodayDateString()
       const sanitizedWeight = Math.round(weight * 10) / 10
 
-      // Filtra o registro existente na data de hoje e atualiza ou insere (1 registro por dia)
       const filtered = current.weightHistory.filter((item) => item.date !== date)
       const updated = sortWeightRecords([...filtered, { date, weight: sanitizedWeight }])
 
@@ -207,9 +206,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const date = customDate || getTodayDateString()
       const currentConsumed = current.waterDailyMap[date] || 0
 
-      // Se o usuário clicar na garrafa index (0-indexed):
-      // Se clicou na garrafa atual ou além, define até ela (index + 1)
-      // Se clicou na última garrafa consumida, remove ela (index)
       let newCount = index + 1
       if (currentConsumed === index + 1) {
         newCount = index

@@ -7,7 +7,6 @@ import {
 } from '@stores/health/utils'
 import type { SleepHistoryChartProps } from './types'
 
-// Gera caminho Bézier suave (Catmull-Rom para Bézier cúbico)
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return ''
   if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
@@ -97,7 +96,6 @@ export const SleepHistoryChart = ({
     const sumH = hoursList.reduce((acc, h) => acc + h, 0)
     const avgH = hoursList.length > 0 ? sumH / hoursList.length : 0
 
-    // Qualidade predominante
     const qualityCounts: Record<number, number> = {}
     recordedDays.forEach((d) => {
       qualityCounts[d.quality] = (qualityCounts[d.quality] || 0) + 1
@@ -111,7 +109,6 @@ export const SleepHistoryChart = ({
       }
     })
 
-    // Escala Y com limites confortáveis (garante no mínimo 4h a 11h)
     const chartMinH = Math.min(4, Math.floor(minH - 1))
     const chartMaxH = Math.max(11, Math.ceil(maxH + 1))
     const rangeH = chartMaxH - chartMinH || 1
@@ -128,11 +125,9 @@ export const SleepHistoryChart = ({
       return pTop + innerH - ((val - chartMinH) / rangeH) * innerH
     }
 
-    // Coordenadas da faixa recomendada de sono (7h a 9h)
     const tZoneY1 = Math.round(getYForHours(9) * 10) / 10
     const tZoneY2 = Math.round(getYForHours(7) * 10) / 10
 
-    // Mapeamento dos pontos registrados
     const pointsWithCoords = recordedDays.map((d) => {
       const x = pX + ((d.day - 1) / (daysInMonth - 1)) * innerW
       const y = getYForHours(d.hours)
@@ -151,7 +146,6 @@ export const SleepHistoryChart = ({
         ? `${pDSleep} L ${coordPoints[coordPoints.length - 1].x} ${h - pBottom} L ${coordPoints[0].x} ${h - pBottom} Z`
         : ''
 
-    // Ticks do eixo X
     const ticks: { day: number; x: number }[] = []
     const step = 5
     for (let day = 1; day <= daysInMonth; day += step) {
@@ -162,7 +156,6 @@ export const SleepHistoryChart = ({
       ticks.push({ day: daysInMonth, x: pX + innerW })
     }
 
-    // Ticks do eixo Y (4h, 7h, 9h, 11h)
     const yTickValues = [4, 7, 9, 11]
     const calculatedYTicks = yTickValues.map((val) => ({
       val,
@@ -194,7 +187,6 @@ export const SleepHistoryChart = ({
 
   return (
     <Box>
-      {/* Legenda e Métricas do Mês */}
       <Group justify="space-between" align="center" mb={10} wrap="nowrap">
         <Group gap="md" align="center">
           <Group gap={6} align="center">
@@ -257,7 +249,6 @@ export const SleepHistoryChart = ({
         )}
       </Group>
 
-      {/* Gráfico SVG */}
       <Box
         style={{
           borderRadius: 12,
@@ -296,7 +287,6 @@ export const SleepHistoryChart = ({
             </filter>
           </defs>
 
-          {/* Faixa Recomendada de Sono (7h a 9h) */}
           <rect
             x={paddingX}
             y={targetZoneY1}
@@ -321,7 +311,6 @@ export const SleepHistoryChart = ({
             strokeDasharray="3 3"
           />
 
-          {/* Linha base inferior */}
           <line
             x1={paddingX}
             y1={height - paddingBottom}
@@ -330,7 +319,6 @@ export const SleepHistoryChart = ({
             stroke="rgba(255, 255, 255, 0.06)"
           />
 
-          {/* Rótulos do Eixo Y */}
           {yTicks.map((t) => (
             <text
               key={t.val}
@@ -346,7 +334,6 @@ export const SleepHistoryChart = ({
             </text>
           ))}
 
-          {/* Rótulos do Eixo X (dias do mês) */}
           {axisTicks.map((tick) => (
             <g key={tick.day}>
               <line
@@ -369,7 +356,6 @@ export const SleepHistoryChart = ({
             </g>
           ))}
 
-          {/* Linha e Área do Sono */}
           {sleepAreaD && <path d={sleepAreaD} fill="url(#sleepAreaGrad)" />}
           {sleepPathD && (
             <path
@@ -382,7 +368,6 @@ export const SleepHistoryChart = ({
             />
           )}
 
-          {/* Pontos Registrados */}
           {activePoints.map((point) => {
             const isHovered = hoveredPoint?.date === point.date
             const qualityOpt = getSleepQualityOption(point.quality)
@@ -394,7 +379,6 @@ export const SleepHistoryChart = ({
                 onClick={() => onOpenCheckinModal(point.date)}
                 onMouseEnter={() => setHoveredPoint(point)}
               >
-                {/* Linha vertical de foco ao passar o mouse */}
                 {isHovered && (
                   <line
                     x1={point.x}
@@ -406,7 +390,6 @@ export const SleepHistoryChart = ({
                   />
                 )}
 
-                {/* Círculo com halo de destaque */}
                 <circle
                   cx={point.x}
                   cy={point.y}
@@ -417,7 +400,6 @@ export const SleepHistoryChart = ({
                   filter={isHovered ? 'url(#sleepGlow)' : undefined}
                 />
 
-                {/* Exibição sutil do Emoji acima do ponto */}
                 <text
                   x={point.x}
                   y={point.y - 8}
@@ -432,7 +414,6 @@ export const SleepHistoryChart = ({
           })}
         </svg>
 
-        {/* Tooltip Flutuante Interativo */}
         {hoveredPoint && (
           <Box
             style={{
@@ -475,7 +456,6 @@ export const SleepHistoryChart = ({
           </Box>
         )}
 
-        {/* Estado sem dados no mês */}
         {!hasData && (
           <Box
             style={{

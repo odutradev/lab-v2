@@ -38,7 +38,6 @@ const EditWaterForm = ({
 }: EditWaterFormProps) => {
   const [bottleMl, setBottleMl] = useState<number>(currentBottleMl || 500)
 
-  // Cálculo da recomendação automática personalizada conforme peso, idade e altura
   const idealDailyMl = calculateIdealWaterMl(currentWeight, currentAge, currentHeight)
   const automaticBottles = Math.max(1, Math.ceil(idealDailyMl / (bottleMl || 500)))
 
@@ -57,7 +56,6 @@ const EditWaterForm = ({
 
   return (
     <Stack gap="md">
-      {/* Banner Informativo Baseado no Perfil Físico */}
       <Box
         style={{
           padding: '10px 12px',
@@ -88,7 +86,6 @@ const EditWaterForm = ({
         </Group>
       </Box>
 
-      {/* Campo: Volume de cada garrafinha */}
       <Box>
         <Text size="xs" fw={600} c="dimmed" mb={6}>
           Volume por garrafa (ml)
@@ -106,7 +103,6 @@ const EditWaterForm = ({
           leftIcon={<TbBottle size={16} />}
         />
 
-        {/* Atalhos rápidos para tamanhos comuns */}
         <Group gap={6} mt={8}>
           {PRESET_BOTTLE_SIZES.map((size) => {
             const isSelected = bottleMl === size
@@ -133,7 +129,6 @@ const EditWaterForm = ({
         </Group>
       </Box>
 
-      {/* Resumo da Meta Automática Calculada */}
       <Box
         style={{
           padding: '10px 12px',
@@ -153,7 +148,6 @@ const EditWaterForm = ({
         </Text>
       </Box>
 
-      {/* Rodapé com Ações */}
       <Group justify="flex-end" gap="sm" mt="xs">
         <Button variant="outline" size="sm" onClick={onClose}>
           Cancelar

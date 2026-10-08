@@ -98,7 +98,6 @@ export const ImcGaugeChart = ({
       }}
     >
       <Stack gap="md">
-        {/* Topo em linha única sem qualquer sobreposição */}
         <Group justify="space-between" align="center" wrap="wrap">
           <Group gap="xs" align="center">
             <Text fw={800} size="24px" c="white" style={{ lineHeight: 1 }}>
@@ -132,7 +131,6 @@ export const ImcGaugeChart = ({
           </Group>
         </Group>
 
-        {/* Barra segmentada limpa sem marcadores sobrepostos */}
         <Group gap={4} grow wrap="nowrap">
           {BANDS.map((b, idx) => {
             const isCurrent = idx === activeIndex
@@ -152,7 +150,6 @@ export const ImcGaugeChart = ({
           })}
         </Group>
 
-        {/* 5 Blocos retangulares de classificação */}
         <Box
           style={{
             display: 'grid',

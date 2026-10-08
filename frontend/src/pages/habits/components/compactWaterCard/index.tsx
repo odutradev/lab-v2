@@ -93,7 +93,6 @@ export const CompactWaterCard = ({
     <>
       <Card style={{ padding: '10px 14px' }}>
         <Stack gap={8}>
-          {/* Cabeçalho Minimalista e Compacto */}
           <Group justify="space-between" align="center" wrap="nowrap">
             <Group gap={6} align="center">
               <TbDropletFilled size={15} color="#c084fc" />
@@ -136,7 +135,6 @@ export const CompactWaterCard = ({
                 </Text>
               )}
 
-              {/* Botão de Editar Quantidade e Meta */}
               {onUpdateSettings && (
                 <ActionIcon
                   variant="subtle"
@@ -151,7 +149,6 @@ export const CompactWaterCard = ({
             </Group>
           </Group>
 
-          {/* Barra de Progresso / Slider Fino no Topo (Sem Nenhuma Animação) */}
           <Progress
             value={progressPercent}
             size="xs"
@@ -170,7 +167,6 @@ export const CompactWaterCard = ({
             }}
           />
 
-          {/* Lista Horizontal de Garrafas Pequenas + Botão Adicionar no Final */}
           <Box
             style={{
               display: 'flex',
@@ -196,13 +192,11 @@ export const CompactWaterCard = ({
               )
             })}
 
-            {/* Garrafa com ícone de adicionar no final */}
             <AddBottleButton bottleMl={bottleMl} onClick={handleAddExtra} />
           </Box>
         </Stack>
       </Card>
 
-      {/* Modal de Edição de Hidratação */}
       <EditWaterModal
         opened={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

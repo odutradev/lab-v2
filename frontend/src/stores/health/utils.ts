@@ -54,7 +54,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'underweight',
     label: 'Abaixo do peso',
     rangeLabel: '< 18.5',
-    color: '#38bdf8', // ciano
+    color: '#38bdf8',
     badgeVariant: 'primary',
     description: 'Abaixo da faixa saudável de referência da OMS.'
   },
@@ -62,7 +62,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'normal',
     label: 'Peso saudável',
     rangeLabel: '18.5 - 24.9',
-    color: '#10b981', // verde/teal
+    color: '#10b981',
     badgeVariant: 'success',
     description: 'Peso ideal e saudável para sua altura.'
   },
@@ -70,7 +70,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'overweight',
     label: 'Sobrepeso',
     rangeLabel: '25.0 - 29.9',
-    color: '#f59e0b', // âmbar
+    color: '#f59e0b',
     badgeVariant: 'warning',
     description: 'Levemente acima da faixa ideal de referência.'
   },
@@ -78,7 +78,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'obesity1',
     label: 'Obesidade Grau I',
     rangeLabel: '30.0 - 34.9',
-    color: '#f97316', // laranja
+    color: '#f97316',
     badgeVariant: 'danger',
     description: 'Classificação de obesidade moderada pela OMS.'
   },
@@ -86,7 +86,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'obesity2',
     label: 'Obesidade Grau II / III',
     rangeLabel: '≥ 35.0',
-    color: '#ef4444', // vermelho
+    color: '#ef4444',
     badgeVariant: 'danger',
     description: 'Classificação de obesidade severa pela OMS.'
   }
@@ -114,11 +114,9 @@ export const calculateImc = (weightKg?: number, heightCm?: number): ImcResult | 
     classification = IMC_TABLE.obesity2
   }
 
-  // Faixa de peso ideal (IMC 18.5 a 24.9)
   const minIdealWeight = Math.round(18.5 * heightM * heightM * 10) / 10
   const maxIdealWeight = Math.round(24.9 * heightM * heightM * 10) / 10
 
-  // Medidor visual: mapear IMC de 15 a 40 para 0% a 100%
   const minRange = 15
   const maxRange = 40
   const positionPercent = Math.min(100, Math.max(0, ((imc - minRange) / (maxRange - minRange)) * 100))
@@ -132,11 +130,6 @@ export const calculateImc = (weightKg?: number, heightCm?: number): ImcResult | 
   }
 }
 
-/**
- * Cálculo científico da meta ideal de água diária (em ml):
- * Considera peso corporal, idade (fator metabólico por faixa etária) e altura (área de superfície corporal).
- * Referência: OMS / EFSA / Sociedade Brasileira de Nutrição.
- */
 export const calculateIdealWaterMl = (
   weightKg?: number,
   age?: number,
@@ -149,7 +142,6 @@ export const calculateIdealWaterMl = (
       : Math.round(22 * Math.pow(effectiveHeight / 100, 2))
   const effectiveAge = age && age > 0 ? age : 25
 
-  // Fator metabólico etário de água por kg de peso
   let mlPerKg = 35
   if (effectiveAge <= 17) {
     mlPerKg = 40
@@ -163,21 +155,12 @@ export const calculateIdealWaterMl = (
     mlPerKg = 28
   }
 
-  // Base metabólica
   const baseMl = effectiveWeight * mlPerKg
-
-  // Ajuste por estatura (área de superfície corporal relativa a 170cm)
   const heightAdjustment = (effectiveHeight - 170) * 8
-
-  // Arredonda para múltiplo de 50ml mais próximo, com piso saudável de 1500ml
   const idealMl = Math.max(1500, Math.round((baseMl + heightAdjustment) / 50) * 50)
   return idealMl
 }
 
-/**
- * Cálculo de meta de hidratação diária:
- * Determina a quantidade ideal de garrafas conforme peso, idade, altura e volume do recipiente.
- */
 export const calculateDailyWaterGoal = (
   weightKg?: number,
   extraBottles = 0,

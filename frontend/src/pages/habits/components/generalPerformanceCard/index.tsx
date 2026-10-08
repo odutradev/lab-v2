@@ -28,7 +28,6 @@ export const GeneralPerformanceCard = ({
 
   return (
     <Card style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Glow suave no topo */}
       <Box
         style={{
           position: 'absolute',
@@ -81,7 +80,6 @@ export const GeneralPerformanceCard = ({
       </CardHeader>
 
       <CardContent style={{ paddingTop: 0 }}>
-        {/* Gráfico dia a dia do mês */}
         <Box mt="xs">
           <Group justify="space-between" align="center" mb={6}>
             <Text size="11px" c="dimmed" fw={600} style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -103,7 +101,6 @@ export const GeneralPerformanceCard = ({
             </Group>
           </Group>
 
-          {/* Barras do Gráfico com Tooltip por dia (ocupando toda a largura sem scroll) */}
           <Box
             style={{
               display: 'flex',
@@ -176,7 +173,6 @@ export const GeneralPerformanceCard = ({
             })}
           </Box>
 
-          {/* Marcadores de Guia dos Dias */}
           {days.length > 0 && (
             <Group justify="space-between" align="center" px={4} mt={3}>
               <Text size="9px" c="dimmed">

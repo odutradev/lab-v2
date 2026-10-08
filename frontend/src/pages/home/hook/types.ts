@@ -10,7 +10,6 @@ export interface UseHomePageReturn {
   handleNavigateResetPassword: () => void
   handleNavigateHabits: () => void
 
-  // Métricas de Saúde & Personagem
   healthProfile: HealthProfile
   weightHistory: WeightRecord[]
   latestWeight?: number

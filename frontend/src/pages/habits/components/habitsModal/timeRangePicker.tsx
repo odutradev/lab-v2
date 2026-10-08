@@ -52,7 +52,6 @@ export const TimeRangePicker = ({
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
   const endInputRef = useRef<HTMLInputElement>(null)
 
-  // Lista de sugestões de horários iniciais a cada 15 ou 30 min
   const startTimeOptions = useMemo(() => {
     const list: string[] = []
     for (let m = 0; m < 1440; m += 30) {
@@ -61,12 +60,10 @@ export const TimeRangePicker = ({
     return list
   }, [])
 
-  // Lista de sugestões de horários finais calculados relativamente ao horário inicial
   const endTimeOptions = useMemo(() => {
-    const baseMinutes = startTime ? parseTimeToMinutes(startTime) : 480 // 08:00 default
+    const baseMinutes = startTime ? parseTimeToMinutes(startTime) : 480
     const options: { time: string; durationLabel: string; isSelected: boolean }[] = []
 
-    // Intervalos pré-definidos: 15m, 30m, 45m, 1h, 1h15m, 1h30m, 1h45m, 2h, 2h30m, 3h, ... até 12h
     const minuteSteps = [
       15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 210, 240, 300, 360, 420, 480, 540, 600, 720
     ]
@@ -88,7 +85,6 @@ export const TimeRangePicker = ({
     onStartTimeChange(time)
     setIsStartMenuOpen(false)
 
-    // Se não tiver endTime ou se endTime for antes do novo startTime, ajusta para 1h depois
     const currentEndMin = endTime ? parseTimeToMinutes(endTime) : null
     const newStartMin = parseTimeToMinutes(time)
 
@@ -102,7 +98,6 @@ export const TimeRangePicker = ({
     setIsEndMenuOpen(false)
   }
 
-  // Duração atual calculada
   const currentDuration = useMemo(() => {
     if (!startTime || !endTime) return null
     const startMin = parseTimeToMinutes(startTime)
@@ -132,7 +127,6 @@ export const TimeRangePicker = ({
 
       {!allDay ? (
         <Group grow align="center" gap="md">
-          {/* Seletor Horário Início */}
           <Popover
             opened={isStartMenuOpen}
             onChange={setIsStartMenuOpen}
@@ -206,7 +200,6 @@ export const TimeRangePicker = ({
             </Popover.Dropdown>
           </Popover>
 
-          {/* Seletor Horário Término com Duração Relativa */}
           <Popover
             opened={isEndMenuOpen}
             onChange={setIsEndMenuOpen}

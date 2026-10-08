@@ -39,14 +39,12 @@ export const HomePage = () => {
     <Stack gap="xl" w="100%">
       <WelcomeBanner user={user} />
 
-      {/* Personagem Interativo com Idade e Altura */}
       <CharacterCard
         profile={healthProfile}
         latestWeight={latestWeight}
         onUpdateProfile={handleUpdateHealthProfile}
       />
 
-      {/* Grid de Saúde: Peso & IMC + Hidratação Diária + Sono & Recuperação */}
       <SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="lg">
         <WeightImcCard
           heightCm={healthProfile.height}

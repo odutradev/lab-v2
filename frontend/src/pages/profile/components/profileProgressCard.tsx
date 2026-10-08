@@ -71,7 +71,6 @@ export const ProfileProgressCard = ({
   const completedSteps = steps.filter((s) => s.completed).length
   const percentage = Math.round((completedSteps / totalSteps) * 100)
 
-  // Quando o perfil estiver 100% completo, não exibe o indicador
   if (completedSteps === totalSteps) {
     return null
   }

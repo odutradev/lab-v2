@@ -73,7 +73,6 @@ export const HabitsPage = () => {
     updateWaterSettings: handleUpdateWaterSettings
   } = useHealthStore()
 
-  // Revisão para disparar recálculo das métricas do mês quando dados mudarem
   const [metricsRevision, setMetricsRevision] = useState(0)
   const currentMonth = selectedDate.slice(0, 7)
 
@@ -152,7 +151,6 @@ export const HabitsPage = () => {
   return (
     <Box style={containerStyle}>
       <Grid gap="md" align="stretch" style={{ flex: 1 }}>
-        {/* Lado Esquerdo: CALENDARIO */}
         <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column' }}>
           <Card style={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
@@ -207,10 +205,8 @@ export const HabitsPage = () => {
           </Card>
         </Grid.Col>
 
-        {/* Lado Direito: DESEMPENHO GERAL, PESO, AGUA (ou AVISO DE CONFIGURAÇÃO) */}
         <Grid.Col span={{ base: 12, lg: 5 }} style={{ display: 'flex', flexDirection: 'column' }}>
           <Stack gap="md" style={{ flex: 1, justifyContent: 'space-between' }}>
-            {/* Topo: DESEMPENHO GERAL em linha inteira */}
             <GeneralPerformanceCard
               metrics={metrics}
               isLoading={isMetricsLoading}
@@ -220,7 +216,6 @@ export const HabitsPage = () => {
 
             {isBioConfigured ? (
               <>
-                {/* Meio: PESO & IMC */}
                 <CompactWeightCard
                   heightCm={healthProfile.height}
                   weightHistory={weightHistory}
@@ -228,14 +223,12 @@ export const HabitsPage = () => {
                   onSaveWeight={handleSaveWeightWithMetrics}
                 />
 
-                {/* SONO & RECUPERAÇÃO */}
                 <CompactSleepCard
                   sleepHistory={sleepHistory}
                   selectedDate={selectedDate}
                   onSaveSleep={handleSaveSleepWithMetrics}
                 />
 
-                {/* Fundo: AGUA */}
                 <CompactWaterCard
                   currentWeight={currentWeightForDay}
                   currentAge={healthProfile.age}
@@ -251,7 +244,6 @@ export const HabitsPage = () => {
                 />
               </>
             ) : (
-              /* Aviso indicando para ir ao perfil quando altura e idade não estão configuradas */
               <Card style={{ position: 'relative', overflow: 'hidden', padding: '24px 20px', textAlign: 'center' }}>
                 <Box
                   style={{

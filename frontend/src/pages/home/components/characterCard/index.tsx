@@ -23,7 +23,6 @@ export const CharacterCard = ({
   return (
     <>
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
-        {/* Glow de fundo */}
         <Box
           style={{
             position: 'absolute',
@@ -39,7 +38,6 @@ export const CharacterCard = ({
         <CardContent>
           <Group justify="space-between" align="center" wrap="wrap" gap="md">
             <Group gap="lg" align="center">
-              {/* Personagem com avatar clicável */}
               <Box style={{ position: 'relative' }}>
                 <CharacterAvatar
                   id={profile.characterId}
@@ -99,7 +97,6 @@ export const CharacterCard = ({
                   Toque no personagem para alterar idade e altura
                 </Text>
 
-                {/* Métricas rápidas */}
                 <Group gap="xs" mt={6} wrap="wrap">
                   <MantineBadge
                     variant="light"
