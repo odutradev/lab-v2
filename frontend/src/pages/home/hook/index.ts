@@ -19,10 +19,12 @@ export const useHomePage = (): UseHomePageReturn => {
   const {
     profile: healthProfile,
     weightHistory,
+    sleepHistory,
     waterDailyMap,
     waterExtraTargetMap,
     updateProfile: handleUpdateHealthProfile,
     saveWeightRecord: handleSaveWeight,
+    saveSleepRecord: handleSaveSleep,
     toggleWaterBottle: handleToggleWaterBottle,
     addExtraWaterBottle: handleAddExtraWaterBottle,
     resetTodayWater: handleResetTodayWater
@@ -74,10 +76,12 @@ export const useHomePage = (): UseHomePageReturn => {
     healthProfile,
     weightHistory,
     latestWeight,
+    sleepHistory,
     consumedWaterBottles,
     extraWaterBottlesTarget,
     handleUpdateHealthProfile,
     handleSaveWeight,
+    handleSaveSleep,
     handleToggleWaterBottle,
     handleAddExtraWaterBottle,
     handleResetTodayWater

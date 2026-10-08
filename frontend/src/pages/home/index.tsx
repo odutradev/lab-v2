@@ -8,6 +8,7 @@ import ProfileCard from './components/profileCard'
 import CharacterCard from './components/characterCard'
 import WeightImcCard from './components/weightImcCard'
 import WaterTrackerCard from './components/waterTrackerCard'
+import SleepTrackerCard from './components/sleepTrackerCard'
 import useHomePage from './hook'
 
 export const HomePage = () => {
@@ -23,10 +24,12 @@ export const HomePage = () => {
     healthProfile,
     weightHistory,
     latestWeight,
+    sleepHistory,
     consumedWaterBottles,
     extraWaterBottlesTarget,
     handleUpdateHealthProfile,
     handleSaveWeight,
+    handleSaveSleep,
     handleToggleWaterBottle,
     handleAddExtraWaterBottle,
     handleResetTodayWater
@@ -43,8 +46,8 @@ export const HomePage = () => {
         onUpdateProfile={handleUpdateHealthProfile}
       />
 
-      {/* Grid de Saúde: Peso & IMC + Hidratação Diária */}
-      <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
+      {/* Grid de Saúde: Peso & IMC + Hidratação Diária + Sono & Recuperação */}
+      <SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="lg">
         <WeightImcCard
           heightCm={healthProfile.height}
           weightHistory={weightHistory}
@@ -58,6 +61,11 @@ export const HomePage = () => {
           onToggleBottle={handleToggleWaterBottle}
           onAddExtraBottle={handleAddExtraWaterBottle}
           onResetToday={handleResetTodayWater}
+        />
+
+        <SleepTrackerCard
+          sleepHistory={sleepHistory}
+          onSaveSleep={handleSaveSleep}
         />
       </SimpleGrid>
 

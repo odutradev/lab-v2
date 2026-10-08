@@ -74,10 +74,12 @@ export const SleepTrackerCard = ({
       record?: (typeof sleepHistory)[0]
     }[] = []
 
-    const today = new Date()
+    const [yyyyStr, mmStr, ddStr] = todayStr.split('-').map(Number)
+    const baseDate = new Date(yyyyStr, (mmStr || 1) - 1, ddStr || 1)
+
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(today)
-      d.setDate(today.getDate() - i)
+      const d = new Date(baseDate)
+      d.setDate(baseDate.getDate() - i)
       const yyyy = d.getFullYear()
       const mm = String(d.getMonth() + 1).padStart(2, '0')
       const dd = String(d.getDate()).padStart(2, '0')
