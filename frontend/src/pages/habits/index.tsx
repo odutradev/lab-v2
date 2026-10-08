@@ -15,6 +15,7 @@ import HabitsModal from './components/habitsModal'
 import RecurringScopeModal from './components/recurringScopeModal'
 import GeneralPerformanceCard from './components/generalPerformanceCard'
 import CompactWeightCard from './components/compactWeightCard'
+import CompactSleepCard from './components/compactSleepCard'
 import CompactWaterCard from './components/compactWaterCard'
 import { containerStyle } from './styles'
 import useHabitsPage from './hook'
@@ -60,10 +61,12 @@ export const HabitsPage = () => {
   const {
     profile: healthProfile,
     weightHistory,
+    sleepHistory,
     waterDailyMap,
     waterExtraTargetMap,
     waterBottleMl,
     saveWeightRecord: handleSaveWeight,
+    saveSleepRecord: handleSaveSleep,
     toggleWaterBottle: handleToggleWaterBottle,
     addExtraWaterBottle: handleAddExtraWaterBottle,
     removeExtraWaterBottle: handleRemoveExtraWaterBottle,
@@ -133,6 +136,11 @@ export const HabitsPage = () => {
 
   const handleSaveWeightWithMetrics = (weight: number, date?: string) => {
     handleSaveWeight(weight, date || selectedDate)
+    triggerMetricsRefresh()
+  }
+
+  const handleSaveSleepWithMetrics = (hours: number, quality: number, date?: string) => {
+    handleSaveSleep(hours, quality, date || selectedDate)
     triggerMetricsRefresh()
   }
 
@@ -218,6 +226,13 @@ export const HabitsPage = () => {
                   weightHistory={weightHistory}
                   selectedDate={selectedDate}
                   onSaveWeight={handleSaveWeightWithMetrics}
+                />
+
+                {/* SONO & RECUPERAÇÃO */}
+                <CompactSleepCard
+                  sleepHistory={sleepHistory}
+                  selectedDate={selectedDate}
+                  onSaveSleep={handleSaveSleepWithMetrics}
                 />
 
                 {/* Fundo: AGUA */}
