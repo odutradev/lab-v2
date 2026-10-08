@@ -134,11 +134,11 @@ export const HabitsPage = () => {
 
   return (
     <Box style={containerStyle}>
-      <Grid gap="md" align="stretch">
+      <Grid gap="md" align="stretch" style={{ flex: 1 }}>
         {/* Lado Esquerdo: CALENDARIO */}
-        <Grid.Col span={{ base: 12, lg: 7 }}>
-          <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Stack gap="md" style={{ flex: 1 }}>
+        <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column' }}>
+          <Card style={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <HabitsCalendarToolbar
                 headerTitle={headerTitle}
                 viewMode={viewMode}
@@ -191,8 +191,8 @@ export const HabitsPage = () => {
         </Grid.Col>
 
         {/* Lado Direito: DESEMPENHO GERAL, PESSOA, PESO, AGUA */}
-        <Grid.Col span={{ base: 12, lg: 5 }}>
-          <Stack gap="md">
+        <Grid.Col span={{ base: 12, lg: 5 }} style={{ display: 'flex', flexDirection: 'column' }}>
+          <Stack gap="md" style={{ flex: 1, justifyContent: 'space-between' }}>
             {/* Topo: DESEMPENHO GERAL em linha inteira */}
             <GeneralPerformanceCard
               metrics={metrics}

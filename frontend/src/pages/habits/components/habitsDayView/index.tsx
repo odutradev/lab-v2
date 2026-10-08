@@ -47,7 +47,7 @@ export const HabitsDayView = ({
   }
 
   return (
-    <Box>
+    <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       <Group justify="space-between" align="center" pb="sm" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
         <Group gap="xs">
           <TbCalendarEvent size={20} color="#818cf8" />
@@ -66,7 +66,7 @@ export const HabitsDayView = ({
         )}
       </Group>
 
-      <Box pt="md">
+      <Box pt="md" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
         {isLoading && items.length === 0 ? (
           <Group justify="center" py="xl">
             <Loader color="indigo" size="sm" />

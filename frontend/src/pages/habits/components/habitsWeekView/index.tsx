@@ -19,7 +19,7 @@ export const HabitsWeekView = ({
 }: HabitsWeekViewProps) => {
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 7 }} spacing="xs">
+    <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 7 }} spacing="xs" style={{ flex: 1, minHeight: 0 }}>
         {weekDays.map((dateStr, index) => {
           const summary = rangeSummariesMap.get(dateStr)
           const items = summary?.items ?? []
@@ -46,7 +46,8 @@ export const HabitsWeekView = ({
                     ? '1px solid rgba(129, 140, 248, 0.35)'
                     : '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: 10,
-                minHeight: 280,
+                height: '100%',
+                minHeight: 0,
                 display: 'flex',
                 flexDirection: 'column',
                 cursor: 'pointer'

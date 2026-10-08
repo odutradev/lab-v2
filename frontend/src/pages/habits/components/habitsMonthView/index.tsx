@@ -15,8 +15,10 @@ export const HabitsMonthView = ({
   onToggleCheckin,
   onEditItem
 }: HabitsMonthViewProps) => {
+  const weeksCount = Math.max(1, Math.ceil(monthCells.length / 7))
+
   return (
-    <Box>
+    <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       <SimpleGrid cols={7} spacing={4} mb="xs">
         {weekHeaders.map((header) => (
           <Box key={header} ta="center" py={4}>
@@ -27,7 +29,16 @@ export const HabitsMonthView = ({
         ))}
       </SimpleGrid>
 
-      <SimpleGrid cols={7} spacing={4}>
+      <Box
+        style={{
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gridTemplateRows: `repeat(${weeksCount}, 1fr)`,
+          gap: 4,
+          minHeight: 0
+        }}
+      >
         {monthCells.map((cell) => {
           const summary = rangeSummariesMap.get(cell.date)
           const items = summary?.items ?? []
@@ -43,7 +54,8 @@ export const HabitsMonthView = ({
               key={cell.date}
               p={5}
               style={{
-                minHeight: 74,
+                height: '100%',
+                minHeight: 0,
                 background: isSelected
                   ? 'rgba(99, 102, 241, 0.14)'
                   : cell.isToday
@@ -161,7 +173,7 @@ export const HabitsMonthView = ({
             </Box>
           )
         })}
-      </SimpleGrid>
+      </Box>
     </Box>
   )
 }
