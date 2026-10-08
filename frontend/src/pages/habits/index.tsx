@@ -59,12 +59,14 @@ export const HabitsPage = () => {
     weightHistory,
     waterDailyMap,
     waterExtraTargetMap,
+    waterBottleMl,
+    waterTargetBottles,
     updateProfile: handleUpdateHealthProfile,
     saveWeightRecord: handleSaveWeight,
     toggleWaterBottle: handleToggleWaterBottle,
     addExtraWaterBottle: handleAddExtraWaterBottle,
     removeExtraWaterBottle: handleRemoveExtraWaterBottle,
-    resetTodayWater: handleResetTodayWater
+    updateWaterSettings: handleUpdateWaterSettings
   } = useHealthStore()
 
   // Revisão para disparar recálculo das métricas do mês quando dados mudarem
@@ -119,8 +121,8 @@ export const HabitsPage = () => {
     triggerMetricsRefresh()
   }
 
-  const handleResetTodayWaterWithMetrics = () => {
-    handleResetTodayWater()
+  const handleUpdateWaterSettingsWithMetrics = (settings: { bottleMl: number; targetBottles: number }) => {
+    handleUpdateWaterSettings(settings)
     triggerMetricsRefresh()
   }
 
@@ -213,10 +215,12 @@ export const HabitsPage = () => {
               currentWeight={latestWeight}
               consumedBottles={consumedWaterBottles}
               extraBottlesTarget={extraWaterBottlesTarget}
+              bottleMl={waterBottleMl}
+              customTargetBottles={waterTargetBottles}
               onToggleBottle={handleToggleWaterWithMetrics}
               onAddExtraBottle={handleAddExtraWaterWithMetrics}
               onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}
-              onResetToday={handleResetTodayWaterWithMetrics}
+              onUpdateSettings={handleUpdateWaterSettingsWithMetrics}
             />
           </Stack>
         </Grid.Col>

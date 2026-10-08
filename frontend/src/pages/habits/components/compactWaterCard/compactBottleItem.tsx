@@ -6,6 +6,7 @@ interface CompactBottleItemProps {
   index: number
   isFilled: boolean
   isExtra?: boolean
+  bottleMl?: number
   onClick: () => void
   onRemove?: () => void
 }
@@ -14,6 +15,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
   index,
   isFilled,
   isExtra,
+  bottleMl = 500,
   onClick,
   onRemove
 }) => {
@@ -21,7 +23,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
     <Box style={{ position: 'relative', display: 'inline-block' }}>
       <UnstyledButton
         onClick={onClick}
-        title={`Garrafa #${index + 1} (500ml) - ${isFilled ? 'Consumida' : 'Pendente'}${isExtra ? ' (Extra)' : ''}`}
+        title={`Garrafa #${index + 1} (${bottleMl}ml) - ${isFilled ? 'Consumida' : 'Pendente'}${isExtra ? ' (Extra)' : ''}`}
         aria-label={`Garrafa ${index + 1}`}
         style={{
           display: 'flex',
@@ -157,15 +159,16 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
 }
 
 interface AddBottleButtonProps {
+  bottleMl?: number
   onClick: () => void
 }
 
-export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ onClick }) => {
+export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500, onClick }) => {
   return (
     <UnstyledButton
       onClick={onClick}
-      title="Adicionar mais uma garrafa (+500ml)"
-      aria-label="Adicionar garrafa extra de 500ml"
+      title={`Adicionar mais uma garrafa (+${bottleMl}ml)`}
+      aria-label={`Adicionar garrafa extra de ${bottleMl}ml`}
       style={{
         display: 'flex',
         flexDirection: 'column',
