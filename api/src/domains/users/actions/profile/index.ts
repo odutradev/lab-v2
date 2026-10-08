@@ -6,7 +6,9 @@ import {
   updateProfileBodySchema,
   updateAvatarResponseSchema,
   resetPasswordBodySchema,
-  resetPasswordResponseSchema
+  resetPasswordResponseSchema,
+  updateHealthBodySchema,
+  userHealthSchema
 } from '@domains/users/actions/profile/schemas'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
@@ -22,7 +24,8 @@ import { hashData } from '@utils/crypto'
 
 import type {
   UpdateProfileBody,
-  ResetPasswordBody
+  ResetPasswordBody,
+  UpdateHealthBody
 } from '@domains/users/actions/profile/types'
 
 const logger = createLocalLogger('profile-actions')
@@ -231,5 +234,40 @@ export const resetPasswordAction = defineAction(
     } catch {
       return manageError({ code: 'invalid_token' })
     }
+  }
+)
+
+export const updateHealthAction = defineAction(
+  {
+    method: 'patch',
+    path: '/users/profile/health',
+    summary: 'Atualiza os dados de saúde e biofísicos do usuário',
+    tags: ['Profile'],
+    schema: { body: updateHealthBodySchema },
+    responses: {
+      200: {
+        description: 'Dados de saúde atualizados com sucesso',
+        schema: userHealthSchema
+      },
+      404: {
+        description: 'Usuário correspondente não encontrado',
+        schema: errorResponseSchema
+      }
+    },
+    middlewares: [authMiddleware]
+  },
+  async ({ ids, data, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const payload = data as UpdateHealthBody
+    const user = await userRepository.findById(ids.userId)
+
+    if (!user) return manageError({ code: 'user_not_found' })
+
+    const updatedUser = await userRepository.update(ids.userId, { health: payload })
+
+    if (!updatedUser) return manageError({ code: 'user_not_found' })
+
+    return updatedUser.health || {}
   }
 )

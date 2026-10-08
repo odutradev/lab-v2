@@ -13,6 +13,22 @@ export interface UserIntegrations {
   googleCalendar?: UserGoogleCalendarIntegration
 }
 
+export interface UserWeightRecord {
+  date: string
+  weight: number
+}
+
+export interface UserHealth {
+  height?: number
+  age?: number
+  characterId?: string
+  weightHistory?: UserWeightRecord[]
+  waterDailyMap?: Record<string, number>
+  waterExtraTargetMap?: Record<string, number>
+  waterBottleMl?: number
+  waterTargetBottles?: number
+}
+
 export interface User {
   name: string
   email: string
@@ -22,6 +38,7 @@ export interface User {
   emailVerified: boolean
   accountStatus: 'active' | 'blocked'
   integrations?: UserIntegrations
+  health?: UserHealth
 }
 
 export interface UserDocument extends User, Document {

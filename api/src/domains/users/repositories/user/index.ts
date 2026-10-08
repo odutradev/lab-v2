@@ -12,7 +12,17 @@ const userRepository = {
     })
   },
   update: async (id: string, payload: UpdateUserPayload): Promise<UserModelType | null> => {
-    return UserModel.findByIdAndUpdate(id, payload, { new: true })
+    const updateQuery: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(payload)) {
+      if (key === 'health' && value && typeof value === 'object' && !Array.isArray(value)) {
+        for (const [healthKey, healthVal] of Object.entries(value)) {
+          updateQuery[`health.${healthKey}`] = healthVal
+        }
+      } else {
+        updateQuery[key] = value
+      }
+    }
+    return UserModel.findByIdAndUpdate(id, { $set: updateQuery }, { new: true })
   },
   updatePassword: async (id: string, password: string): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { password }, { new: true })

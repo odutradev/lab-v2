@@ -5,6 +5,22 @@ import registry from '@factories/docs/registry'
 
 extendZodWithOpenApi(z)
 
+export const userWeightRecordSchema = registry.register('UserWeightRecord', z.object({
+  date: z.string(),
+  weight: z.number()
+}))
+
+export const userHealthSchema = registry.register('UserHealth', z.object({
+  height: z.number().optional(),
+  age: z.number().optional(),
+  characterId: z.string().optional(),
+  weightHistory: z.array(userWeightRecordSchema).optional(),
+  waterDailyMap: z.record(z.string(), z.number()).optional(),
+  waterExtraTargetMap: z.record(z.string(), z.number()).optional(),
+  waterBottleMl: z.number().optional(),
+  waterTargetBottles: z.number().optional()
+}))
+
 export const profileResponseSchema = registry.register('ProfileResponse', z.object({
   id: z.string(),
   name: z.string(),
@@ -21,14 +37,18 @@ export const profileResponseSchema = registry.register('ProfileResponse', z.obje
       connectedAt: z.date().optional()
     }).optional()
   }).optional(),
+  health: userHealthSchema.optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional()
 }))
 
 export const updateProfileBodySchema = registry.register('UpdateProfileBody', z.object({
   name: z.string().min(2).optional(),
-  avatar: z.string().optional()
+  avatar: z.string().optional(),
+  health: userHealthSchema.partial().optional()
 }))
+
+export const updateHealthBodySchema = registry.register('UpdateHealthBody', userHealthSchema.partial())
 
 export const updateAvatarResponseSchema = registry.register('UpdateAvatarResponse', z.object({
   avatar: z.string()

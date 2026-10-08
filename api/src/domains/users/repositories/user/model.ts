@@ -20,6 +20,22 @@ const userSchema = new Schema<UserDocument>(
         calendarName: { type: String, required: false },
         connectedAt: { type: Date, required: false }
       }
+    },
+    health: {
+      height: { type: Number, required: false },
+      age: { type: Number, required: false },
+      characterId: { type: String, default: 'spark' },
+      weightHistory: [
+        {
+          _id: false,
+          date: { type: String, required: true },
+          weight: { type: Number, required: true }
+        }
+      ],
+      waterDailyMap: { type: Schema.Types.Mixed, default: {} },
+      waterExtraTargetMap: { type: Schema.Types.Mixed, default: {} },
+      waterBottleMl: { type: Number, default: 500 },
+      waterTargetBottles: { type: Number, required: false }
     }
   },
   {
