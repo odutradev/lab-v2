@@ -16,11 +16,10 @@ interface CompactWaterCardProps {
   consumedBottles: number
   extraBottlesTarget: number
   bottleMl?: number
-  customTargetBottles?: number
   onToggleBottle: (index: number) => void
   onAddExtraBottle: () => void
   onRemoveExtraBottle?: () => void
-  onUpdateSettings?: (settings: { bottleMl: number; targetBottles: number }) => void
+  onUpdateSettings?: (settings: { bottleMl: number }) => void
 }
 
 export const CompactWaterCard = ({
@@ -30,7 +29,6 @@ export const CompactWaterCard = ({
   consumedBottles,
   extraBottlesTarget,
   bottleMl = 500,
-  customTargetBottles,
   onToggleBottle,
   onAddExtraBottle,
   onRemoveExtraBottle,
@@ -44,11 +42,11 @@ export const CompactWaterCard = ({
       currentWeight,
       extraBottlesTarget,
       bottleMl,
-      customTargetBottles,
+      undefined,
       currentAge,
       currentHeight
     )
-  }, [currentWeight, extraBottlesTarget, bottleMl, customTargetBottles, currentAge, currentHeight])
+  }, [currentWeight, extraBottlesTarget, bottleMl, currentAge, currentHeight])
 
   const totalConsumedMl = consumedBottles * bottleMl
   const progressPercent = Math.min(100, Math.round((totalConsumedMl / targetMl) * 100))
@@ -74,10 +72,10 @@ export const CompactWaterCard = ({
     }
   }
 
-  const handleSaveSettings = (settings: { bottleMl: number; targetBottles: number }) => {
+  const handleSaveSettings = (settings: { bottleMl: number }) => {
     if (onUpdateSettings) {
       onUpdateSettings(settings)
-      showToast('Configurações de hidratação atualizadas!', 'success')
+      showToast('Tamanho da garrafa atualizado!', 'success')
     }
   }
 
@@ -188,7 +186,6 @@ export const CompactWaterCard = ({
         currentAge={currentAge}
         currentHeight={currentHeight}
         currentBottleMl={bottleMl}
-        currentTargetBottles={standardBottles}
         onSave={handleSaveSettings}
       />
     </>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Group, Stack, Text, UnstyledButton } from '@mantine/core'
-import { TbDropletFilled, TbBottle, TbSparkles } from 'react-icons/tb'
+import { TbBottle, TbSparkles } from 'react-icons/tb'
 
 import Modal from '@components/ui/modal'
 import Input from '@components/ui/input'
@@ -14,8 +14,7 @@ interface EditWaterModalProps {
   currentAge?: number
   currentHeight?: number
   currentBottleMl: number
-  currentTargetBottles: number
-  onSave: (settings: { bottleMl: number; targetBottles: number }) => void
+  onSave: (settings: { bottleMl: number }) => void
 }
 
 const PRESET_BOTTLE_SIZES = [250, 300, 500, 600, 750, 1000]
@@ -25,9 +24,8 @@ interface EditWaterFormProps {
   currentAge?: number
   currentHeight?: number
   currentBottleMl: number
-  currentTargetBottles: number
   onClose: () => void
-  onSave: (settings: { bottleMl: number; targetBottles: number }) => void
+  onSave: (settings: { bottleMl: number }) => void
 }
 
 const EditWaterForm = ({
@@ -35,41 +33,31 @@ const EditWaterForm = ({
   currentAge,
   currentHeight,
   currentBottleMl,
-  currentTargetBottles,
   onClose,
   onSave
 }: EditWaterFormProps) => {
   const [bottleMl, setBottleMl] = useState<number>(currentBottleMl || 500)
-  const [targetBottles, setTargetBottles] = useState<number>(currentTargetBottles || 5)
 
-  // Cálculo da recomendação científica personalizada conforme peso, idade e altura
+  // Cálculo da recomendação automática personalizada conforme peso, idade e altura
   const idealDailyMl = calculateIdealWaterMl(currentWeight, currentAge, currentHeight)
-  const idealBottlesForSelectedSize = Math.max(1, Math.ceil(idealDailyMl / (bottleMl || 500)))
+  const automaticBottles = Math.max(1, Math.ceil(idealDailyMl / (bottleMl || 500)))
 
-  const totalDailyMl = Math.max(0, bottleMl * targetBottles)
+  const totalDailyMl = bottleMl * automaticBottles
   const totalLiters = (totalDailyMl / 1000).toFixed(1)
 
   const handleSelectSize = (size: number) => {
     setBottleMl(size)
-    // Atualiza automaticamente a quantidade de garrafas para a meta ideal daquele volume
-    const newIdealBottles = Math.max(1, Math.ceil(idealDailyMl / size))
-    setTargetBottles(newIdealBottles)
-  }
-
-  const handleApplyIdeal = () => {
-    setTargetBottles(idealBottlesForSelectedSize)
   }
 
   const handleSave = () => {
     const validMl = Math.max(50, Math.min(3000, Number(bottleMl) || 500))
-    const validCount = Math.max(1, Math.min(30, Number(targetBottles) || 5))
-    onSave({ bottleMl: validMl, targetBottles: validCount })
+    onSave({ bottleMl: validMl })
     onClose()
   }
 
   return (
     <Stack gap="md">
-      {/* Banner de Recomendação Baseada no Perfil Físico */}
+      {/* Banner Informativo Baseado no Perfil Físico */}
       <Box
         style={{
           padding: '10px 12px',
@@ -82,7 +70,7 @@ const EditWaterForm = ({
           <Group gap={6} align="center">
             <TbSparkles size={14} color="#38bdf8" />
             <Text size="11px" fw={600} c="#38bdf8">
-              Recomendação pelo seu Perfil
+              Cálculo Automático por Perfil
             </Text>
           </Group>
           <Text size="10px" c="dimmed">
@@ -92,15 +80,15 @@ const EditWaterForm = ({
 
         <Group justify="space-between" align="baseline" mt={4}>
           <Text size="xs" c="dimmed">
-            Meta ideal estimada:
+            Necessidade ideal:
           </Text>
           <Text size="xs" fw={700} c="white">
-            {idealDailyMl.toLocaleString()}ml/dia ({idealBottlesForSelectedSize} garrafas de {bottleMl}ml)
+            {idealDailyMl.toLocaleString()}ml / dia
           </Text>
         </Group>
       </Box>
 
-      {/* Campo 1: Volume de cada garrafinha */}
+      {/* Campo: Volume de cada garrafinha */}
       <Box>
         <Text size="xs" fw={600} c="dimmed" mb={6}>
           Volume por garrafa (ml)
@@ -111,7 +99,6 @@ const EditWaterForm = ({
           onChange={(e) => {
             const val = Math.max(1, Number(e.target.value))
             setBottleMl(val)
-            setTargetBottles(Math.max(1, Math.ceil(idealDailyMl / val)))
           }}
           min={50}
           max={3000}
@@ -119,7 +106,7 @@ const EditWaterForm = ({
           leftIcon={<TbBottle size={16} />}
         />
 
-        {/* Atalhos rápidos para tamanhos comuns com recálculo automático da meta ideal */}
+        {/* Atalhos rápidos para tamanhos comuns */}
         <Group gap={6} mt={8}>
           {PRESET_BOTTLE_SIZES.map((size) => {
             const isSelected = bottleMl === size
@@ -128,7 +115,7 @@ const EditWaterForm = ({
                 key={size}
                 onClick={() => handleSelectSize(size)}
                 style={{
-                  padding: '3px 8px',
+                  padding: '4px 10px',
                   borderRadius: 6,
                   fontSize: 11,
                   fontWeight: 600,
@@ -146,40 +133,7 @@ const EditWaterForm = ({
         </Group>
       </Box>
 
-      {/* Campo 2: Quantidade de garrafas da meta */}
-      <Box>
-        <Group justify="space-between" align="center" mb={6}>
-          <Text size="xs" fw={600} c="dimmed">
-            Meta diária de garrafas
-          </Text>
-          {targetBottles !== idealBottlesForSelectedSize && (
-            <UnstyledButton
-              onClick={handleApplyIdeal}
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: '#38bdf8',
-                cursor: 'pointer',
-                textDecoration: 'underline'
-              }}
-            >
-              Usar ideal ({idealBottlesForSelectedSize} garrafas)
-            </UnstyledButton>
-          )}
-        </Group>
-
-        <Input
-          type="number"
-          value={targetBottles}
-          onChange={(e) => setTargetBottles(Math.max(1, Number(e.target.value)))}
-          min={1}
-          max={30}
-          step={1}
-          leftIcon={<TbDropletFilled size={15} color="#c084fc" />}
-        />
-      </Box>
-
-      {/* Resumo da Meta Diária */}
+      {/* Resumo da Meta Automática Calculada */}
       <Box
         style={{
           padding: '10px 12px',
@@ -192,10 +146,10 @@ const EditWaterForm = ({
         }}
       >
         <Text size="xs" c="dimmed">
-          Meta diária total:
+          Meta calculada:
         </Text>
         <Text size="xs" fw={700} c="#c084fc">
-          {targetBottles} × {bottleMl}ml = {totalDailyMl.toLocaleString()}ml ({totalLiters}L)
+          {automaticBottles} garrafas × {bottleMl}ml = {totalDailyMl.toLocaleString()}ml ({totalLiters}L)
         </Text>
       </Box>
 
@@ -219,15 +173,14 @@ export const EditWaterModal = ({
   currentAge,
   currentHeight,
   currentBottleMl,
-  currentTargetBottles,
   onSave
 }: EditWaterModalProps) => {
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Configurar Hidratação"
-      description="Personalize o volume da garrafinha e a meta diária calculada para seu perfil."
+      title="Configurar Garrafa"
+      description="Informe o tamanho da sua garrafa. A meta de garrafas diárias é calculada automaticamente para o seu corpo."
       variant="indigo"
       size="sm"
     >
@@ -237,7 +190,6 @@ export const EditWaterModal = ({
           currentAge={currentAge}
           currentHeight={currentHeight}
           currentBottleMl={currentBottleMl}
-          currentTargetBottles={currentTargetBottles}
           onClose={onClose}
           onSave={onSave}
         />

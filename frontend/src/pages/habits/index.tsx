@@ -60,7 +60,6 @@ export const HabitsPage = () => {
     waterDailyMap,
     waterExtraTargetMap,
     waterBottleMl,
-    waterTargetBottles,
     updateProfile: handleUpdateHealthProfile,
     saveWeightRecord: handleSaveWeight,
     toggleWaterBottle: handleToggleWaterBottle,
@@ -121,7 +120,7 @@ export const HabitsPage = () => {
     triggerMetricsRefresh()
   }
 
-  const handleUpdateWaterSettingsWithMetrics = (settings: { bottleMl: number; targetBottles: number }) => {
+  const handleUpdateWaterSettingsWithMetrics = (settings: { bottleMl: number }) => {
     handleUpdateWaterSettings(settings)
     triggerMetricsRefresh()
   }
@@ -218,7 +217,6 @@ export const HabitsPage = () => {
               consumedBottles={consumedWaterBottles}
               extraBottlesTarget={extraWaterBottlesTarget}
               bottleMl={waterBottleMl}
-              customTargetBottles={waterTargetBottles}
               onToggleBottle={handleToggleWaterWithMetrics}
               onAddExtraBottle={handleAddExtraWaterWithMetrics}
               onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}
