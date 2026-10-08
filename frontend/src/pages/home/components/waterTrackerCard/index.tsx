@@ -5,22 +5,21 @@ import {
   Text,
   Progress,
   Box,
-  Badge,
-  SimpleGrid
+  Badge as MantineBadge,
+  ThemeIcon
 } from '@mantine/core'
 import {
   TbDropletFilled,
   TbPlus,
   TbRotateClockwise2,
-  TbTrophy,
-  TbInfoCircle
+  TbTrophy
 } from 'react-icons/tb'
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
+import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
-import { calculateDailyWaterGoal } from '@stores/health/utils'
-import { WaterBottleItem } from './waterBottleItem'
+import { calculateDailyWaterGoal, getTodayDateString, formatDateDisplay } from '@stores/health/utils'
+import { CompactBottleItem, AddBottleButton } from '@pages/habits/components/compactWaterCard/compactBottleItem'
 import type { WaterTrackerCardProps } from './types'
 
 export const WaterTrackerCard = ({
@@ -32,9 +31,10 @@ export const WaterTrackerCard = ({
   onResetToday
 }: WaterTrackerCardProps) => {
   const { showToast } = useToastStore()
+  const todayStr = getTodayDateString()
 
   // Meta calculada com base no peso (35ml/kg)
-  const { targetMl, targetBottles } = useMemo(() => {
+  const { targetMl, targetBottles, standardBottles } = useMemo(() => {
     return calculateDailyWaterGoal(currentWeight, extraBottlesTarget)
   }, [currentWeight, extraBottlesTarget])
 
@@ -57,47 +57,38 @@ export const WaterTrackerCard = ({
 
   return (
     <Card style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Glow de água azul ao fundo */}
-      <Box
-        style={{
-          position: 'absolute',
-          top: -30,
-          left: -30,
-          width: 160,
-          height: 160,
-          background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }}
-      />
-
       <CardHeader>
-        <Group justify="space-between" align="flex-start" wrap="wrap">
-          <Box>
-            <Group gap="xs" align="center">
-              <TbDropletFilled size={22} color="#38bdf8" />
-              <CardTitle>Hidratação Diária (500ml)</CardTitle>
-            </Group>
-            <CardDescription>
-              {currentWeight
-                ? `Meta calculada: 35 ml × ${currentWeight.toFixed(1)} kg = ${targetMl} ml recomendados`
-                : 'Meta diária recomendada: 2.000 ml (4 garrafas). Cadastre seu peso para meta personalizada.'}
-            </CardDescription>
-          </Box>
+        <Group justify="space-between" align="center" wrap="nowrap">
+          <Group gap={8} align="center">
+            <ThemeIcon
+              size="sm"
+              radius="md"
+              variant="light"
+              color="cyan"
+              style={{ backgroundColor: 'rgba(56, 189, 248, 0.15)' }}
+            >
+              <TbDropletFilled size={16} color="#38bdf8" />
+            </ThemeIcon>
+            <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Hidratação Diária</CardTitle>
+            <MantineBadge size="xs" variant="outline" color="cyan">
+              {formatDateDisplay(todayStr)}
+            </MantineBadge>
+          </Group>
 
-          <Group gap="xs">
+          <Group gap={6} align="center">
             {isGoalReached ? (
-              <Badge
+              <MantineBadge
                 variant="gradient"
                 gradient={{ from: 'cyan', to: 'blue' }}
-                size="md"
-                leftSection={<TbTrophy size={14} />}
+                size="xs"
+                leftSection={<TbTrophy size={12} />}
               >
                 Meta Atingida!
-              </Badge>
+              </MantineBadge>
             ) : (
-              <Badge variant="light" color="cyan" size="md">
+              <MantineBadge variant="light" color="cyan" size="xs">
                 {progressPercent}% concluído
-              </Badge>
+              </MantineBadge>
             )}
           </Group>
         </Group>
@@ -105,79 +96,97 @@ export const WaterTrackerCard = ({
 
       <CardContent>
         <Stack gap="md">
-          {/* Barra de Progresso e Métricas Numéricas */}
+          {/* Barra de Progresso e Métricas Numéricas Minimalistas */}
           <Box
-            p="md"
             style={{
-              borderRadius: 12,
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              borderRadius: 10,
+              background: 'rgba(56, 189, 248, 0.04)',
+              border: '1px solid rgba(56, 189, 248, 0.15)',
+              padding: '12px 14px'
             }}
           >
-            <Group justify="space-between" align="baseline" mb="xs">
-              <Group align="baseline" gap="xs">
-                <Text size="26px" fw={800} c="#38bdf8" style={{ lineHeight: 1 }}>
+            <Group justify="space-between" align="baseline" mb={8}>
+              <Group align="baseline" gap={6}>
+                <Text size="20px" fw={800} c="#38bdf8" style={{ lineHeight: 1 }}>
                   {totalConsumedMl.toLocaleString('pt-BR')}
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="xs" c="dimmed">
                   / {targetMl.toLocaleString('pt-BR')} ml
                 </Text>
               </Group>
 
               <Text size="xs" c="dimmed">
-                <span style={{ color: '#fff', fontWeight: 600 }}>{consumedBottles}</span> de{' '}
-                <span style={{ color: '#fff', fontWeight: 600 }}>{targetBottles}</span> garrafinhas
+                <span style={{ color: '#fff', fontWeight: 700 }}>{consumedBottles}</span> de{' '}
+                <span style={{ color: '#fff', fontWeight: 700 }}>{targetBottles}</span> garrafas (500ml)
               </Text>
             </Group>
 
             <Progress
               value={progressPercent}
-              size="lg"
+              size="xs"
               radius="xl"
               color="cyan"
-              animated={progressPercent < 100 && progressPercent > 0}
+              animated={false}
               styles={{
                 root: {
                   backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4)'
+                  height: 5
                 },
                 section: {
-                  background: 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)',
-                  boxShadow: '0 0 12px rgba(56, 189, 248, 0.5)'
+                  background: 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)'
                 }
               }}
             />
           </Box>
 
-          {/* Instrução rápida */}
-          <Group gap="xs" align="center">
-            <TbInfoCircle size={15} color="#38bdf8" />
-            <Text size="xs" c="dimmed">
-              Clique em cada garrafinha de 500ml ao beber para marcá-la em azul:
-            </Text>
-          </Group>
+          {/* Garrafinhas Interativas Compactas */}
+          <Box>
+            <Group justify="space-between" align="center" mb={8}>
+              <Text size="xs" fw={600} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Garrafas do Dia
+              </Text>
+              <Text size="11px" c="dimmed">
+                Clique para marcar consumo
+              </Text>
+            </Group>
 
-          {/* Grid de Garrafinhas Interativas de 500ml */}
-          <SimpleGrid cols={{ base: 2, xs: 3, sm: 4, md: 5, lg: 6 }} spacing="sm">
-            {Array.from({ length: targetBottles }).map((_, index) => (
-              <WaterBottleItem
-                key={index}
-                index={index}
-                isFilled={index < consumedBottles}
-                onClick={() => handleBottleClick(index)}
-              />
-            ))}
-          </SimpleGrid>
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                overflowX: 'auto',
+                padding: '4px 0',
+                scrollbarWidth: 'none'
+              }}
+            >
+              {Array.from({ length: targetBottles }).map((_, index) => {
+                const isExtra = index >= standardBottles
+                return (
+                  <CompactBottleItem
+                    key={index}
+                    index={index}
+                    isFilled={index < consumedBottles}
+                    isExtra={isExtra}
+                    bottleMl={500}
+                    onClick={() => handleBottleClick(index)}
+                  />
+                )
+              })}
 
-          {/* Ações adicionais: Adicionar mais garrafas ou resetar */}
-          <Group justify="space-between" align="center" mt="xs" wrap="wrap">
+              <AddBottleButton bottleMl={500} onClick={handleAddExtra} />
+            </Box>
+          </Box>
+
+          {/* Ações Rápidas no Rodapé */}
+          <Group justify="space-between" align="center" pt={4} wrap="wrap">
             <Button
               variant="outline"
               size="sm"
               onClick={handleAddExtra}
-              leftIcon={<TbPlus size={16} />}
+              leftIcon={<TbPlus size={14} />}
             >
-              Adicionar +1 Garrafa (500ml)
+              +1 Garrafa (500ml)
             </Button>
 
             {consumedBottles > 0 && (
@@ -185,7 +194,7 @@ export const WaterTrackerCard = ({
                 variant="ghost"
                 size="sm"
                 onClick={onResetToday}
-                leftIcon={<TbRotateClockwise2 size={14} />}
+                leftIcon={<TbRotateClockwise2 size={13} />}
               >
                 Zerar Hoje
               </Button>
