@@ -213,6 +213,8 @@ export const HabitsPage = () => {
             {/* Fundo: AGUA */}
             <CompactWaterCard
               currentWeight={latestWeight}
+              currentAge={healthProfile.age}
+              currentHeight={healthProfile.height}
               consumedBottles={consumedWaterBottles}
               extraBottlesTarget={extraWaterBottlesTarget}
               bottleMl={waterBottleMl}

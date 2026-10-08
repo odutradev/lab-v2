@@ -11,6 +11,8 @@ import EditWaterModal from './editWaterModal'
 
 interface CompactWaterCardProps {
   currentWeight?: number
+  currentAge?: number
+  currentHeight?: number
   consumedBottles: number
   extraBottlesTarget: number
   bottleMl?: number
@@ -23,6 +25,8 @@ interface CompactWaterCardProps {
 
 export const CompactWaterCard = ({
   currentWeight,
+  currentAge,
+  currentHeight,
   consumedBottles,
   extraBottlesTarget,
   bottleMl = 500,
@@ -40,9 +44,11 @@ export const CompactWaterCard = ({
       currentWeight,
       extraBottlesTarget,
       bottleMl,
-      customTargetBottles
+      customTargetBottles,
+      currentAge,
+      currentHeight
     )
-  }, [currentWeight, extraBottlesTarget, bottleMl, customTargetBottles])
+  }, [currentWeight, extraBottlesTarget, bottleMl, customTargetBottles, currentAge, currentHeight])
 
   const totalConsumedMl = consumedBottles * bottleMl
   const progressPercent = Math.min(100, Math.round((totalConsumedMl / targetMl) * 100))
@@ -178,6 +184,9 @@ export const CompactWaterCard = ({
       <EditWaterModal
         opened={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+        currentWeight={currentWeight}
+        currentAge={currentAge}
+        currentHeight={currentHeight}
         currentBottleMl={bottleMl}
         currentTargetBottles={standardBottles}
         onSave={handleSaveSettings}
