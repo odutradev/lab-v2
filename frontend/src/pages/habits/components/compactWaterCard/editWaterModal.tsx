@@ -17,7 +17,7 @@ interface EditWaterModalProps {
   onSave: (settings: { bottleMl: number }) => void
 }
 
-const PRESET_BOTTLE_SIZES = [250, 300, 500, 600, 750, 1000]
+const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000]
 
 interface EditWaterFormProps {
   currentWeight?: number
