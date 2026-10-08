@@ -5,3 +5,11 @@ export interface SleepTrackerCardProps {
   selectedDate?: string
   onSaveSleep: (hours: number, quality: number, date?: string) => void
 }
+
+export interface SleepHistoryChartProps {
+  records: SleepRecord[]
+  selectedYear: number
+  selectedMonth: number
+  targetDate?: string
+  onOpenCheckinModal: (date?: string) => void
+}

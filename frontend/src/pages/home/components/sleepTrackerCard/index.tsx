@@ -7,7 +7,6 @@ import {
   Badge as MantineBadge,
   ThemeIcon,
   Slider,
-  Progress,
   UnstyledButton
 } from '@mantine/core'
 import {
@@ -15,7 +14,6 @@ import {
   TbCalendarCheck,
   TbCheck,
   TbClock,
-  TbBed,
   TbSparkles
 } from 'react-icons/tb'
 
@@ -31,6 +29,7 @@ import {
   getSleepQualityOption,
   getSleepStatus
 } from '@stores/health/utils'
+import { SleepHistoryChart } from './sleepHistoryChart'
 import type { SleepTrackerCardProps } from './types'
 
 export const SleepTrackerCard = ({
@@ -42,6 +41,14 @@ export const SleepTrackerCard = ({
   const todayStr = getTodayDateString()
   const activeDate = selectedDate || todayStr
 
+  // O mês e ano do gráfico acompanham estritamente o mês ativo
+  const [selectedYear, selectedMonth] = useMemo(() => {
+    const parts = activeDate.split('-').map(Number)
+    const y = parts[0] || 2026
+    const m = (parts[1] || 1) - 1
+    return [y, m]
+  }, [activeDate])
+
   // Modal de Check-in
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [targetDate, setTargetDate] = useState(activeDate)
@@ -50,66 +57,24 @@ export const SleepTrackerCard = ({
 
   // Registro ativo (da data selecionada ou de hoje)
   const activeRecord = useMemo(() => {
-    return sleepHistory.find((r) => r.date === activeDate)
-  }, [sleepHistory, activeDate])
-
-  // Registro mais recente
-  const latestRecord = useMemo(() => {
-    if (sleepHistory.length === 0) return null
-    return sleepHistory[sleepHistory.length - 1]
-  }, [sleepHistory])
-
-  // Dados para exibição no card de hoje
-  const displayRecord = activeRecord || (activeDate === todayStr ? latestRecord : null)
-  const currentQualityOpt = displayRecord ? getSleepQualityOption(displayRecord.quality) : null
-  const currentStatus = displayRecord ? getSleepStatus(displayRecord.hours) : null
-
-  // Histórico dos últimos 7 dias
-  const last7Days = useMemo(() => {
-    const days: {
-      date: string
-      dayName: string
-      dayNumber: number
-      isToday: boolean
-      record?: (typeof sleepHistory)[0]
-    }[] = []
-
-    const [yyyyStr, mmStr, ddStr] = todayStr.split('-').map(Number)
-    const baseDate = new Date(yyyyStr, (mmStr || 1) - 1, ddStr || 1)
-
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(baseDate)
-      d.setDate(baseDate.getDate() - i)
-      const yyyy = d.getFullYear()
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      const dateStr = `${yyyy}-${mm}-${dd}`
-      const dayName = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()
-      const dayNumber = d.getDate()
-      const record = sleepHistory.find((r) => r.date === dateStr)
-
-      days.push({
-        date: dateStr,
-        dayName,
-        dayNumber,
-        isToday: dateStr === todayStr,
-        record
-      })
+    if (selectedDate) {
+      const found = sleepHistory.find((r) => r.date === selectedDate)
+      if (found) return found
     }
-    return days
-  }, [sleepHistory, todayStr])
+    return sleepHistory.find((r) => r.date === todayStr) || null
+  }, [sleepHistory, selectedDate, todayStr])
 
-  const handleOpenCheckin = (dateToUse?: string, initialQuality?: number) => {
-    const target = dateToUse || activeDate
+  const handleOpenCheckin = (dateToUse?: string) => {
+    const target = dateToUse || selectedDate || todayStr
     setTargetDate(target)
 
     const existing = sleepHistory.find((r) => r.date === target)
     if (existing) {
       setInputHours(existing.hours)
-      setInputQuality(initialQuality || existing.quality)
+      setInputQuality(existing.quality)
     } else {
       setInputHours(8)
-      setInputQuality(initialQuality || 4)
+      setInputQuality(4)
     }
 
     setIsModalOpen(true)
@@ -127,8 +92,8 @@ export const SleepTrackerCard = ({
     const isToday = targetDate === todayStr
     showToast(
       isToday
-        ? `Sono registrado: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`
-        : `Sono de ${formatDateDisplay(targetDate)} registrado: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`,
+        ? `Check-in de sono salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`
+        : `Sono de ${formatDateDisplay(targetDate)} salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`,
       'success'
     )
   }
@@ -156,22 +121,18 @@ export const SleepTrackerCard = ({
               <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>
                 Sono & Recuperação
               </CardTitle>
-
-              <MantineBadge size="xs" variant="outline" color="violet">
-                {formatDateDisplay(activeDate)}
-              </MantineBadge>
             </Group>
 
             {/* Ações do Header */}
             <Group gap="xs" align="center">
-              {displayRecord && (
+              {activeRecord && (
                 <MantineBadge
                   variant="light"
                   size="xs"
                   color="violet"
                   leftSection={<TbSparkles size={11} />}
                 >
-                  {displayRecord.hours.toFixed(1)}h dormidas
+                  {activeRecord.hours.toFixed(1)}h • {getSleepQualityOption(activeRecord.quality).emoji}
                 </MantineBadge>
               )}
 
@@ -193,228 +154,19 @@ export const SleepTrackerCard = ({
           </Group>
         </CardHeader>
 
+        {/* O CARD EM SI É O GRÁFICO */}
         <CardContent>
-          <Stack gap="md">
-            {/* Bloco de Resumo do Dia / Noite */}
-            <Box
-              style={{
-                borderRadius: 10,
-                background: 'rgba(168, 85, 247, 0.04)',
-                border: '1px solid rgba(168, 85, 247, 0.18)',
-                padding: '12px 14px'
-              }}
-            >
-              {displayRecord && currentQualityOpt && currentStatus ? (
-                <>
-                  <Group justify="space-between" align="baseline" mb={8}>
-                    <Group align="baseline" gap={6}>
-                      <Text size="22px" fw={800} c="#c084fc" style={{ lineHeight: 1 }}>
-                        {displayRecord.hours.toFixed(1)}h
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        / 8.0h meta
-                      </Text>
-                    </Group>
-
-                    <Group gap="xs" align="center">
-                      <MantineBadge
-                        size="xs"
-                        variant="filled"
-                        style={{
-                          backgroundColor: `${currentQualityOpt.color}25`,
-                          color: currentQualityOpt.color,
-                          border: `1px solid ${currentQualityOpt.color}55`
-                        }}
-                      >
-                        {currentQualityOpt.emoji} {currentQualityOpt.label}
-                      </MantineBadge>
-
-                      <Text size="xs" fw={600} style={{ color: currentStatus.color }}>
-                        {currentStatus.label}
-                      </Text>
-                    </Group>
-                  </Group>
-
-                  <Progress
-                    value={Math.min(100, Math.round((displayRecord.hours / 8) * 100))}
-                    size="xs"
-                    radius="xl"
-                    color="violet"
-                    styles={{
-                      root: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                        height: 5
-                      },
-                      section: {
-                        background: 'linear-gradient(90deg, #7c3aed 0%, #c084fc 100%)'
-                      }
-                    }}
-                  />
-
-                  <Text size="11px" c="dimmed" mt={6}>
-                    {currentStatus.description}
-                  </Text>
-                </>
-              ) : (
-                <Group justify="space-between" align="center">
-                  <Box>
-                    <Text size="sm" fw={600} c="#fff">
-                      Nenhum check-in de sono hoje
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      Registre as horas dormidas e a qualidade da noite.
-                    </Text>
-                  </Box>
-
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleOpenCheckin()}
-                    leftIcon={<TbBed size={14} />}
-                  >
-                    Registrar Sono
-                  </Button>
-                </Group>
-              )}
-            </Box>
-
-            {/* Avaliação de Qualidade com Emojis (Muito Ruim a Muito Bom) */}
-            <Box>
-              <Group justify="space-between" align="center" mb={8}>
-                <Text
-                  size="xs"
-                  fw={600}
-                  c="dimmed"
-                  style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
-                >
-                  Qualidade do Sono
-                </Text>
-                <Text size="11px" c="dimmed">
-                  Toque para registrar ou ajustar
-                </Text>
-              </Group>
-
-              <Group gap={6} grow wrap="nowrap">
-                {SLEEP_QUALITY_OPTIONS.map((opt) => {
-                  const isSelected = displayRecord?.quality === opt.value
-                  return (
-                    <UnstyledButton
-                      key={opt.value}
-                      onClick={() => handleOpenCheckin(activeDate, opt.value)}
-                      title={`${opt.label} (${opt.value}/5)`}
-                      style={{
-                        padding: '8px 4px',
-                        borderRadius: 8,
-                        textAlign: 'center',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 2,
-                        backgroundColor: isSelected
-                          ? `${opt.color}22`
-                          : 'rgba(255, 255, 255, 0.03)',
-                        border: isSelected
-                          ? `1px solid ${opt.color}`
-                          : '1px solid rgba(255, 255, 255, 0.07)',
-                        transition: 'all 0.15s ease',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Text size="20px" style={{ lineHeight: 1 }}>
-                        {opt.emoji}
-                      </Text>
-                      <Text
-                        size="10px"
-                        fw={isSelected ? 700 : 500}
-                        style={{
-                          color: isSelected ? opt.color : 'rgba(255, 255, 255, 0.65)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '100%'
-                        }}
-                      >
-                        {opt.label}
-                      </Text>
-                    </UnstyledButton>
-                  )
-                })}
-              </Group>
-            </Box>
-
-            {/* Histórico Semanal dos Últimos 7 Dias */}
-            <Box>
-              <Group justify="space-between" align="center" mb={8}>
-                <Text
-                  size="xs"
-                  fw={600}
-                  c="dimmed"
-                  style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
-                >
-                  Últimos 7 Dias
-                </Text>
-                <Text size="11px" c="dimmed">
-                  Clique no dia para editar
-                </Text>
-              </Group>
-
-              <Group gap={6} grow wrap="nowrap">
-                {last7Days.map((day) => {
-                  const opt = day.record ? getSleepQualityOption(day.record.quality) : null
-                  return (
-                    <UnstyledButton
-                      key={day.date}
-                      onClick={() => handleOpenCheckin(day.date)}
-                      title={
-                        day.record
-                          ? `${formatDateDisplay(day.date)}: ${day.record.hours}h (${opt?.label})`
-                          : `${formatDateDisplay(day.date)}: Sem registro`
-                      }
-                      style={{
-                        padding: '8px 4px',
-                        borderRadius: 8,
-                        textAlign: 'center',
-                        backgroundColor: day.isToday
-                          ? 'rgba(168, 85, 247, 0.12)'
-                          : 'rgba(255, 255, 255, 0.02)',
-                        border: day.isToday
-                          ? '1px solid rgba(168, 85, 247, 0.4)'
-                          : '1px solid rgba(255, 255, 255, 0.05)',
-                        transition: 'all 0.15s ease',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Text size="9px" fw={700} c={day.isToday ? '#c084fc' : 'dimmed'}>
-                        {day.dayName}
-                      </Text>
-                      <Text size="11px" fw={600} c="#fff" my={2}>
-                        {day.dayNumber}
-                      </Text>
-
-                      {day.record ? (
-                        <>
-                          <Text size="14px" style={{ lineHeight: 1 }}>
-                            {opt?.emoji}
-                          </Text>
-                          <Text size="9px" fw={700} c="#c084fc" mt={2}>
-                            {day.record.hours}h
-                          </Text>
-                        </>
-                      ) : (
-                        <Text size="11px" c="dimmed" my={2}>
-                          -
-                        </Text>
-                      )}
-                    </UnstyledButton>
-                  )
-                })}
-              </Group>
-            </Box>
-          </Stack>
+          <SleepHistoryChart
+            records={sleepHistory}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            targetDate={selectedDate}
+            onOpenCheckinModal={handleOpenCheckin}
+          />
         </CardContent>
       </Card>
 
-      {/* Modal de Check-in de Sono */}
+      {/* Modal de Check-in de Sono (Mesmo pressuposto do peso: slider de horas e qualidade de 1 a 5 com emojis) */}
       <Modal
         opened={isModalOpen}
         onClose={handleCloseModal}
@@ -423,7 +175,7 @@ export const SleepTrackerCard = ({
             ? 'Check-in de Sono - Hoje'
             : `Atualizar Sono - ${formatDateDisplay(targetDate)}`
         }
-        description="Monitore a duração e a qualidade do seu sono para manter o corpo em alta recuperação."
+        description="Informe a duração e avalie a qualidade da sua noite de sono para atualizar sua evolução."
         variant="indigo"
         size="sm"
       >
@@ -490,11 +242,11 @@ export const SleepTrackerCard = ({
               />
 
               <Text size="xs" c="dimmed" mt="lg">
-                Faixa recomendada: 7.0h a 9.0h para recuperação ideal.
+                Faixa recomendada: 7.0h a 9.0h para recuperação biológica ideal.
               </Text>
             </Box>
 
-            {/* Avaliação de Qualidade de 1 a 5 com Emojis */}
+            {/* Avaliação de Qualidade de 1 a 5 com Emojis (Muito Ruim a Muito Bom) */}
             <Box>
               <Text size="sm" fw={600} c="#fff" mb="xs">
                 Qualidade da Noite (1 a 5)
@@ -507,6 +259,7 @@ export const SleepTrackerCard = ({
                     <UnstyledButton
                       key={opt.value}
                       onClick={() => setInputQuality(opt.value)}
+                      title={`${opt.label} (${opt.value}/5)`}
                       style={{
                         padding: '10px 4px',
                         borderRadius: 8,
