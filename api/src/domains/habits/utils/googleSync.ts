@@ -213,7 +213,6 @@ export const syncAllUserHabitsToGoogle = async (userId: string): Promise<number>
             syncedCount++
             continue
           } catch {
-            // Recria evento caso não exista mais no Google
           }
         }
 

@@ -134,7 +134,6 @@ export const updateHabitAction = defineAction(
     const targetMode = isRecurring && mode ? mode : 'all'
 
     if (targetMode === 'this' && date) {
-      // 1. Adiciona a data no excludedDates da série original
       const currentExcluded = habit.excludedDates || []
       if (!currentExcluded.includes(date)) {
         await habitRepository.update(id, ids.userId, {
@@ -142,10 +141,8 @@ export const updateHabitAction = defineAction(
         })
       }
 
-      // Se havia checkin na data original, busca para migrar
       const existingCheckin = await habitCheckinRepository.findByUserHabitAndDate(ids.userId, id, date)
 
-      // 2. Cria uma nova instância pontual com as alterações para este dia específico
       const createdSingleInstance = await habitRepository.create({
         userId: ids.userId,
         title: updatePayload.title ?? habit.title,
@@ -192,12 +189,10 @@ export const updateHabitAction = defineAction(
       const previousDate = `${py}-${pm}-${pd}`
 
       if (habit.startDate && habit.startDate >= date) {
-        // Se a série original inicia nesta data ou depois, apenas atualiza
         const updated = await habitRepository.update(id, ids.userId, updatePayload)
         if (updated) await syncHabitToGoogle(ids.userId, updated)
         return updated
       } else {
-        // 1. Encerra a série original no dia anterior
         await habitRepository.update(id, ids.userId, {
           recurrence: {
             ...(habit.recurrence || { type: habit.frequency || 'daily' }),
@@ -206,7 +201,6 @@ export const updateHabitAction = defineAction(
           }
         })
 
-        // 2. Cria a nova série com os novos dados a partir de date
         const createdNewSeries = await habitRepository.create({
           userId: ids.userId,
           title: updatePayload.title ?? habit.title,
@@ -249,7 +243,6 @@ export const updateHabitAction = defineAction(
       }
     }
 
-    // Modo 'all' ou evento pontual: atualiza normalmente
     const updated = await habitRepository.update(id, ids.userId, updatePayload)
     if (!updated) return manageError({ code: 'not_found' })
 
@@ -307,7 +300,6 @@ export const removeHabitAction = defineAction(
     const targetMode = isRecurring && mode ? mode : 'all'
 
     if (targetMode === 'this' && date) {
-      // Excluir apenas ESTE evento naquela data
       const currentExcluded = habit.excludedDates || []
       if (!currentExcluded.includes(date)) {
         await habitRepository.update(id, ids.userId, {
@@ -329,7 +321,6 @@ export const removeHabitAction = defineAction(
     }
 
     if (targetMode === 'following' && date) {
-      // Excluir ESTE E OS SEGUINTES
       const [y, m, d] = date.split('-').map(Number)
       const prev = new Date(y, m - 1, d - 1)
       const py = prev.getFullYear()
@@ -338,7 +329,6 @@ export const removeHabitAction = defineAction(
       const previousDate = `${py}-${pm}-${pd}`
 
       if (habit.startDate && habit.startDate >= date) {
-        // Se começava nesta data ou depois, exclui tudo
         await habitRepository.delete(id, ids.userId)
         await habitCheckinRepository.deleteByHabitId(id)
         await removeHabitFromGoogle(ids.userId, habit.googleEventId)
@@ -367,7 +357,6 @@ export const removeHabitAction = defineAction(
       return { success: true }
     }
 
-    // Modo 'all': remove o hábito completo
     const removed = await habitRepository.delete(id, ids.userId)
     if (!removed) return manageError({ code: 'not_found' })
 

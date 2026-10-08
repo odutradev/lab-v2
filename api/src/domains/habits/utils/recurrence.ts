@@ -34,28 +34,24 @@ const getDaysDiff = (startStr: string, targetStr: string): number => {
 }
 
 export const isHabitScheduledForDate = (habit: HabitSchedulable, targetDateStr: string): boolean => {
-  // Se a data específica foi excluída (ex: "Excluir este evento")
   if (Array.isArray(habit.excludedDates) && habit.excludedDates.includes(targetDateStr)) {
     return false
   }
 
   const startDate = habit.startDate
 
-  // Se tiver startDate e a data do calendário for anterior ao início, não está agendado
   if (startDate && targetDateStr < startDate) {
     return false
   }
 
   const recurrence = habit.recurrence
 
-  // Se não houver recorrência configurada explicitamente, mantém compatibilidade legada
   if (!recurrence || !recurrence.type) {
     if (habit.frequency === 'daily') return true
     if (startDate) return startDate === targetDateStr
     return false
   }
 
-  // Verifica término da recorrência
   if (recurrence.endType === 'on_date' && recurrence.endDate && targetDateStr > recurrence.endDate) {
     return false
   }

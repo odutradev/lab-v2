@@ -13,10 +13,6 @@ export const deleteUploadedFile = (path?: string): void => {
   fs.unlink(path, () => {})
 }
 
-/**
- * Cria o middleware de upload de arquivos utilizando Multer.
- * Documentação acoplada: Injeta automaticamente o status 400 no Swagger via defineAction.
- */
 export const createUploadMiddleware = (config: UploadConfig = {}): RequestHandler => {
   const fieldName = config.fieldName ?? 'file'
   const storage = multer.diskStorage({

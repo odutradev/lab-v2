@@ -89,7 +89,6 @@ export const getMonthlyMetricsAction = defineAction(
 
       if (!isFuture) {
         if (totalHabits > 0) {
-          // Total de metas do dia = total de hábitos + 1 meta de hidratação diária
           const totalGoals = totalHabits + 1
           const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
           const completedGoals = completedHabits + waterFraction
@@ -116,7 +115,6 @@ export const getMonthlyMetricsAction = defineAction(
       })
     }
 
-    // Calcula médias apenas dos dias até hoje no mês
     const trackedDays = days.filter((d) => !d.isFuture)
     const trackedDaysCount = trackedDays.length
 
