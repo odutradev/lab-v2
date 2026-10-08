@@ -63,6 +63,7 @@ export const HabitsPage = () => {
     saveWeightRecord: handleSaveWeight,
     toggleWaterBottle: handleToggleWaterBottle,
     addExtraWaterBottle: handleAddExtraWaterBottle,
+    removeExtraWaterBottle: handleRemoveExtraWaterBottle,
     resetTodayWater: handleResetTodayWater
   } = useHealthStore()
 
@@ -110,6 +111,11 @@ export const HabitsPage = () => {
 
   const handleAddExtraWaterWithMetrics = () => {
     handleAddExtraWaterBottle()
+    triggerMetricsRefresh()
+  }
+
+  const handleRemoveExtraWaterWithMetrics = () => {
+    handleRemoveExtraWaterBottle()
     triggerMetricsRefresh()
   }
 
@@ -209,6 +215,7 @@ export const HabitsPage = () => {
               extraBottlesTarget={extraWaterBottlesTarget}
               onToggleBottle={handleToggleWaterWithMetrics}
               onAddExtraBottle={handleAddExtraWaterWithMetrics}
+              onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}
               onResetToday={handleResetTodayWaterWithMetrics}
             />
           </Stack>

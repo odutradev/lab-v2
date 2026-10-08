@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import type { HealthProfile, HealthStoreState, WeightRecord } from './types'
-import { getTodayDateString, sortWeightRecords } from './utils'
+import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords } from './utils'
 
 const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
 
@@ -135,6 +135,41 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: current.weightHistory,
         waterDailyMap: current.waterDailyMap,
+        waterExtraTargetMap: updatedExtras
+      })
+    },
+
+    removeExtraWaterBottle: (customDate?: string) => {
+      const current = get()
+      const date = customDate || getTodayDateString()
+      const currentExtra = current.waterExtraTargetMap[date] || 0
+      if (currentExtra <= 0) return
+
+      const newExtra = currentExtra - 1
+      const updatedExtras = {
+        ...current.waterExtraTargetMap,
+        [date]: newExtra
+      }
+
+      const latestWeight =
+        current.weightHistory.length > 0
+          ? current.weightHistory[current.weightHistory.length - 1].weight
+          : undefined
+      const { targetBottles } = calculateDailyWaterGoal(latestWeight, newExtra)
+      const currentConsumed = current.waterDailyMap[date] || 0
+      const updatedDaily = {
+        ...current.waterDailyMap,
+        [date]: Math.min(currentConsumed, targetBottles)
+      }
+
+      set({
+        waterExtraTargetMap: updatedExtras,
+        waterDailyMap: updatedDaily
+      })
+      saveToLocalStorage({
+        profile: current.profile,
+        weightHistory: current.weightHistory,
+        waterDailyMap: updatedDaily,
         waterExtraTargetMap: updatedExtras
       })
     },

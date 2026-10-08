@@ -57,5 +57,6 @@ export interface HealthStoreState {
   saveWeightRecord: (weight: number, date?: string) => void
   toggleWaterBottle: (index: number, date?: string) => void
   addExtraWaterBottle: (date?: string) => void
+  removeExtraWaterBottle: (date?: string) => void
   resetTodayWater: (date?: string) => void
 }
