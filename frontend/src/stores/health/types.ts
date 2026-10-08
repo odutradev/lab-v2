@@ -49,9 +49,23 @@ export interface WaterDayData {
   percentage: number
 }
 
+export interface SleepRecord {
+  date: string // YYYY-MM-DD
+  hours: number // Horas de sono (ex: 7.5)
+  quality: number // 1 a 5 (Muito ruim a Muito bom)
+}
+
+export interface SleepQualityOption {
+  value: number
+  emoji: string
+  label: string
+  color: string
+}
+
 export interface HealthStoreState {
   profile: HealthProfile
   weightHistory: WeightRecord[]
+  sleepHistory: SleepRecord[]
   waterDailyMap: Record<string, number> // YYYY-MM-DD -> garrafas consumidas
   waterExtraTargetMap: Record<string, number> // YYYY-MM-DD -> garrafas extras adicionadas à meta
   waterBottleMl: number // ml por garrafa (default: 500)
@@ -60,6 +74,7 @@ export interface HealthStoreState {
   syncFromApi: (data?: Partial<UserHealth>) => void
   updateProfile: (data: Partial<HealthProfile>) => Promise<void>
   saveWeightRecord: (weight: number, date?: string) => Promise<void>
+  saveSleepRecord: (hours: number, quality: number, date?: string) => Promise<void>
   toggleWaterBottle: (index: number, date?: string) => Promise<void>
   addExtraWaterBottle: (date?: string) => Promise<void>
   removeExtraWaterBottle: (date?: string) => Promise<void>

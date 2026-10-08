@@ -2,15 +2,16 @@ import { create } from 'zustand'
 
 import { STORAGE_KEYS } from '@api/config'
 import { updateHealthAction } from '@actions/users/profile'
-import type { HealthProfile, HealthStoreState, WeightRecord } from './types'
+import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord } from './types'
 import type { UserHealth } from '@projectTypes/user'
-import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords } from './utils'
+import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords, sortSleepRecords } from './utils'
 
 const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
 
 interface PersistedData {
   profile: HealthProfile
   weightHistory: WeightRecord[]
+  sleepHistory: SleepRecord[]
   waterDailyMap: Record<string, number>
   waterExtraTargetMap: Record<string, number>
   waterBottleMl?: number
@@ -31,6 +32,7 @@ const loadPersistedData = (): PersistedData => {
       return {
         profile: { ...defaultProfile, ...(parsed.profile || {}) },
         weightHistory: Array.isArray(parsed.weightHistory) ? parsed.weightHistory : [],
+        sleepHistory: Array.isArray(parsed.sleepHistory) ? parsed.sleepHistory : [],
         waterDailyMap: parsed.waterDailyMap || {},
         waterExtraTargetMap: parsed.waterExtraTargetMap || {},
         waterBottleMl: typeof parsed.waterBottleMl === 'number' ? parsed.waterBottleMl : 500,
@@ -44,6 +46,7 @@ const loadPersistedData = (): PersistedData => {
   return {
     profile: defaultProfile,
     weightHistory: [],
+    sleepHistory: [],
     waterDailyMap: {},
     waterExtraTargetMap: {},
     waterBottleMl: 500,
@@ -75,6 +78,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
   return {
     profile: initial.profile,
     weightHistory: initial.weightHistory,
+    sleepHistory: initial.sleepHistory,
     waterDailyMap: initial.waterDailyMap,
     waterExtraTargetMap: initial.waterExtraTargetMap,
     waterBottleMl: initial.waterBottleMl || 500,
@@ -93,6 +97,10 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         ? data.weightHistory
         : current.weightHistory
 
+      const newSleepHistory = Array.isArray(data.sleepHistory) && data.sleepHistory.length > 0
+        ? data.sleepHistory
+        : current.sleepHistory
+
       const newWaterDailyMap = data.waterDailyMap || current.waterDailyMap
       const newWaterExtraTargetMap = data.waterExtraTargetMap || current.waterExtraTargetMap
       const newWaterBottleMl = typeof data.waterBottleMl === 'number' ? data.waterBottleMl : current.waterBottleMl
@@ -101,6 +109,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       set({
         profile: newProfile,
         weightHistory: newWeightHistory,
+        sleepHistory: newSleepHistory,
         waterDailyMap: newWaterDailyMap,
         waterExtraTargetMap: newWaterExtraTargetMap,
         waterBottleMl: newWaterBottleMl,
@@ -110,6 +119,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: newProfile,
         weightHistory: newWeightHistory,
+        sleepHistory: newSleepHistory,
         waterDailyMap: newWaterDailyMap,
         waterExtraTargetMap: newWaterExtraTargetMap,
         waterBottleMl: newWaterBottleMl,
@@ -128,6 +138,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: newProfile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: current.waterDailyMap,
         waterExtraTargetMap: current.waterExtraTargetMap,
         waterBottleMl: current.waterBottleMl,
@@ -154,6 +165,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: updated,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: current.waterDailyMap,
         waterExtraTargetMap: current.waterExtraTargetMap,
         waterBottleMl: current.waterBottleMl,
@@ -162,6 +174,31 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
 
       await syncWithBackend({
         weightHistory: updated
+      })
+    },
+
+    saveSleepRecord: async (hours: number, quality: number, customDate?: string) => {
+      const current = get()
+      const date = customDate || getTodayDateString()
+      const sanitizedHours = Math.round(Math.max(0, Math.min(24, hours)) * 10) / 10
+      const sanitizedQuality = Math.min(5, Math.max(1, Math.round(quality)))
+
+      const filtered = current.sleepHistory.filter((item) => item.date !== date)
+      const updated = sortSleepRecords([...filtered, { date, hours: sanitizedHours, quality: sanitizedQuality }])
+
+      set({ sleepHistory: updated })
+      saveToLocalStorage({
+        profile: current.profile,
+        weightHistory: current.weightHistory,
+        sleepHistory: updated,
+        waterDailyMap: current.waterDailyMap,
+        waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
+      })
+
+      await syncWithBackend({
+        sleepHistory: updated
       })
     },
 
@@ -187,6 +224,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: updatedMap,
         waterExtraTargetMap: current.waterExtraTargetMap,
         waterBottleMl: current.waterBottleMl,
@@ -212,6 +250,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: current.waterDailyMap,
         waterExtraTargetMap: updatedExtras,
         waterBottleMl: current.waterBottleMl,
@@ -260,6 +299,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: updatedDaily,
         waterExtraTargetMap: updatedExtras,
         waterBottleMl: current.waterBottleMl,
@@ -294,6 +334,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: updatedDaily,
         waterExtraTargetMap: updatedExtras,
         waterBottleMl: current.waterBottleMl,
@@ -319,6 +360,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       saveToLocalStorage({
         profile: current.profile,
         weightHistory: current.weightHistory,
+        sleepHistory: current.sleepHistory,
         waterDailyMap: current.waterDailyMap,
         waterExtraTargetMap: current.waterExtraTargetMap,
         waterBottleMl: newBottleMl,

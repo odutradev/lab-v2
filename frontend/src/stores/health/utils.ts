@@ -2,7 +2,9 @@ import type {
   CharacterInfo,
   ImcClassification,
   ImcResult,
-  WeightRecord
+  WeightRecord,
+  SleepRecord,
+  SleepQualityOption
 } from './types'
 
 export const CHARACTERS: CharacterInfo[] = [
@@ -211,4 +213,57 @@ export const calculateDailyWaterGoal = (
 
 export const sortWeightRecords = (records: WeightRecord[]): WeightRecord[] => {
   return [...records].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export const SLEEP_QUALITY_OPTIONS: SleepQualityOption[] = [
+  { value: 1, emoji: '😫', label: 'Muito ruim', color: '#f87171' },
+  { value: 2, emoji: '🙁', label: 'Ruim', color: '#fb923c' },
+  { value: 3, emoji: '😐', label: 'Regular', color: '#facc15' },
+  { value: 4, emoji: '🙂', label: 'Bom', color: '#38bdf8' },
+  { value: 5, emoji: '😴', label: 'Muito bom', color: '#c084fc' }
+]
+
+export const getSleepQualityOption = (quality?: number): SleepQualityOption => {
+  const rounded = Math.min(5, Math.max(1, Math.round(quality || 3)))
+  return (
+    SLEEP_QUALITY_OPTIONS.find((opt) => opt.value === rounded) ||
+    SLEEP_QUALITY_OPTIONS[2]
+  )
+}
+
+export const sortSleepRecords = (records: SleepRecord[]): SleepRecord[] => {
+  return [...records].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export const getSleepStatus = (hours: number): {
+  label: string
+  color: string
+  description: string
+} => {
+  if (hours < 6) {
+    return {
+      label: 'Pouco sono',
+      color: '#f87171',
+      description: 'Abaixo da faixa recomendada de descanso (7h a 9h).'
+    }
+  }
+  if (hours < 7) {
+    return {
+      label: 'Sono moderado',
+      color: '#fb923c',
+      description: 'Próximo da meta recomendada (7h a 9h).'
+    }
+  }
+  if (hours <= 9) {
+    return {
+      label: 'Sono ideal',
+      color: '#4ade80',
+      description: 'Dentro da faixa recomendada pela OMS (7h a 9h).'
+    }
+  }
+  return {
+    label: 'Sono prolongado',
+    color: '#38bdf8',
+    description: 'Descanso acima de 9 horas.'
+  }
 }
