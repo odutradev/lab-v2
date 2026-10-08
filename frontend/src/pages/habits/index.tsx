@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Stack, Box, Grid, SimpleGrid } from '@mantine/core'
+import { Stack, Box, Grid } from '@mantine/core'
 
 import Card from '@components/ui/card'
 import useHealthStore from '@stores/health'
@@ -185,22 +185,21 @@ export const HabitsPage = () => {
 
         {/* Lado Direito: DESEMPENHO GERAL, PESSOA, PESO, AGUA */}
         <Grid.Col span={{ base: 12, lg: 5 }}>
-          <Stack gap="md" h="100%" justify="space-between">
-            {/* Topo: DESEMPENHO GERAL e PESSOA lado a lado */}
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              <GeneralPerformanceCard
-                metrics={metrics}
-                isLoading={isMetricsLoading}
-                selectedDate={selectedDate}
-                onSelectDate={handleSelectDate}
-              />
+          <Stack gap="md">
+            {/* Topo: DESEMPENHO GERAL em linha inteira */}
+            <GeneralPerformanceCard
+              metrics={metrics}
+              isLoading={isMetricsLoading}
+              selectedDate={selectedDate}
+              onSelectDate={handleSelectDate}
+            />
 
-              <CompactCharacterCard
-                profile={healthProfile}
-                latestWeight={latestWeight}
-                onUpdateProfile={handleUpdateHealthProfile}
-              />
-            </SimpleGrid>
+            {/* PESSOA em linha inteira */}
+            <CompactCharacterCard
+              profile={healthProfile}
+              latestWeight={latestWeight}
+              onUpdateProfile={handleUpdateHealthProfile}
+            />
 
             {/* Meio: PESO */}
             <CompactWeightCard

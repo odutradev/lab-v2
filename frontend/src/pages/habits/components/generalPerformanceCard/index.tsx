@@ -29,15 +29,15 @@ export const GeneralPerformanceCard = ({
   }, [metrics])
 
   return (
-    <Card style={{ position: 'relative', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card style={{ position: 'relative', overflow: 'hidden' }}>
       {/* Glow suave no topo */}
       <Box
         style={{
           position: 'absolute',
           top: -24,
           right: -24,
-          width: 110,
-          height: 110,
+          width: 120,
+          height: 120,
           background: 'radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, transparent 70%)',
           pointerEvents: 'none'
         }}
@@ -64,7 +64,7 @@ export const GeneralPerformanceCard = ({
             </Tooltip>
           </Group>
 
-          <Group gap={6}>
+          <Group gap={8} align="center">
             <Badge
               variant="gradient"
               gradient={
@@ -76,13 +76,13 @@ export const GeneralPerformanceCard = ({
               }
               size="sm"
             >
-              {stats.average}% mês
+              {stats.average}% no mês
             </Badge>
           </Group>
         </Group>
       </CardHeader>
 
-      <CardContent style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingTop: 0 }}>
+      <CardContent style={{ paddingTop: 0 }}>
         {/* Gráfico dia a dia do mês */}
         <Box mt="xs">
           <Group justify="space-between" align="center" mb={6}>
@@ -105,23 +105,28 @@ export const GeneralPerformanceCard = ({
             </Group>
           </Group>
 
-          {/* Barras do Gráfico com Tooltip por dia */}
+          {/* Barras do Gráfico com Tooltip por dia (ocupando toda a largura sem scroll) */}
           <Box
             style={{
               display: 'flex',
               alignItems: 'flex-end',
               gap: 3,
-              height: 52,
-              padding: '4px 6px',
+              height: 48,
+              padding: '6px 8px',
               borderRadius: 8,
               background: 'rgba(255, 255, 255, 0.02)',
               border: '1px solid rgba(255, 255, 255, 0.05)',
-              overflowX: 'auto'
+              overflow: 'hidden'
             }}
           >
             {days.map((item) => {
               const isSelected = item.date === selectedDate
-              const barHeight = item.isFuture ? 6 : Math.max(8, Math.round((item.overallRate / 100) * 44))
+              const barHeight = item.isFuture
+                ? 4
+                : item.overallRate === 0
+                  ? 5
+                  : Math.max(8, Math.round((item.overallRate / 100) * 36))
+
               const barColor = item.isFuture
                 ? 'rgba(255, 255, 255, 0.04)'
                 : item.overallRate >= 100
@@ -130,7 +135,7 @@ export const GeneralPerformanceCard = ({
                     ? '#6366f1'
                     : item.overallRate > 0
                       ? '#38bdf8'
-                      : 'rgba(255, 255, 255, 0.1)'
+                      : 'rgba(255, 255, 255, 0.12)'
 
               const tooltipText = item.isFuture
                 ? `Dia ${item.day}: Dia futuro`
@@ -148,15 +153,23 @@ export const GeneralPerformanceCard = ({
                     onClick={() => onSelectDate?.(item.date)}
                     style={{
                       flex: 1,
-                      minWidth: 7,
+                      minWidth: 0,
                       height: `${barHeight}px`,
                       background: barColor,
-                      borderRadius: 3,
+                      borderRadius: '3px 3px 2px 2px',
                       cursor: 'pointer',
                       position: 'relative',
                       opacity: item.isFuture ? 0.35 : 1,
-                      border: isSelected ? '1px solid #ffffff' : item.isToday ? '1px solid #818cf8' : 'none',
-                      boxShadow: item.overallRate >= 100 ? '0 0 6px rgba(16, 185, 129, 0.4)' : 'none',
+                      border: isSelected
+                        ? '1.5px solid #ffffff'
+                        : item.isToday
+                          ? '1.5px solid #c084fc'
+                          : 'none',
+                      boxShadow: isSelected
+                        ? '0 0 8px rgba(255, 255, 255, 0.5)'
+                        : item.overallRate >= 100
+                          ? '0 0 6px rgba(16, 185, 129, 0.4)'
+                          : 'none',
                       transition: 'all 0.15s ease'
                     }}
                   />
@@ -164,11 +177,26 @@ export const GeneralPerformanceCard = ({
               )
             })}
           </Box>
+
+          {/* Marcadores de Guia dos Dias */}
+          {days.length > 0 && (
+            <Group justify="space-between" align="center" px={4} mt={3}>
+              <Text size="9px" c="dimmed">
+                Dia 1
+              </Text>
+              <Text size="9px" c="dimmed">
+                Dia 15
+              </Text>
+              <Text size="9px" c="dimmed">
+                Dia {days.length}
+              </Text>
+            </Group>
+          )}
         </Box>
 
         {/* Resumo compacto no rodapé */}
-        <Group justify="space-between" align="center" mt="xs" pt={4} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-          <Group gap={10}>
+        <Group justify="space-between" align="center" mt="xs" pt={6} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+          <Group gap={14}>
             <Group gap={4} align="center">
               <TbTrophy size={13} color="#f59e0b" />
               <Text size="11px" c="dimmed">

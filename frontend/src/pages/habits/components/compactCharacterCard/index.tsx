@@ -28,7 +28,7 @@ export const CompactCharacterCard = ({
 
   return (
     <>
-      <Card style={{ position: 'relative', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Card style={{ position: 'relative', overflow: 'hidden' }}>
         {/* Glow suave no topo */}
         <Box
           style={{
@@ -60,81 +60,86 @@ export const CompactCharacterCard = ({
           </Group>
         </CardHeader>
 
-        <CardContent style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 0 }}>
-          <Group gap="sm" align="center" wrap="nowrap">
-            {/* Avatar Interativo */}
-            <Box
-              style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}
-              onClick={() => setModalOpened(true)}
-              title="Clique para editar avatar e físico"
-            >
-              <CharacterAvatar
-                id={profile.characterId}
-                size={58}
-                interactive
-              />
+        <CardContent style={{ paddingTop: 0 }}>
+          <Group justify="space-between" align="center" wrap="nowrap">
+            {/* Lado Esquerdo: Avatar + Nome */}
+            <Group gap="sm" align="center" wrap="nowrap">
               <Box
-                style={{
-                  position: 'absolute',
-                  bottom: -2,
-                  right: -2,
-                  background: '#0284c7',
-                  borderRadius: '50%',
-                  padding: 3,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid #0f172a'
-                }}
+                style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}
+                onClick={() => setModalOpened(true)}
+                title="Clique para editar avatar e físico"
               >
-                <TbPencil size={10} color="#fff" />
+                <CharacterAvatar
+                  id={profile.characterId}
+                  size={50}
+                  interactive
+                />
+                <Box
+                  style={{
+                    position: 'absolute',
+                    bottom: -2,
+                    right: -2,
+                    background: '#0284c7',
+                    borderRadius: '50%',
+                    padding: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #0f172a'
+                  }}
+                >
+                  <TbPencil size={10} color="#fff" />
+                </Box>
               </Box>
-            </Box>
 
-            {/* Informações Físicas Compactas */}
-            <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-              <Group gap={4} wrap="nowrap" align="center">
-                <Text size="xs" fw={700} c="white" truncate>
-                  {activeChar.name}
-                </Text>
-                <MantineBadge size="xs" variant="light" color="cyan">
-                  Ativo
-                </MantineBadge>
-              </Group>
-
-              <Group gap={4} wrap="wrap">
-                <MantineBadge
-                  variant="subtle"
-                  color="gray"
-                  size="xs"
-                  leftSection={<TbCalendarTime size={11} />}
-                  style={{ padding: '0 4px', height: 18 }}
-                >
-                  {ageFormatted}
-                </MantineBadge>
-
-                <MantineBadge
-                  variant="subtle"
-                  color="gray"
-                  size="xs"
-                  leftSection={<TbRuler size={11} />}
-                  style={{ padding: '0 4px', height: 18 }}
-                >
-                  {heightFormatted}
-                </MantineBadge>
-
-                {latestWeight && (
-                  <MantineBadge
-                    variant="subtle"
-                    color="teal"
-                    size="xs"
-                    style={{ padding: '0 4px', height: 18 }}
-                  >
-                    {latestWeight.toFixed(1)}kg
+              <Stack gap={2}>
+                <Group gap={6} align="center" wrap="nowrap">
+                  <Text size="xs" fw={700} c="white">
+                    {activeChar.name}
+                  </Text>
+                  <MantineBadge size="xs" variant="light" color="cyan">
+                    Ativo
                   </MantineBadge>
-                )}
-              </Group>
-            </Stack>
+                </Group>
+                <Text size="11px" c="dimmed">
+                  Perfil e biofísico
+                </Text>
+              </Stack>
+            </Group>
+
+            {/* Lado Direito: Badges físicos */}
+            <Group gap={6} wrap="nowrap" justify="flex-end">
+              <MantineBadge
+                variant="subtle"
+                color="gray"
+                size="xs"
+                leftSection={<TbCalendarTime size={11} />}
+                style={{ padding: '0 6px', height: 20 }}
+              >
+                {ageFormatted}
+              </MantineBadge>
+
+              <MantineBadge
+                variant="subtle"
+                color="gray"
+                size="xs"
+                leftSection={<TbRuler size={11} />}
+                style={{ padding: '0 6px', height: 20 }}
+              >
+                {heightFormatted}
+              </MantineBadge>
+
+              {latestWeight && (
+                <MantineBadge
+                  variant="subtle"
+                  color="teal"
+                  size="xs"
+                  style={{ padding: '0 6px', height: 20 }}
+                >
+                  {latestWeight.toFixed(1)}kg
+                </MantineBadge>
+              )}
+            </Group>
           </Group>
         </CardContent>
       </Card>
