@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Stack,
   Group,
@@ -52,6 +52,13 @@ export const WeightImcCard = ({
     todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : ''
   )
 
+  // Sincroniza input quando registro muda
+  useEffect(() => {
+    if (!isEditing) {
+      setInputWeight(todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : '')
+    }
+  }, [todayRecord, latestRecord, isEditing])
+
   const imcResult = useMemo(() => {
     const currentWeight = todayRecord?.weight || latestRecord?.weight
     return calculateImc(currentWeight, heightCm)
@@ -87,7 +94,7 @@ export const WeightImcCard = ({
     showToast(
       todayRecord
         ? `Check-in de hoje atualizado para ${weightNum.toFixed(1)} kg!`
-        : `Check-in de hoje registrado: ${weightNum.toFixed(1)} kg!`,
+        : `Check-in de hoje registrado com sucesso: ${weightNum.toFixed(1)} kg!`,
       'success'
     )
   }
@@ -108,10 +115,10 @@ export const WeightImcCard = ({
             >
               <TbScale size={16} color={todayRecord ? '#4ade80' : '#818cf8'} />
             </ThemeIcon>
-            <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso & IMC</CardTitle>
+            <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso Corporal</CardTitle>
             <MantineBadge
               size="xs"
-              variant={todayRecord ? 'light' : 'outline'}
+              variant="outline"
               color={todayRecord ? 'teal' : 'gray'}
             >
               {formatDateDisplay(todayStr)}
@@ -150,17 +157,19 @@ export const WeightImcCard = ({
 
       <CardContent>
         <Stack gap="md">
-          {/* Módulo de Check-in do Dia (Clique para Editar) */}
+          {/* Módulo de Check-in do Dia (Interativo / Clique para Editar) */}
           <Box
             style={{
               borderRadius: 10,
               background: todayRecord
-                ? 'rgba(34, 197, 94, 0.05)'
-                : 'rgba(99, 102, 241, 0.05)',
+                ? 'rgba(34, 197, 94, 0.04)'
+                : 'rgba(99, 102, 241, 0.04)',
               border: `1px solid ${
-                todayRecord
-                  ? 'rgba(34, 197, 94, 0.22)'
-                  : 'rgba(99, 102, 241, 0.22)'
+                isEditing
+                  ? 'rgba(99, 102, 241, 0.4)'
+                  : todayRecord
+                    ? 'rgba(34, 197, 94, 0.18)'
+                    : 'rgba(99, 102, 241, 0.18)'
               }`,
               padding: '12px 14px',
               transition: 'all 0.2s ease',
@@ -185,27 +194,33 @@ export const WeightImcCard = ({
                       <Text size="xs" fw={700} c="white">
                         {todayRecord ? 'Check-in de Hoje' : 'Check-in do Dia'}
                       </Text>
-                      <Text size="11px" c="dimmed">
-                        ({todayRecord ? 'Registrado' : 'Pendente'})
+                      <Text size="11px" c={todayRecord ? '#4ade80' : '#fbbf24'} fw={600}>
+                        • {todayRecord ? 'Concluído' : 'Pendente'}
                       </Text>
                     </Group>
 
                     <Text size="11px" c="dimmed">
                       {todayRecord
-                        ? 'Toque para editar seu peso do dia'
-                        : 'Toque para registrar seu peso de hoje'}
+                        ? 'Clique para editar seu peso registrado hoje'
+                        : 'Clique para registrar seu peso de hoje'}
                     </Text>
                   </Box>
                 </Group>
 
                 <Group gap="sm" align="center">
                   {todayRecord ? (
-                    <Text size="20px" fw={800} c="#4ade80">
-                      {todayRecord.weight.toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 600 }}>kg</span>
+                    <Text size="20px" fw={800} c="#4ade80" style={{ lineHeight: 1 }}>
+                      {todayRecord.weight.toFixed(1)}{' '}
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>
+                        kg
+                      </span>
                     </Text>
                   ) : latestRecord ? (
                     <Text size="xs" c="dimmed">
-                      Último: <span style={{ color: '#fff', fontWeight: 600 }}>{latestRecord.weight.toFixed(1)} kg</span>
+                      Último:{' '}
+                      <span style={{ color: '#fff', fontWeight: 600 }}>
+                        {latestRecord.weight.toFixed(1)} kg
+                      </span>
                     </Text>
                   ) : null}
 
