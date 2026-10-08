@@ -77,9 +77,11 @@ export const HabitsPage = () => {
     triggerRevision: metricsRevision
   })
 
-  const consumedWaterBottles = waterDailyMap[todayStr] || 0
-  const extraWaterBottlesTarget = waterExtraTargetMap[todayStr] || 0
+  const consumedWaterBottles = waterDailyMap[selectedDate] || 0
+  const extraWaterBottlesTarget = waterExtraTargetMap[selectedDate] || 0
+  const dayWeightRecord = weightHistory.find((r) => r.date === selectedDate)
   const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
+  const currentWeightForDay = dayWeightRecord?.weight || latestWeight
 
   const triggerMetricsRefresh = () => {
     setMetricsRevision((prev) => prev + 1)
@@ -106,17 +108,22 @@ export const HabitsPage = () => {
   }
 
   const handleToggleWaterWithMetrics = (index: number) => {
-    handleToggleWaterBottle(index)
+    handleToggleWaterBottle(index, selectedDate)
     triggerMetricsRefresh()
   }
 
   const handleAddExtraWaterWithMetrics = () => {
-    handleAddExtraWaterBottle()
+    handleAddExtraWaterBottle(selectedDate)
     triggerMetricsRefresh()
   }
 
   const handleRemoveExtraWaterWithMetrics = () => {
-    handleRemoveExtraWaterBottle()
+    handleRemoveExtraWaterBottle(selectedDate)
+    triggerMetricsRefresh()
+  }
+
+  const handleSaveWeightWithMetrics = (weight: number, date?: string) => {
+    handleSaveWeight(weight, date || selectedDate)
     triggerMetricsRefresh()
   }
 
@@ -197,7 +204,7 @@ export const HabitsPage = () => {
             {/* PESSOA em linha inteira */}
             <CompactCharacterCard
               profile={healthProfile}
-              latestWeight={latestWeight}
+              latestWeight={currentWeightForDay}
               onUpdateProfile={handleUpdateHealthProfile}
             />
 
@@ -205,17 +212,19 @@ export const HabitsPage = () => {
             <CompactWeightCard
               heightCm={healthProfile.height}
               weightHistory={weightHistory}
-              onSaveWeight={handleSaveWeight}
+              selectedDate={selectedDate}
+              onSaveWeight={handleSaveWeightWithMetrics}
             />
 
             {/* Fundo: AGUA */}
             <CompactWaterCard
-              currentWeight={latestWeight}
+              currentWeight={currentWeightForDay}
               currentAge={healthProfile.age}
               currentHeight={healthProfile.height}
               consumedBottles={consumedWaterBottles}
               extraBottlesTarget={extraWaterBottlesTarget}
               bottleMl={waterBottleMl}
+              selectedDate={selectedDate}
               onToggleBottle={handleToggleWaterWithMetrics}
               onAddExtraBottle={handleAddExtraWaterWithMetrics}
               onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}

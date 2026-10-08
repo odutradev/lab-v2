@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Group, Stack, Text, NumberInput, Box, Badge as MantineBadge } from '@mantine/core'
 import { TbScale, TbCheck, TbArrowUpRight, TbArrowDownRight } from 'react-icons/tb'
 
@@ -11,20 +11,24 @@ import type { WeightRecord } from '@stores/health/types'
 interface CompactWeightCardProps {
   heightCm?: number
   weightHistory: WeightRecord[]
+  selectedDate?: string
   onSaveWeight: (weight: number, date?: string) => void
 }
 
 export const CompactWeightCard = ({
   heightCm,
   weightHistory,
+  selectedDate,
   onSaveWeight
 }: CompactWeightCardProps) => {
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
+  const activeDate = selectedDate || todayStr
+  const isViewingToday = activeDate === todayStr
 
-  const todayRecord = useMemo(
-    () => weightHistory.find((r) => r.date === todayStr),
-    [weightHistory, todayStr]
+  const selectedRecord = useMemo(
+    () => weightHistory.find((r) => r.date === activeDate),
+    [weightHistory, activeDate]
   )
 
   const latestRecord = useMemo(() => {
@@ -33,13 +37,17 @@ export const CompactWeightCard = ({
   }, [weightHistory])
 
   const [inputWeight, setInputWeight] = useState<number | string>(
-    todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : ''
+    selectedRecord ? selectedRecord.weight : ''
   )
 
+  useEffect(() => {
+    setInputWeight(selectedRecord ? selectedRecord.weight : '')
+  }, [selectedRecord, activeDate])
+
   const imcResult = useMemo(() => {
-    const currentWeight = todayRecord?.weight || latestRecord?.weight
+    const currentWeight = selectedRecord?.weight || latestRecord?.weight
     return calculateImc(currentWeight, heightCm)
-  }, [todayRecord, latestRecord, heightCm])
+  }, [selectedRecord, latestRecord, heightCm])
 
   const weightDifference = useMemo(() => {
     if (weightHistory.length < 2) return null
@@ -55,11 +63,12 @@ export const CompactWeightCard = ({
       return
     }
 
-    onSaveWeight(weightNum, todayStr)
+    onSaveWeight(weightNum, activeDate)
+    const dateLabel = isViewingToday ? 'hoje' : formatDateDisplay(activeDate)
     showToast(
-      todayRecord
-        ? `Peso de hoje atualizado para ${weightNum.toFixed(1)} kg!`
-        : `Peso de hoje registrado: ${weightNum.toFixed(1)} kg!`,
+      selectedRecord
+        ? `Peso de ${dateLabel} atualizado para ${weightNum.toFixed(1)} kg!`
+        : `Peso de ${dateLabel} registrado: ${weightNum.toFixed(1)} kg!`,
       'success'
     )
   }
@@ -84,6 +93,14 @@ export const CompactWeightCard = ({
           <Group gap={6} align="center">
             <TbScale size={18} color="#a3e635" />
             <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Peso & IMC</CardTitle>
+            <MantineBadge
+              size="xs"
+              variant={isViewingToday ? 'light' : 'gradient'}
+              gradient={!isViewingToday ? { from: 'indigo', to: 'cyan' } : undefined}
+              color={isViewingToday ? 'cyan' : undefined}
+            >
+              {isViewingToday ? 'Hoje' : formatDateDisplay(activeDate)}
+            </MantineBadge>
           </Group>
 
           <Group gap={6}>
@@ -98,21 +115,25 @@ export const CompactWeightCard = ({
               </MantineBadge>
             )}
 
-            {latestRecord && (
+            {selectedRecord ? (
               <MantineBadge size="xs" variant="outline" color="lime">
-                {latestRecord.weight.toFixed(1)} kg
+                {selectedRecord.weight.toFixed(1)} kg
               </MantineBadge>
-            )}
+            ) : latestRecord ? (
+              <MantineBadge size="xs" variant="subtle" color="gray" title="Último peso registrado">
+                Último: {latestRecord.weight.toFixed(1)} kg
+              </MantineBadge>
+            ) : null}
           </Group>
         </Group>
       </CardHeader>
 
       <CardContent style={{ paddingTop: 0 }}>
         <Stack gap={8}>
-          {/* Linha de registro de hoje */}
+          {/* Linha de registro da data selecionada */}
           <Group align="center" gap="xs" wrap="nowrap">
             <NumberInput
-              placeholder="Ex: 75.5"
+              placeholder={latestRecord ? `Ex: ${latestRecord.weight}` : 'Ex: 75.5'}
               value={inputWeight}
               onChange={(val) => setInputWeight(typeof val === 'number' ? val : '')}
               decimalScale={1}
@@ -125,7 +146,7 @@ export const CompactWeightCard = ({
               styles={{
                 input: {
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: isViewingToday ? 'rgba(255, 255, 255, 0.1)' : 'rgba(56, 189, 248, 0.3)',
                   color: '#fff',
                   fontWeight: 600,
                   height: 32
@@ -134,13 +155,13 @@ export const CompactWeightCard = ({
             />
 
             <Button
-              variant={todayRecord ? 'outline' : 'primary'}
+              variant={selectedRecord ? 'outline' : 'primary'}
               size="sm"
               onClick={handleSave}
-              leftIcon={todayRecord ? <TbCheck size={14} /> : <TbScale size={14} />}
+              leftIcon={selectedRecord ? <TbCheck size={14} /> : <TbScale size={14} />}
               style={{ height: 32, flexShrink: 0 }}
             >
-              {todayRecord ? 'Atualizar' : 'Salvar'}
+              {selectedRecord ? 'Atualizar' : 'Salvar'}
             </Button>
           </Group>
 
@@ -175,13 +196,13 @@ export const CompactWeightCard = ({
                   py={2}
                   style={{
                     borderRadius: 4,
-                    background: rec.date === todayStr ? 'rgba(163, 230, 53, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                    border: rec.date === todayStr ? '1px solid rgba(163, 230, 53, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
+                    background: rec.date === activeDate ? 'rgba(163, 230, 53, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                    border: rec.date === activeDate ? '1px solid rgba(163, 230, 53, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
                     fontSize: '10px'
                   }}
                   title={formatDateDisplay(rec.date)}
                 >
-                  <Text size="10px" fw={600} c={rec.date === todayStr ? '#a3e635' : 'dimmed'}>
+                  <Text size="10px" fw={600} c={rec.date === activeDate ? '#a3e635' : 'dimmed'}>
                     {rec.weight.toFixed(1)}k
                   </Text>
                 </Box>
