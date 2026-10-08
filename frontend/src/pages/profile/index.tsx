@@ -2,6 +2,7 @@ import { Stack, Box } from '@mantine/core'
 
 import ProfileHeader from './components/profileHeader'
 import ProfileInfoCard from './components/profileInfoCard'
+import ProfilePhysicalCard from './components/profilePhysicalCard'
 import ProfileSecurityCard from './components/profileSecurityCard'
 import { containerStyle } from './styles'
 import useProfile from './hook'
@@ -50,6 +51,8 @@ export const ProfilePage = () => {
           user={user}
           formatDate={formatDate}
         />
+
+        <ProfilePhysicalCard />
 
         <ProfileSecurityCard
           onNavigateResetPassword={handleNavigateResetPassword}

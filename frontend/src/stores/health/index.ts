@@ -16,8 +16,8 @@ interface PersistedData {
 
 const defaultProfile: HealthProfile = {
   characterId: 'spark',
-  age: 26,
-  height: 175
+  age: undefined,
+  height: undefined
 }
 
 const loadPersistedData = (): PersistedData => {
