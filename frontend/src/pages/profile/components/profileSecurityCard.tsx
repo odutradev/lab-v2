@@ -90,7 +90,7 @@ export const ProfileSecurityCard = ({
 
   return (
     <>
-      <Card>
+      <Card id="profile-security-card">
         <CardHeader>
           <CardTitle>Integrações e Segurança</CardTitle>
           <CardDescription>

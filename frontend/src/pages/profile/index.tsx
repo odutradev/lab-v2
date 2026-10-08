@@ -1,6 +1,7 @@
 import { Stack, Box } from '@mantine/core'
 
 import ProfileHeader from './components/profileHeader'
+import ProfileProgressCard from './components/profileProgressCard'
 import ProfileInfoCard from './components/profileInfoCard'
 import ProfilePhysicalCard from './components/profilePhysicalCard'
 import ProfileSecurityCard from './components/profileSecurityCard'
@@ -45,6 +46,11 @@ export const ProfilePage = () => {
           user={user}
           initials={initials}
           onBack={handleNavigateHome}
+        />
+
+        <ProfileProgressCard
+          calendarStatus={calendarStatus}
+          onConnectCalendar={handleConnectGoogleCalendar}
         />
 
         <ProfileInfoCard
