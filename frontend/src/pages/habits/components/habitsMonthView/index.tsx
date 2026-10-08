@@ -35,15 +35,15 @@ export const HabitsMonthView = ({
           const totalHabits = summary?.totalHabits ?? 0
           const isSelected = cell.date === selectedDate
 
-          const visibleItems = items.slice(0, 3)
-          const remainingCount = items.length - 3
+          const visibleItems = items.slice(0, 2)
+          const remainingCount = items.length - 2
 
           return (
             <Box
               key={cell.date}
-              p={6}
+              p={5}
               style={{
-                minHeight: 110,
+                minHeight: 74,
                 background: isSelected
                   ? 'rgba(99, 102, 241, 0.14)'
                   : cell.isToday

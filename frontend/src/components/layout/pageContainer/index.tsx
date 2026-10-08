@@ -5,14 +5,15 @@ import type { PageContainerProps } from './types'
 export const PageContainer = ({
   children,
   center = false,
-  className
+  className,
+  size = 'xl'
 }: PageContainerProps) => {
   return (
     <Box component="main" flex={1} display="flex" style={{ flexDirection: 'column' }}>
       <Container
-        size="lg"
+        size={size}
         w="100%"
-        py="xl"
+        py="lg"
         px="md"
         flex={1}
         display="flex"

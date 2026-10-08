@@ -1,10 +1,8 @@
-import { Stack, Box, SimpleGrid } from '@mantine/core'
+import { useState } from 'react'
+import { Stack, Box, Grid, SimpleGrid } from '@mantine/core'
 
 import Card from '@components/ui/card'
 import useHealthStore from '@stores/health'
-import CharacterCard from '@pages/home/components/characterCard'
-import WeightImcCard from '@pages/home/components/weightImcCard'
-import WaterTrackerCard from '@pages/home/components/waterTrackerCard'
 
 import HabitsCalendarToolbar from './components/habitsCalendarToolbar'
 import HabitsMonthView from './components/habitsMonthView'
@@ -12,8 +10,16 @@ import HabitsWeekView from './components/habitsWeekView'
 import HabitsDayView from './components/habitsDayView'
 import HabitsModal from './components/habitsModal'
 import RecurringScopeModal from './components/recurringScopeModal'
+import GeneralPerformanceCard from './components/generalPerformanceCard'
+import CompactCharacterCard from './components/compactCharacterCard'
+import CompactWeightCard from './components/compactWeightCard'
+import CompactWaterCard from './components/compactWaterCard'
 import { containerStyle } from './styles'
 import useHabitsPage from './hook'
+import useMonthlyMetrics from './hook/useMonthlyMetrics'
+
+import type { CreateHabitFormData } from './components/habitsModal/types'
+import type { RecurrenceScopeMode } from '@actions/habits/types'
 
 export const HabitsPage = () => {
   const {
@@ -60,91 +66,154 @@ export const HabitsPage = () => {
     resetTodayWater: handleResetTodayWater
   } = useHealthStore()
 
+  // Revisão para disparar recálculo das métricas do mês quando dados mudarem
+  const [metricsRevision, setMetricsRevision] = useState(0)
+  const currentMonth = selectedDate.slice(0, 7)
+
+  const { metrics, isLoading: isMetricsLoading } = useMonthlyMetrics({
+    month: currentMonth,
+    triggerRevision: metricsRevision
+  })
+
   const consumedWaterBottles = waterDailyMap[todayStr] || 0
   const extraWaterBottlesTarget = waterExtraTargetMap[todayStr] || 0
   const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
 
+  const triggerMetricsRefresh = () => {
+    setMetricsRevision((prev) => prev + 1)
+  }
+
+  const handleToggleCheckinWithMetrics = async (habitId: string, date?: string) => {
+    await handleToggleCheckin(habitId, date)
+    triggerMetricsRefresh()
+  }
+
+  const handleSaveHabitWithMetrics = async (data: CreateHabitFormData) => {
+    await handleSaveHabit(data)
+    triggerMetricsRefresh()
+  }
+
+  const handleRemoveHabitWithMetrics = async (habitId: string, date?: string) => {
+    await handleRemoveHabit(habitId, date)
+    triggerMetricsRefresh()
+  }
+
+  const handleConfirmScopeActionWithMetrics = async (mode: RecurrenceScopeMode) => {
+    await handleConfirmScopeAction(mode)
+    triggerMetricsRefresh()
+  }
+
+  const handleToggleWaterWithMetrics = (index: number) => {
+    handleToggleWaterBottle(index)
+    triggerMetricsRefresh()
+  }
+
+  const handleAddExtraWaterWithMetrics = () => {
+    handleAddExtraWaterBottle()
+    triggerMetricsRefresh()
+  }
+
+  const handleResetTodayWaterWithMetrics = () => {
+    handleResetTodayWater()
+    triggerMetricsRefresh()
+  }
+
   return (
     <Box style={containerStyle}>
-      <Stack gap="xl" w="100%">
-        {/* Personagem Interativo: clique para configurar idade e altura */}
-        <CharacterCard
-          profile={healthProfile}
-          latestWeight={latestWeight}
-          onUpdateProfile={handleUpdateHealthProfile}
-        />
+      <Grid gap="md" align="stretch">
+        {/* Lado Esquerdo: CALENDARIO */}
+        <Grid.Col span={{ base: 12, lg: 7 }}>
+          <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Stack gap="md" style={{ flex: 1 }}>
+              <HabitsCalendarToolbar
+                headerTitle={headerTitle}
+                viewMode={viewMode}
+                isToday={isToday}
+                onViewModeChange={setViewMode}
+                onPrevious={handlePreviousPeriod}
+                onNext={handleNextPeriod}
+                onToday={handleToday}
+                onOpenNewHabitModal={handleOpenModal}
+              />
 
-        {/* Grid de Saúde: Controle de Peso & IMC + Hidratação Diária */}
-        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-          <WeightImcCard
-            heightCm={healthProfile.height}
-            weightHistory={weightHistory}
-            onSaveWeight={handleSaveWeight}
-          />
+              {viewMode === 'month' && (
+                <HabitsMonthView
+                  monthCells={monthCells}
+                  rangeSummariesMap={rangeSummariesMap}
+                  selectedDate={selectedDate}
+                  onSelectDate={handleSelectDate}
+                  onToggleCheckin={handleToggleCheckinWithMetrics}
+                  onEditItem={handleOpenEditModal}
+                />
+              )}
 
-          <WaterTrackerCard
-            currentWeight={latestWeight}
-            consumedBottles={consumedWaterBottles}
-            extraBottlesTarget={extraWaterBottlesTarget}
-            onToggleBottle={handleToggleWaterBottle}
-            onAddExtraBottle={handleAddExtraWaterBottle}
-            onResetToday={handleResetTodayWater}
-          />
-        </SimpleGrid>
+              {viewMode === 'week' && (
+                <HabitsWeekView
+                  weekDays={weekDays}
+                  todayStr={todayStr}
+                  rangeSummariesMap={rangeSummariesMap}
+                  selectedDate={selectedDate}
+                  togglingId={togglingId}
+                  onSelectDate={handleSelectDate}
+                  onToggleCheckin={handleToggleCheckinWithMetrics}
+                  onEditItem={handleOpenEditModal}
+                />
+              )}
 
-        {/* Agenda e Metas de Hábitos */}
-        <Card>
-          <Stack gap="lg">
-            <HabitsCalendarToolbar
-              headerTitle={headerTitle}
-              viewMode={viewMode}
-              isToday={isToday}
-              onViewModeChange={setViewMode}
-              onPrevious={handlePreviousPeriod}
-              onNext={handleNextPeriod}
-              onToday={handleToday}
-              onOpenNewHabitModal={handleOpenModal}
+              {viewMode === 'day' && (
+                <HabitsDayView
+                  selectedDate={selectedDate}
+                  isToday={isToday}
+                  daySummary={daySummary}
+                  isLoading={isLoading}
+                  togglingId={togglingId}
+                  onToggleCheckin={handleToggleCheckinWithMetrics}
+                  onEditItem={handleOpenEditModal}
+                  onRemoveItem={handleRemoveHabitWithMetrics}
+                />
+              )}
+            </Stack>
+          </Card>
+        </Grid.Col>
+
+        {/* Lado Direito: DESEMPENHO GERAL, PESSOA, PESO, AGUA */}
+        <Grid.Col span={{ base: 12, lg: 5 }}>
+          <Stack gap="md" h="100%" justify="space-between">
+            {/* Topo: DESEMPENHO GERAL e PESSOA lado a lado */}
+            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+              <GeneralPerformanceCard
+                metrics={metrics}
+                isLoading={isMetricsLoading}
+                selectedDate={selectedDate}
+                onSelectDate={handleSelectDate}
+              />
+
+              <CompactCharacterCard
+                profile={healthProfile}
+                latestWeight={latestWeight}
+                onUpdateProfile={handleUpdateHealthProfile}
+              />
+            </SimpleGrid>
+
+            {/* Meio: PESO */}
+            <CompactWeightCard
+              heightCm={healthProfile.height}
+              weightHistory={weightHistory}
+              onSaveWeight={handleSaveWeight}
             />
 
-            {viewMode === 'month' && (
-              <HabitsMonthView
-                monthCells={monthCells}
-                rangeSummariesMap={rangeSummariesMap}
-                selectedDate={selectedDate}
-                onSelectDate={handleSelectDate}
-                onToggleCheckin={handleToggleCheckin}
-                onEditItem={handleOpenEditModal}
-              />
-            )}
-
-            {viewMode === 'week' && (
-              <HabitsWeekView
-                weekDays={weekDays}
-                todayStr={todayStr}
-                rangeSummariesMap={rangeSummariesMap}
-                selectedDate={selectedDate}
-                togglingId={togglingId}
-                onSelectDate={handleSelectDate}
-                onToggleCheckin={handleToggleCheckin}
-                onEditItem={handleOpenEditModal}
-              />
-            )}
-
-            {viewMode === 'day' && (
-              <HabitsDayView
-                selectedDate={selectedDate}
-                isToday={isToday}
-                daySummary={daySummary}
-                isLoading={isLoading}
-                togglingId={togglingId}
-                onToggleCheckin={handleToggleCheckin}
-                onEditItem={handleOpenEditModal}
-                onRemoveItem={handleRemoveHabit}
-              />
-            )}
+            {/* Fundo: AGUA */}
+            <CompactWaterCard
+              currentWeight={latestWeight}
+              consumedBottles={consumedWaterBottles}
+              extraBottlesTarget={extraWaterBottlesTarget}
+              onToggleBottle={handleToggleWaterWithMetrics}
+              onAddExtraBottle={handleAddExtraWaterWithMetrics}
+              onResetToday={handleResetTodayWaterWithMetrics}
+            />
           </Stack>
-        </Card>
-      </Stack>
+        </Grid.Col>
+      </Grid>
 
       <HabitsModal
         isOpen={isModalOpen}
@@ -152,15 +221,15 @@ export const HabitsPage = () => {
         initialDate={selectedDate}
         initialHabit={editingHabit}
         onClose={handleCloseModal}
-        onSubmit={handleSaveHabit}
-        onDelete={(id) => handleRemoveHabit(id, selectedDate)}
+        onSubmit={handleSaveHabitWithMetrics}
+        onDelete={(id) => handleRemoveHabitWithMetrics(id, selectedDate)}
       />
 
       <RecurringScopeModal
         isOpen={isScopeModalOpen}
         actionType={scopeActionType}
         onClose={handleCloseScopeModal}
-        onConfirm={handleConfirmScopeAction}
+        onConfirm={handleConfirmScopeActionWithMetrics}
         isLoading={isCreating}
       />
     </Box>
