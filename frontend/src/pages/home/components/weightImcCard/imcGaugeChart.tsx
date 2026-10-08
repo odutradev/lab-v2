@@ -1,114 +1,88 @@
-import { Box, Group, Text, Badge } from '@mantine/core'
+import { Box, Group, Stack, Text, Badge } from '@mantine/core'
 import type { ImcGaugeChartProps } from './types'
 
-function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
-  const rad = (angleDeg * Math.PI) / 180
-  return {
-    x: cx + r * Math.cos(rad),
-    y: cy - r * Math.sin(rad)
-  }
-}
-
-function describeSector(
-  cx: number,
-  cy: number,
-  rInner: number,
-  rOuter: number,
-  startAngle: number,
-  endAngle: number
-) {
-  const gap = 0.5
-  const sAngle = startAngle - gap
-  const eAngle = endAngle + gap
-
-  const pOutStart = polarToCartesian(cx, cy, rOuter, sAngle)
-  const pOutEnd = polarToCartesian(cx, cy, rOuter, eAngle)
-  const pInEnd = polarToCartesian(cx, cy, rInner, eAngle)
-  const pInStart = polarToCartesian(cx, cy, rInner, sAngle)
-
-  return `M ${pOutStart.x.toFixed(2)} ${pOutStart.y.toFixed(2)} A ${rOuter} ${rOuter} 0 0 1 ${pOutEnd.x.toFixed(2)} ${pOutEnd.y.toFixed(2)} L ${pInEnd.x.toFixed(2)} ${pInEnd.y.toFixed(2)} A ${rInner} ${rInner} 0 0 0 ${pInStart.x.toFixed(2)} ${pInStart.y.toFixed(2)} Z`
-}
-
-interface SectorConfig {
+interface ClassificationBand {
   label: string
-  subLabel: string
+  range: string
   color: string
-  startAngle: number
-  endAngle: number
-  minImc: number
-  maxImc: number
+  bgActive: string
+  borderActive: string
+  widthPercent: number
 }
 
-const SECTORS: SectorConfig[] = [
+const BANDS: ClassificationBand[] = [
   {
-    label: 'ABAIXO DO PESO',
-    subLabel: '< 18.5',
-    color: '#0ea5e9',
-    startAngle: 180,
-    endAngle: 144,
-    minImc: 15,
-    maxImc: 18.5
+    label: 'Abaixo',
+    range: '< 18.5',
+    color: '#38bdf8',
+    bgActive: 'rgba(56, 189, 248, 0.12)',
+    borderActive: 'rgba(56, 189, 248, 0.45)',
+    widthPercent: 15
   },
   {
-    label: 'NORMAL',
-    subLabel: '18.5 – 24.9',
-    color: '#22c55e',
-    startAngle: 144,
-    endAngle: 108,
-    minImc: 18.5,
-    maxImc: 24.9
+    label: 'Normal',
+    range: '18.5 – 24.9',
+    color: '#10b981',
+    bgActive: 'rgba(16, 185, 129, 0.12)',
+    borderActive: 'rgba(16, 185, 129, 0.45)',
+    widthPercent: 30
   },
   {
-    label: 'SOBREPESO',
-    subLabel: '25.0 – 29.9',
-    color: '#eab308',
-    startAngle: 108,
-    endAngle: 72,
-    minImc: 25.0,
-    maxImc: 29.9
+    label: 'Sobrepeso',
+    range: '25.0 – 29.9',
+    color: '#f59e0b',
+    bgActive: 'rgba(245, 158, 11, 0.12)',
+    borderActive: 'rgba(245, 158, 11, 0.45)',
+    widthPercent: 25
   },
   {
-    label: 'OBESIDADE',
-    subLabel: '30.0 – 39.9',
+    label: 'Obesidade',
+    range: '30.0 – 39.9',
     color: '#f97316',
-    startAngle: 72,
-    endAngle: 36,
-    minImc: 30.0,
-    maxImc: 39.9
+    bgActive: 'rgba(249, 115, 22, 0.12)',
+    borderActive: 'rgba(249, 115, 22, 0.45)',
+    widthPercent: 15
   },
   {
-    label: 'OBESIDADE SEVERA',
-    subLabel: '≥ 40.0',
+    label: 'Severa',
+    range: '≥ 40.0',
     color: '#ef4444',
-    startAngle: 36,
-    endAngle: 0,
-    minImc: 40.0,
-    maxImc: 45.0
+    bgActive: 'rgba(239, 68, 68, 0.12)',
+    borderActive: 'rgba(239, 68, 68, 0.45)',
+    widthPercent: 15
   }
 ]
 
-function calculateNeedleAngle(imc: number): number {
-  if (imc <= 15) return 176
-  if (imc >= 45) return 4
+function getActiveBandIndex(imc: number): number {
+  if (imc < 18.5) return 0
+  if (imc < 25.0) return 1
+  if (imc < 30.0) return 2
+  if (imc < 40.0) return 3
+  return 4
+}
+
+function calculateMarkerPercent(imc: number): number {
+  if (imc <= 15) return 0
+  if (imc >= 45) return 100
 
   if (imc < 18.5) {
-    const t = Math.max(0, (imc - 15) / (18.5 - 15))
-    return 176 - t * (176 - 146)
+    const t = (imc - 15) / (18.5 - 15)
+    return Math.max(0, Math.min(15, t * 15))
   }
   if (imc < 25.0) {
-    const t = (imc - 18.5) / (24.9 - 18.5)
-    return 142 - t * (142 - 110)
+    const t = (imc - 18.5) / (25.0 - 18.5)
+    return 15 + t * 30
   }
   if (imc < 30.0) {
-    const t = (imc - 25.0) / (29.9 - 25.0)
-    return 106 - t * (106 - 74)
+    const t = (imc - 25.0) / (30.0 - 25.0)
+    return 45 + t * 25
   }
   if (imc < 40.0) {
-    const t = (imc - 30.0) / (39.9 - 30.0)
-    return 70 - t * (70 - 38)
+    const t = (imc - 30.0) / (40.0 - 30.0)
+    return 70 + t * 15
   }
   const t = Math.min(1, (imc - 40.0) / (45.0 - 40.0))
-  return 34 - t * (34 - 6)
+  return 85 + t * 15
 }
 
 export const ImcGaugeChart = ({
@@ -146,169 +120,205 @@ export const ImcGaugeChart = ({
         }}
       >
         <Text size="sm" c="dimmed">
-          Faça um check-in de peso para calcular seu IMC e visualizar a classificação no medidor.
+          Faça um check-in de peso para calcular seu IMC e visualizar sua classificação.
         </Text>
       </Box>
     )
   }
 
   const { imc, classification, minIdealWeight, maxIdealWeight } = imcResult
-
-  const cx = 250
-  const cy = 205
-  const rOuter = 180
-  const rInner = 110
-  const rText = (rOuter + rInner) / 2
-  const needleLength = 138
-  const needleAngle = calculateNeedleAngle(imc)
-
-  // Geometria da agulha
-  const tip = polarToCartesian(cx, cy, needleLength, needleAngle)
-  const baseR = 10
-  const b1 = polarToCartesian(cx, cy, baseR, needleAngle + 90)
-  const b2 = polarToCartesian(cx, cy, baseR, needleAngle - 90)
-  const tail = polarToCartesian(cx, cy, 18, needleAngle + 180)
-  const needlePath = `M ${tail.x.toFixed(2)} ${tail.y.toFixed(2)} L ${b1.x.toFixed(2)} ${b1.y.toFixed(2)} L ${tip.x.toFixed(2)} ${tip.y.toFixed(2)} L ${b2.x.toFixed(2)} ${b2.y.toFixed(2)} Z`
+  const activeIndex = getActiveBandIndex(imc)
+  const markerPercent = calculateMarkerPercent(imc)
+  const activeColor = BANDS[activeIndex]?.color || '#10b981'
 
   return (
-    <Box>
-      {/* Título do Gráfico */}
-      <Text
-        ta="center"
-        fw={800}
-        size="12px"
-        c="dimmed"
-        mb={4}
-        style={{ letterSpacing: '0.8px', textTransform: 'uppercase' }}
-      >
-        Índice de Massa Corporal (IMC)
-      </Text>
+    <Box
+      p="sm"
+      style={{
+        borderRadius: 12,
+        background: 'rgba(255, 255, 255, 0.015)',
+        border: '1px solid rgba(255, 255, 255, 0.05)'
+      }}
+    >
+      <Stack gap="md">
+        {/* Topo: Valor do IMC em destaque + Metadados */}
+        <Group justify="space-between" align="flex-end" wrap="nowrap">
+          <Group gap="sm" align="center">
+            <Text
+              fw={800}
+              c="white"
+              style={{ fontSize: 28, lineHeight: 1, letterSpacing: '-0.5px' }}
+            >
+              {imc.toFixed(1)}
+            </Text>
+            <Stack gap={2}>
+              <Text size="11px" fw={600} c="dimmed" style={{ lineHeight: 1 }}>
+                kg/m²
+              </Text>
+              <Badge
+                variant="filled"
+                size="sm"
+                style={{
+                  backgroundColor: activeColor,
+                  fontWeight: 700,
+                  fontSize: '11px',
+                  height: 20
+                }}
+              >
+                {classification.label}
+              </Badge>
+            </Stack>
+          </Group>
 
-      {/* SVG do Semicírculo com Arcos, Textos e Agulha */}
-      <Box style={{ width: '100%', maxWidth: 440, margin: '0 auto', position: 'relative' }}>
-        <svg
-          viewBox="0 0 500 235"
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        >
-          <defs>
-            <filter id="gaugeShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.5" />
-            </filter>
-            <radialGradient id="pivotGrad" cx="40%" cy="40%" r="60%">
-              <stop offset="0%" stopColor="#475569" />
-              <stop offset="100%" stopColor="#0f172a" />
-            </radialGradient>
-          </defs>
-
-          {/* Fatias Coloridas com Divisórias */}
-          {SECTORS.map((sector) => {
-            const d = describeSector(cx, cy, rInner, rOuter, sector.startAngle, sector.endAngle)
-            const midAngle = (sector.startAngle + sector.endAngle) / 2
-            const pos = polarToCartesian(cx, cy, rText, midAngle)
-            const rot = 90 - midAngle
-
-            return (
-              <g key={sector.label}>
-                <path
-                  d={d}
-                  fill={sector.color}
-                  stroke="#ffffff"
-                  strokeWidth="1.8"
-                />
-
-                {/* Texto Rotacionado no Centro da Fatia */}
-                <g transform={`translate(${pos.x}, ${pos.y}) rotate(${rot})`}>
-                  <text
-                    y={-5}
-                    textAnchor="middle"
-                    fill="#ffffff"
-                    fontSize="9.5"
-                    fontWeight="800"
-                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}
-                  >
-                    {sector.label}
-                  </text>
-                  <text
-                    y={8}
-                    textAnchor="middle"
-                    fill="#ffffff"
-                    fontSize="8.5"
-                    fontWeight="600"
-                    opacity={0.95}
-                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}
-                  >
-                    {sector.subLabel}
-                  </text>
-                </g>
-              </g>
-            )
-          })}
-
-          {/* Agulha Indicadora do IMC */}
-          <path
-            d={needlePath}
-            fill="#1e293b"
-            stroke="#ffffff"
-            strokeWidth="1.2"
-            filter="url(#gaugeShadow)"
-          />
-
-          {/* Linha de Destaque na Agulha */}
-          <line
-            x1={cx}
-            y1={cy}
-            x2={tip.x}
-            y2={tip.y}
-            stroke="#f8fafc"
-            strokeWidth="1"
-            strokeOpacity="0.8"
-          />
-
-          {/* Pivô Central da Agulha */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={15}
-            fill="url(#pivotGrad)"
-            stroke="#94a3b8"
-            strokeWidth="2.5"
-            filter="url(#gaugeShadow)"
-          />
-          <circle cx={cx} cy={cy} r={5} fill="#ffffff" />
-        </svg>
-      </Box>
-
-      {/* Resumo do IMC do Usuário e Faixa Ideal */}
-      <Group justify="space-between" align="center" mt={4} px="xs">
-        <Group gap={8} align="center">
-          <Text size="sm" fw={800} c="white">
-            {imc.toFixed(1)} kg/m²
-          </Text>
-          <Badge
-            color={
-              classification.badgeVariant === 'success'
-                ? 'teal'
-                : classification.badgeVariant === 'warning'
-                  ? 'yellow'
-                  : classification.badgeVariant === 'danger'
-                    ? 'red'
-                    : 'blue'
-            }
-            variant="filled"
-            size="sm"
-            style={{ fontWeight: 700 }}
-          >
-            {classification.label}
-          </Badge>
+          <Stack gap={2} align="flex-end">
+            <Group gap={4}>
+              <Text size="xs" c="dimmed">
+                Peso:
+              </Text>
+              <Text size="xs" fw={700} c="white">
+                {currentWeight.toFixed(1)} kg
+              </Text>
+            </Group>
+            <Group gap={4}>
+              <Text size="xs" c="dimmed">
+                Faixa ideal:
+              </Text>
+              <Text size="xs" fw={700} c="#34d399">
+                {minIdealWeight} – {maxIdealWeight} kg
+              </Text>
+            </Group>
+          </Stack>
         </Group>
 
-        <Text size="xs" c="dimmed">
-          Faixa ideal: <span style={{ color: '#34d399', fontWeight: 600 }}>{minIdealWeight} – {maxIdealWeight} kg</span>
-        </Text>
-      </Group>
+        {/* Barra Retangular Minimalista de Espectro com Marcador */}
+        <Box style={{ position: 'relative', paddingTop: 8, paddingBottom: 6 }}>
+          {/* Marcador Indicador do Usuário */}
+          <Box
+            style={{
+              position: 'absolute',
+              left: `${markerPercent}%`,
+              top: 0,
+              transform: 'translateX(-50%)',
+              zIndex: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              pointerEvents: 'none'
+            }}
+          >
+            {/* Triângulo indicador apontando para a barra */}
+            <Box
+              style={{
+                width: 0,
+                height: 0,
+                borderLeft: '5px solid transparent',
+                borderRight: '5px solid transparent',
+                borderTop: '6px solid #ffffff'
+              }}
+            />
+            {/* Linha vertical que atravessa a barra */}
+            <Box
+              style={{
+                width: 3,
+                height: 18,
+                backgroundColor: '#ffffff',
+                borderRadius: 2,
+                boxShadow: '0 0 8px rgba(255, 255, 255, 0.9), 0 2px 4px rgba(0, 0, 0, 0.5)'
+              }}
+            />
+          </Box>
+
+          {/* Barra contínua com as 5 seções coloridas */}
+          <Box
+            style={{
+              height: 10,
+              borderRadius: 6,
+              display: 'flex',
+              overflow: 'hidden',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}
+          >
+            {BANDS.map((b) => (
+              <Box
+                key={b.label}
+                style={{
+                  width: `${b.widthPercent}%`,
+                  backgroundColor: b.color,
+                  opacity: 0.9,
+                  transition: 'opacity 0.2s'
+                }}
+                title={`${b.label}: ${b.range}`}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        {/* Grid Retangular das 5 Classificações */}
+        <Box
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: 6
+          }}
+        >
+          {BANDS.map((b, idx) => {
+            const isCurrent = idx === activeIndex
+
+            return (
+              <Box
+                key={b.label}
+                p={6}
+                ta="center"
+                style={{
+                  borderRadius: 8,
+                  backgroundColor: isCurrent ? b.bgActive : 'rgba(255, 255, 255, 0.02)',
+                  border: isCurrent
+                    ? `1px solid ${b.borderActive}`
+                    : '1px solid rgba(255, 255, 255, 0.04)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {/* Indicador de cor no topo do cartão */}
+                <Box
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 2.5,
+                    backgroundColor: b.color,
+                    opacity: isCurrent ? 1 : 0.4
+                  }}
+                />
+
+                <Text
+                  size="11px"
+                  fw={isCurrent ? 800 : 600}
+                  c={isCurrent ? '#ffffff' : 'dimmed'}
+                  style={{ lineHeight: 1.2, marginTop: 2 }}
+                >
+                  {b.label}
+                </Text>
+                <Text
+                  size="9.5px"
+                  fw={isCurrent ? 700 : 500}
+                  c={isCurrent ? b.color : 'dimmed'}
+                  style={{ lineHeight: 1.2, marginTop: 2 }}
+                >
+                  {b.range}
+                </Text>
+              </Box>
+            )
+          })}
+        </Box>
+      </Stack>
     </Box>
   )
 }
 
 export default ImcGaugeChart
+
 
