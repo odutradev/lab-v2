@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 
+import { STORAGE_KEYS } from '@api/config'
+import { updateHealthAction } from '@actions/users/profile'
 import type { HealthProfile, HealthStoreState, WeightRecord } from './types'
+import type { UserHealth } from '@projectTypes/user'
 import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords } from './utils'
 
 const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
@@ -56,6 +59,16 @@ const saveToLocalStorage = (data: PersistedData) => {
   }
 }
 
+const syncWithBackend = async (payload: Partial<UserHealth>) => {
+  try {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN)
+    if (!token) return
+    await updateHealthAction(payload)
+  } catch (err) {
+    console.error('Failed to sync health metrics to API', err)
+  }
+}
+
 export const useHealthStore = create<HealthStoreState>((set, get) => {
   const initial = loadPersistedData()
 
@@ -67,7 +80,44 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
     waterBottleMl: initial.waterBottleMl || 500,
     waterTargetBottles: initial.waterTargetBottles,
 
-    updateProfile: (data: Partial<HealthProfile>) => {
+    syncFromApi: (data?: Partial<UserHealth>) => {
+      if (!data) return
+      const current = get()
+      const newProfile: HealthProfile = {
+        characterId: (data.characterId as HealthProfile['characterId']) || current.profile.characterId,
+        height: typeof data.height === 'number' ? data.height : current.profile.height,
+        age: typeof data.age === 'number' ? data.age : current.profile.age
+      }
+
+      const newWeightHistory = Array.isArray(data.weightHistory) && data.weightHistory.length > 0
+        ? data.weightHistory
+        : current.weightHistory
+
+      const newWaterDailyMap = data.waterDailyMap || current.waterDailyMap
+      const newWaterExtraTargetMap = data.waterExtraTargetMap || current.waterExtraTargetMap
+      const newWaterBottleMl = typeof data.waterBottleMl === 'number' ? data.waterBottleMl : current.waterBottleMl
+      const newWaterTargetBottles = typeof data.waterTargetBottles === 'number' ? data.waterTargetBottles : current.waterTargetBottles
+
+      set({
+        profile: newProfile,
+        weightHistory: newWeightHistory,
+        waterDailyMap: newWaterDailyMap,
+        waterExtraTargetMap: newWaterExtraTargetMap,
+        waterBottleMl: newWaterBottleMl,
+        waterTargetBottles: newWaterTargetBottles
+      })
+
+      saveToLocalStorage({
+        profile: newProfile,
+        weightHistory: newWeightHistory,
+        waterDailyMap: newWaterDailyMap,
+        waterExtraTargetMap: newWaterExtraTargetMap,
+        waterBottleMl: newWaterBottleMl,
+        waterTargetBottles: newWaterTargetBottles
+      })
+    },
+
+    updateProfile: async (data: Partial<HealthProfile>) => {
       const current = get()
       const newProfile: HealthProfile = {
         ...current.profile,
@@ -83,9 +133,15 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        height: newProfile.height,
+        age: newProfile.age,
+        characterId: newProfile.characterId
+      })
     },
 
-    saveWeightRecord: (weight: number, customDate?: string) => {
+    saveWeightRecord: async (weight: number, customDate?: string) => {
       const current = get()
       const date = customDate || getTodayDateString()
       const sanitizedWeight = Math.round(weight * 10) / 10
@@ -103,9 +159,13 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        weightHistory: updated
+      })
     },
 
-    toggleWaterBottle: (index: number, customDate?: string) => {
+    toggleWaterBottle: async (index: number, customDate?: string) => {
       const current = get()
       const date = customDate || getTodayDateString()
       const currentConsumed = current.waterDailyMap[date] || 0
@@ -132,9 +192,13 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        waterDailyMap: updatedMap
+      })
     },
 
-    addExtraWaterBottle: (customDate?: string) => {
+    addExtraWaterBottle: async (customDate?: string) => {
       const current = get()
       const date = customDate || getTodayDateString()
       const currentExtra = current.waterExtraTargetMap[date] || 0
@@ -153,9 +217,13 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        waterExtraTargetMap: updatedExtras
+      })
     },
 
-    removeExtraWaterBottle: (customDate?: string) => {
+    removeExtraWaterBottle: async (customDate?: string) => {
       const current = get()
       const date = customDate || getTodayDateString()
       const currentExtra = current.waterExtraTargetMap[date] || 0
@@ -197,9 +265,14 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        waterExtraTargetMap: updatedExtras,
+        waterDailyMap: updatedDaily
+      })
     },
 
-    resetTodayWater: (customDate?: string) => {
+    resetTodayWater: async (customDate?: string) => {
       const current = get()
       const date = customDate || getTodayDateString()
 
@@ -226,9 +299,14 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterBottleMl: current.waterBottleMl,
         waterTargetBottles: current.waterTargetBottles
       })
+
+      await syncWithBackend({
+        waterDailyMap: updatedDaily,
+        waterExtraTargetMap: updatedExtras
+      })
     },
 
-    updateWaterSettings: ({ bottleMl, targetBottles }: { bottleMl?: number; targetBottles?: number }) => {
+    updateWaterSettings: async ({ bottleMl, targetBottles }: { bottleMl?: number; targetBottles?: number }) => {
       const current = get()
       const newBottleMl = bottleMl !== undefined && bottleMl > 0 ? bottleMl : current.waterBottleMl
       const newTargetBottles = targetBottles !== undefined && targetBottles > 0 ? targetBottles : current.waterTargetBottles
@@ -243,6 +321,11 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         weightHistory: current.weightHistory,
         waterDailyMap: current.waterDailyMap,
         waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: newBottleMl,
+        waterTargetBottles: newTargetBottles
+      })
+
+      await syncWithBackend({
         waterBottleMl: newBottleMl,
         waterTargetBottles: newTargetBottles
       })

@@ -1,3 +1,5 @@
+import type { UserHealth } from '@projectTypes/user'
+
 export type CharacterId = 'spark' | 'athlete' | 'zen' | 'cyber'
 
 export interface CharacterInfo {
@@ -55,11 +57,12 @@ export interface HealthStoreState {
   waterBottleMl: number // ml por garrafa (default: 500)
   waterTargetBottles?: number // quantidade fixa de garrafas de meta (se definida)
 
-  updateProfile: (data: Partial<HealthProfile>) => void
-  saveWeightRecord: (weight: number, date?: string) => void
-  toggleWaterBottle: (index: number, date?: string) => void
-  addExtraWaterBottle: (date?: string) => void
-  removeExtraWaterBottle: (date?: string) => void
-  resetTodayWater: (date?: string) => void
-  updateWaterSettings: (settings: { bottleMl?: number; targetBottles?: number }) => void
+  syncFromApi: (data?: Partial<UserHealth>) => void
+  updateProfile: (data: Partial<HealthProfile>) => Promise<void>
+  saveWeightRecord: (weight: number, date?: string) => Promise<void>
+  toggleWaterBottle: (index: number, date?: string) => Promise<void>
+  addExtraWaterBottle: (date?: string) => Promise<void>
+  removeExtraWaterBottle: (date?: string) => Promise<void>
+  resetTodayWater: (date?: string) => Promise<void>
+  updateWaterSettings: (settings: { bottleMl?: number; targetBottles?: number }) => Promise<void>
 }

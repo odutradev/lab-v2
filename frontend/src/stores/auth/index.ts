@@ -2,11 +2,32 @@ import { create } from 'zustand'
 
 import { STORAGE_KEYS } from '@api/config'
 import { signInAction, signUpAction } from '@actions/users/auth'
-import { getProfileAction } from '@actions/users/profile'
+import { getProfileAction, updateHealthAction } from '@actions/users/profile'
+import useHealthStore from '@stores/health'
 
 import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
 import type { UserProfile } from '@projectTypes/user'
 import type { AuthState } from './types'
+
+const syncProfileHealth = (profile: UserProfile) => {
+  if (profile.health) {
+    useHealthStore.getState().syncFromApi(profile.health)
+  } else {
+    const local = useHealthStore.getState()
+    if (local.profile.height || local.profile.age || local.weightHistory.length > 0) {
+      updateHealthAction({
+        height: local.profile.height,
+        age: local.profile.age,
+        characterId: local.profile.characterId,
+        weightHistory: local.weightHistory,
+        waterDailyMap: local.waterDailyMap,
+        waterExtraTargetMap: local.waterExtraTargetMap,
+        waterBottleMl: local.waterBottleMl,
+        waterTargetBottles: local.waterTargetBottles
+      }).catch(() => {})
+    }
+  }
+}
 
 const getInitialUser = (): UserProfile | null => {
   try {
@@ -53,6 +74,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const profile = await getProfileAction()
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
+      syncProfileHealth(profile)
       set({
         token: storedToken,
         user: profile,
@@ -71,6 +93,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     const profile = await getProfileAction()
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
+    syncProfileHealth(profile)
 
     set({
       token: response.token,
@@ -86,6 +109,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     const profile = await getProfileAction()
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
+    syncProfileHealth(profile)
 
     set({
       token: response.token,
@@ -101,6 +125,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const profile = await getProfileAction()
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
+      syncProfileHealth(profile)
       set({ user: profile, isAuthenticated: true })
     } catch {
       logout()

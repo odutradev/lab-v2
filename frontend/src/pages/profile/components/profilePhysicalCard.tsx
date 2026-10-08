@@ -22,20 +22,26 @@ export const ProfilePhysicalCard = () => {
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    if (profile.height !== undefined) setHeight(profile.height)
-  }, [profile.height])
+    if (profile.height !== undefined && profile.height !== height) {
+      setHeight(profile.height)
+    }
+  }, [profile.height, height])
 
   useEffect(() => {
-    if (latestWeight) setWeight(latestWeight)
-  }, [latestWeight])
+    if (latestWeight && latestWeight !== weight) {
+      setWeight(latestWeight)
+    }
+  }, [latestWeight, weight])
 
   useEffect(() => {
-    if (profile.age !== undefined) setAge(profile.age)
-  }, [profile.age])
+    if (profile.age !== undefined && profile.age !== age) {
+      setAge(profile.age)
+    }
+  }, [profile.age, age])
 
   const isConfigured = Boolean(profile.height && weightHistory.length > 0)
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const heightNum = Number(height)
     const weightNum = Number(weight)
     const ageNum = Number(age)
@@ -56,17 +62,22 @@ export const ProfilePhysicalCard = () => {
     }
 
     setIsSaving(true)
-    updateProfile({
-      height: heightNum > 0 ? heightNum : undefined,
-      age: ageNum > 0 ? ageNum : undefined
-    })
+    try {
+      await updateProfile({
+        height: heightNum > 0 ? heightNum : undefined,
+        age: ageNum > 0 ? ageNum : undefined
+      })
 
-    if (weightNum > 0) {
-      saveWeightRecord(weightNum)
+      if (weightNum > 0) {
+        await saveWeightRecord(weightNum)
+      }
+
+      showToast('Dados biofísicos salvos com sucesso na sua conta!', 'success')
+    } catch {
+      showToast('Ocorreu um erro ao salvar os dados no servidor.', 'error')
+    } finally {
+      setIsSaving(false)
     }
-
-    setIsSaving(false)
-    showToast('Dados biofísicos atualizados com sucesso!', 'success')
   }
 
   return (
