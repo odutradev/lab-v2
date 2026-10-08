@@ -4,14 +4,22 @@ import {
   Group,
   Text,
   NumberInput,
-  Divider,
   Box,
-  Badge as MantineBadge
+  Badge as MantineBadge,
+  ThemeIcon
 } from '@mantine/core'
-import { TbScale, TbCheck, TbHistory, TbArrowUpRight, TbArrowDownRight } from 'react-icons/tb'
+import {
+  TbScale,
+  TbCheck,
+  TbPencil,
+  TbArrowUpRight,
+  TbArrowDownRight,
+  TbX
+} from 'react-icons/tb'
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
+import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
 import Button from '@components/ui/button'
+import ActionIcon from '@components/ui/actionIcon'
 import useToastStore from '@stores/toast'
 import { calculateImc, getTodayDateString, formatDateDisplay } from '@stores/health/utils'
 import { WeightHistoryChart } from './weightHistoryChart'
@@ -38,6 +46,8 @@ export const WeightImcCard = ({
     return weightHistory[weightHistory.length - 1]
   }, [weightHistory])
 
+  // Estado para controlar se está no modo de edição do check-in
+  const [isEditing, setIsEditing] = useState(false)
   const [inputWeight, setInputWeight] = useState<number | string>(
     todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : ''
   )
@@ -47,6 +57,24 @@ export const WeightImcCard = ({
     return calculateImc(currentWeight, heightCm)
   }, [todayRecord, latestRecord, heightCm])
 
+  // Variação em relação ao registro anterior
+  const weightDifference = useMemo(() => {
+    if (weightHistory.length < 2) return null
+    const latest = weightHistory[weightHistory.length - 1].weight
+    const previous = weightHistory[weightHistory.length - 2].weight
+    return Math.round((latest - previous) * 10) / 10
+  }, [weightHistory])
+
+  const handleStartEdit = () => {
+    setInputWeight(todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : '')
+    setIsEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setInputWeight(todayRecord ? todayRecord.weight : latestRecord ? latestRecord.weight : '')
+  }
+
   const handleSave = () => {
     const weightNum = Number(inputWeight)
     if (!weightNum || isNaN(weightNum) || weightNum < 25 || weightNum > 350) {
@@ -55,178 +83,225 @@ export const WeightImcCard = ({
     }
 
     onSaveWeight(weightNum, todayStr)
+    setIsEditing(false)
     showToast(
       todayRecord
-        ? `Peso de hoje atualizado para ${weightNum.toFixed(1)} kg!`
-        : `Peso de hoje salvo com sucesso (${weightNum.toFixed(1)} kg)!`,
+        ? `Check-in de hoje atualizado para ${weightNum.toFixed(1)} kg!`
+        : `Check-in de hoje registrado: ${weightNum.toFixed(1)} kg!`,
       'success'
     )
   }
 
-  // Variação em relação ao registro anterior
-  const weightDifference = useMemo(() => {
-    if (weightHistory.length < 2) return null
-    const latest = weightHistory[weightHistory.length - 1].weight
-    const previous = weightHistory[weightHistory.length - 2].weight
-    const diff = Math.round((latest - previous) * 10) / 10
-    return diff
-  }, [weightHistory])
-
   return (
-    <Card>
+    <Card style={{ position: 'relative', overflow: 'hidden' }}>
       <CardHeader>
-        <Group justify="space-between" align="flex-start" wrap="wrap">
-          <Box>
-            <CardTitle>Controle de Peso & IMC</CardTitle>
-            <CardDescription>
-              Registre 1 vez ao dia para acompanhar seu histórico e status corporal
-            </CardDescription>
-          </Box>
+        <Group justify="space-between" align="center" wrap="nowrap">
+          <Group gap={8} align="center">
+            <ThemeIcon
+              size="sm"
+              radius="md"
+              variant="light"
+              color={todayRecord ? 'teal' : 'indigo'}
+              style={{
+                backgroundColor: todayRecord ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)'
+              }}
+            >
+              <TbScale size={16} color={todayRecord ? '#4ade80' : '#818cf8'} />
+            </ThemeIcon>
+            <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso & IMC</CardTitle>
+            <MantineBadge
+              size="xs"
+              variant={todayRecord ? 'light' : 'outline'}
+              color={todayRecord ? 'teal' : 'gray'}
+            >
+              {formatDateDisplay(todayStr)}
+            </MantineBadge>
+          </Group>
 
-          {latestRecord && (
-            <Group gap="xs">
-              {weightDifference !== null && (
-                <MantineBadge
-                  size="sm"
-                  variant="light"
-                  color={weightDifference > 0 ? 'orange' : weightDifference < 0 ? 'teal' : 'gray'}
-                  leftSection={
-                    weightDifference > 0 ? (
-                      <TbArrowUpRight size={14} />
-                    ) : (
-                      <TbArrowDownRight size={14} />
-                    )
-                  }
-                >
-                  {weightDifference > 0 ? `+${weightDifference}` : `${weightDifference}`} kg
-                </MantineBadge>
-              )}
-              <MantineBadge size="sm" variant="outline" color="indigo">
-                {latestRecord.weight.toFixed(1)} kg atual
+          <Group gap={6} align="center">
+            {weightDifference !== null && (
+              <MantineBadge
+                size="xs"
+                variant="light"
+                color={weightDifference > 0 ? 'orange' : weightDifference < 0 ? 'teal' : 'gray'}
+                leftSection={
+                  weightDifference > 0 ? (
+                    <TbArrowUpRight size={12} />
+                  ) : (
+                    <TbArrowDownRight size={12} />
+                  )
+                }
+              >
+                {weightDifference > 0 ? `+${weightDifference}` : `${weightDifference}`} kg
               </MantineBadge>
-            </Group>
-          )}
+            )}
+
+            <MantineBadge
+              size="xs"
+              variant={todayRecord ? 'filled' : 'light'}
+              color={todayRecord ? 'teal' : 'yellow'}
+              leftSection={todayRecord ? <TbCheck size={11} /> : undefined}
+            >
+              {todayRecord ? 'Check-in Feito' : 'Check-in Pendente'}
+            </MantineBadge>
+          </Group>
         </Group>
       </CardHeader>
 
       <CardContent>
-        <Stack gap="lg">
-          {/* Formulário de Registro Diário */}
+        <Stack gap="md">
+          {/* Módulo de Check-in do Dia (Clique para Editar) */}
           <Box
-            p="md"
             style={{
-              borderRadius: 12,
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              borderRadius: 10,
+              background: todayRecord
+                ? 'rgba(34, 197, 94, 0.05)'
+                : 'rgba(99, 102, 241, 0.05)',
+              border: `1px solid ${
+                todayRecord
+                  ? 'rgba(34, 197, 94, 0.22)'
+                  : 'rgba(99, 102, 241, 0.22)'
+              }`,
+              padding: '12px 14px',
+              transition: 'all 0.2s ease',
+              cursor: isEditing ? 'default' : 'pointer'
             }}
+            onClick={!isEditing ? handleStartEdit : undefined}
           >
-            <Group justify="space-between" align="center" mb="xs" wrap="wrap">
-              <Group gap="xs">
-                <TbScale size={18} color="#818cf8" />
-                <Text size="sm" fw={600} c="white">
-                  Registro de Hoje ({formatDateDisplay(todayStr)})
-                </Text>
+            {!isEditing ? (
+              <Group justify="space-between" align="center" wrap="nowrap">
+                <Group gap="sm" align="center">
+                  <ThemeIcon
+                    size="lg"
+                    radius="xl"
+                    variant={todayRecord ? 'filled' : 'light'}
+                    color={todayRecord ? 'teal' : 'indigo'}
+                  >
+                    {todayRecord ? <TbCheck size={18} /> : <TbScale size={18} />}
+                  </ThemeIcon>
+
+                  <Box>
+                    <Group gap={6} align="center">
+                      <Text size="xs" fw={700} c="white">
+                        {todayRecord ? 'Check-in de Hoje' : 'Check-in do Dia'}
+                      </Text>
+                      <Text size="11px" c="dimmed">
+                        ({todayRecord ? 'Registrado' : 'Pendente'})
+                      </Text>
+                    </Group>
+
+                    <Text size="11px" c="dimmed">
+                      {todayRecord
+                        ? 'Toque para editar seu peso do dia'
+                        : 'Toque para registrar seu peso de hoje'}
+                    </Text>
+                  </Box>
+                </Group>
+
+                <Group gap="sm" align="center">
+                  {todayRecord ? (
+                    <Text size="20px" fw={800} c="#4ade80">
+                      {todayRecord.weight.toFixed(1)} <span style={{ fontSize: '13px', fontWeight: 600 }}>kg</span>
+                    </Text>
+                  ) : latestRecord ? (
+                    <Text size="xs" c="dimmed">
+                      Último: <span style={{ color: '#fff', fontWeight: 600 }}>{latestRecord.weight.toFixed(1)} kg</span>
+                    </Text>
+                  ) : null}
+
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    color="gray"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleStartEdit()
+                    }}
+                    title={todayRecord ? 'Editar peso de hoje' : 'Fazer check-in de hoje'}
+                  >
+                    <TbPencil size={15} />
+                  </ActionIcon>
+                </Group>
               </Group>
+            ) : (
+              <Box>
+                <Group justify="space-between" align="center" mb="xs">
+                  <Text size="xs" fw={700} c="white">
+                    {todayRecord ? 'Editar Check-in de Hoje' : 'Realizar Check-in de Hoje'}
+                  </Text>
+                  <ActionIcon
+                    variant="subtle"
+                    size="xs"
+                    color="gray"
+                    onClick={handleCancelEdit}
+                    title="Cancelar"
+                  >
+                    <TbX size={14} />
+                  </ActionIcon>
+                </Group>
 
-              {todayRecord ? (
-                <MantineBadge color="teal" variant="light" size="sm" leftSection={<TbCheck size={12} />}>
-                  Registrado hoje: {todayRecord.weight.toFixed(1)} kg
-                </MantineBadge>
-              ) : (
-                <MantineBadge color="yellow" variant="light" size="sm">
-                  Pendente hoje
-                </MantineBadge>
-              )}
-            </Group>
+                <Group gap="xs" align="center">
+                  <Box style={{ flex: 1 }}>
+                    <NumberInput
+                      autoFocus
+                      placeholder="Ex: 75.5"
+                      value={inputWeight}
+                      onChange={(val) => setInputWeight(typeof val === 'number' ? val : '')}
+                      decimalScale={1}
+                      step={0.1}
+                      min={25}
+                      max={350}
+                      suffix=" kg"
+                      size="xs"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSave()
+                        if (e.key === 'Escape') handleCancelEdit()
+                      }}
+                      styles={{
+                        input: {
+                          backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                          borderColor: 'rgba(255, 255, 255, 0.15)',
+                          color: '#fff',
+                          fontWeight: 700,
+                          height: 34
+                        }
+                      }}
+                    />
+                  </Box>
 
-            <Group align="flex-end" gap="sm">
-              <Box style={{ flex: 1 }}>
-                <NumberInput
-                  placeholder="Seu peso em kg (ex: 75.5)"
-                  value={inputWeight}
-                  onChange={(val) => setInputWeight(typeof val === 'number' ? val : '')}
-                  decimalScale={1}
-                  step={0.1}
-                  min={25}
-                  max={350}
-                  suffix=" kg"
-                  styles={{
-                    input: {
-                      backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                      color: '#fff',
-                      fontSize: 16,
-                      fontWeight: 600
-                    }
-                  }}
-                />
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSave}
+                    leftIcon={<TbCheck size={14} />}
+                    style={{ height: 34 }}
+                  >
+                    Salvar
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCancelEdit}
+                    style={{ height: 34 }}
+                  >
+                    Cancelar
+                  </Button>
+                </Group>
               </Box>
-
-              <Button
-                variant={todayRecord ? 'outline' : 'primary'}
-                onClick={handleSave}
-                leftIcon={<TbScale size={16} />}
-              >
-                {todayRecord ? 'Atualizar Peso' : 'Salvar Peso de Hoje'}
-              </Button>
-            </Group>
+            )}
           </Box>
 
-          {/* Gráfico / Medidor de IMC (Classificação Real OMS) */}
+          {/* Gráfico Minimalista indicando o peso do dia */}
+          <WeightHistoryChart records={weightHistory} height={heightCm} />
+
+          {/* Medidor Minimalista de IMC */}
           <ImcGaugeChart
             imcResult={imcResult}
             heightCm={heightCm}
             currentWeight={todayRecord?.weight || latestRecord?.weight}
             onConfigureHeight={onOpenPhysicalModal}
           />
-
-          <Divider style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }} />
-
-          {/* Gráfico Minimalista de Histórico de Peso */}
-          <WeightHistoryChart records={weightHistory} height={heightCm} />
-
-          {/* Linha de registros recentes */}
-          {weightHistory.length > 0 && (
-            <Box>
-              <Group gap="xs" mb="xs">
-                <TbHistory size={16} color="rgba(255, 255, 255, 0.5)" />
-                <Text size="xs" fw={600} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  Histórico Registrado
-                </Text>
-              </Group>
-
-              <Group gap="xs" wrap="wrap">
-                {weightHistory
-                  .slice(-7)
-                  .reverse()
-                  .map((item) => (
-                    <Box
-                      key={item.date}
-                      px="sm"
-                      py={6}
-                      style={{
-                        borderRadius: 8,
-                        background:
-                          item.date === todayStr
-                            ? 'rgba(99, 102, 241, 0.15)'
-                            : 'rgba(255, 255, 255, 0.03)',
-                        border:
-                          item.date === todayStr
-                            ? '1px solid rgba(129, 140, 248, 0.4)'
-                            : '1px solid rgba(255, 255, 255, 0.06)'
-                      }}
-                    >
-                      <Text size="11px" c="dimmed">
-                        {formatDateDisplay(item.date)}
-                      </Text>
-                      <Text size="xs" fw={700} c="white">
-                        {item.weight.toFixed(1)} kg
-                      </Text>
-                    </Box>
-                  ))}
-              </Group>
-            </Box>
-          )}
         </Stack>
       </CardContent>
     </Card>

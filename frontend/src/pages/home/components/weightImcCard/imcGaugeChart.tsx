@@ -1,41 +1,26 @@
-import { Box, Group, Text, Badge, Stack, Button as MantineButton } from '@mantine/core'
-import { TbHeartbeat, TbRuler } from 'react-icons/tb'
+import { Box, Group, Text, Badge } from '@mantine/core'
+import { TbHeartbeat } from 'react-icons/tb'
 import type { ImcGaugeChartProps } from './types'
 
 export const ImcGaugeChart = ({
   imcResult,
   heightCm,
-  currentWeight,
-  onConfigureHeight
+  currentWeight
 }: ImcGaugeChartProps) => {
   if (!heightCm) {
     return (
       <Box
-        p="md"
+        p="xs"
         ta="center"
         style={{
-          borderRadius: 12,
-          background: 'rgba(99, 102, 241, 0.05)',
-          border: '1px dashed rgba(99, 102, 241, 0.25)'
+          borderRadius: 8,
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px dashed rgba(255, 255, 255, 0.08)'
         }}
       >
-        <Text size="sm" c="dimmed">
-          Altura não cadastrada
+        <Text size="11px" c="dimmed">
+          Cadastre sua altura no perfil para desbloquear o cálculo de IMC.
         </Text>
-        <Text size="xs" c="dimmed" mt={4} mb="xs">
-          Defina sua altura no personagem para desbloquear o cálculo e gráfico real de IMC.
-        </Text>
-        {onConfigureHeight && (
-          <MantineButton
-            size="xs"
-            variant="light"
-            color="indigo"
-            leftSection={<TbRuler size={14} />}
-            onClick={onConfigureHeight}
-          >
-            Cadastrar Altura
-          </MantineButton>
-        )}
       </Box>
     )
   }
@@ -43,19 +28,16 @@ export const ImcGaugeChart = ({
   if (!currentWeight || !imcResult) {
     return (
       <Box
-        p="md"
+        p="xs"
         ta="center"
         style={{
-          borderRadius: 12,
+          borderRadius: 8,
           background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.1)'
+          border: '1px dashed rgba(255, 255, 255, 0.08)'
         }}
       >
-        <Text size="sm" c="dimmed">
-          Aguardando registro de peso
-        </Text>
-        <Text size="xs" c="dimmed" mt={4}>
-          Registre seu peso para visualizar sua classificação e posição no gráfico de IMC.
+        <Text size="11px" c="dimmed">
+          Faça seu check-in de peso para calcular seu IMC e classificação corporal.
         </Text>
       </Box>
     )
@@ -65,155 +47,85 @@ export const ImcGaugeChart = ({
 
   return (
     <Box>
-      <Group justify="space-between" align="flex-start" mb="xs">
-        <Group gap="xs" align="center">
-          <TbHeartbeat size={18} color="#818cf8" />
+      <Group justify="space-between" align="center" mb={6}>
+        <Group gap={6} align="center">
+          <TbHeartbeat size={15} color="#818cf8" />
           <Text size="xs" fw={600} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            Índice de Massa Corporal (OMS)
+            Índice de Massa Corporal
           </Text>
         </Group>
 
-        <Badge
-          color={
-            classification.badgeVariant === 'success'
-              ? 'teal'
-              : classification.badgeVariant === 'warning'
-                ? 'yellow'
-                : classification.badgeVariant === 'danger'
-                  ? 'red'
-                  : 'blue'
-          }
-          variant="light"
-          size="md"
-        >
-          {classification.label}
-        </Badge>
-      </Group>
-
-      {/* Destaque do número e peso ideal */}
-      <Group justify="space-between" align="baseline" mb="sm">
-        <Group align="baseline" gap="xs">
-          <Text size="26px" fw={800} c="white" style={{ lineHeight: 1 }}>
-            {imc.toFixed(1)}
+        <Group gap={6} align="center">
+          <Text size="xs" fw={700} c="white">
+            {imc.toFixed(1)} kg/m²
           </Text>
-          <Text size="xs" c="dimmed">
-            kg/m²
-          </Text>
+          <Badge
+            color={
+              classification.badgeVariant === 'success'
+                ? 'teal'
+                : classification.badgeVariant === 'warning'
+                  ? 'yellow'
+                  : classification.badgeVariant === 'danger'
+                    ? 'red'
+                    : 'blue'
+            }
+            variant="light"
+            size="xs"
+          >
+            {classification.label}
+          </Badge>
         </Group>
-
-        <Text size="xs" c="dimmed">
-          Faixa ideal: <span style={{ color: '#34d399', fontWeight: 600 }}>{minIdealWeight}kg - {maxIdealWeight}kg</span>
-        </Text>
       </Group>
 
-      {/* Gráfico de barras minimalista com classificação real da OMS */}
-      <Box mb="xs">
+      {/* Barra de espectro de IMC minimalista de 4px */}
+      <Box style={{ position: 'relative', margin: '6px 0 4px 0' }}>
         {/* Marcador do usuário */}
         <Box
           style={{
-            position: 'relative',
-            height: 18,
-            marginBottom: 2
+            position: 'absolute',
+            left: `${positionPercent}%`,
+            top: -6,
+            transform: 'translateX(-50%)',
+            width: 3,
+            height: 16,
+            backgroundColor: '#ffffff',
+            borderRadius: 2,
+            boxShadow: '0 0 6px rgba(255, 255, 255, 0.9)',
+            zIndex: 2,
+            transition: 'left 0.3s ease'
           }}
-        >
-          <Box
-            style={{
-              position: 'absolute',
-              left: `${positionPercent}%`,
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              transition: 'left 0.4s ease'
-            }}
-          >
-            <Text size="10px" fw={700} c="white" style={{ lineHeight: 1 }}>
-              ▼
-            </Text>
-          </Box>
-        </Box>
+        />
 
-        {/* Barra de espectro de IMC */}
         <Box
           style={{
-            height: 10,
-            borderRadius: 6,
+            height: 5,
+            borderRadius: 4,
             display: 'flex',
             overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-            background: '#1e293b'
+            background: 'rgba(255, 255, 255, 0.06)'
           }}
         >
-          {/* Abaixo: 15 a 18.5 (14%) */}
-          <Box
-            style={{
-              width: '14%',
-              background: '#38bdf8',
-              opacity: classification.key === 'underweight' ? 1 : 0.65
-            }}
-            title="Abaixo do peso (< 18.5)"
-          />
-          {/* Peso Saudável: 18.5 a 24.9 (25.6%) */}
-          <Box
-            style={{
-              width: '26%',
-              background: '#10b981',
-              opacity: classification.key === 'normal' ? 1 : 0.65
-            }}
-            title="Peso Saudável (18.5 - 24.9)"
-          />
-          {/* Sobrepeso: 25 a 29.9 (20%) */}
-          <Box
-            style={{
-              width: '20%',
-              background: '#f59e0b',
-              opacity: classification.key === 'overweight' ? 1 : 0.65
-            }}
-            title="Sobrepeso (25.0 - 29.9)"
-          />
-          {/* Obesidade Grau 1: 30 a 34.9 (20%) */}
-          <Box
-            style={{
-              width: '20%',
-              background: '#f97316',
-              opacity: classification.key === 'obesity1' ? 1 : 0.65
-            }}
-            title="Obesidade Grau I (30.0 - 34.9)"
-          />
-          {/* Obesidade Severa: 35+ (20%) */}
-          <Box
-            style={{
-              width: '20%',
-              background: '#ef4444',
-              opacity: classification.key === 'obesity2' ? 1 : 0.65
-            }}
-            title="Obesidade Grau II / III (≥ 35.0)"
-          />
+          <Box style={{ width: '14%', background: '#38bdf8' }} title="Abaixo do peso (< 18.5)" />
+          <Box style={{ width: '26%', background: '#10b981' }} title="Saudável (18.5 - 24.9)" />
+          <Box style={{ width: '20%', background: '#f59e0b' }} title="Sobrepeso (25.0 - 29.9)" />
+          <Box style={{ width: '20%', background: '#f97316' }} title="Obesidade I (30.0 - 34.9)" />
+          <Box style={{ width: '20%', background: '#ef4444' }} title="Obesidade II/III (≥ 35.0)" />
         </Box>
-
-        {/* Legenda minimalista */}
-        <Group justify="space-between" mt={6} gap={2}>
-          <Text size="10px" c="#38bdf8" fw={500}>
-            Abaixo (&lt;18.5)
-          </Text>
-          <Text size="10px" c="#10b981" fw={600}>
-            Saudável (18.5-24.9)
-          </Text>
-          <Text size="10px" c="#f59e0b" fw={500}>
-            Sobrepeso (25-29.9)
-          </Text>
-          <Text size="10px" c="#ef4444" fw={500}>
-            Obeso (≥30)
-          </Text>
-        </Group>
       </Box>
 
-      {/* Descrição clínica breve */}
-      <Stack gap={2} mt="xs">
-        <Text size="xs" c="dimmed">
-          {classification.description}
+      {/* Legenda compacta e faixa ideal */}
+      <Group justify="space-between" align="center" mt={4}>
+        <Group gap={8}>
+          <Text size="10px" c="#38bdf8">Abaixo</Text>
+          <Text size="10px" c="#10b981" fw={600}>Normal</Text>
+          <Text size="10px" c="#f59e0b">Sobrepeso</Text>
+          <Text size="10px" c="#ef4444">Obeso</Text>
+        </Group>
+
+        <Text size="10px" c="dimmed">
+          Faixa ideal: <span style={{ color: '#34d399', fontWeight: 600 }}>{minIdealWeight} - {maxIdealWeight} kg</span>
         </Text>
-      </Stack>
+      </Group>
     </Box>
   )
 }
