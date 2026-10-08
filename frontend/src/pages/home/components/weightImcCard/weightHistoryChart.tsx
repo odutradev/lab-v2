@@ -1,7 +1,12 @@
 import { useMemo } from 'react'
 import { Box, Text, Group } from '@mantine/core'
-import { TbArrowUpRight, TbArrowDownRight, TbMinus, TbCalendarStats } from 'react-icons/tb'
-import { getTodayDateString } from '@stores/health/utils'
+import {
+  TbArrowUpRight,
+  TbArrowDownRight,
+  TbMinus,
+  TbCalendarStats
+} from 'react-icons/tb'
+import { getTodayDateString, calculateImc } from '@stores/health/utils'
 import type { WeightHistoryChartProps } from './types'
 
 // Gera caminho Bézier suave (Catmull-Rom para Bézier cúbico)
@@ -70,6 +75,7 @@ function getPast7Days(todayStr: string) {
 
 export const WeightHistoryChart = ({
   records,
+  height: heightCm,
   onStartTodayCheckin
 }: WeightHistoryChartProps) => {
   const todayStr = getTodayDateString()
@@ -77,31 +83,46 @@ export const WeightHistoryChart = ({
   const {
     daySlots,
     todaySlot,
-    minWeight,
-    maxWeight,
     width,
     height,
     paddingX,
     paddingTop,
     paddingBottom,
-    pathD,
-    areaD,
+    weightPathD,
+    weightAreaD,
+    imcPathD,
+    imcAreaD,
     hasAnyRecords
   } = useMemo(() => {
     const pastDays = getPast7Days(todayStr)
     const sortedRecords = [...records].sort((a, b) => a.date.localeCompare(b.date))
+    const effectiveHeight = heightCm && heightCm > 0 ? heightCm : 170
 
-    // Calcula os 7 slots diários e a variação em relação ao registro anterior
+    // Calcula os 7 slots diários com Peso e IMC e suas variações
     const slots = pastDays.map((slot, index) => {
       const record = sortedRecords.find((r) => r.date === slot.date)
 
-      let diff: number | null = null
+      let diffWeight: number | null = null
+      let diffImc: number | null = null
+      let imcValue: number | null = null
+      let imcCategory: string | null = null
+
       if (record) {
-        // Encontra o registro mais recente antes dessa data
+        const calculated = calculateImc(record.weight, effectiveHeight)
+        if (calculated) {
+          imcValue = calculated.imc
+          imcCategory = calculated.classification.label
+        }
+
         const priorRecords = sortedRecords.filter((r) => r.date < slot.date)
         if (priorRecords.length > 0) {
           const prev = priorRecords[priorRecords.length - 1]
-          diff = Math.round((record.weight - prev.weight) * 10) / 10
+          diffWeight = Math.round((record.weight - prev.weight) * 10) / 10
+
+          const prevImcResult = calculateImc(prev.weight, effectiveHeight)
+          if (prevImcResult && imcValue !== null) {
+            diffImc = Math.round((imcValue - prevImcResult.imc) * 10) / 10
+          }
         }
       }
 
@@ -110,115 +131,157 @@ export const WeightHistoryChart = ({
         index,
         record,
         weight: record ? record.weight : null,
-        diff
+        imc: imcValue,
+        imcCategory,
+        diffWeight,
+        diffImc
       }
     })
 
     const weightsWithValues = slots
       .map((s) => s.weight)
       .filter((w): w is number => w !== null)
+    const imcsWithValues = slots
+      .map((s) => s.imc)
+      .filter((v): v is number => v !== null)
 
     const allHistoryWeights = sortedRecords.map((r) => r.weight)
     const combinedWeights = weightsWithValues.length > 0 ? weightsWithValues : allHistoryWeights
 
     const minW = combinedWeights.length > 0 ? Math.min(...combinedWeights) : 70
     const maxW = combinedWeights.length > 0 ? Math.max(...combinedWeights) : 70
-    const pad = Math.max(0.6, (maxW - minW) * 0.25 || 1.2)
-    const chartMin = Math.floor((minW - pad) * 10) / 10
-    const chartMax = Math.ceil((maxW + pad) * 10) / 10
-    const range = chartMax - chartMin || 1
+    const padW = Math.max(0.6, (maxW - minW) * 0.25 || 1.2)
+    const chartMinW = Math.floor((minW - padW) * 10) / 10
+    const chartMaxW = Math.ceil((maxW + padW) * 10) / 10
+    const rangeW = chartMaxW - chartMinW || 1
+
+    const minI = imcsWithValues.length > 0 ? Math.min(...imcsWithValues) : 22
+    const maxI = imcsWithValues.length > 0 ? Math.max(...imcsWithValues) : 24
+    const padI = Math.max(0.3, (maxI - minI) * 0.25 || 0.6)
+    const chartMinI = Math.floor((minI - padI) * 10) / 10
+    const chartMaxI = Math.ceil((maxI + padI) * 10) / 10
+    const rangeI = chartMaxI - chartMinI || 1
 
     const w = 500
-    const h = 138
+    const h = 152
     const pX = 38
-    const pTop = 28
+    const pTop = 26
     const pBottom = 26
     const innerW = w - pX * 2
     const innerH = h - pTop - pBottom
 
-    // Mapeia coordenadas x para cada um dos 7 dias
+    // Zona superior para Peso (44% da altura) e inferior para IMC (44% da altura)
+    const zoneH = innerH * 0.44
+    const zoneSpacing = innerH * 0.12
+
     const slotsWithCoords = slots.map((s, i) => {
       const x = pX + (i / 6) * innerW
-      const y =
+
+      // Posição Y da linha de Peso (zona superior)
+      const weightY =
         s.weight !== null
-          ? pTop + innerH - ((s.weight - chartMin) / range) * innerH
+          ? pTop + zoneH - ((s.weight - chartMinW) / rangeW) * zoneH
+          : null
+
+      // Posição Y da linha de IMC (zona inferior)
+      const imcY =
+        s.imc !== null
+          ? pTop + zoneH + zoneSpacing + zoneH - ((s.imc - chartMinI) / rangeI) * zoneH
           : null
 
       return {
         ...s,
         x: Math.round(x * 10) / 10,
-        y: y !== null ? Math.round(y * 10) / 10 : null
+        weightY: weightY !== null ? Math.round(weightY * 10) / 10 : null,
+        imcY: imcY !== null ? Math.round(imcY * 10) / 10 : null
       }
     })
 
-    const activePoints = slotsWithCoords
-      .filter((s): s is typeof s & { y: number } => s.y !== null)
-      .map((s) => ({ x: s.x, y: s.y, slot: s }))
+    const activeWeightPoints = slotsWithCoords
+      .filter((s): s is typeof s & { weightY: number } => s.weightY !== null)
+      .map((s) => ({ x: s.x, y: s.weightY }))
 
-    const pD = createSmoothPath(activePoints)
-    const aD =
-      activePoints.length > 1
-        ? `${pD} L ${activePoints[activePoints.length - 1].x} ${h - pBottom} L ${activePoints[0].x} ${h - pBottom} Z`
+    const activeImcPoints = slotsWithCoords
+      .filter((s): s is typeof s & { imcY: number } => s.imcY !== null)
+      .map((s) => ({ x: s.x, y: s.imcY }))
+
+    const pDWeight = createSmoothPath(activeWeightPoints)
+    const aDWeight =
+      activeWeightPoints.length > 1
+        ? `${pDWeight} L ${activeWeightPoints[activeWeightPoints.length - 1].x} ${pTop + zoneH + 4} L ${activeWeightPoints[0].x} ${pTop + zoneH + 4} Z`
+        : ''
+
+    const pDImc = createSmoothPath(activeImcPoints)
+    const aDImc =
+      activeImcPoints.length > 1
+        ? `${pDImc} L ${activeImcPoints[activeImcPoints.length - 1].x} ${h - pBottom} L ${activeImcPoints[0].x} ${h - pBottom} Z`
         : ''
 
     const todayS = slotsWithCoords.find((s) => s.isToday) || slotsWithCoords[6]
 
     return {
       daySlots: slotsWithCoords,
-      registeredPoints: activePoints,
       todaySlot: todayS,
-      minWeight: minW,
-      maxWeight: maxW,
       width: w,
       height: h,
       paddingX: pX,
       paddingTop: pTop,
       paddingBottom: pBottom,
-      pathD: pD,
-      areaD: aD,
+      weightPathD: pDWeight,
+      weightAreaD: aDWeight,
+      imcPathD: pDImc,
+      imcAreaD: aDImc,
       hasAnyRecords: sortedRecords.length > 0
     }
-  }, [records, todayStr])
+  }, [records, todayStr, heightCm])
 
   return (
     <Box>
-      {/* Header do Gráfico com Resumo das Atualizações */}
+      {/* Header do Gráfico com Legenda Dupla: Peso & IMC */}
       <Group justify="space-between" align="center" mb={6}>
-        <Group gap={6} align="center">
-          <TbCalendarStats size={15} color="#818cf8" />
-          <Text
-            size="11px"
-            fw={600}
-            c="dimmed"
-            style={{ textTransform: 'uppercase', letterSpacing: 0.6 }}
-          >
-            Acompanhamento Dia a Dia
-          </Text>
-
-          {todaySlot.weight !== null ? (
-            <Text size="11px" fw={700} c="#4ade80">
-              • Hoje: {todaySlot.weight.toFixed(1)} kg
-            </Text>
-          ) : (
-            <Text size="11px" fw={600} c="#fbbf24">
-              • Hoje: Check-in pendente
-            </Text>
-          )}
-        </Group>
-
-        {hasAnyRecords && (
-          <Group gap="xs">
-            <Text size="11px" c="dimmed">
-              Mín <span style={{ color: '#818cf8', fontWeight: 600 }}>{minWeight.toFixed(1)}</span>
-            </Text>
-            <Text size="11px" c="dimmed">
-              • Máx <span style={{ color: '#38bdf8', fontWeight: 600 }}>{maxWeight.toFixed(1)} kg</span>
+        <Group gap="sm" align="center">
+          <Group gap={6} align="center">
+            <TbCalendarStats size={15} color="#818cf8" />
+            <Text
+              size="11px"
+              fw={600}
+              c="dimmed"
+              style={{ textTransform: 'uppercase', letterSpacing: 0.6 }}
+            >
+              Gráfico Dia a Dia
             </Text>
           </Group>
+
+          {/* Legenda visual das duas linhas */}
+          <Group gap={8} align="center">
+            <Group gap={4} align="center">
+              <Box style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#38bdf8' }} />
+              <Text size="10.5px" fw={600} c="#38bdf8">
+                Peso (kg)
+              </Text>
+            </Group>
+
+            <Group gap={4} align="center">
+              <Box style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#c084fc' }} />
+              <Text size="10.5px" fw={600} c="#c084fc">
+                IMC (kg/m²)
+              </Text>
+            </Group>
+          </Group>
+        </Group>
+
+        {hasAnyRecords && todaySlot.weight !== null ? (
+          <Text size="11px" fw={700} c="#4ade80">
+            Hoje: {todaySlot.weight.toFixed(1)} kg • {todaySlot.imc ? `${todaySlot.imc.toFixed(1)} IMC` : ''}
+          </Text>
+        ) : (
+          <Text size="11px" fw={600} c="#fbbf24">
+            Hoje: Check-in pendente
+          </Text>
         )}
       </Group>
 
-      {/* Gráfico SVG com os 7 Dias Consecutivos e Curva de Atualizações */}
+      {/* Gráfico SVG com Linha Dupla (Peso e IMC) */}
       <Box
         style={{
           borderRadius: 10,
@@ -233,16 +296,31 @@ export const WeightHistoryChart = ({
           style={{ width: '100%', height: 'auto', display: 'block' }}
         >
           <defs>
-            <linearGradient id="minimalWeightArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.20" />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+            {/* Gradiente da Linha de Peso */}
+            <linearGradient id="weightAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
             </linearGradient>
-            <linearGradient id="minimalWeightLine" x1="0" y1="0" x2="1" y2="0">
+            <linearGradient id="weightLineGrad" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#818cf8" />
               <stop offset="100%" stopColor="#38bdf8" />
             </linearGradient>
-            <filter id="todayActiveGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#38bdf8" floodOpacity="0.95" />
+
+            {/* Gradiente da Linha de IMC */}
+            <linearGradient id="imcAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#c084fc" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#c084fc" stopOpacity="0.0" />
+            </linearGradient>
+            <linearGradient id="imcLineGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#a855f7" />
+              <stop offset="100%" stopColor="#c084fc" />
+            </linearGradient>
+
+            <filter id="todayGlowDual" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#38bdf8" floodOpacity="0.9" />
+            </filter>
+            <filter id="todayGlowImc" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#c084fc" floodOpacity="0.9" />
             </filter>
           </defs>
 
@@ -254,6 +332,14 @@ export const WeightHistoryChart = ({
             y2={paddingTop}
             stroke="rgba(255, 255, 255, 0.03)"
             strokeDasharray="2 3"
+          />
+          <line
+            x1={paddingX}
+            y1={Math.round(height / 2)}
+            x2={width - paddingX}
+            y2={Math.round(height / 2)}
+            stroke="rgba(255, 255, 255, 0.03)"
+            strokeDasharray="1 3"
           />
           <line
             x1={paddingX}
@@ -276,61 +362,86 @@ export const WeightHistoryChart = ({
             />
           ))}
 
-          {/* Área com gradiente */}
-          {areaD && <path d={areaD} fill="url(#minimalWeightArea)" />}
+          {/* Áreas preenchidas */}
+          {weightAreaD && <path d={weightAreaD} fill="url(#weightAreaGrad)" />}
+          {imcAreaD && <path d={imcAreaD} fill="url(#imcAreaGrad)" />}
 
-          {/* Linha principal Bézier conectando as atualizações */}
-          {pathD && (
+          {/* 1. LINHA DE PESO */}
+          {weightPathD && (
             <path
-              d={pathD}
+              d={weightPathD}
               fill="none"
-              stroke="url(#minimalWeightLine)"
-              strokeWidth="2.4"
+              stroke="url(#weightLineGrad)"
+              strokeWidth="2.3"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           )}
 
-          {/* Renderização de cada dia no gráfico */}
+          {/* 2. LINHA DE IMC */}
+          {imcPathD && (
+            <path
+              d={imcPathD}
+              fill="none"
+              stroke="url(#imcLineGrad)"
+              strokeWidth="2.0"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {/* Renderização dos Pontos de Peso e IMC para cada dia */}
           {daySlots.map((slot) => {
             const weight = slot.weight
-            const y = slot.y
+            const imc = slot.imc
+            const weightY = slot.weightY
+            const imcY = slot.imcY
             const isToday = slot.isToday
 
             return (
               <g key={slot.date}>
-                {weight !== null && y !== null ? (
+                {/* Linha vertical conectando Peso e IMC no mesmo dia */}
+                {weightY !== null && imcY !== null && (
+                  <line
+                    x1={slot.x}
+                    y1={weightY}
+                    x2={slot.x}
+                    y2={imcY}
+                    stroke="rgba(255, 255, 255, 0.06)"
+                    strokeDasharray="1 2"
+                  />
+                )}
+
+                {/* PONTO DE PESO (Zona Superior) */}
+                {weight !== null && weightY !== null && (
                   isToday ? (
-                    /* Ponto do Dia de Hoje */
-                    <g filter="url(#todayActiveGlow)">
+                    <g filter="url(#todayGlowDual)">
                       <circle
                         cx={slot.x}
-                        cy={y}
-                        r="6.5"
+                        cy={weightY}
+                        r="6"
                         fill="#0b1329"
                         stroke="#38bdf8"
-                        strokeWidth="2.6"
+                        strokeWidth="2.4"
                       />
-                      <circle cx={slot.x} cy={y} r="2.2" fill="#ffffff" />
-
-                      {/* Tag com o peso de hoje */}
+                      <circle cx={slot.x} cy={weightY} r="2" fill="#ffffff" />
                       <g>
                         <rect
-                          x={slot.x - 26}
-                          y={y - 21}
-                          width="52"
-                          height="15"
+                          x={slot.x - 24}
+                          y={weightY - 18}
+                          width="48"
+                          height="14"
                           rx="4"
                           fill="#0f172a"
                           stroke="#38bdf8"
-                          strokeWidth="1"
+                          strokeWidth="0.9"
                         />
                         <text
                           x={slot.x}
-                          y={y - 10}
+                          y={weightY - 8}
                           textAnchor="middle"
                           fill="#38bdf8"
-                          fontSize="9.5"
+                          fontSize="9"
                           fontWeight="700"
                         >
                           {weight.toFixed(1)} kg
@@ -338,60 +449,120 @@ export const WeightHistoryChart = ({
                       </g>
                     </g>
                   ) : (
-                    /* Ponto de outros dias com registro */
                     <g>
                       <circle
                         cx={slot.x}
-                        cy={y}
-                        r="3.5"
+                        cy={weightY}
+                        r="3.2"
                         fill="#0b1329"
-                        stroke="rgba(255, 255, 255, 0.55)"
-                        strokeWidth="1.8"
+                        stroke="rgba(56, 189, 248, 0.7)"
+                        strokeWidth="1.6"
                       />
-                      <circle cx={slot.x} cy={y} r="1.4" fill="#ffffff" />
+                      <circle cx={slot.x} cy={weightY} r="1.3" fill="#ffffff" />
                       <text
                         x={slot.x}
-                        y={y - 7}
+                        y={weightY - 6}
                         textAnchor="middle"
-                        fill="rgba(255, 255, 255, 0.7)"
-                        fontSize="9"
-                        fontWeight="500"
+                        fill="#38bdf8"
+                        fontSize="8.5"
+                        fontWeight="600"
                       >
                         {weight.toFixed(1)}
                       </text>
                     </g>
                   )
-                ) : (
-                  /* Dia sem registro */
-                  isToday && (
+                )}
+
+                {/* PONTO DE IMC (Zona Inferior) */}
+                {imc !== null && imcY !== null && (
+                  isToday ? (
+                    <g filter="url(#todayGlowImc)">
+                      <circle
+                        cx={slot.x}
+                        cy={imcY}
+                        r="5.5"
+                        fill="#0b1329"
+                        stroke="#c084fc"
+                        strokeWidth="2.2"
+                      />
+                      <circle cx={slot.x} cy={imcY} r="1.8" fill="#ffffff" />
+                      <g>
+                        <rect
+                          x={slot.x - 22}
+                          y={imcY + 6}
+                          width="44"
+                          height="13"
+                          rx="3"
+                          fill="#0f172a"
+                          stroke="#c084fc"
+                          strokeWidth="0.8"
+                        />
+                        <text
+                          x={slot.x}
+                          y={imcY + 16}
+                          textAnchor="middle"
+                          fill="#c084fc"
+                          fontSize="8.5"
+                          fontWeight="700"
+                        >
+                          {imc.toFixed(1)} IMC
+                        </text>
+                      </g>
+                    </g>
+                  ) : (
                     <g>
                       <circle
                         cx={slot.x}
-                        cy={height - paddingBottom - 18}
-                        r="4.5"
+                        cy={imcY}
+                        r="2.8"
                         fill="#0b1329"
-                        stroke="#fbbf24"
-                        strokeWidth="1.8"
-                        strokeDasharray="2 2"
+                        stroke="rgba(192, 132, 252, 0.7)"
+                        strokeWidth="1.5"
                       />
+                      <circle cx={slot.x} cy={imcY} r="1.1" fill="#ffffff" />
                       <text
                         x={slot.x}
-                        y={height - paddingBottom - 26}
+                        y={imcY + 11}
                         textAnchor="middle"
-                        fill="#fbbf24"
-                        fontSize="8.5"
-                        fontWeight="600"
+                        fill="#c084fc"
+                        fontSize="8"
+                        fontWeight="500"
                       >
-                        Pendente
+                        {imc.toFixed(1)}
                       </text>
                     </g>
                   )
                 )}
 
-                {/* Rótulo da data no rodapé do SVG */}
+                {/* Dia de Hoje sem peso */}
+                {weight === null && isToday && (
+                  <g>
+                    <circle
+                      cx={slot.x}
+                      cy={Math.round(height / 2)}
+                      r="4.5"
+                      fill="#0b1329"
+                      stroke="#fbbf24"
+                      strokeWidth="1.8"
+                      strokeDasharray="2 2"
+                    />
+                    <text
+                      x={slot.x}
+                      y={Math.round(height / 2) - 8}
+                      textAnchor="middle"
+                      fill="#fbbf24"
+                      fontSize="8.5"
+                      fontWeight="600"
+                    >
+                      Pendente
+                    </text>
+                  </g>
+                )}
+
+                {/* Rótulo do dia da semana no rodapé */}
                 <text
                   x={slot.x}
-                  y={height - 8}
+                  y={height - 7}
                   textAnchor="middle"
                   fill={isToday ? '#38bdf8' : 'rgba(255, 255, 255, 0.45)'}
                   fontSize="8.5"
@@ -405,7 +576,7 @@ export const WeightHistoryChart = ({
         </svg>
       </Box>
 
-      {/* Grid Minimalista com as Atualizações Dia a Dia */}
+      {/* Grid Minimalista com as Atualizações Dia a Dia (Peso & IMC) */}
       <Box mt={10}>
         <Group
           justify="space-between"
@@ -446,7 +617,7 @@ export const WeightHistoryChart = ({
                   isToday
                     ? 'Clique para editar seu check-in de hoje'
                     : slot.record
-                      ? `Peso: ${slot.record.weight.toFixed(1)} kg em ${slot.shortDate}`
+                      ? `Peso: ${slot.record.weight.toFixed(1)} kg • IMC: ${slot.imc?.toFixed(1) || '--'}`
                       : `Sem registro em ${slot.shortDate}`
                 }
               >
@@ -474,22 +645,32 @@ export const WeightHistoryChart = ({
                   {hasWeight ? `${slot.weight?.toFixed(1)}` : '--'}
                 </Text>
 
-                {/* Variação da atualização em relação ao anterior */}
+                {/* IMC do dia */}
+                <Text
+                  size="9.5px"
+                  fw={600}
+                  c={slot.imc ? '#c084fc' : 'dimmed'}
+                  style={{ lineHeight: 1.2, opacity: slot.imc ? 1 : 0.4 }}
+                >
+                  {slot.imc ? `${slot.imc.toFixed(1)}` : '--'}
+                </Text>
+
+                {/* Variação da atualização do peso */}
                 <Box mt={2}>
-                  {slot.diff !== null ? (
+                  {slot.diffWeight !== null ? (
                     <Group gap={2} justify="center" align="center" wrap="nowrap">
-                      {slot.diff > 0 ? (
+                      {slot.diffWeight > 0 ? (
                         <>
                           <TbArrowUpRight size={10} color="#fb923c" />
                           <Text size="8.5px" fw={600} c="#fb923c">
-                            +{slot.diff}
+                            +{slot.diffWeight}
                           </Text>
                         </>
-                      ) : slot.diff < 0 ? (
+                      ) : slot.diffWeight < 0 ? (
                         <>
                           <TbArrowDownRight size={10} color="#4ade80" />
                           <Text size="8.5px" fw={600} c="#4ade80">
-                            {slot.diff}
+                            {slot.diffWeight}
                           </Text>
                         </>
                       ) : (
