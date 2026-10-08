@@ -118,3 +118,39 @@ export interface HabitActionSuccessResponse {
   success: boolean
 }
 
+export interface MonthlyMetricsPayload {
+  month?: string
+  waterDailyMap?: Record<string, number>
+  waterGoalBottles?: number
+  waterExtraTargetMap?: Record<string, number>
+}
+
+export interface MonthlyMetricsDayItem {
+  date: string
+  day: number
+  dayOfWeek: string
+  isToday: boolean
+  isFuture: boolean
+  totalHabits: number
+  completedHabits: number
+  habitRate: number
+  waterConsumedBottles: number
+  waterGoalBottles: number
+  waterGoalReached: boolean
+  waterRate: number
+  overallRate: number
+}
+
+export interface MonthlyMetricsResponse {
+  month: string
+  monthLabel: string
+  averageOverallRate: number
+  averageHabitRate: number
+  averageWaterRate: number
+  perfectDaysCount: number
+  trackedDaysCount: number
+  daysInMonth: number
+  formulaExplanation: string
+  days: MonthlyMetricsDayItem[]
+}
+
