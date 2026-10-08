@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
-import { Group, Stack, Progress, Box, Badge as MantineBadge } from '@mantine/core'
-import { TbDropletFilled, TbPlus, TbRotateClockwise2, TbTrophy } from 'react-icons/tb'
+import { Group, Stack, Progress, Box, Badge as MantineBadge, Text } from '@mantine/core'
+import { TbDropletFilled, TbRotateClockwise2, TbTrophy } from 'react-icons/tb'
 
-import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
+import Card from '@components/ui/card'
 import ActionIcon from '@components/ui/actionIcon'
 import useToastStore from '@stores/toast'
 import { calculateDailyWaterGoal } from '@stores/health/utils'
-import { WaterBottleItem } from '@pages/home/components/waterTrackerCard/waterBottleItem'
+import { CompactBottleItem, AddBottleButton } from './compactBottleItem'
 
 interface CompactWaterCardProps {
   currentWeight?: number
@@ -14,6 +14,7 @@ interface CompactWaterCardProps {
   extraBottlesTarget: number
   onToggleBottle: (index: number) => void
   onAddExtraBottle: () => void
+  onRemoveExtraBottle?: () => void
   onResetToday: () => void
 }
 
@@ -23,11 +24,12 @@ export const CompactWaterCard = ({
   extraBottlesTarget,
   onToggleBottle,
   onAddExtraBottle,
+  onRemoveExtraBottle,
   onResetToday
 }: CompactWaterCardProps) => {
   const { showToast } = useToastStore()
 
-  const { targetMl, targetBottles } = useMemo(() => {
+  const { targetMl, targetBottles, standardBottles } = useMemo(() => {
     return calculateDailyWaterGoal(currentWeight, extraBottlesTarget)
   }, [currentWeight, extraBottlesTarget])
 
@@ -48,109 +50,107 @@ export const CompactWaterCard = ({
     showToast('+1 garrafa (500ml) adicionada à meta!', 'info')
   }
 
-  return (
-    <Card style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Glow suave no topo */}
-      <Box
-        style={{
-          position: 'absolute',
-          top: -24,
-          right: -24,
-          width: 100,
-          height: 100,
-          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }}
-      />
+  const handleRemoveExtra = () => {
+    if (onRemoveExtraBottle) {
+      onRemoveExtraBottle()
+      showToast('Garrafa extra removida da meta', 'info')
+    }
+  }
 
-      <CardHeader style={{ paddingBottom: 6 }}>
+  return (
+    <Card style={{ padding: '10px 14px' }}>
+      <Stack gap={8}>
+        {/* Cabeçalho Minimalista e Compacto */}
         <Group justify="space-between" align="center" wrap="nowrap">
           <Group gap={6} align="center">
-            <TbDropletFilled size={18} color="#c084fc" />
-            <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Água (500ml)</CardTitle>
+            <TbDropletFilled size={15} color="#c084fc" />
+            <Text size="xs" fw={700} c="white">
+              Água
+            </Text>
+            <Text size="11px" c="dimmed">
+              (500ml)
+            </Text>
           </Group>
 
-          <Group gap={6}>
+          <Group gap={6} align="center">
             {isGoalReached ? (
               <MantineBadge
                 variant="gradient"
                 gradient={{ from: 'grape', to: 'violet' }}
                 size="xs"
-                leftSection={<TbTrophy size={11} />}
+                leftSection={<TbTrophy size={10} />}
+                styles={{ root: { height: 18, padding: '0 6px', fontSize: 10 } }}
               >
                 Meta Atingida!
               </MantineBadge>
             ) : (
-              <MantineBadge variant="light" color="grape" size="xs">
-                {progressPercent}% ({totalConsumedMl}ml)
-              </MantineBadge>
+              <Text size="11px" c="dimmed" fw={600}>
+                {totalConsumedMl}ml / {targetMl}ml ({progressPercent}%)
+              </Text>
             )}
-
-            <ActionIcon
-              variant="subtle"
-              size="sm"
-              onClick={handleAddExtra}
-              title="Adicionar +1 garrafa de 500ml"
-            >
-              <TbPlus size={14} />
-            </ActionIcon>
 
             {consumedBottles > 0 && (
               <ActionIcon
                 variant="subtle"
-                size="sm"
+                size="xs"
                 onClick={onResetToday}
                 title="Zerar garrafas de hoje"
+                style={{ width: 20, height: 20 }}
               >
-                <TbRotateClockwise2 size={13} />
+                <TbRotateClockwise2 size={12} />
               </ActionIcon>
             )}
           </Group>
         </Group>
-      </CardHeader>
 
-      <CardContent style={{ paddingTop: 0 }}>
-        <Stack gap={8}>
-          {/* Barra de Progresso Compacta */}
-          <Progress
-            value={progressPercent}
-            size="sm"
-            radius="xl"
-            color="grape"
-            animated={progressPercent < 100 && progressPercent > 0}
-            styles={{
-              root: {
-                backgroundColor: 'rgba(255, 255, 255, 0.06)'
-              },
-              section: {
-                background: 'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
-                boxShadow: '0 0 10px rgba(192, 132, 252, 0.4)'
-              }
-            }}
-          />
+        {/* Barra de Progresso / Slider Fino no Topo (Sem Nenhuma Animação) */}
+        <Progress
+          value={progressPercent}
+          size="xs"
+          radius="xl"
+          color="grape"
+          animated={false}
+          styles={{
+            root: {
+              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+              height: 4
+            },
+            section: {
+              background: 'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
+              transition: 'none'
+            }
+          }}
+        />
 
-          {/* Garrafinhas Interativas em Grid Compacto */}
-          <Box
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              overflowX: 'auto',
-              padding: '2px 0'
-            }}
-          >
-            {Array.from({ length: targetBottles }).map((_, index) => (
-              <Box key={index} style={{ flexShrink: 0 }}>
-                <WaterBottleItem
-                  index={index}
-                  isFilled={index < consumedBottles}
-                  onClick={() => handleBottleClick(index)}
-                />
-              </Box>
-            ))}
-          </Box>
-        </Stack>
-      </CardContent>
+        {/* Lista Horizontal de Garrafas Pequenas + Botão Adicionar no Final */}
+        <Box
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            overflowX: 'auto',
+            padding: '2px 0',
+            scrollbarWidth: 'none'
+          }}
+        >
+          {Array.from({ length: targetBottles }).map((_, index) => {
+            const isExtra = index >= standardBottles
+            return (
+              <CompactBottleItem
+                key={index}
+                index={index}
+                isFilled={index < consumedBottles}
+                isExtra={isExtra}
+                onClick={() => handleBottleClick(index)}
+                onRemove={isExtra ? handleRemoveExtra : undefined}
+              />
+            )
+          })}
+
+          {/* Garrafa com ícone de adicionar no final */}
+          <AddBottleButton onClick={handleAddExtra} />
+        </Box>
+      </Stack>
     </Card>
   )
 }
