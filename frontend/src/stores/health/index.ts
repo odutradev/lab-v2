@@ -10,6 +10,8 @@ interface PersistedData {
   weightHistory: WeightRecord[]
   waterDailyMap: Record<string, number>
   waterExtraTargetMap: Record<string, number>
+  waterBottleMl?: number
+  waterTargetBottles?: number
 }
 
 const defaultProfile: HealthProfile = {
@@ -27,7 +29,9 @@ const loadPersistedData = (): PersistedData => {
         profile: { ...defaultProfile, ...(parsed.profile || {}) },
         weightHistory: Array.isArray(parsed.weightHistory) ? parsed.weightHistory : [],
         waterDailyMap: parsed.waterDailyMap || {},
-        waterExtraTargetMap: parsed.waterExtraTargetMap || {}
+        waterExtraTargetMap: parsed.waterExtraTargetMap || {},
+        waterBottleMl: typeof parsed.waterBottleMl === 'number' ? parsed.waterBottleMl : 500,
+        waterTargetBottles: typeof parsed.waterTargetBottles === 'number' ? parsed.waterTargetBottles : undefined
       }
     }
   } catch (err) {
@@ -38,7 +42,9 @@ const loadPersistedData = (): PersistedData => {
     profile: defaultProfile,
     weightHistory: [],
     waterDailyMap: {},
-    waterExtraTargetMap: {}
+    waterExtraTargetMap: {},
+    waterBottleMl: 500,
+    waterTargetBottles: undefined
   }
 }
 
@@ -58,6 +64,8 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
     weightHistory: initial.weightHistory,
     waterDailyMap: initial.waterDailyMap,
     waterExtraTargetMap: initial.waterExtraTargetMap,
+    waterBottleMl: initial.waterBottleMl || 500,
+    waterTargetBottles: initial.waterTargetBottles,
 
     updateProfile: (data: Partial<HealthProfile>) => {
       const current = get()
@@ -71,7 +79,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: newProfile,
         weightHistory: current.weightHistory,
         waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap
+        waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
       })
     },
 
@@ -89,7 +99,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: updated,
         waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap
+        waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
       })
     },
 
@@ -116,7 +128,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: current.weightHistory,
         waterDailyMap: updatedMap,
-        waterExtraTargetMap: current.waterExtraTargetMap
+        waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
       })
     },
 
@@ -135,7 +149,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: current.weightHistory,
         waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: updatedExtras
+        waterExtraTargetMap: updatedExtras,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
       })
     },
 
@@ -155,7 +171,12 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         current.weightHistory.length > 0
           ? current.weightHistory[current.weightHistory.length - 1].weight
           : undefined
-      const { targetBottles } = calculateDailyWaterGoal(latestWeight, newExtra)
+      const { targetBottles } = calculateDailyWaterGoal(
+        latestWeight,
+        newExtra,
+        current.waterBottleMl,
+        current.waterTargetBottles
+      )
       const currentConsumed = current.waterDailyMap[date] || 0
       const updatedDaily = {
         ...current.waterDailyMap,
@@ -170,7 +191,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: current.weightHistory,
         waterDailyMap: updatedDaily,
-        waterExtraTargetMap: updatedExtras
+        waterExtraTargetMap: updatedExtras,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
       })
     },
 
@@ -197,7 +220,29 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         profile: current.profile,
         weightHistory: current.weightHistory,
         waterDailyMap: updatedDaily,
-        waterExtraTargetMap: updatedExtras
+        waterExtraTargetMap: updatedExtras,
+        waterBottleMl: current.waterBottleMl,
+        waterTargetBottles: current.waterTargetBottles
+      })
+    },
+
+    updateWaterSettings: ({ bottleMl, targetBottles }: { bottleMl?: number; targetBottles?: number }) => {
+      const current = get()
+      const newBottleMl = bottleMl !== undefined && bottleMl > 0 ? bottleMl : current.waterBottleMl
+      const newTargetBottles = targetBottles !== undefined && targetBottles > 0 ? targetBottles : current.waterTargetBottles
+
+      set({
+        waterBottleMl: newBottleMl,
+        waterTargetBottles: newTargetBottles
+      })
+
+      saveToLocalStorage({
+        profile: current.profile,
+        weightHistory: current.weightHistory,
+        waterDailyMap: current.waterDailyMap,
+        waterExtraTargetMap: current.waterExtraTargetMap,
+        waterBottleMl: newBottleMl,
+        waterTargetBottles: newTargetBottles
       })
     }
   }

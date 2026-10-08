@@ -137,17 +137,24 @@ export const calculateImc = (weightKg?: number, heightCm?: number): ImcResult | 
  */
 export const calculateDailyWaterGoal = (
   weightKg?: number,
-  extraBottles = 0
-): { targetMl: number; targetBottles: number; standardBottles: number } => {
+  extraBottles = 0,
+  customBottleMl = 500,
+  customTargetBottles?: number
+): { targetMl: number; targetBottles: number; standardBottles: number; bottleMl: number } => {
+  const bottleMl = customBottleMl > 0 ? customBottleMl : 500
   const baseMl = weightKg && weightKg > 0 ? Math.round(weightKg * 35) : 2000
-  const standardBottles = Math.max(2, Math.ceil(baseMl / 500))
+  const calculatedStandard = Math.max(1, Math.ceil(baseMl / bottleMl))
+  const standardBottles = customTargetBottles && customTargetBottles > 0
+    ? customTargetBottles
+    : calculatedStandard
   const targetBottles = standardBottles + extraBottles
-  const targetMl = targetBottles * 500
+  const targetMl = targetBottles * bottleMl
 
   return {
     targetMl,
     targetBottles,
-    standardBottles
+    standardBottles,
+    bottleMl
   }
 }
 

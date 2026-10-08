@@ -15,9 +15,14 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
   const [metrics, setMetrics] = useState<MonthlyMetricsResponse | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const { waterDailyMap, waterExtraTargetMap, weightHistory } = useHealthStore()
+  const { waterDailyMap, waterExtraTargetMap, weightHistory, waterBottleMl, waterTargetBottles } = useHealthStore()
   const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
-  const defaultWaterTargetBottles = calculateDailyWaterGoal(latestWeight).targetBottles
+  const defaultWaterTargetBottles = calculateDailyWaterGoal(
+    latestWeight,
+    0,
+    waterBottleMl,
+    waterTargetBottles
+  ).targetBottles
 
   const loadMetrics = useCallback(async () => {
     setIsLoading(true)

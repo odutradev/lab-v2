@@ -52,6 +52,8 @@ export interface HealthStoreState {
   weightHistory: WeightRecord[]
   waterDailyMap: Record<string, number> // YYYY-MM-DD -> garrafas consumidas
   waterExtraTargetMap: Record<string, number> // YYYY-MM-DD -> garrafas extras adicionadas à meta
+  waterBottleMl: number // ml por garrafa (default: 500)
+  waterTargetBottles?: number // quantidade fixa de garrafas de meta (se definida)
 
   updateProfile: (data: Partial<HealthProfile>) => void
   saveWeightRecord: (weight: number, date?: string) => void
@@ -59,4 +61,5 @@ export interface HealthStoreState {
   addExtraWaterBottle: (date?: string) => void
   removeExtraWaterBottle: (date?: string) => void
   resetTodayWater: (date?: string) => void
+  updateWaterSettings: (settings: { bottleMl?: number; targetBottles?: number }) => void
 }
