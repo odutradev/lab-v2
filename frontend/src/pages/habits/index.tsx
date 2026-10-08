@@ -1,6 +1,11 @@
-import { Stack, Box } from '@mantine/core'
+import { Stack, Box, SimpleGrid } from '@mantine/core'
 
 import Card from '@components/ui/card'
+import useHealthStore from '@stores/health'
+import CharacterCard from '@pages/home/components/characterCard'
+import WeightImcCard from '@pages/home/components/weightImcCard'
+import WaterTrackerCard from '@pages/home/components/waterTrackerCard'
+
 import HabitsCalendarToolbar from './components/habitsCalendarToolbar'
 import HabitsMonthView from './components/habitsMonthView'
 import HabitsWeekView from './components/habitsWeekView'
@@ -43,59 +48,103 @@ export const HabitsPage = () => {
     handleCloseScopeModal
   } = useHabitsPage()
 
+  const {
+    profile: healthProfile,
+    weightHistory,
+    waterDailyMap,
+    waterExtraTargetMap,
+    updateProfile: handleUpdateHealthProfile,
+    saveWeightRecord: handleSaveWeight,
+    toggleWaterBottle: handleToggleWaterBottle,
+    addExtraWaterBottle: handleAddExtraWaterBottle,
+    resetTodayWater: handleResetTodayWater
+  } = useHealthStore()
+
+  const consumedWaterBottles = waterDailyMap[todayStr] || 0
+  const extraWaterBottlesTarget = waterExtraTargetMap[todayStr] || 0
+  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
+
   return (
     <Box style={containerStyle}>
-      <Card>
-        <Stack gap="lg">
-          <HabitsCalendarToolbar
-            headerTitle={headerTitle}
-            viewMode={viewMode}
-            isToday={isToday}
-            onViewModeChange={setViewMode}
-            onPrevious={handlePreviousPeriod}
-            onNext={handleNextPeriod}
-            onToday={handleToday}
-            onOpenNewHabitModal={handleOpenModal}
+      <Stack gap="xl" w="100%">
+        {/* Personagem Interativo: clique para configurar idade e altura */}
+        <CharacterCard
+          profile={healthProfile}
+          latestWeight={latestWeight}
+          onUpdateProfile={handleUpdateHealthProfile}
+        />
+
+        {/* Grid de Saúde: Controle de Peso & IMC + Hidratação Diária */}
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+          <WeightImcCard
+            heightCm={healthProfile.height}
+            weightHistory={weightHistory}
+            onSaveWeight={handleSaveWeight}
           />
 
-          {viewMode === 'month' && (
-            <HabitsMonthView
-              monthCells={monthCells}
-              rangeSummariesMap={rangeSummariesMap}
-              selectedDate={selectedDate}
-              onSelectDate={handleSelectDate}
-              onToggleCheckin={handleToggleCheckin}
-              onEditItem={handleOpenEditModal}
-            />
-          )}
+          <WaterTrackerCard
+            currentWeight={latestWeight}
+            consumedBottles={consumedWaterBottles}
+            extraBottlesTarget={extraWaterBottlesTarget}
+            onToggleBottle={handleToggleWaterBottle}
+            onAddExtraBottle={handleAddExtraWaterBottle}
+            onResetToday={handleResetTodayWater}
+          />
+        </SimpleGrid>
 
-          {viewMode === 'week' && (
-            <HabitsWeekView
-              weekDays={weekDays}
-              todayStr={todayStr}
-              rangeSummariesMap={rangeSummariesMap}
-              selectedDate={selectedDate}
-              togglingId={togglingId}
-              onSelectDate={handleSelectDate}
-              onToggleCheckin={handleToggleCheckin}
-              onEditItem={handleOpenEditModal}
-            />
-          )}
-
-          {viewMode === 'day' && (
-            <HabitsDayView
-              selectedDate={selectedDate}
+        {/* Agenda e Metas de Hábitos */}
+        <Card>
+          <Stack gap="lg">
+            <HabitsCalendarToolbar
+              headerTitle={headerTitle}
+              viewMode={viewMode}
               isToday={isToday}
-              daySummary={daySummary}
-              isLoading={isLoading}
-              togglingId={togglingId}
-              onToggleCheckin={handleToggleCheckin}
-              onEditItem={handleOpenEditModal}
-              onRemoveItem={handleRemoveHabit}
+              onViewModeChange={setViewMode}
+              onPrevious={handlePreviousPeriod}
+              onNext={handleNextPeriod}
+              onToday={handleToday}
+              onOpenNewHabitModal={handleOpenModal}
             />
-          )}
-        </Stack>
-      </Card>
+
+            {viewMode === 'month' && (
+              <HabitsMonthView
+                monthCells={monthCells}
+                rangeSummariesMap={rangeSummariesMap}
+                selectedDate={selectedDate}
+                onSelectDate={handleSelectDate}
+                onToggleCheckin={handleToggleCheckin}
+                onEditItem={handleOpenEditModal}
+              />
+            )}
+
+            {viewMode === 'week' && (
+              <HabitsWeekView
+                weekDays={weekDays}
+                todayStr={todayStr}
+                rangeSummariesMap={rangeSummariesMap}
+                selectedDate={selectedDate}
+                togglingId={togglingId}
+                onSelectDate={handleSelectDate}
+                onToggleCheckin={handleToggleCheckin}
+                onEditItem={handleOpenEditModal}
+              />
+            )}
+
+            {viewMode === 'day' && (
+              <HabitsDayView
+                selectedDate={selectedDate}
+                isToday={isToday}
+                daySummary={daySummary}
+                isLoading={isLoading}
+                togglingId={togglingId}
+                onToggleCheckin={handleToggleCheckin}
+                onEditItem={handleOpenEditModal}
+                onRemoveItem={handleRemoveHabit}
+              />
+            )}
+          </Stack>
+        </Card>
+      </Stack>
 
       <HabitsModal
         isOpen={isModalOpen}
@@ -119,4 +168,3 @@ export const HabitsPage = () => {
 }
 
 export default HabitsPage
-
