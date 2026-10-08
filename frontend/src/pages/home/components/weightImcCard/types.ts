@@ -3,6 +3,7 @@ import type { ImcResult, WeightRecord } from '@stores/health/types'
 export interface WeightImcCardProps {
   heightCm?: number
   weightHistory: WeightRecord[]
+  selectedDate?: string
   onSaveWeight: (weight: number, date?: string) => void
   onOpenPhysicalModal?: () => void
 }
@@ -12,6 +13,7 @@ export interface WeightHistoryChartProps {
   height?: number
   selectedYear: number
   selectedMonth: number
+  targetDate?: string
   onOpenCheckinModal: (date?: string) => void
 }
 

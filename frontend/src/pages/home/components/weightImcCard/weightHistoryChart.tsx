@@ -36,9 +36,11 @@ export const WeightHistoryChart = ({
   height: heightCm,
   selectedYear,
   selectedMonth,
+  targetDate,
   onOpenCheckinModal
 }: WeightHistoryChartProps) => {
   const todayStr = getTodayDateString()
+  const activeTargetDate = targetDate || todayStr
   const [hoveredDay, setHoveredDay] = useState<{
     date: string
     day: number
@@ -85,7 +87,8 @@ export const WeightHistoryChart = ({
         day: dayNum,
         weight: r.weight,
         imc,
-        isToday: r.date === todayStr
+        isToday: r.date === todayStr,
+        isTarget: r.date === activeTargetDate
       }
     })
 
@@ -182,7 +185,7 @@ export const WeightHistoryChart = ({
       todayPoint: todayP,
       axisTicks: ticks
     }
-  }, [records, selectedYear, selectedMonth, heightCm, todayStr])
+  }, [records, selectedYear, selectedMonth, heightCm, todayStr, activeTargetDate])
 
   const hasData = activePoints.length > 0
 
@@ -341,7 +344,7 @@ export const WeightHistoryChart = ({
 
           {/* Pontos de cada dia registrado no mês */}
           {activePoints.map((p) => {
-            const isToday = p.isToday
+            const isHighlighted = p.isTarget || (p.isToday && !targetDate)
 
             return (
               <g
@@ -356,16 +359,16 @@ export const WeightHistoryChart = ({
                   y1={p.weightY}
                   x2={p.x}
                   y2={p.imcY}
-                  stroke={isToday ? 'rgba(56, 189, 248, 0.3)' : 'rgba(255, 255, 255, 0.08)'}
+                  stroke={isHighlighted ? 'rgba(56, 189, 248, 0.35)' : 'rgba(255, 255, 255, 0.08)'}
                   strokeDasharray="1 2"
                 />
 
                 {/* PONTO DE PESO */}
-                {isToday ? (
+                {isHighlighted ? (
                   <g filter="url(#monthGlowWeight)">
                     <circle cx={p.x} cy={p.weightY} r="6" fill="#0b1329" stroke="#38bdf8" strokeWidth="2.4" />
                     <circle cx={p.x} cy={p.weightY} r="2" fill="#ffffff" />
-                    {/* Tag de Peso de Hoje */}
+                    {/* Tag de Peso com valor */}
                     <g>
                       <rect
                         x={p.x - 22}
@@ -404,11 +407,11 @@ export const WeightHistoryChart = ({
                 )}
 
                 {/* PONTO DE IMC */}
-                {isToday ? (
+                {isHighlighted ? (
                   <g filter="url(#monthGlowImc)">
                     <circle cx={p.x} cy={p.imcY} r="5.5" fill="#0b1329" stroke="#c084fc" strokeWidth="2.2" />
                     <circle cx={p.x} cy={p.imcY} r="1.8" fill="#ffffff" />
-                    {/* Tag de IMC de Hoje */}
+                    {/* Tag de IMC com valor */}
                     <g>
                       <rect
                         x={p.x - 20}

@@ -26,19 +26,40 @@ import type { WeightImcCardProps } from './types'
 export const WeightImcCard = ({
   heightCm,
   weightHistory,
+  selectedDate,
   onSaveWeight
 }: WeightImcCardProps) => {
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
 
   // Controle de navegação do mês
-  const [currentDate, setCurrentDate] = useState(() => new Date())
+  const [currentDate, setCurrentDate] = useState(() => {
+    if (selectedDate) {
+      const parts = selectedDate.split('-').map(Number)
+      if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        return new Date(parts[0], parts[1] - 1, parts[2] || 1)
+      }
+    }
+    return new Date()
+  })
+  const [prevSelectedDate, setPrevSelectedDate] = useState(selectedDate)
+
+  if (selectedDate !== prevSelectedDate) {
+    setPrevSelectedDate(selectedDate)
+    if (selectedDate) {
+      const parts = selectedDate.split('-').map(Number)
+      if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        setCurrentDate(new Date(parts[0], parts[1] - 1, parts[2] || 1))
+      }
+    }
+  }
+
   const selectedYear = currentDate.getFullYear()
   const selectedMonth = currentDate.getMonth()
 
   // Modal de Check-in do dia
   const [isCheckinModalOpen, setIsCheckinModalOpen] = useState(false)
-  const [targetCheckinDate, setTargetCheckinDate] = useState(todayStr)
+  const [targetCheckinDate, setTargetCheckinDate] = useState(selectedDate || todayStr)
   const [inputWeight, setInputWeight] = useState<number | string>('')
 
   const latestRecord = useMemo(() => {
@@ -61,7 +82,7 @@ export const WeightImcCard = ({
   }
 
   const handleOpenCheckin = (date?: string) => {
-    const dateToUse = date || todayStr
+    const dateToUse = date || selectedDate || todayStr
     setTargetCheckinDate(dateToUse)
 
     const rec = weightHistory.find((r) => r.date === dateToUse)
@@ -169,6 +190,7 @@ export const WeightImcCard = ({
             height={heightCm}
             selectedYear={selectedYear}
             selectedMonth={selectedMonth}
+            targetDate={selectedDate}
             onOpenCheckinModal={handleOpenCheckin}
           />
         </CardContent>
