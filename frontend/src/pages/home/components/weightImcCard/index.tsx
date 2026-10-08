@@ -308,7 +308,11 @@ export const WeightImcCard = ({
           </Box>
 
           {/* Gráfico Minimalista indicando o peso do dia */}
-          <WeightHistoryChart records={weightHistory} height={heightCm} />
+          <WeightHistoryChart
+            records={weightHistory}
+            height={heightCm}
+            onStartTodayCheckin={handleStartEdit}
+          />
 
           {/* Medidor Minimalista de IMC */}
           <ImcGaugeChart

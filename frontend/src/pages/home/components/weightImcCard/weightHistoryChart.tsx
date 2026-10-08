@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Box, Text, Group } from '@mantine/core'
-import { getTodayDateString, formatDateDisplay } from '@stores/health/utils'
+import { TbArrowUpRight, TbArrowDownRight, TbMinus, TbCalendarStats } from 'react-icons/tb'
+import { getTodayDateString } from '@stores/health/utils'
 import type { WeightHistoryChartProps } from './types'
 
 // Gera caminho Bézier suave (Catmull-Rom para Bézier cúbico)
@@ -31,11 +32,51 @@ function createSmoothPath(points: { x: number; y: number }[]): string {
   return d
 }
 
-export const WeightHistoryChart = ({ records }: WeightHistoryChartProps) => {
+function getPast7Days(todayStr: string) {
+  const [yyyy, mm, dd] = todayStr.split('-').map(Number)
+  const baseDate = new Date(yyyy, mm - 1, dd, 12, 0, 0)
+  const days: {
+    date: string
+    dayName: string
+    shortDate: string
+    isToday: boolean
+  }[] = []
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(baseDate)
+    d.setDate(baseDate.getDate() - i)
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const dayNum = String(d.getDate()).padStart(2, '0')
+    const date = `${y}-${m}-${dayNum}`
+
+    const isToday = i === 0
+    const rawName = isToday
+      ? 'Hoje'
+      : d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+    const dayName = rawName.charAt(0).toUpperCase() + rawName.slice(1)
+    const shortDate = `${dayNum}/${m}`
+
+    days.push({
+      date,
+      dayName,
+      shortDate,
+      isToday
+    })
+  }
+
+  return days
+}
+
+export const WeightHistoryChart = ({
+  records,
+  onStartTodayCheckin
+}: WeightHistoryChartProps) => {
   const todayStr = getTodayDateString()
 
   const {
-    todayRecord,
+    daySlots,
+    todaySlot,
     minWeight,
     maxWeight,
     width,
@@ -43,143 +84,141 @@ export const WeightHistoryChart = ({ records }: WeightHistoryChartProps) => {
     paddingX,
     paddingTop,
     paddingBottom,
-    points,
-    pendingTodayPoint,
     pathD,
-    areaD
+    areaD,
+    hasAnyRecords
   } = useMemo(() => {
-    const today = records.find((r) => r.date === todayStr)
-    const recent = records.slice(-7)
+    const pastDays = getPast7Days(todayStr)
+    const sortedRecords = [...records].sort((a, b) => a.date.localeCompare(b.date))
 
-    const wList = recent.map((r) => r.weight)
-    const minW = wList.length > 0 ? Math.min(...wList) : 70
-    const maxW = wList.length > 0 ? Math.max(...wList) : 70
+    // Calcula os 7 slots diários e a variação em relação ao registro anterior
+    const slots = pastDays.map((slot, index) => {
+      const record = sortedRecords.find((r) => r.date === slot.date)
+
+      let diff: number | null = null
+      if (record) {
+        // Encontra o registro mais recente antes dessa data
+        const priorRecords = sortedRecords.filter((r) => r.date < slot.date)
+        if (priorRecords.length > 0) {
+          const prev = priorRecords[priorRecords.length - 1]
+          diff = Math.round((record.weight - prev.weight) * 10) / 10
+        }
+      }
+
+      return {
+        ...slot,
+        index,
+        record,
+        weight: record ? record.weight : null,
+        diff
+      }
+    })
+
+    const weightsWithValues = slots
+      .map((s) => s.weight)
+      .filter((w): w is number => w !== null)
+
+    const allHistoryWeights = sortedRecords.map((r) => r.weight)
+    const combinedWeights = weightsWithValues.length > 0 ? weightsWithValues : allHistoryWeights
+
+    const minW = combinedWeights.length > 0 ? Math.min(...combinedWeights) : 70
+    const maxW = combinedWeights.length > 0 ? Math.max(...combinedWeights) : 70
     const pad = Math.max(0.6, (maxW - minW) * 0.25 || 1.2)
-    const cMin = Math.floor((minW - pad) * 10) / 10
-    const cMax = Math.ceil((maxW + pad) * 10) / 10
-    const rng = cMax - cMin || 1
+    const chartMin = Math.floor((minW - pad) * 10) / 10
+    const chartMax = Math.ceil((maxW + pad) * 10) / 10
+    const range = chartMax - chartMin || 1
 
-    const w = 480
-    const h = 136
-    const pX = 42
+    const w = 500
+    const h = 138
+    const pX = 38
     const pTop = 28
     const pBottom = 26
     const innerW = w - pX * 2
     const innerH = h - pTop - pBottom
 
-    // Se hoje não está nos registros recentes mas temos histórico, criamos ponto virtual para "Hoje"
-    const hasTodayInList = recent.some((r) => r.date === todayStr)
-    const totalSlots = hasTodayInList ? recent.length : recent.length + 1
+    // Mapeia coordenadas x para cada um dos 7 dias
+    const slotsWithCoords = slots.map((s, i) => {
+      const x = pX + (i / 6) * innerW
+      const y =
+        s.weight !== null
+          ? pTop + innerH - ((s.weight - chartMin) / range) * innerH
+          : null
 
-    const pts = recent.map((r, i) => {
-      const x =
-        totalSlots <= 1
-          ? w / 2
-          : pX + (i / (totalSlots - 1)) * innerW
-      const y = pTop + innerH - ((r.weight - cMin) / rng) * innerH
       return {
+        ...s,
         x: Math.round(x * 10) / 10,
-        y: Math.round(y * 10) / 10,
-        record: r,
-        isToday: r.date === todayStr
+        y: y !== null ? Math.round(y * 10) / 10 : null
       }
     })
 
-    let pendingPt = null
-    if (!hasTodayInList && recent.length > 0) {
-      const lastRecorded = pts[pts.length - 1]
-      const x = pX + ((totalSlots - 1) / (totalSlots - 1)) * innerW
-      const y = lastRecorded.y
-      pendingPt = {
-        x: Math.round(x * 10) / 10,
-        y: Math.round(y * 10) / 10,
-        lastX: lastRecorded.x,
-        lastY: lastRecorded.y
-      }
-    }
+    const activePoints = slotsWithCoords
+      .filter((s): s is typeof s & { y: number } => s.y !== null)
+      .map((s) => ({ x: s.x, y: s.y, slot: s }))
 
-    const pD = createSmoothPath(pts)
+    const pD = createSmoothPath(activePoints)
     const aD =
-      pts.length > 1
-        ? `${pD} L ${pts[pts.length - 1].x} ${h - pBottom} L ${pts[0].x} ${h - pBottom} Z`
+      activePoints.length > 1
+        ? `${pD} L ${activePoints[activePoints.length - 1].x} ${h - pBottom} L ${activePoints[0].x} ${h - pBottom} Z`
         : ''
 
+    const todayS = slotsWithCoords.find((s) => s.isToday) || slotsWithCoords[6]
+
     return {
-      displayRecords: recent,
-      todayRecord: today,
-      weights: wList,
+      daySlots: slotsWithCoords,
+      registeredPoints: activePoints,
+      todaySlot: todayS,
       minWeight: minW,
       maxWeight: maxW,
-      chartMin: cMin,
-      range: rng,
       width: w,
       height: h,
       paddingX: pX,
       paddingTop: pTop,
       paddingBottom: pBottom,
-      points: pts,
-      pendingTodayPoint: pendingPt,
       pathD: pD,
-      areaD: aD
+      areaD: aD,
+      hasAnyRecords: sortedRecords.length > 0
     }
   }, [records, todayStr])
 
-  if (records.length === 0) {
-    return (
-      <Box
-        py="lg"
-        px="md"
-        ta="center"
-        style={{
-          borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.08)'
-        }}
-      >
-        <Text size="xs" fw={600} c="dimmed">
-          Nenhum registro de peso no histórico
-        </Text>
-        <Text size="11px" c="dimmed" mt={2}>
-          Faça seu check-in diário acima para visualizar a evolução no gráfico.
-        </Text>
-      </Box>
-    )
-  }
-
   return (
     <Box>
+      {/* Header do Gráfico com Resumo das Atualizações */}
       <Group justify="space-between" align="center" mb={6}>
         <Group gap={6} align="center">
+          <TbCalendarStats size={15} color="#818cf8" />
           <Text
             size="11px"
             fw={600}
             c="dimmed"
             style={{ textTransform: 'uppercase', letterSpacing: 0.6 }}
           >
-            Evolução do Peso
+            Acompanhamento Dia a Dia
           </Text>
 
-          {todayRecord ? (
+          {todaySlot.weight !== null ? (
             <Text size="11px" fw={700} c="#4ade80">
-              • Peso de hoje: {todayRecord.weight.toFixed(1)} kg
+              • Hoje: {todaySlot.weight.toFixed(1)} kg
             </Text>
           ) : (
             <Text size="11px" fw={600} c="#fbbf24">
-              • Peso de hoje: Pendente
+              • Hoje: Check-in pendente
             </Text>
           )}
         </Group>
 
-        <Group gap="xs">
-          <Text size="11px" c="dimmed">
-            Mín <span style={{ color: '#818cf8', fontWeight: 600 }}>{minWeight.toFixed(1)}</span>
-          </Text>
-          <Text size="11px" c="dimmed">
-            • Máx <span style={{ color: '#38bdf8', fontWeight: 600 }}>{maxWeight.toFixed(1)} kg</span>
-          </Text>
-        </Group>
+        {hasAnyRecords && (
+          <Group gap="xs">
+            <Text size="11px" c="dimmed">
+              Mín <span style={{ color: '#818cf8', fontWeight: 600 }}>{minWeight.toFixed(1)}</span>
+            </Text>
+            <Text size="11px" c="dimmed">
+              • Máx <span style={{ color: '#38bdf8', fontWeight: 600 }}>{maxWeight.toFixed(1)} kg</span>
+            </Text>
+          </Group>
+        )}
       </Group>
 
+      {/* Gráfico SVG com os 7 Dias Consecutivos e Curva de Atualizações */}
       <Box
         style={{
           borderRadius: 10,
@@ -195,7 +234,7 @@ export const WeightHistoryChart = ({ records }: WeightHistoryChartProps) => {
         >
           <defs>
             <linearGradient id="minimalWeightArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.18" />
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.20" />
               <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="minimalWeightLine" x1="0" y1="0" x2="1" y2="0">
@@ -203,7 +242,7 @@ export const WeightHistoryChart = ({ records }: WeightHistoryChartProps) => {
               <stop offset="100%" stopColor="#38bdf8" />
             </linearGradient>
             <filter id="todayActiveGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#38bdf8" floodOpacity="0.9" />
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#38bdf8" floodOpacity="0.95" />
             </filter>
           </defs>
 
@@ -224,174 +263,254 @@ export const WeightHistoryChart = ({ records }: WeightHistoryChartProps) => {
             stroke="rgba(255, 255, 255, 0.06)"
           />
 
+          {/* Colunas verticais discretas para cada dia */}
+          {daySlots.map((slot) => (
+            <line
+              key={slot.date}
+              x1={slot.x}
+              y1={paddingTop}
+              x2={slot.x}
+              y2={height - paddingBottom}
+              stroke={slot.isToday ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.02)'}
+              strokeDasharray={slot.isToday ? '2 2' : undefined}
+            />
+          ))}
+
           {/* Área com gradiente */}
           {areaD && <path d={areaD} fill="url(#minimalWeightArea)" />}
 
-          {/* Linha principal Bézier */}
+          {/* Linha principal Bézier conectando as atualizações */}
           {pathD && (
             <path
               d={pathD}
               fill="none"
               stroke="url(#minimalWeightLine)"
-              strokeWidth="2.2"
+              strokeWidth="2.4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           )}
 
-          {/* Linha projetada se o peso de hoje ainda estiver pendente */}
-          {pendingTodayPoint && (
-            <line
-              x1={pendingTodayPoint.lastX}
-              y1={pendingTodayPoint.lastY}
-              x2={pendingTodayPoint.x}
-              y2={pendingTodayPoint.y}
-              stroke="rgba(251, 191, 36, 0.4)"
-              strokeWidth="1.8"
-              strokeDasharray="3 3"
-            />
-          )}
+          {/* Renderização de cada dia no gráfico */}
+          {daySlots.map((slot) => {
+            const weight = slot.weight
+            const y = slot.y
+            const isToday = slot.isToday
 
-          {/* Pontos históricos */}
-          {points.map((pt, idx) => {
             return (
-              <g key={idx}>
-                {/* Linha vertical guia para o dia de hoje */}
-                {pt.isToday && (
-                  <line
-                    x1={pt.x}
-                    y1={pt.y}
-                    x2={pt.x}
-                    y2={height - paddingBottom}
-                    stroke="rgba(56, 189, 248, 0.4)"
-                    strokeWidth="1.2"
-                    strokeDasharray="2 2"
-                  />
-                )}
+              <g key={slot.date}>
+                {weight !== null && y !== null ? (
+                  isToday ? (
+                    /* Ponto do Dia de Hoje */
+                    <g filter="url(#todayActiveGlow)">
+                      <circle
+                        cx={slot.x}
+                        cy={y}
+                        r="6.5"
+                        fill="#0b1329"
+                        stroke="#38bdf8"
+                        strokeWidth="2.6"
+                      />
+                      <circle cx={slot.x} cy={y} r="2.2" fill="#ffffff" />
 
-                {/* Marcador do ponto */}
-                {pt.isToday ? (
-                  <g filter="url(#todayActiveGlow)">
-                    <circle
-                      cx={pt.x}
-                      cy={pt.y}
-                      r="6"
-                      fill="#0b1329"
-                      stroke="#38bdf8"
-                      strokeWidth="2.4"
-                    />
-                    <circle cx={pt.x} cy={pt.y} r="2.2" fill="#ffffff" />
-                  </g>
+                      {/* Tag com o peso de hoje */}
+                      <g>
+                        <rect
+                          x={slot.x - 26}
+                          y={y - 21}
+                          width="52"
+                          height="15"
+                          rx="4"
+                          fill="#0f172a"
+                          stroke="#38bdf8"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={slot.x}
+                          y={y - 10}
+                          textAnchor="middle"
+                          fill="#38bdf8"
+                          fontSize="9.5"
+                          fontWeight="700"
+                        >
+                          {weight.toFixed(1)} kg
+                        </text>
+                      </g>
+                    </g>
+                  ) : (
+                    /* Ponto de outros dias com registro */
+                    <g>
+                      <circle
+                        cx={slot.x}
+                        cy={y}
+                        r="3.5"
+                        fill="#0b1329"
+                        stroke="rgba(255, 255, 255, 0.55)"
+                        strokeWidth="1.8"
+                      />
+                      <circle cx={slot.x} cy={y} r="1.4" fill="#ffffff" />
+                      <text
+                        x={slot.x}
+                        y={y - 7}
+                        textAnchor="middle"
+                        fill="rgba(255, 255, 255, 0.7)"
+                        fontSize="9"
+                        fontWeight="500"
+                      >
+                        {weight.toFixed(1)}
+                      </text>
+                    </g>
+                  )
                 ) : (
-                  <g>
-                    <circle
-                      cx={pt.x}
-                      cy={pt.y}
-                      r="3.2"
-                      fill="#0b1329"
-                      stroke="rgba(255, 255, 255, 0.45)"
-                      strokeWidth="1.6"
-                    />
-                    <circle cx={pt.x} cy={pt.y} r="1.4" fill="#ffffff" />
-                  </g>
+                  /* Dia sem registro */
+                  isToday && (
+                    <g>
+                      <circle
+                        cx={slot.x}
+                        cy={height - paddingBottom - 18}
+                        r="4.5"
+                        fill="#0b1329"
+                        stroke="#fbbf24"
+                        strokeWidth="1.8"
+                        strokeDasharray="2 2"
+                      />
+                      <text
+                        x={slot.x}
+                        y={height - paddingBottom - 26}
+                        textAnchor="middle"
+                        fill="#fbbf24"
+                        fontSize="8.5"
+                        fontWeight="600"
+                      >
+                        Pendente
+                      </text>
+                    </g>
+                  )
                 )}
 
-                {/* Rótulo de peso acima do ponto */}
-                {pt.isToday ? (
-                  <g>
-                    <rect
-                      x={pt.x - 26}
-                      y={pt.y - 20}
-                      width="52"
-                      height="15"
-                      rx="4"
-                      fill="#0f172a"
-                      stroke="#38bdf8"
-                      strokeWidth="1"
-                    />
-                    <text
-                      x={pt.x}
-                      y={pt.y - 9}
-                      textAnchor="middle"
-                      fill="#38bdf8"
-                      fontSize="9.5"
-                      fontWeight="700"
-                    >
-                      {pt.record.weight.toFixed(1)} kg
-                    </text>
-                  </g>
-                ) : (
-                  <text
-                    x={pt.x}
-                    y={pt.y - 7}
-                    textAnchor="middle"
-                    fill="rgba(255, 255, 255, 0.65)"
-                    fontSize="9"
-                    fontWeight="500"
-                  >
-                    {pt.record.weight.toFixed(1)}
-                  </text>
-                )}
-
-                {/* Rótulo de data no rodapé */}
+                {/* Rótulo da data no rodapé do SVG */}
                 <text
-                  x={pt.x}
+                  x={slot.x}
                   y={height - 8}
                   textAnchor="middle"
-                  fill={pt.isToday ? '#38bdf8' : 'rgba(255, 255, 255, 0.4)'}
+                  fill={isToday ? '#38bdf8' : 'rgba(255, 255, 255, 0.45)'}
                   fontSize="8.5"
-                  fontWeight={pt.isToday ? '700' : '400'}
+                  fontWeight={isToday ? '700' : '500'}
                 >
-                  {pt.isToday ? 'Hoje' : formatDateDisplay(pt.record.date)}
+                  {isToday ? 'Hoje' : slot.dayName}
                 </text>
               </g>
             )
           })}
-
-          {/* Marcador de Hoje quando pendente */}
-          {pendingTodayPoint && (
-            <g>
-              <line
-                x1={pendingTodayPoint.x}
-                y1={pendingTodayPoint.y}
-                x2={pendingTodayPoint.x}
-                y2={height - paddingBottom}
-                stroke="rgba(251, 191, 36, 0.3)"
-                strokeWidth="1"
-                strokeDasharray="2 2"
-              />
-              <circle
-                cx={pendingTodayPoint.x}
-                cy={pendingTodayPoint.y}
-                r="4.5"
-                fill="#0b1329"
-                stroke="#fbbf24"
-                strokeWidth="1.8"
-                strokeDasharray="2 2"
-              />
-              <text
-                x={pendingTodayPoint.x}
-                y={pendingTodayPoint.y - 8}
-                textAnchor="middle"
-                fill="#fbbf24"
-                fontSize="8.5"
-                fontWeight="600"
-              >
-                Pendente
-              </text>
-              <text
-                x={pendingTodayPoint.x}
-                y={height - 8}
-                textAnchor="middle"
-                fill="#fbbf24"
-                fontSize="8.5"
-                fontWeight="700"
-              >
-                Hoje
-              </text>
-            </g>
-          )}
         </svg>
+      </Box>
+
+      {/* Grid Minimalista com as Atualizações Dia a Dia */}
+      <Box mt={10}>
+        <Group
+          justify="space-between"
+          gap={6}
+          wrap="nowrap"
+          style={{ overflowX: 'auto', paddingBottom: 2 }}
+        >
+          {daySlots.map((slot) => {
+            const isToday = slot.isToday
+            const hasWeight = slot.weight !== null
+
+            return (
+              <Box
+                key={slot.date}
+                style={{
+                  flex: 1,
+                  minWidth: 54,
+                  borderRadius: 8,
+                  background: isToday
+                    ? hasWeight
+                      ? 'rgba(56, 189, 248, 0.08)'
+                      : 'rgba(251, 191, 36, 0.08)'
+                    : 'rgba(255, 255, 255, 0.02)',
+                  border: `1px solid ${
+                    isToday
+                      ? hasWeight
+                        ? 'rgba(56, 189, 248, 0.25)'
+                        : 'rgba(251, 191, 36, 0.25)'
+                      : 'rgba(255, 255, 255, 0.05)'
+                  }`,
+                  padding: '6px 4px',
+                  textAlign: 'center',
+                  cursor: isToday && onStartTodayCheckin ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease'
+                }}
+                onClick={isToday && onStartTodayCheckin ? onStartTodayCheckin : undefined}
+                title={
+                  isToday
+                    ? 'Clique para editar seu check-in de hoje'
+                    : slot.record
+                      ? `Peso: ${slot.record.weight.toFixed(1)} kg em ${slot.shortDate}`
+                      : `Sem registro em ${slot.shortDate}`
+                }
+              >
+                {/* Nome do dia e data */}
+                <Text
+                  size="9.5px"
+                  fw={isToday ? 700 : 500}
+                  c={isToday ? (hasWeight ? '#38bdf8' : '#fbbf24') : 'dimmed'}
+                  style={{ lineHeight: 1.2 }}
+                >
+                  {isToday ? 'Hoje' : slot.dayName}
+                </Text>
+                <Text size="8.5px" c="dimmed" style={{ opacity: 0.7, lineHeight: 1.1 }}>
+                  {slot.shortDate}
+                </Text>
+
+                {/* Peso do dia */}
+                <Text
+                  size="11px"
+                  fw={700}
+                  c={hasWeight ? (isToday ? '#4ade80' : 'white') : 'dimmed'}
+                  mt={4}
+                  style={{ lineHeight: 1.2 }}
+                >
+                  {hasWeight ? `${slot.weight?.toFixed(1)}` : '--'}
+                </Text>
+
+                {/* Variação da atualização em relação ao anterior */}
+                <Box mt={2}>
+                  {slot.diff !== null ? (
+                    <Group gap={2} justify="center" align="center" wrap="nowrap">
+                      {slot.diff > 0 ? (
+                        <>
+                          <TbArrowUpRight size={10} color="#fb923c" />
+                          <Text size="8.5px" fw={600} c="#fb923c">
+                            +{slot.diff}
+                          </Text>
+                        </>
+                      ) : slot.diff < 0 ? (
+                        <>
+                          <TbArrowDownRight size={10} color="#4ade80" />
+                          <Text size="8.5px" fw={600} c="#4ade80">
+                            {slot.diff}
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <TbMinus size={9} color="rgba(255, 255, 255, 0.4)" />
+                          <Text size="8.5px" c="dimmed">
+                            0.0
+                          </Text>
+                        </>
+                      )}
+                    </Group>
+                  ) : (
+                    <Text size="8.5px" c="dimmed" style={{ opacity: 0.4 }}>
+                      •
+                    </Text>
+                  )}
+                </Box>
+              </Box>
+            )
+          })}
+        </Group>
       </Box>
     </Box>
   )

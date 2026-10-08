@@ -10,6 +10,7 @@ export interface WeightImcCardProps {
 export interface WeightHistoryChartProps {
   records: WeightRecord[]
   height?: number
+  onStartTodayCheckin?: () => void
 }
 
 export interface ImcGaugeChartProps {
