@@ -98,7 +98,7 @@ export const CompactWaterCard = ({
             </Group>
 
             <Group gap={6} align="center" wrap="nowrap">
-              {isGoalReached && (
+              {isGoalReached ? (
                 <MantineBadge
                   variant="gradient"
                   gradient={{ from: 'grape', to: 'violet' }}
@@ -108,12 +108,11 @@ export const CompactWaterCard = ({
                 >
                   Meta Atingida!
                 </MantineBadge>
+              ) : (
+                <Text size="11px" c="dimmed" fw={600}>
+                  {totalConsumedMl}ml / {standardMl}ml ({progressPercent}%)
+                </Text>
               )}
-
-              <Text size="11px" c="dimmed" fw={600}>
-                {totalConsumedMl}ml / {standardMl}ml
-                {!isGoalReached && ` (${progressPercent}%)`}
-              </Text>
 
               {extraBottlesTarget > 0 && (
                 <Text size="11px" c="#c084fc" fw={700}>
