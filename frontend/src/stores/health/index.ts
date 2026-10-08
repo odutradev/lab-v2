@@ -175,7 +175,9 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         latestWeight,
         newExtra,
         current.waterBottleMl,
-        current.waterTargetBottles
+        current.waterTargetBottles,
+        current.profile.age,
+        current.profile.height
       )
       const currentConsumed = current.waterDailyMap[date] || 0
       const updatedDaily = {

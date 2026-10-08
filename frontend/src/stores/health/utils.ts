@@ -131,22 +131,72 @@ export const calculateImc = (weightKg?: number, heightCm?: number): ImcResult | 
 }
 
 /**
+ * Cálculo científico da meta ideal de água diária (em ml):
+ * Considera peso corporal, idade (fator metabólico por faixa etária) e altura (área de superfície corporal).
+ * Referência: OMS / EFSA / Sociedade Brasileira de Nutrição.
+ */
+export const calculateIdealWaterMl = (
+  weightKg?: number,
+  age?: number,
+  heightCm?: number
+): number => {
+  const effectiveHeight = heightCm && heightCm > 0 ? heightCm : 170
+  const effectiveWeight =
+    weightKg && weightKg > 0
+      ? weightKg
+      : Math.round(22 * Math.pow(effectiveHeight / 100, 2))
+  const effectiveAge = age && age > 0 ? age : 25
+
+  // Fator metabólico etário de água por kg de peso
+  let mlPerKg = 35
+  if (effectiveAge <= 17) {
+    mlPerKg = 40
+  } else if (effectiveAge <= 30) {
+    mlPerKg = 38
+  } else if (effectiveAge <= 55) {
+    mlPerKg = 35
+  } else if (effectiveAge <= 65) {
+    mlPerKg = 30
+  } else {
+    mlPerKg = 28
+  }
+
+  // Base metabólica
+  const baseMl = effectiveWeight * mlPerKg
+
+  // Ajuste por estatura (área de superfície corporal relativa a 170cm)
+  const heightAdjustment = (effectiveHeight - 170) * 8
+
+  // Arredonda para múltiplo de 50ml mais próximo, com piso saudável de 1500ml
+  const idealMl = Math.max(1500, Math.round((baseMl + heightAdjustment) / 50) * 50)
+  return idealMl
+}
+
+/**
  * Cálculo de meta de hidratação diária:
- * Padrão nutricional: 35 ml por kg de peso corporal.
- * Garrafa padrão: 500 ml.
+ * Determina a quantidade ideal de garrafas conforme peso, idade, altura e volume do recipiente.
  */
 export const calculateDailyWaterGoal = (
   weightKg?: number,
   extraBottles = 0,
   customBottleMl = 500,
-  customTargetBottles?: number
-): { targetMl: number; targetBottles: number; standardBottles: number; bottleMl: number } => {
+  customTargetBottles?: number,
+  age?: number,
+  heightCm?: number
+): {
+  targetMl: number
+  targetBottles: number
+  standardBottles: number
+  bottleMl: number
+  idealDailyMl: number
+} => {
   const bottleMl = customBottleMl > 0 ? customBottleMl : 500
-  const baseMl = weightKg && weightKg > 0 ? Math.round(weightKg * 35) : 2000
-  const calculatedStandard = Math.max(1, Math.ceil(baseMl / bottleMl))
-  const standardBottles = customTargetBottles && customTargetBottles > 0
-    ? customTargetBottles
-    : calculatedStandard
+  const idealDailyMl = calculateIdealWaterMl(weightKg, age, heightCm)
+  const calculatedStandard = Math.max(1, Math.ceil(idealDailyMl / bottleMl))
+  const standardBottles =
+    customTargetBottles && customTargetBottles > 0
+      ? customTargetBottles
+      : calculatedStandard
   const targetBottles = standardBottles + extraBottles
   const targetMl = targetBottles * bottleMl
 
@@ -154,7 +204,8 @@ export const calculateDailyWaterGoal = (
     targetMl,
     targetBottles,
     standardBottles,
-    bottleMl
+    bottleMl,
+    idealDailyMl
   }
 }
 
