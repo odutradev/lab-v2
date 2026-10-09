@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 
 import { getMonthlyMetricsAction } from '@actions/habits'
 import useHealthStore from '@stores/health'
@@ -15,7 +15,24 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
   const [metrics, setMetrics] = useState<MonthlyMetricsResponse | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const { waterDailyMap, waterExtraTargetMap, weightHistory, waterBottleMl, waterTargetBottles, profile } = useHealthStore()
+  const {
+    waterDailyMap,
+    waterExtraTargetMap,
+    weightHistory,
+    sleepHistory,
+    waterBottleMl,
+    waterTargetBottles,
+    profile
+  } = useHealthStore()
+
+  const sleepDailyMap = useMemo(() => {
+    const map: Record<string, number> = {}
+    sleepHistory.forEach((item) => {
+      map[item.date] = item.hours
+    })
+    return map
+  }, [sleepHistory])
+
   const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
   const defaultWaterTargetBottles = calculateDailyWaterGoal(
     latestWeight,
@@ -33,7 +50,9 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
         month,
         waterDailyMap,
         waterGoalBottles: defaultWaterTargetBottles,
-        waterExtraTargetMap
+        waterExtraTargetMap,
+        sleepDailyMap,
+        sleepMinRecommendedHours: 7
       })
       setMetrics(data)
     } catch (err) {
@@ -41,7 +60,7 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
     } finally {
       setIsLoading(false)
     }
-  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap])
+  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap, sleepDailyMap])
 
   useEffect(() => {
     loadMetrics()

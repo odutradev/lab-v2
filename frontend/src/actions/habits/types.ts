@@ -123,6 +123,8 @@ export interface MonthlyMetricsPayload {
   waterDailyMap?: Record<string, number>
   waterGoalBottles?: number
   waterExtraTargetMap?: Record<string, number>
+  sleepDailyMap?: Record<string, number>
+  sleepMinRecommendedHours?: number
 }
 
 export interface MonthlyMetricsDayItem {
@@ -138,6 +140,10 @@ export interface MonthlyMetricsDayItem {
   waterGoalBottles: number
   waterGoalReached: boolean
   waterRate: number
+  sleepHours: number
+  sleepGoalHours: number
+  sleepGoalReached: boolean
+  sleepRate: number
   overallRate: number
 }
 
@@ -147,6 +153,7 @@ export interface MonthlyMetricsResponse {
   averageOverallRate: number
   averageHabitRate: number
   averageWaterRate: number
+  averageSleepRate: number
   perfectDaysCount: number
   trackedDaysCount: number
   daysInMonth: number

@@ -18,7 +18,10 @@ export const GeneralPerformanceCard = ({
   const stats = useMemo(() => {
     return {
       average: metrics?.averageOverallRate ?? 0,
-      monthLabel: metrics?.monthLabel ?? 'Mês Atual'
+      monthLabel: metrics?.monthLabel ?? 'Mês Atual',
+      averageHabitRate: metrics?.averageHabitRate ?? 0,
+      averageWaterRate: metrics?.averageWaterRate ?? 0,
+      averageSleepRate: metrics?.averageSleepRate ?? 0
     }
   }, [metrics])
 
@@ -46,10 +49,10 @@ export const GeneralPerformanceCard = ({
             <Tooltip
               label={
                 metrics?.formulaExplanation ||
-                'O índice diário considera seus hábitos programados + a meta diária de hidratação. Cada hábito equivale a 1 meta e a água a 1 meta de saúde. Se você tiver 3 hábitos e bater a meta de água, são 4 metas de 25% cada (totalizando 100%).'
+                'O índice diário considera seus hábitos programados + a meta diária de hidratação + a meta recomendada de sono (mínimo de 7h). Cada hábito equivale a 1 meta, a água a 1 meta de saúde e o sono a 1 meta de saúde. Se você tiver 3 hábitos, bater a meta de água e dormir 7h+, são 5 metas de 20% cada (totalizando 100%).'
               }
               multiline
-              w={260}
+              w={280}
               withArrow
               position="bottom-start"
             >
@@ -60,19 +63,27 @@ export const GeneralPerformanceCard = ({
           </Group>
 
           <Group gap={8} align="center">
-            <Badge
-              variant="gradient"
-              gradient={
-                stats.average >= 80
-                  ? { from: 'teal', to: 'emerald' }
-                  : stats.average >= 50
-                    ? { from: 'indigo', to: 'cyan' }
-                    : { from: 'orange', to: 'red' }
-              }
-              size="sm"
+            <Tooltip
+              label={`Média do mês:\n• Hábitos: ${stats.averageHabitRate}%\n• Água: ${stats.averageWaterRate}%\n• Sono: ${stats.averageSleepRate}%`}
+              multiline
+              withArrow
+              position="bottom-end"
             >
-              {stats.average}% no mês
-            </Badge>
+              <Badge
+                variant="gradient"
+                gradient={
+                  stats.average >= 80
+                    ? { from: 'teal', to: 'emerald' }
+                    : stats.average >= 50
+                      ? { from: 'indigo', to: 'cyan' }
+                      : { from: 'orange', to: 'red' }
+                }
+                size="sm"
+                style={{ cursor: 'pointer' }}
+              >
+                {stats.average}% no mês
+              </Badge>
+            </Tooltip>
           </Group>
         </Group>
       </CardHeader>
@@ -136,9 +147,13 @@ export const GeneralPerformanceCard = ({
                       ? '#38bdf8'
                       : 'rgba(255, 255, 255, 0.12)'
 
+              const sleepInfo = item.sleepHours > 0
+                ? `${item.sleepHours}h/${item.sleepGoalHours}h (${item.sleepRate}%)`
+                : `Sem registro (0%)`
+
               const tooltipText = item.isFuture
                 ? `Dia ${item.day}: Dia futuro`
-                : `Dia ${item.day} (${item.dayOfWeek}): ${item.overallRate}% de constância\n• Hábitos: ${item.completedHabits}/${item.totalHabits} (${item.habitRate}%)\n• Água: ${item.waterConsumedBottles}/${item.waterGoalBottles} garrafas (${item.waterRate}%)`
+                : `Dia ${item.day} (${item.dayOfWeek}): ${item.overallRate}% de constância\n• Hábitos: ${item.completedHabits}/${item.totalHabits} (${item.habitRate}%)\n• Água: ${item.waterConsumedBottles}/${item.waterGoalBottles} garrafas (${item.waterRate}%)\n• Sono: ${sleepInfo}`
 
               return (
                 <Tooltip
