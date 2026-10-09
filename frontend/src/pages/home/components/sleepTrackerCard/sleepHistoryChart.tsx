@@ -163,7 +163,10 @@ export const SleepHistoryChart = ({
   const topQualityOpt = getSleepQualityOption(mostFrequentQuality)
 
   return (
-    <Box>
+    <Box
+      key={`${selectedYear}-${selectedMonth}`}
+      className="chart-fade-transition"
+    >
       <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
         <Group gap={8} align="center" wrap="wrap">
           <Group gap={4} align="center">

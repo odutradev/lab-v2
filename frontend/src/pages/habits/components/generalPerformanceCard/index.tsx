@@ -30,6 +30,8 @@ export const GeneralPerformanceCard = ({
     }
   }, [metrics])
 
+  const currentMonthKey = selectedDate?.slice(0, 7) || stats.monthLabel
+
   return (
     <Card style={{ position: 'relative', overflow: 'hidden' }}>
       <Box
@@ -84,7 +86,11 @@ export const GeneralPerformanceCard = ({
       </CardHeader>
 
       <CardContent style={{ paddingTop: 0 }}>
-        <Box mt="xs">
+        <Box
+          key={currentMonthKey}
+          className="chart-fade-transition"
+          mt="xs"
+        >
           <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
             <Text size="11px" c="dimmed" fw={600} style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
               Constância Diária ({stats.monthLabel})
