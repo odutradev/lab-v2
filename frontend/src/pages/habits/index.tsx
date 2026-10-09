@@ -153,8 +153,6 @@ export const HabitsPage = () => {
   return (
     <Box style={containerStyle}>
       <Stack gap="md" style={{ flex: 1, minWidth: 0, width: '100%' }}>
-        <ChallengesSection />
-
         <Grid gap="md" align="stretch" style={{ flex: 1 }}>
         <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%', maxWidth: '100%' }}>
           <Card
@@ -321,6 +319,8 @@ export const HabitsPage = () => {
           </Stack>
         </Grid.Col>
       </Grid>
+
+      <ChallengesSection />
       </Stack>
 
       <HabitsModal
