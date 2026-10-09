@@ -9,3 +9,12 @@ export interface HabitsMonthViewProps {
   onToggleCheckin: (habitId: string, date: string) => void
   onEditItem?: (habitId: string, date: string) => void
 }
+
+export interface HabitsMonthCellProps {
+  cell: CalendarDayCell
+  summary?: DaySummaryResponse
+  isSelected: boolean
+  onSelectDate: (date: string) => void
+  onToggleCheckin: (habitId: string, date: string) => void
+  onEditItem?: (habitId: string, date: string) => void
+}
