@@ -7,7 +7,7 @@ import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
 import { CHARACTERS } from '@stores/health/utils'
 import type { CharacterId, HealthProfile } from '@stores/health/types'
-import { CharacterAvatar } from './characterAvatars'
+import { CharacterAvatar } from '../characterAvatars'
 import type { EditPhysicalInfoModalProps } from './types'
 
 interface FormContentProps {

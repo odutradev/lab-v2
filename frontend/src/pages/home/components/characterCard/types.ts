@@ -1,4 +1,4 @@
-import type { CharacterId, HealthProfile } from '@stores/health/types'
+import type { HealthProfile } from '@stores/health/types'
 
 export interface CharacterCardProps {
   profile: HealthProfile
@@ -6,16 +6,5 @@ export interface CharacterCardProps {
   onUpdateProfile: (data: Partial<HealthProfile>) => void
 }
 
-export interface EditPhysicalInfoModalProps {
-  opened: boolean
-  onClose: () => void
-  currentProfile: HealthProfile
-  onSave: (data: Partial<HealthProfile>) => void
-}
-
-export interface CharacterAvatarProps {
-  id: CharacterId
-  size?: number
-  interactive?: boolean
-  onClick?: () => void
-}
+export type { CharacterAvatarProps } from './characterAvatars/types'
+export type { EditPhysicalInfoModalProps } from './editPhysicalInfoModal/types'

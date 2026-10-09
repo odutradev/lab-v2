@@ -3,16 +3,8 @@ import { Group, Text, Box, Tooltip, Badge } from '@mantine/core'
 import { TbActivity, TbInfoCircle } from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardContent } from '@components/ui/card'
-import type { MonthlyMetricsResponse } from '@actions/habits/types'
 
-interface GeneralPerformanceCardProps {
-  metrics: MonthlyMetricsResponse | null
-  isLoading?: boolean
-  selectedDate?: string
-  hoveredDate?: string | null
-  onSelectDate?: (date: string) => void
-  onHoverDate?: (date: string | null) => void
-}
+import type { GeneralPerformanceCardProps } from './types'
 
 export const GeneralPerformanceCard = ({
   metrics,
