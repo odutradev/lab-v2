@@ -2,14 +2,10 @@ import { useState, useMemo } from 'react'
 import { Group, Text, Box, Popover, UnstyledButton } from '@mantine/core'
 import { TbChevronDown, TbChevronUp } from 'react-icons/tb'
 
-import CustomRecurrenceModal from './customRecurrenceModal'
+import CustomRecurrenceModal from '../customRecurrenceModal'
 import type { HabitRecurrence } from '@actions/habits/types'
 
-interface RecurrenceSelectProps {
-  startDate: string
-  recurrence?: HabitRecurrence
-  onChange: (rec: HabitRecurrence) => void
-}
+import type { RecurrenceSelectProps } from './types'
 
 const weekdayNames = [
   'domingo',

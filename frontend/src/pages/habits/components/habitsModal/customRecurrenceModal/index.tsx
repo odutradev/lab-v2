@@ -6,13 +6,7 @@ import Select from '@components/ui/select'
 
 import type { HabitRecurrence } from '@actions/habits/types'
 
-interface CustomRecurrenceModalProps {
-  isOpen: boolean
-  initialRecurrence?: HabitRecurrence
-  baseDate: string
-  onClose: () => void
-  onConfirm: (recurrence: HabitRecurrence) => void
-}
+import type { CustomRecurrenceModalProps } from './types'
 
 const dayLetters = [
   { dayIndex: 0, label: 'D', full: 'Domingo' },

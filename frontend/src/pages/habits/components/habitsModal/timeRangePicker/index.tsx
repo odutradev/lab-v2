@@ -2,14 +2,7 @@ import { useState, useMemo, useRef } from 'react'
 import { Group, Text, Box, Checkbox, Popover, ScrollArea } from '@mantine/core'
 import { TbClock } from 'react-icons/tb'
 
-interface TimeRangePickerProps {
-  allDay: boolean
-  onAllDayChange: (val: boolean) => void
-  startTime: string
-  endTime: string
-  onStartTimeChange: (val: string) => void
-  onEndTimeChange: (val: string) => void
-}
+import type { TimeRangePickerProps } from './types'
 
 const formatDurationLabel = (diffMinutes: number): string => {
   if (diffMinutes < 60) {
