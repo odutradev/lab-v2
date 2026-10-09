@@ -17,6 +17,7 @@ import GeneralPerformanceCard from './components/generalPerformanceCard'
 import CompactWeightCard from './components/compactWeightCard'
 import CompactSleepCard from './components/compactSleepCard'
 import CompactWaterCard from './components/compactWaterCard'
+import ChallengesSection from './components/challenges'
 import { containerStyle } from './styles'
 import useHabitsPage from './hook'
 import useMonthlyMetrics from './hook/useMonthlyMetrics'
@@ -151,7 +152,10 @@ export const HabitsPage = () => {
 
   return (
     <Box style={containerStyle}>
-      <Grid gap="md" align="stretch" style={{ flex: 1 }}>
+      <Stack gap="md" style={{ flex: 1, minWidth: 0, width: '100%' }}>
+        <ChallengesSection />
+
+        <Grid gap="md" align="stretch" style={{ flex: 1 }}>
         <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%', maxWidth: '100%' }}>
           <Card
             p={{ base: 'xs', sm: 'md', md: 'xl' }}
@@ -317,6 +321,7 @@ export const HabitsPage = () => {
           </Stack>
         </Grid.Col>
       </Grid>
+      </Stack>
 
       <HabitsModal
         isOpen={isModalOpen}
