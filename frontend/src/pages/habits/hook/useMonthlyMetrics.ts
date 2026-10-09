@@ -22,6 +22,7 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
     sleepHistory,
     waterBottleMl,
     waterTargetBottles,
+    performanceWeights,
     profile
   } = useHealthStore()
 
@@ -52,7 +53,8 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
         waterGoalBottles: defaultWaterTargetBottles,
         waterExtraTargetMap,
         sleepDailyMap,
-        sleepMinRecommendedHours: 7
+        sleepMinRecommendedHours: 7,
+        performanceWeights
       })
       setMetrics(data)
     } catch (err) {
@@ -60,7 +62,7 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
     } finally {
       setIsLoading(false)
     }
-  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap, sleepDailyMap])
+  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap, sleepDailyMap, performanceWeights])
 
   useEffect(() => {
     loadMetrics()

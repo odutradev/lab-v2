@@ -2,11 +2,17 @@ import { create } from 'zustand'
 
 import { STORAGE_KEYS } from '@api/config'
 import { updateHealthAction } from '@actions/users/profile'
-import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord } from './types'
+import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord, PerformanceWeights } from './types'
 import type { UserHealth } from '@projectTypes/user'
 import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords, sortSleepRecords } from './utils'
 
 const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
+
+const defaultPerformanceWeights: PerformanceWeights = {
+  habits: 50,
+  water: 25,
+  sleep: 25
+}
 
 interface PersistedData {
   profile: HealthProfile
@@ -16,6 +22,7 @@ interface PersistedData {
   waterExtraTargetMap: Record<string, number>
   waterBottleMl?: number
   waterTargetBottles?: number
+  performanceWeights?: PerformanceWeights
 }
 
 const defaultProfile: HealthProfile = {
@@ -36,7 +43,8 @@ const loadPersistedData = (): PersistedData => {
         waterDailyMap: parsed.waterDailyMap || {},
         waterExtraTargetMap: parsed.waterExtraTargetMap || {},
         waterBottleMl: typeof parsed.waterBottleMl === 'number' ? parsed.waterBottleMl : 500,
-        waterTargetBottles: typeof parsed.waterTargetBottles === 'number' ? parsed.waterTargetBottles : undefined
+        waterTargetBottles: typeof parsed.waterTargetBottles === 'number' ? parsed.waterTargetBottles : undefined,
+        performanceWeights: parsed.performanceWeights || defaultPerformanceWeights
       }
     }
   } catch (err) {
@@ -50,13 +58,20 @@ const loadPersistedData = (): PersistedData => {
     waterDailyMap: {},
     waterExtraTargetMap: {},
     waterBottleMl: 500,
-    waterTargetBottles: undefined
+    waterTargetBottles: undefined,
+    performanceWeights: defaultPerformanceWeights
   }
 }
 
 const saveToLocalStorage = (data: PersistedData) => {
   try {
-    localStorage.setItem(HEALTH_STORAGE_KEY, JSON.stringify(data))
+    const existing = loadPersistedData()
+    const merged: PersistedData = {
+      ...existing,
+      ...data,
+      performanceWeights: data.performanceWeights || existing.performanceWeights || defaultPerformanceWeights
+    }
+    localStorage.setItem(HEALTH_STORAGE_KEY, JSON.stringify(merged))
   } catch (err) {
     console.error('Failed to save health storage data', err)
   }
@@ -83,6 +98,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
     waterExtraTargetMap: initial.waterExtraTargetMap,
     waterBottleMl: initial.waterBottleMl || 500,
     waterTargetBottles: initial.waterTargetBottles,
+    performanceWeights: initial.performanceWeights || defaultPerformanceWeights,
 
     syncFromApi: (data?: Partial<UserHealth>) => {
       if (!data) return
@@ -105,6 +121,13 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const newWaterExtraTargetMap = data.waterExtraTargetMap || current.waterExtraTargetMap
       const newWaterBottleMl = typeof data.waterBottleMl === 'number' ? data.waterBottleMl : current.waterBottleMl
       const newWaterTargetBottles = typeof data.waterTargetBottles === 'number' ? data.waterTargetBottles : current.waterTargetBottles
+      const newPerformanceWeights = data.performanceWeights && typeof data.performanceWeights === 'object'
+        ? {
+            habits: typeof data.performanceWeights.habits === 'number' ? data.performanceWeights.habits : current.performanceWeights.habits,
+            water: typeof data.performanceWeights.water === 'number' ? data.performanceWeights.water : current.performanceWeights.water,
+            sleep: typeof data.performanceWeights.sleep === 'number' ? data.performanceWeights.sleep : current.performanceWeights.sleep
+          }
+        : current.performanceWeights
 
       set({
         profile: newProfile,
@@ -113,7 +136,8 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterDailyMap: newWaterDailyMap,
         waterExtraTargetMap: newWaterExtraTargetMap,
         waterBottleMl: newWaterBottleMl,
-        waterTargetBottles: newWaterTargetBottles
+        waterTargetBottles: newWaterTargetBottles,
+        performanceWeights: newPerformanceWeights
       })
 
       saveToLocalStorage({
@@ -123,7 +147,20 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterDailyMap: newWaterDailyMap,
         waterExtraTargetMap: newWaterExtraTargetMap,
         waterBottleMl: newWaterBottleMl,
-        waterTargetBottles: newWaterTargetBottles
+        waterTargetBottles: newWaterTargetBottles,
+        performanceWeights: newPerformanceWeights
+      })
+    },
+
+    updatePerformanceWeights: async (weights: PerformanceWeights) => {
+      set({ performanceWeights: weights })
+      saveToLocalStorage({
+        ...get(),
+        performanceWeights: weights
+      })
+
+      await syncWithBackend({
+        performanceWeights: weights
       })
     },
 

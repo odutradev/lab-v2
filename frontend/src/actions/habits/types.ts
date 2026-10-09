@@ -118,6 +118,12 @@ export interface HabitActionSuccessResponse {
   success: boolean
 }
 
+export interface PerformanceWeights {
+  habits: number
+  water: number
+  sleep: number
+}
+
 export interface MonthlyMetricsPayload {
   month?: string
   waterDailyMap?: Record<string, number>
@@ -125,6 +131,7 @@ export interface MonthlyMetricsPayload {
   waterExtraTargetMap?: Record<string, number>
   sleepDailyMap?: Record<string, number>
   sleepMinRecommendedHours?: number
+  performanceWeights?: PerformanceWeights
 }
 
 export interface MonthlyMetricsDayItem {
@@ -158,6 +165,7 @@ export interface MonthlyMetricsResponse {
   trackedDaysCount: number
   daysInMonth: number
   formulaExplanation: string
+  performanceWeights?: PerformanceWeights
   days: MonthlyMetricsDayItem[]
 }
 

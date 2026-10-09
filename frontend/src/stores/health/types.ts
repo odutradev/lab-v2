@@ -1,4 +1,6 @@
-import type { UserHealth } from '@projectTypes/user'
+import type { UserHealth, PerformanceWeights } from '@projectTypes/user'
+
+export type { PerformanceWeights }
 
 export type CharacterId = 'spark' | 'athlete' | 'zen' | 'cyber'
 
@@ -70,9 +72,11 @@ export interface HealthStoreState {
   waterExtraTargetMap: Record<string, number>
   waterBottleMl: number
   waterTargetBottles?: number
+  performanceWeights: PerformanceWeights
 
   syncFromApi: (data?: Partial<UserHealth>) => void
   updateProfile: (data: Partial<HealthProfile>) => Promise<void>
+  updatePerformanceWeights: (weights: PerformanceWeights) => Promise<void>
   saveWeightRecord: (weight: number, date?: string) => Promise<void>
   saveSleepRecord: (hours: number, quality: number, date?: string) => Promise<void>
   toggleWaterBottle: (index: number, date?: string) => Promise<void>
