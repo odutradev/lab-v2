@@ -35,7 +35,7 @@ export const ActionExecutorCard = ({
             <Code
               block
               p="md"
-              style={actionResultCodeStyle}
+              style={{ ...actionResultCodeStyle, wordBreak: 'break-all', overflowX: 'auto' }}
             >
               {actionResult}
             </Code>

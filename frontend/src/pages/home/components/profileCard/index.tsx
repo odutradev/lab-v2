@@ -17,6 +17,9 @@ export const ProfileCard = ({ user, onResetPassword }: ProfileCardProps) => {
         <Stack gap="sm">
           <Group
             justify="space-between"
+            align="center"
+            wrap="wrap"
+            gap="xs"
             pb="xs"
             style={profileRowStyle}
           >
@@ -29,29 +32,38 @@ export const ProfileCard = ({ user, onResetPassword }: ProfileCardProps) => {
           </Group>
           <Group
             justify="space-between"
+            align="center"
+            wrap="wrap"
+            gap="xs"
             pb="xs"
             style={profileRowStyle}
           >
             <Text size="sm" c="dimmed">
               E-mail
             </Text>
-            <Text size="sm" fw={500} c="white">
+            <Text size="sm" fw={500} c="white" style={{ wordBreak: 'break-all' }}>
               {user?.email}
             </Text>
           </Group>
           <Group
             justify="space-between"
+            align="center"
+            wrap="wrap"
+            gap="xs"
             pb="xs"
             style={profileRowStyle}
           >
             <Text size="sm" c="dimmed">
               ID do Usuário
             </Text>
-            <Code c="indigo.3">{user?.id}</Code>
+            <Code c="indigo.3" style={{ wordBreak: 'break-all' }}>{user?.id}</Code>
           </Group>
           {user?.accountStatus && (
             <Group
               justify="space-between"
+              align="center"
+              wrap="wrap"
+              gap="xs"
               pb="xs"
               style={profileRowStyle}
             >
@@ -64,7 +76,7 @@ export const ProfileCard = ({ user, onResetPassword }: ProfileCardProps) => {
             </Group>
           )}
           {user?.superAdmin !== undefined && (
-            <Group justify="space-between">
+            <Group justify="space-between" align="center" wrap="wrap" gap="xs">
               <Text size="sm" c="dimmed">
                 Perfil de Administrador
               </Text>

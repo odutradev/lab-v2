@@ -11,17 +11,18 @@ export const HabitsBannerCard = ({ onNavigateHabits }: HabitsBannerCardProps) =>
   return (
     <Card style={{ position: 'relative', overflow: 'hidden' }}>
       <Group justify="space-between" align="center" wrap="wrap" gap="lg">
-        <Group gap="md" align="flex-start">
+        <Group gap="md" align="flex-start" wrap="nowrap" style={{ flex: 1, minWidth: 'min(100%, 280px)' }}>
           <ThemeIcon
             size={48}
             radius="md"
             variant="gradient"
             gradient={{ from: 'indigo', to: 'cyan' }}
+            style={{ flexShrink: 0 }}
           >
             <TbCalendarCheck size={26} />
           </ThemeIcon>
 
-          <Stack gap={4}>
+          <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
             <Box>
               <Badge variant="primary">Novo Módulo</Badge>
             </Box>

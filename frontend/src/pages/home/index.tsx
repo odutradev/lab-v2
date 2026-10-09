@@ -36,7 +36,7 @@ export const HomePage = () => {
   } = useHomePage()
 
   return (
-    <Stack gap="xl" w="100%">
+    <Stack gap="lg" w="100%">
       <WelcomeBanner user={user} />
 
       <CharacterCard
@@ -45,7 +45,7 @@ export const HomePage = () => {
         onUpdateProfile={handleUpdateHealthProfile}
       />
 
-      <SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing="lg">
+      <SimpleGrid cols={{ base: 1, md: 2, xl: 3 }} spacing={{ base: 'md', sm: 'lg' }}>
         <WeightImcCard
           heightCm={healthProfile.height}
           weightHistory={weightHistory}
@@ -69,7 +69,7 @@ export const HomePage = () => {
 
       <HabitsBannerCard onNavigateHabits={handleNavigateHabits} />
 
-      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing={{ base: 'md', sm: 'lg' }}>
         <ProfileCard
           user={user}
           onResetPassword={handleNavigateResetPassword}
