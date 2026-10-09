@@ -151,9 +151,22 @@ export const HabitsPage = () => {
   return (
     <Box style={containerStyle}>
       <Grid gap="md" align="stretch" style={{ flex: 1 }}>
-        <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column' }}>
-          <Card style={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%', maxWidth: '100%' }}>
+          <Card
+            p={{ base: 'xs', sm: 'md', md: 'xl' }}
+            style={{
+              height: '100%',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0,
+              minWidth: 0,
+              width: '100%',
+              maxWidth: '100%',
+              overflow: 'hidden'
+            }}
+          >
+            <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0, width: '100%', maxWidth: '100%' }}>
               <HabitsCalendarToolbar
                 headerTitle={headerTitle}
                 viewMode={viewMode}

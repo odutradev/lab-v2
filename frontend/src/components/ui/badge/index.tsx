@@ -13,6 +13,7 @@ const colorMap: Record<BadgeVariant, string> = {
 export const Badge = ({
   children,
   variant = 'default',
+  size = 'sm',
   className,
   ...props
 }: BadgeProps) => {
@@ -20,7 +21,7 @@ export const Badge = ({
     <MantineBadge
       color={colorMap[variant]}
       variant={variant === 'primary' ? 'filled' : 'light'}
-      size="sm"
+      size={size}
       radius="md"
       className={className}
       {...props}

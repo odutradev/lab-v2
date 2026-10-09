@@ -54,10 +54,10 @@ export const CardFooter = ({ children, className, ...props }: CardProps) => {
   )
 }
 
-export const Card = ({ children, className, ...props }: CardProps) => {
+export const Card = ({ children, className, p = 'xl', ...props }: CardProps) => {
   return (
     <Paper
-      p="xl"
+      p={p}
       radius="lg"
       withBorder
       shadow="md"

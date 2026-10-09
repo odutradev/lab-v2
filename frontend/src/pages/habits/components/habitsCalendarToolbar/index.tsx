@@ -75,7 +75,7 @@ export const HabitsCalendarToolbar = ({
           </Text>
         </Group>
 
-        <Group gap="xs" align="center" wrap="wrap">
+        <Group gap="xs" align="center" wrap="wrap" style={{ maxWidth: '100%' }}>
           <SegmentedControl
             value={viewMode}
             onChange={(val) => onViewModeChange(val as CalendarViewMode)}
@@ -91,6 +91,7 @@ export const HabitsCalendarToolbar = ({
             h={TOOLBAR_CONTROL_HEIGHT}
             leftIcon={<TbPlus size={16} />}
             onClick={onOpenNewHabitModal}
+            style={{ flexShrink: 0 }}
           >
             Novo Item
           </Button>

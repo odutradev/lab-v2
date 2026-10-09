@@ -18,11 +18,11 @@ export const HabitsMonthView = ({
   const weeksCount = Math.max(1, Math.ceil(monthCells.length / 7))
 
   return (
-    <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <SimpleGrid cols={7} spacing={4} mb="xs">
+    <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, width: '100%', maxWidth: '100%' }}>
+      <SimpleGrid cols={7} spacing={4} mb="xs" style={{ width: '100%', maxWidth: '100%' }}>
         {weekHeaders.map((header) => (
-          <Box key={header} ta="center" py={4}>
-            <Text size="xs" fw={700} c="dimmed">
+          <Box key={header} ta="center" py={4} style={{ minWidth: 0, overflow: 'hidden' }}>
+            <Text fz={{ base: 10, sm: 12 }} fw={700} c="dimmed" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {header}
             </Text>
           </Box>
@@ -33,10 +33,12 @@ export const HabitsMonthView = ({
         style={{
           flex: 1,
           display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
+          gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
           gridTemplateRows: `repeat(${weeksCount}, 1fr)`,
           gap: 4,
-          minHeight: 0
+          minHeight: 0,
+          width: '100%',
+          maxWidth: '100%'
         }}
       >
         {monthCells.map((cell) => {
@@ -52,10 +54,13 @@ export const HabitsMonthView = ({
           return (
             <Box
               key={cell.date}
-              p={5}
+              p={{ base: '3px', sm: '5px' }}
               style={{
                 height: '100%',
                 minHeight: 0,
+                minWidth: 0,
+                maxWidth: '100%',
+                overflow: 'hidden',
                 background: isSelected
                   ? 'rgba(99, 102, 241, 0.14)'
                   : cell.isToday
@@ -77,11 +82,12 @@ export const HabitsMonthView = ({
               }}
               onClick={() => onSelectDate(cell.date)}
             >
-              <Group justify="space-between" align="center" mb={4}>
+              <Group justify="space-between" align="center" mb={{ base: '2px', sm: '4px' }} gap={2} wrap="nowrap" style={{ minWidth: 0, width: '100%' }}>
                 <Box
-                  w={22}
-                  h={22}
+                  w={{ base: 18, sm: 22 }}
+                  h={{ base: 18, sm: 22 }}
                   style={{
+                    flexShrink: 0,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -89,32 +95,46 @@ export const HabitsMonthView = ({
                     backgroundColor: cell.isToday ? '#6366f1' : 'transparent',
                     color: cell.isToday ? '#ffffff' : cell.isCurrentMonth ? '#f3f4f6' : '#9ca3af',
                     fontWeight: cell.isToday ? 700 : 600,
-                    fontSize: 11
+                    fontSize: 10
                   }}
                 >
                   {cell.dayNumber}
                 </Box>
 
                 {totalHabits > 0 && (
-                  <Badge variant={completionRate === 100 ? 'success' : completionRate >= 80 ? 'primary' : 'warning'}>
+                  <Badge
+                    variant={completionRate === 100 ? 'success' : completionRate >= 80 ? 'primary' : 'warning'}
+                    size="xs"
+                    style={{
+                      flexShrink: 0,
+                      padding: '0 3px',
+                      height: 15,
+                      fontSize: 9,
+                      lineHeight: '15px',
+                      fontWeight: 700
+                    }}
+                  >
                     {completionRate}%
                   </Badge>
                 )}
               </Group>
 
-              <Stack gap={2} style={{ flex: 1, overflow: 'hidden' }}>
+              <Stack gap={2} style={{ flex: 1, overflow: 'hidden', minWidth: 0, width: '100%' }}>
                 {visibleItems.map((item) => (
                   <Box
                     key={item.habitId}
-                    px={4}
-                    py={2}
+                    px={{ base: '2px', sm: '4px' }}
+                    py={{ base: '2px', sm: '3px' }}
                     title={`${item.title}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
                     style={{
                       background: item.completed ? 'rgba(45, 212, 191, 0.14)' : 'rgba(99, 102, 241, 0.14)',
                       borderRadius: 4,
                       border: item.completed ? '1px solid rgba(45, 212, 191, 0.25)' : '1px solid rgba(99, 102, 241, 0.2)',
                       fontSize: 10,
-                      lineHeight: 1.2
+                      lineHeight: 1.2,
+                      minWidth: 0,
+                      maxWidth: '100%',
+                      overflow: 'hidden'
                     }}
                     onClick={(e) => {
                       e.stopPropagation()
@@ -123,13 +143,13 @@ export const HabitsMonthView = ({
                       }
                     }}
                   >
-                    <Group gap={4} wrap="nowrap" align="center">
+                    <Group gap={3} wrap="nowrap" align="center" style={{ minWidth: 0, width: '100%', overflow: 'hidden' }}>
                       <Box
                         onClick={(e) => {
                           e.stopPropagation()
                           onToggleCheckin(item.habitId, cell.date)
                         }}
-                        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
                       >
                         {item.completed ? (
                           <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
@@ -138,20 +158,24 @@ export const HabitsMonthView = ({
                         )}
                       </Box>
                       {item.startTime && (
-                        <Text
-                          size="9px"
-                          fw={700}
-                          c={item.completed ? 'dimmed' : '#93c5fd'}
-                          style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
-                        >
-                          {item.startTime}
-                        </Text>
+                        <Box visibleFrom="sm" style={{ flexShrink: 0 }}>
+                          <Text
+                            size="9px"
+                            fw={700}
+                            c={item.completed ? 'dimmed' : '#93c5fd'}
+                            style={{ fontVariantNumeric: 'tabular-nums' }}
+                          >
+                            {item.startTime}
+                          </Text>
+                        </Box>
                       )}
                       <Text
                         size="10px"
                         fw={500}
                         c={item.completed ? 'dimmed' : 'white'}
                         style={{
+                          flex: 1,
+                          minWidth: 0,
                           textDecoration: item.completed ? 'line-through' : 'none',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
@@ -165,7 +189,18 @@ export const HabitsMonthView = ({
                 ))}
 
                 {remainingCount > 0 && (
-                  <Text size="10px" c="dimmed" fw={600} pl={4}>
+                  <Text
+                    size="9px"
+                    c="dimmed"
+                    fw={600}
+                    pl={{ base: '2px', sm: '4px' }}
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: 1.2
+                    }}
+                  >
                     +{remainingCount} mais
                   </Text>
                 )}
