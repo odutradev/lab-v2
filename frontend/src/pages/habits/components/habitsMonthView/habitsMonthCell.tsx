@@ -1,5 +1,5 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Group, Stack, Text, Box } from '@mantine/core'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Group, Stack, Text, Box, Popover, ScrollArea } from '@mantine/core'
 import { TbCheck, TbCircle } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
@@ -21,6 +21,8 @@ export const HabitsMonthCell = ({
   onEditItem
 }: HabitsMonthCellProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const items = summary?.items ?? EMPTY_ITEMS
   const totalHabits = summary?.totalHabits ?? 0
   const completionRate = summary?.completionRate ?? 0
@@ -74,6 +76,42 @@ export const HabitsMonthCell = ({
       remainingCount: items.length - count
     }
   }, [items, availableHeight])
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handleMouseEnter = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current)
+      closeTimerRef.current = null
+    }
+    setIsPopoverOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimerRef.current = setTimeout(() => {
+      setIsPopoverOpen(false)
+    }, 200)
+  }
+
+  const handleTogglePopover = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current)
+      closeTimerRef.current = null
+    }
+    setIsPopoverOpen((prev) => !prev)
+  }
+
+  const hiddenItems = useMemo(
+    () => items.slice(visibleItems.length),
+    [items, visibleItems.length]
+  )
 
   return (
     <Box
@@ -213,25 +251,154 @@ export const HabitsMonthCell = ({
         ))}
 
         {remainingCount > 0 && (
-          <Text
-            size="9px"
-            c="dimmed"
-            fw={600}
-            pl={{ base: '2px', sm: '4px' }}
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              lineHeight: 1.2,
-              flexShrink: 0
-            }}
+          <Popover
+            opened={isPopoverOpen}
+            onChange={setIsPopoverOpen}
+            position="bottom-start"
+            withArrow
+            shadow="xl"
+            withinPortal
+            middlewares={{ flip: true, shift: true }}
           >
-            +{remainingCount} mais
-          </Text>
+            <Popover.Target>
+              <Box
+                onClick={handleTogglePopover}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                px={{ base: '2px', sm: '4px' }}
+                py="1px"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  width: 'fit-content',
+                  maxWidth: '100%',
+                  cursor: 'pointer',
+                  borderRadius: 4,
+                  backgroundColor: isPopoverOpen ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.04)',
+                  border: isPopoverOpen ? '1px solid rgba(129, 140, 248, 0.4)' : '1px solid transparent',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0
+                }}
+              >
+                <Text
+                  size="9px"
+                  c={isPopoverOpen ? '#c7d2fe' : 'dimmed'}
+                  fw={600}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: 1.2
+                  }}
+                >
+                  +{remainingCount} mais
+                </Text>
+              </Box>
+            </Popover.Target>
+
+            <Popover.Dropdown
+              p={8}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: '#161922',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
+                borderRadius: 8,
+                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.65)',
+                minWidth: 210,
+                maxWidth: 280
+              }}
+            >
+              <Group justify="space-between" align="center" mb={6} pb={4} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <Text size="xs" fw={700} c="#e0e7ff">
+                  Hábitos ({hiddenItems.length})
+                </Text>
+                <Text size="10px" c="dimmed">
+                  Dia {cell.dayNumber}
+                </Text>
+              </Group>
+
+              <ScrollArea.Autosize mah={220} offsetScrollbars>
+                <Stack gap={4}>
+                  {hiddenItems.map((item) => (
+                    <Box
+                      key={item.habitId}
+                      px={6}
+                      py={4}
+                      title={`${item.title}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
+                      style={{
+                        background: item.completed ? 'rgba(45, 212, 191, 0.14)' : 'rgba(99, 102, 241, 0.14)',
+                        borderRadius: 6,
+                        border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : '1px solid rgba(99, 102, 241, 0.25)',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.15s ease'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (onEditItem) {
+                          onEditItem(item.habitId, cell.date)
+                        }
+                      }}
+                    >
+                      <Group gap={6} wrap="nowrap" align="center">
+                        <Box
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onToggleCheckin(item.habitId, cell.date)
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            flexShrink: 0
+                          }}
+                        >
+                          {item.completed ? (
+                            <TbCheck size={13} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                          ) : (
+                            <TbCircle size={13} color="#818cf8" style={{ flexShrink: 0 }} />
+                          )}
+                        </Box>
+
+                        {item.startTime && (
+                          <Text
+                            size="10px"
+                            fw={700}
+                            c={item.completed ? 'dimmed' : '#93c5fd'}
+                            style={{ fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
+                          >
+                            {item.startTime}
+                          </Text>
+                        )}
+
+                        <Text
+                          size="11px"
+                          fw={500}
+                          c={item.completed ? 'dimmed' : 'white'}
+                          style={{
+                            flex: 1,
+                            minWidth: 0,
+                            textDecoration: item.completed ? 'line-through' : 'none',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          {item.title}
+                        </Text>
+                      </Group>
+                    </Box>
+                  ))}
+                </Stack>
+              </ScrollArea.Autosize>
+            </Popover.Dropdown>
+          </Popover>
         )}
       </Stack>
     </Box>
   )
 }
+
 
 export default HabitsMonthCell
