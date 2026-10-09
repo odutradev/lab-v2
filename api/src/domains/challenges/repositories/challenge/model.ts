@@ -15,7 +15,9 @@ const challengeSchema = new Schema<ChallengeDocument>(
     status: { type: String, enum: ['active', 'completed', 'paused'], default: 'active', index: true },
     type: { type: String, enum: ['streak', 'accumulative'], default: 'streak' },
     resetOnMiss: { type: Boolean, default: false },
-    slipDates: { type: [String], default: [] }
+    slipDates: { type: [String], default: [] },
+    freezeDaysPerMonth: { type: Number, default: 2, min: 0, max: 7 },
+    freezeDates: { type: [String], default: [] }
   },
   {
     timestamps: true,

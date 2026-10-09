@@ -21,6 +21,8 @@ export const challengeResponseSchema = registry.register(
     type: z.enum(['streak', 'accumulative']),
     resetOnMiss: z.boolean(),
     slipDates: z.array(z.string()).optional(),
+    freezeDaysPerMonth: z.number().default(2),
+    freezeDates: z.array(z.string()).optional(),
     createdAt: z.date().optional(),
     updatedAt: z.date().optional()
   })
@@ -41,7 +43,8 @@ export const createChallengeBodySchema = registry.register(
     targetDays: z.number().int().min(1, 'Meta mínima de 1 dia').max(3650),
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inicial deve seguir o formato YYYY-MM-DD').optional(),
     type: z.enum(['streak', 'accumulative']).optional(),
-    resetOnMiss: z.boolean().optional()
+    resetOnMiss: z.boolean().optional(),
+    freezeDaysPerMonth: z.number().int().min(0).max(7).optional()
   })
 )
 
@@ -63,7 +66,8 @@ export const updateChallengeBodySchema = registry.register(
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     status: z.enum(['active', 'completed', 'paused']).optional(),
     type: z.enum(['streak', 'accumulative']).optional(),
-    resetOnMiss: z.boolean().optional()
+    resetOnMiss: z.boolean().optional(),
+    freezeDaysPerMonth: z.number().int().min(0).max(7).optional()
   })
 )
 
@@ -122,5 +126,28 @@ export const challengeActionSuccessResponseSchema = registry.register(
   'ChallengeActionSuccessResponse',
   z.object({
     success: z.boolean()
+  })
+)
+
+export const freezeChallengeParamsSchema = registry.register(
+  'FreezeChallengeParams',
+  z.object({
+    id: z.string().min(1, 'ID do desafio é obrigatório')
+  })
+)
+
+export const freezeChallengeBodySchema = registry.register(
+  'FreezeChallengeBody',
+  z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve seguir o formato YYYY-MM-DD').optional()
+  })
+)
+
+export const freezeChallengeResponseSchema = registry.register(
+  'FreezeChallengeResponse',
+  z.object({
+    challenge: challengeResponseSchema,
+    frozen: z.boolean(),
+    error: z.string().optional()
   })
 )

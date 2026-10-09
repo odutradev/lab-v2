@@ -16,6 +16,8 @@ export interface Challenge {
   type: ChallengeType
   resetOnMiss: boolean
   slipDates?: string[]
+  freezeDaysPerMonth: number
+  freezeDates?: string[]
 }
 
 export interface ChallengeDocument extends Challenge, Document {
@@ -35,6 +37,7 @@ export interface CreateChallengePayload {
   startDate?: string
   type?: ChallengeType
   resetOnMiss?: boolean
+  freezeDaysPerMonth?: number
 }
 
 export interface UpdateChallengePayload {
@@ -47,8 +50,10 @@ export interface UpdateChallengePayload {
   status?: ChallengeStatus
   type?: ChallengeType
   resetOnMiss?: boolean
+  freezeDaysPerMonth?: number
   checkins?: string[]
   slipDates?: string[]
+  freezeDates?: string[]
 }
 
 export interface ListChallengesFilters {

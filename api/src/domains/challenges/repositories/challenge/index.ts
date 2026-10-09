@@ -32,7 +32,11 @@ const challengeRepository = {
       status: 'active',
       type: payload.type || 'streak',
       resetOnMiss: Boolean(payload.resetOnMiss),
-      slipDates: []
+      slipDates: [],
+      freezeDaysPerMonth: typeof payload.freezeDaysPerMonth === 'number'
+        ? Math.min(7, Math.max(0, payload.freezeDaysPerMonth))
+        : 2,
+      freezeDates: []
     })
 
     return { ...created.toObject(), id: created._id.toString() } as unknown as ChallengeModelType
@@ -80,8 +84,12 @@ const challengeRepository = {
     if (payload.status !== undefined) updateData.status = payload.status
     if (payload.type !== undefined) updateData.type = payload.type
     if (payload.resetOnMiss !== undefined) updateData.resetOnMiss = payload.resetOnMiss
+    if (payload.freezeDaysPerMonth !== undefined) {
+      updateData.freezeDaysPerMonth = Math.min(7, Math.max(0, payload.freezeDaysPerMonth))
+    }
     if (payload.checkins !== undefined) updateData.checkins = payload.checkins
     if (payload.slipDates !== undefined) updateData.slipDates = payload.slipDates
+    if (payload.freezeDates !== undefined) updateData.freezeDates = payload.freezeDates
 
     const updated = await ChallengeModel.findOneAndUpdate(
       { _id: toObjectId(id), userId: toObjectId(userId) },
@@ -168,6 +176,55 @@ const challengeRepository = {
     await challenge.save()
     const result = challenge.toObject()
     return { ...result, id: result._id.toString() } as unknown as ChallengeModelType
+  },
+
+  toggleFreeze: async (
+    id: string,
+    userId: string,
+    date: string
+  ): Promise<{ challenge: ChallengeModelType | null; frozen: boolean; error?: string }> => {
+    const challenge = await ChallengeModel.findOne({
+      _id: toObjectId(id),
+      userId: toObjectId(userId)
+    })
+
+    if (!challenge) {
+      return { challenge: null, frozen: false }
+    }
+
+    const freezes = challenge.freezeDates || []
+    const exists = freezes.includes(date)
+
+    if (exists) {
+      challenge.freezeDates = freezes.filter((d) => d !== date)
+      await challenge.save()
+      const result = challenge.toObject()
+      return {
+        challenge: { ...result, id: result._id.toString() } as unknown as ChallengeModelType,
+        frozen: false
+      }
+    }
+
+    const targetMonth = date.slice(0, 7)
+    const usedInMonth = freezes.filter((d) => d.startsWith(targetMonth)).length
+    const maxAllowed = typeof challenge.freezeDaysPerMonth === 'number' ? challenge.freezeDaysPerMonth : 2
+
+    if (usedInMonth >= maxAllowed) {
+      const result = challenge.toObject()
+      return {
+        challenge: { ...result, id: result._id.toString() } as unknown as ChallengeModelType,
+        frozen: false,
+        error: `Limite mensal de ${maxAllowed} dias livres atingido para este mês.`
+      }
+    }
+
+    challenge.freezeDates = [...freezes, date].sort()
+    await challenge.save()
+    const result = challenge.toObject()
+    return {
+      challenge: { ...result, id: result._id.toString() } as unknown as ChallengeModelType,
+      frozen: true
+    }
   }
 }
 

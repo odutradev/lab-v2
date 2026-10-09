@@ -17,7 +17,10 @@ import {
   listChallengesQuerySchema,
   challengeResponseSchema,
   listChallengesResponseSchema,
-  challengeActionSuccessResponseSchema
+  challengeActionSuccessResponseSchema,
+  freezeChallengeParamsSchema,
+  freezeChallengeBodySchema,
+  freezeChallengeResponseSchema
 } from './schemas'
 
 import type {
@@ -29,7 +32,9 @@ import type {
   CheckinChallengeBody,
   SlipChallengeParams,
   SlipChallengeBody,
-  ListChallengesQuery
+  ListChallengesQuery,
+  FreezeChallengeParams,
+  FreezeChallengeBody
 } from './types'
 
 const getTodayDateString = (): string => {
@@ -72,7 +77,8 @@ export const createChallengeAction = defineAction(
       targetDays: payload.targetDays,
       startDate: payload.startDate,
       type: payload.type,
-      resetOnMiss: payload.resetOnMiss
+      resetOnMiss: payload.resetOnMiss,
+      freezeDaysPerMonth: payload.freezeDaysPerMonth
     })
 
     await createAuditLog({
@@ -304,3 +310,55 @@ export const slipChallengeAction = defineAction(
     return updated
   }
 )
+
+export const freezeChallengeAction = defineAction(
+  {
+    method: 'post',
+    path: '/challenges/:id/freeze',
+    summary: 'Congela ou descongela um dia no desafio (streak freeze)',
+    tags: ['Challenges'],
+    authenticate: true,
+    schema: {
+      params: freezeChallengeParamsSchema,
+      body: freezeChallengeBodySchema
+    },
+    responses: {
+      200: {
+        description: 'Status de congelamento do dia atualizado',
+        schema: freezeChallengeResponseSchema
+      },
+      404: {
+        description: 'Desafio não encontrado'
+      }
+    },
+    middlewares: [authMiddlewareWithDocs]
+  },
+  async ({ ids, params, data, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const { id } = params as FreezeChallengeParams
+    if (!isValidObjectId(id)) return manageError({ code: 'bad_request' })
+
+    const body = (data || {}) as FreezeChallengeBody
+    const targetDate = body.date || getTodayDateString()
+
+    const { challenge, frozen, error } = await challengeRepository.toggleFreeze(id, ids.userId, targetDate)
+    if (!challenge) return manageError({ code: 'not_found' })
+
+    await createAuditLog({
+      actorId: ids.userId,
+      action: 'freeze_challenge',
+      entity: 'Challenge',
+      entityId: id,
+      summary: frozen ? 'Dia congelado com sucesso (streak freeze).' : 'Dia descongelado no desafio.',
+      details: { date: targetDate, frozen, error }
+    })
+
+    return {
+      challenge,
+      frozen,
+      error
+    }
+  }
+)
+
