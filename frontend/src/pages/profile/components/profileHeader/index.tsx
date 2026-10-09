@@ -4,13 +4,8 @@ import { TbArrowLeft } from 'react-icons/tb'
 import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 import Card from '@components/ui/card'
-import type { UserProfile } from '@projectTypes/user'
 
-interface ProfileHeaderProps {
-  user: UserProfile
-  initials: string
-  onBack: () => void
-}
+import type { ProfileHeaderProps } from './types'
 
 export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) => {
   const isAdmin = Boolean(user.superAdmin)

@@ -12,12 +12,8 @@ import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@comp
 import Badge from '@components/ui/badge'
 import Button from '@components/ui/button'
 import useHealthStore from '@stores/health'
-import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
 
-interface ProfileProgressCardProps {
-  calendarStatus?: GoogleCalendarStatusResponse
-  onConnectCalendar?: () => void
-}
+import type { ProfileProgressCardProps } from './types'
 
 export const ProfileProgressCard = ({
   calendarStatus,

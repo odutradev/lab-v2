@@ -7,7 +7,7 @@ import Button from '@components/ui/button'
 import Badge from '@components/ui/badge'
 import useHealthStore from '@stores/health'
 import useToastStore from '@stores/toast'
-import { infoCardItemStyle } from '../styles'
+import { infoCardItemStyle } from '../../styles'
 
 export const ProfilePhysicalCard = () => {
   const { profile, updateProfile } = useHealthStore()

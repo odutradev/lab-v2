@@ -17,29 +17,8 @@ import Badge from '@components/ui/badge'
 import Modal from '@components/ui/modal'
 import Input from '@components/ui/input'
 
-import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
 
-interface ProfileSecurityCardProps {
-  onNavigateResetPassword: () => void
-  calendarStatus?: GoogleCalendarStatusResponse
-  isCalendarLoading?: boolean
-  isConnectingCalendar?: boolean
-  isDisconnectingCalendar?: boolean
-  isSavingCalendarName?: boolean
-  isRecreatingCalendar?: boolean
-  isDisconnectModalOpen: boolean
-  isEditCalendarNameModalOpen: boolean
-  calendarNameInput: string
-  onCalendarNameInputChange: (value: string) => void
-  onConnectCalendar?: () => void
-  onOpenDisconnectModal: () => void
-  onCloseDisconnectModal: () => void
-  onConfirmDisconnect: (deleteCalendar: boolean) => void
-  onOpenEditCalendarNameModal: () => void
-  onCloseEditCalendarNameModal: () => void
-  onSaveCalendarName: () => void
-  onRecreateCalendar?: () => void
-}
+import type { ProfileSecurityCardProps } from './types'
 
 export const ProfileSecurityCard = ({
   onNavigateResetPassword,

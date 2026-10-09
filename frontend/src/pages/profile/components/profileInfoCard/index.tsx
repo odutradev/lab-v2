@@ -10,13 +10,9 @@ import {
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/ui/card'
 import Badge from '@components/ui/badge'
-import { infoCardItemStyle } from '../styles'
-import type { UserProfile } from '@projectTypes/user'
+import { infoCardItemStyle } from '../../styles'
 
-interface ProfileInfoCardProps {
-  user: UserProfile
-  formatDate: (dateStr?: string) => string
-}
+import type { ProfileInfoCardProps } from './types'
 
 export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
   return (
