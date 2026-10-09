@@ -1,10 +1,11 @@
 {
   "name": "lab-v2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Lab V2 monorepo workspace",
   "scripts": {
     "dev": "concurrently -n \"api,frontend\" -c \"cyan,green\" \"npm run dev:api\" \"npm run dev:frontend\"",
+    "publish": "npx project-publisher --bump-package --push",
     "dev:api": "npm --prefix api run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "build": "npm run build:api && npm run build:frontend",
