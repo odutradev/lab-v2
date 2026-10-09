@@ -11,6 +11,7 @@ import {
 import {
   TbMoonStars,
   TbCalendarCheck,
+  TbCalendarPlus,
   TbCheck,
   TbClock,
   TbSparkles
@@ -54,6 +55,14 @@ export const SleepTrackerCard = ({
   const [inputHours, setInputHours] = useState<number>(8)
   const [inputQuality, setInputQuality] = useState<number>(4)
 
+  const isTargetRecorded = useMemo(() => {
+    return sleepHistory.some((r) => r.date === activeDate)
+  }, [sleepHistory, activeDate])
+
+  const isEditing = useMemo(() => {
+    return sleepHistory.some((r) => r.date === targetDate)
+  }, [sleepHistory, targetDate])
+
   const activeRecord = useMemo(() => {
     if (selectedDate) {
       const found = sleepHistory.find((r) => r.date === selectedDate)
@@ -88,12 +97,22 @@ export const SleepTrackerCard = ({
 
     const qualityOpt = getSleepQualityOption(inputQuality)
     const isToday = targetDate === todayStr
-    showToast(
-      isToday
-        ? `Check-in de sono salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`
-        : `Sono de ${formatDateDisplay(targetDate)} salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`,
-      'success'
-    )
+
+    if (isEditing) {
+      showToast(
+        isToday
+          ? `Check-in de sono atualizado: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`
+          : `Sono de ${formatDateDisplay(targetDate)} atualizado: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`,
+        'success'
+      )
+    } else {
+      showToast(
+        isToday
+          ? `Check-in de sono salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`
+          : `Sono de ${formatDateDisplay(targetDate)} salvo: ${inputHours.toFixed(1)}h • ${qualityOpt.emoji} ${qualityOpt.label}!`,
+        'success'
+      )
+    }
   }
 
   const modalStatus = useMemo(() => getSleepStatus(inputHours), [inputHours])
@@ -129,6 +148,9 @@ export const SleepTrackerCard = ({
                   size="sm"
                   color="violet"
                   leftSection={<TbSparkles size={11} />}
+                  onClick={() => handleOpenCheckin(activeDate)}
+                  style={{ cursor: 'pointer' }}
+                  title="Clique para editar este check-in de sono"
                 >
                   {activeRecord.hours.toFixed(1)}h • {getSleepQualityOption(activeRecord.quality).emoji}
                 </MantineBadge>
@@ -139,14 +161,22 @@ export const SleepTrackerCard = ({
                 radius="md"
                 variant="outline"
                 onClick={() => handleOpenCheckin()}
-                title="Fazer Check-in de Sono"
+                title={
+                  isTargetRecorded
+                    ? (activeDate === todayStr
+                        ? `Editar Check-in de Sono (Hoje: ${activeRecord ? activeRecord.hours.toFixed(1) + 'h' : ''})`
+                        : `Editar Check-in de Sono (${formatDateDisplay(activeDate)})`)
+                    : (activeDate === todayStr
+                        ? 'Fazer Check-in de Sono (Hoje)'
+                        : `Fazer Check-in de Sono (${formatDateDisplay(activeDate)})`)
+                }
                 style={{
-                  backgroundColor: 'rgba(168, 85, 247, 0.12)',
-                  borderColor: 'rgba(168, 85, 247, 0.35)',
+                  backgroundColor: isTargetRecorded ? 'rgba(168, 85, 247, 0.18)' : 'rgba(168, 85, 247, 0.1)',
+                  borderColor: isTargetRecorded ? 'rgba(168, 85, 247, 0.45)' : 'rgba(168, 85, 247, 0.25)',
                   color: '#c084fc'
                 }}
               >
-                <TbCalendarCheck size={15} />
+                {isTargetRecorded ? <TbCalendarCheck size={15} /> : <TbCalendarPlus size={15} />}
               </ActionIcon>
             </Group>
           </Group>
@@ -169,11 +199,19 @@ export const SleepTrackerCard = ({
         opened={isModalOpen}
         onClose={handleCloseModal}
         title={
-          targetDate === todayStr
-            ? 'Check-in de Sono - Hoje'
-            : `Atualizar Sono - ${formatDateDisplay(targetDate)}`
+          isEditing
+            ? (targetDate === todayStr
+                ? 'Editar Check-in de Sono - Hoje'
+                : `Editar Sono - ${formatDateDisplay(targetDate)}`)
+            : (targetDate === todayStr
+                ? 'Check-in de Sono - Hoje'
+                : `Registrar Sono - ${formatDateDisplay(targetDate)}`)
         }
-        description="Informe a duração e avalie a qualidade da sua noite de sono para atualizar sua evolução."
+        description={
+          isEditing
+            ? 'Atualize a duração e a qualidade da sua noite de sono para recalcular sua recuperação.'
+            : 'Informe a duração e avalie a qualidade da sua noite de sono para atualizar sua evolução.'
+        }
         variant="indigo"
         size="sm"
       >
@@ -310,7 +348,7 @@ export const SleepTrackerCard = ({
             onClick={handleConfirmSave}
             leftIcon={<TbCheck size={15} />}
           >
-            Salvar Check-in
+            {isEditing ? 'Atualizar Check-in' : 'Salvar Check-in'}
           </Button>
         </ModalFooter>
       </Modal>
