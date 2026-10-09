@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text, Badge, SimpleGrid } from '@mantine/core'
+import { Box, Group, Text, Badge } from '@mantine/core'
 import type { ImcGaugeChartProps } from './types'
 
 interface ClassificationBand {
@@ -51,12 +51,17 @@ export const ImcGaugeChart = ({
   if (!heightCm) {
     return (
       <Box
-        p="md"
-        ta="center"
+        className="chart-fade-transition"
         style={{
+          height: 89,
           borderRadius: 8,
           background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.08)'
+          border: '1px dashed rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 12px'
         }}
       >
         <Text size="xs" c="dimmed">
@@ -69,12 +74,17 @@ export const ImcGaugeChart = ({
   if (!currentWeight || !imcResult) {
     return (
       <Box
-        p="md"
-        ta="center"
+        className="chart-fade-transition"
         style={{
+          height: 89,
           borderRadius: 8,
           background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.08)'
+          border: '1px dashed rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 12px'
         }}
       >
         <Text size="xs" c="dimmed">
@@ -89,106 +99,137 @@ export const ImcGaugeChart = ({
   const activeColor = BANDS[activeIndex]?.color || '#10b981'
 
   return (
-    <Box
-      p="md"
-      style={{
-        borderRadius: 10,
-        background: 'rgba(255, 255, 255, 0.015)',
-        border: '1px solid rgba(255, 255, 255, 0.06)'
-      }}
-    >
-      <Stack gap="md">
-        <Group justify="space-between" align="center" wrap="wrap">
-          <Group gap="xs" align="center">
-            <Text fw={800} size="24px" c="white" style={{ lineHeight: 1 }}>
-              {imc.toFixed(1)}
-            </Text>
-            <Text size="xs" fw={600} c="dimmed">
+    <Box className="chart-fade-transition">
+      <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
+        <Group gap={6} align="center">
+          <Text size="12px" fw={800} c="#ffffff" style={{ lineHeight: 1 }}>
+            {imc.toFixed(1)}{' '}
+            <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(255, 255, 255, 0.5)' }}>
               kg/m²
-            </Text>
-            <Badge
-              variant="light"
-              size="sm"
-              radius="sm"
+            </span>
+          </Text>
+          <Badge
+            variant="light"
+            size="xs"
+            radius="sm"
+            style={{
+              backgroundColor: `${activeColor}22`,
+              color: activeColor,
+              border: `1px solid ${activeColor}55`,
+              fontWeight: 700,
+              height: 18,
+              padding: '0 6px'
+            }}
+          >
+            {classification.label}
+          </Badge>
+        </Group>
+
+        <Group gap={6} align="center">
+          <Text size="10px" c="dimmed">
+            Peso <span style={{ color: '#fff', fontWeight: 600 }}>{currentWeight.toFixed(1)} kg</span>
+          </Text>
+          <Text size="10px" c="dimmed">•</Text>
+          <Text size="10px" c="dimmed">
+            Ideal <span style={{ color: '#10b981', fontWeight: 600 }}>{minIdealWeight} – {maxIdealWeight} kg</span>
+          </Text>
+        </Group>
+      </Group>
+
+      <Box
+        style={{
+          height: 48,
+          borderRadius: 8,
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          overflow: 'hidden',
+          display: 'flex',
+          padding: 3,
+          gap: 4
+        }}
+      >
+        {BANDS.map((b, idx) => {
+          const isCurrent = idx === activeIndex
+          return (
+            <Box
+              key={b.label}
               style={{
-                backgroundColor: `${activeColor}22`,
-                color: activeColor,
-                border: `1px solid ${activeColor}55`,
-                fontWeight: 700
+                flex: 1,
+                minWidth: 0,
+                height: '100%',
+                borderRadius: 6,
+                backgroundColor: isCurrent ? `${b.color}22` : 'rgba(255, 255, 255, 0.02)',
+                border: isCurrent
+                  ? `1px solid ${b.color}99`
+                  : '1px solid rgba(255, 255, 255, 0.03)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2px 1px',
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.2s ease'
               }}
             >
-              {classification.label}
-            </Badge>
-          </Group>
-
-          <Group gap="md" align="center">
-            <Text size="xs" c="dimmed">
-              Peso: <span style={{ color: '#fff', fontWeight: 600 }}>{currentWeight.toFixed(1)} kg</span>
-            </Text>
-            <Text size="xs" c="dimmed">
-              Faixa ideal: <span style={{ color: '#10b981', fontWeight: 600 }}>{minIdealWeight} – {maxIdealWeight} kg</span>
-            </Text>
-          </Group>
-        </Group>
-
-        <Group gap={4} grow wrap="nowrap">
-          {BANDS.map((b, idx) => {
-            const isCurrent = idx === activeIndex
-            return (
               <Box
-                key={b.label}
                 style={{
-                  height: 6,
-                  borderRadius: 3,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: isCurrent ? 3 : 2,
                   backgroundColor: b.color,
-                  opacity: isCurrent ? 1 : 0.25,
-                  boxShadow: isCurrent ? `0 0 8px ${b.color}88` : 'none',
-                  transition: 'opacity 0.2s ease'
+                  opacity: isCurrent ? 1 : 0.35,
+                  boxShadow: isCurrent ? `0 0 6px ${b.color}` : 'none'
                 }}
               />
-            )
-          })}
-        </Group>
-
-        <SimpleGrid cols={{ base: 2, xs: 3, sm: 5 }} spacing={6}>
-          {BANDS.map((b, idx) => {
-            const isCurrent = idx === activeIndex
-
-            return (
-              <Box
-                key={b.label}
-                p="xs"
-                ta="center"
+              <Text
+                size="10px"
+                fw={isCurrent ? 700 : 500}
                 style={{
-                  borderRadius: 8,
-                  backgroundColor: isCurrent ? `${b.color}15` : 'rgba(255, 255, 255, 0.02)',
-                  border: isCurrent
-                    ? `1px solid ${b.color}88`
-                    : '1px solid rgba(255, 255, 255, 0.05)',
-                  transition: 'all 0.2s ease'
+                  color: isCurrent ? b.color : 'rgba(255, 255, 255, 0.65)',
+                  lineHeight: 1.1,
+                  marginTop: 2,
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  maxWidth: '100%'
                 }}
               >
-                <Text
-                  size="11px"
-                  fw={isCurrent ? 700 : 500}
-                  c={isCurrent ? b.color : 'dimmed'}
-                  style={{ lineHeight: 1.3 }}
-                >
-                  {b.label}
-                </Text>
-                <Text
-                  size="10px"
-                  fw={isCurrent ? 600 : 400}
-                  c={isCurrent ? '#ffffff' : 'dimmed'}
-                  style={{ lineHeight: 1.3, marginTop: 2 }}
-                >
-                  {b.range}
-                </Text>
-              </Box>
-            )
-          })}
-        </SimpleGrid>
-      </Stack>
+                {b.label}
+              </Text>
+              <Text
+                size="9px"
+                fw={isCurrent ? 600 : 400}
+                style={{
+                  color: isCurrent ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
+                  lineHeight: 1.1,
+                  marginTop: 2,
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  maxWidth: '100%'
+                }}
+              >
+                {b.range}
+              </Text>
+            </Box>
+          )
+        })}
+      </Box>
+
+      <Group justify="space-between" align="center" px={4} mt={3}>
+        <Text size="9px" c="dimmed">
+          Abaixo (&lt; 18.5)
+        </Text>
+        <Text size="9px" style={{ color: activeColor, fontWeight: 600 }}>
+          Faixa: {classification.label}
+        </Text>
+        <Text size="9px" c="dimmed">
+          Severa (≥ 40.0)
+        </Text>
+      </Group>
     </Box>
   )
 }
