@@ -7,15 +7,7 @@ import Input from '@components/ui/input'
 import Button from '@components/ui/button'
 import { calculateIdealWaterMl } from '@stores/health/utils'
 
-interface EditWaterModalProps {
-  opened: boolean
-  onClose: () => void
-  currentWeight?: number
-  currentAge?: number
-  currentHeight?: number
-  currentBottleMl: number
-  onSave: (settings: { bottleMl: number }) => void
-}
+import type { EditWaterModalProps } from './types'
 
 const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000]
 

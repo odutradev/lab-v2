@@ -2,14 +2,7 @@ import React from 'react'
 import { Box, Text, UnstyledButton } from '@mantine/core'
 import { TbCheck, TbPlus, TbX } from 'react-icons/tb'
 
-interface CompactBottleItemProps {
-  index: number
-  isFilled: boolean
-  isExtra?: boolean
-  bottleMl?: number
-  onClick: () => void
-  onRemove?: () => void
-}
+import type { CompactBottleItemProps } from './types'
 
 export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
   index,

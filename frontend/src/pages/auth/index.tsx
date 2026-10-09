@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core'
 
-import ResetPasswordForm from '@pages/resetPassword/components/resetPasswordForm'
+import ResetPasswordForm from '@components/shared/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
 import AuthHeader from './components/authHeader'
 import AuthTabs from './components/authTabs'

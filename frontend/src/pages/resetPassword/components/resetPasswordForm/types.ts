@@ -1,7 +1,1 @@
-export type ResetPasswordStep = 'email' | 'code' | 'password' | 'success'
-
-export interface ResetPasswordFormProps {
-  initialEmail?: string
-  onSuccess?: () => void
-  onCancel?: () => void
-}
+export type * from '@components/shared/resetPasswordForm/types'
