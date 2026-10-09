@@ -187,8 +187,8 @@ export const SleepHistoryChart = ({
 
   return (
     <Box>
-      <Group justify="space-between" align="center" mb={10} wrap="nowrap">
-        <Group gap="md" align="center">
+      <Group justify="space-between" align="center" mb={10} wrap="wrap" gap="xs">
+        <Group gap="sm" align="center" wrap="wrap">
           <Group gap={6} align="center">
             <Box
               style={{

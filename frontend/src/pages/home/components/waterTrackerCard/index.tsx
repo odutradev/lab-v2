@@ -57,8 +57,8 @@ export const WaterTrackerCard = ({
   return (
     <Card style={{ position: 'relative', overflow: 'hidden' }}>
       <CardHeader>
-        <Group justify="space-between" align="center" wrap="nowrap">
-          <Group gap={8} align="center">
+        <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+          <Group gap={8} align="center" wrap="wrap">
             <ThemeIcon
               size="sm"
               radius="md"
@@ -103,7 +103,7 @@ export const WaterTrackerCard = ({
               padding: '12px 14px'
             }}
           >
-            <Group justify="space-between" align="baseline" mb={8}>
+            <Group justify="space-between" align="baseline" mb={8} wrap="wrap" gap="xs">
               <Group align="baseline" gap={6}>
                 <Text size="20px" fw={800} c="#38bdf8" style={{ lineHeight: 1 }}>
                   {totalConsumedMl.toLocaleString('pt-BR')}

@@ -101,7 +101,7 @@ export const SleepTrackerCard = ({
     <>
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
         <CardHeader>
-          <Group justify="space-between" align="center" wrap="nowrap">
+          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap="sm" align="center">
               <ThemeIcon
                 size="md"
@@ -251,7 +251,9 @@ export const SleepTrackerCard = ({
                       onClick={() => setInputQuality(opt.value)}
                       title={`${opt.label} (${opt.value}/5)`}
                       style={{
-                        padding: '10px 4px',
+                        flex: 1,
+                        minWidth: 0,
+                        padding: '8px 2px',
                         borderRadius: 8,
                         textAlign: 'center',
                         display: 'flex',

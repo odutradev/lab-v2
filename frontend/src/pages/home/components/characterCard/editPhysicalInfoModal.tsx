@@ -88,7 +88,7 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
         </SimpleGrid>
       </Box>
 
-      <Group grow align="flex-start" gap="md">
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
         <NumberInput
           label="Idade (anos)"
           description="Ex: 26"
@@ -124,7 +124,7 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
             }
           }}
         />
-      </Group>
+      </SimpleGrid>
 
       <Box
         p="xs"

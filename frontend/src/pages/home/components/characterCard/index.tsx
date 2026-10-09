@@ -37,11 +37,11 @@ export const CharacterCard = ({
 
         <CardContent>
           <Group justify="space-between" align="center" wrap="wrap" gap="md">
-            <Group gap="lg" align="center">
-              <Box style={{ position: 'relative' }}>
+            <Group gap="md" align="center" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+              <Box style={{ position: 'relative', flexShrink: 0 }}>
                 <CharacterAvatar
                   id={profile.characterId}
-                  size={92}
+                  size={84}
                   interactive
                   onClick={() => setModalOpened(true)}
                 />
@@ -67,7 +67,7 @@ export const CharacterCard = ({
                 </Box>
               </Box>
 
-              <Stack gap={4}>
+              <Stack gap={4} style={{ flex: 1, minWidth: 'min(100%, 220px)' }}>
                 <Group gap="xs" align="center">
                   <MantineBadge
                     size="xs"

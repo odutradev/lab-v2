@@ -106,7 +106,7 @@ export const WeightImcCard = ({
     <>
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
         <CardHeader>
-          <Group justify="space-between" align="center" wrap="nowrap">
+          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap="sm" align="center">
               <ThemeIcon
                 size="md"

@@ -183,8 +183,8 @@ export const WeightHistoryChart = ({
 
   return (
     <Box>
-      <Group justify="space-between" align="center" mb={10}>
-        <Group gap="md" align="center">
+      <Group justify="space-between" align="center" mb={10} wrap="wrap" gap="xs">
+        <Group gap="sm" align="center" wrap="wrap">
           <Group gap={6} align="center">
             <Box style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#38bdf8' }} />
             <Text size="11px" fw={600} c="#38bdf8">

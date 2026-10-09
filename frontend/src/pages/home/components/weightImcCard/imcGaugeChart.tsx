@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text, Badge } from '@mantine/core'
+import { Box, Group, Stack, Text, Badge, SimpleGrid } from '@mantine/core'
 import type { ImcGaugeChartProps } from './types'
 
 interface ClassificationBand {
@@ -150,13 +150,7 @@ export const ImcGaugeChart = ({
           })}
         </Group>
 
-        <Box
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 6
-          }}
-        >
+        <SimpleGrid cols={{ base: 2, xs: 3, sm: 5 }} spacing={6}>
           {BANDS.map((b, idx) => {
             const isCurrent = idx === activeIndex
 
@@ -193,7 +187,7 @@ export const ImcGaugeChart = ({
               </Box>
             )
           })}
-        </Box>
+        </SimpleGrid>
       </Stack>
     </Box>
   )
