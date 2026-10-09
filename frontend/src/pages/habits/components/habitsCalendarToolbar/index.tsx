@@ -34,7 +34,7 @@ export const HabitsCalendarToolbar = ({
       }}
     >
       <Group justify="space-between" align="center" wrap="wrap" gap="sm">
-        <Group gap="xs" align="center">
+        <Group gap="xs" align="center" wrap="wrap">
           <Button
             variant={isToday ? 'outline' : 'secondary'}
             size="sm"
@@ -75,7 +75,7 @@ export const HabitsCalendarToolbar = ({
           </Text>
         </Group>
 
-        <Group gap="sm" align="center">
+        <Group gap="xs" align="center" wrap="wrap">
           <SegmentedControl
             value={viewMode}
             onChange={(val) => onViewModeChange(val as CalendarViewMode)}

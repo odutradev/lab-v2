@@ -93,8 +93,8 @@ export const CompactWaterCard = ({
     <>
       <Card style={{ padding: '10px 14px' }}>
         <Stack gap={8}>
-          <Group justify="space-between" align="center" wrap="nowrap">
-            <Group gap={6} align="center">
+          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+            <Group gap={6} align="center" wrap="wrap">
               <TbDropletFilled size={15} color="#c084fc" />
               <Text size="xs" fw={700} c="white">
                 Água
@@ -112,7 +112,7 @@ export const CompactWaterCard = ({
               </MantineBadge>
             </Group>
 
-            <Group gap={6} align="center" wrap="nowrap">
+            <Group gap={6} align="center" wrap="wrap">
               {isGoalReached ? (
                 <MantineBadge
                   variant="gradient"

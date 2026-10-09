@@ -41,7 +41,7 @@ export const GeneralPerformanceCard = ({
       />
 
       <CardHeader style={{ paddingBottom: 6 }}>
-        <Group justify="space-between" align="center" wrap="nowrap">
+        <Group justify="space-between" align="center" wrap="wrap" gap="xs">
           <Group gap={6} align="center">
             <TbActivity size={18} color="#a855f7" />
             <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Desempenho Geral</CardTitle>
@@ -81,11 +81,11 @@ export const GeneralPerformanceCard = ({
 
       <CardContent style={{ paddingTop: 0 }}>
         <Box mt="xs">
-          <Group justify="space-between" align="center" mb={6}>
+          <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
             <Text size="11px" c="dimmed" fw={600} style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
               Constância Diária ({stats.monthLabel})
             </Text>
-            <Group gap={8}>
+            <Group gap={8} wrap="wrap">
               <Group gap={3} align="center">
                 <Box w={6} h={6} style={{ borderRadius: '50%', background: '#10b981' }} />
                 <Text size="10px" c="dimmed">100%</Text>

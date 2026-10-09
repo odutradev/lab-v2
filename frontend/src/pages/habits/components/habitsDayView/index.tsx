@@ -48,8 +48,8 @@ export const HabitsDayView = ({
 
   return (
     <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <Group justify="space-between" align="center" pb="sm" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-        <Group gap="xs">
+      <Group justify="space-between" align="center" pb="sm" wrap="wrap" gap="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <Group gap="xs" wrap="wrap">
           <TbCalendarEvent size={20} color="#818cf8" />
           <Text fw={700} size="md" c="white">
             Programação do Dia
@@ -93,8 +93,8 @@ export const HabitsDayView = ({
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <Group justify="space-between" align="center" wrap="nowrap">
-                    <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                  <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+                    <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 'min(100%, 180px)' }}>
                       <ActionIcon
                         size="md"
                         variant="subtle"
@@ -131,7 +131,7 @@ export const HabitsDayView = ({
                       </Box>
                     </Group>
 
-                    <Group gap="xs" wrap="nowrap">
+                    <Group gap="xs" wrap="wrap" style={{ flexShrink: 0 }}>
                       {getItemTypeBadge(item.category)}
                       {getFrequencyBadge(item.frequency || 'daily')}
 
