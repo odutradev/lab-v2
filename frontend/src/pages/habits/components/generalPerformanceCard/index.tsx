@@ -40,7 +40,7 @@ export const GeneralPerformanceCard = ({
         }}
       />
 
-      <CardHeader style={{ paddingBottom: 6 }}>
+      <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
         <Group justify="space-between" align="center" wrap="wrap" gap="xs">
           <Group gap={6} align="center">
             <TbActivity size={18} color="#a855f7" />

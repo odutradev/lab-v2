@@ -5,7 +5,6 @@ import {
   Text,
   Box,
   Badge as MantineBadge,
-  ThemeIcon,
   Slider,
   UnstyledButton
 } from '@mantine/core'
@@ -100,29 +99,32 @@ export const SleepTrackerCard = ({
   return (
     <>
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
-        <CardHeader>
-          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
-            <Group gap="sm" align="center">
-              <ThemeIcon
-                size="md"
-                radius="md"
-                variant="light"
-                color="violet"
-                style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}
-              >
-                <TbMoonStars size={18} color="#c084fc" />
-              </ThemeIcon>
+        <Box
+          style={{
+            position: 'absolute',
+            top: -24,
+            right: -24,
+            width: 120,
+            height: 120,
+            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
+            pointerEvents: 'none'
+          }}
+        />
 
-              <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>
+        <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
+          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+            <Group gap={6} align="center">
+              <TbMoonStars size={18} color="#c084fc" />
+              <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>
                 Sono & Recuperação
               </CardTitle>
             </Group>
 
-            <Group gap="xs" align="center">
+            <Group gap={8} align="center">
               {activeRecord && (
                 <MantineBadge
                   variant="light"
-                  size="xs"
+                  size="sm"
                   color="violet"
                   leftSection={<TbSparkles size={11} />}
                 >
@@ -131,7 +133,7 @@ export const SleepTrackerCard = ({
               )}
 
               <ActionIcon
-                size="lg"
+                size="sm"
                 radius="md"
                 variant="outline"
                 onClick={() => handleOpenCheckin()}
@@ -142,13 +144,13 @@ export const SleepTrackerCard = ({
                   color: '#c084fc'
                 }}
               >
-                <TbCalendarCheck size={18} />
+                <TbCalendarCheck size={15} />
               </ActionIcon>
             </Group>
           </Group>
         </CardHeader>
 
-        <CardContent>
+        <CardContent style={{ paddingTop: 0 }}>
           <SleepHistoryChart
             records={sleepHistory}
             selectedYear={selectedYear}
