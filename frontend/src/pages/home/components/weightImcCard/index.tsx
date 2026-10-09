@@ -3,8 +3,7 @@ import {
   Group,
   Text,
   NumberInput,
-  Box,
-  ThemeIcon
+  Box
 } from '@mantine/core'
 import {
   TbScale,
@@ -105,23 +104,26 @@ export const WeightImcCard = ({
   return (
     <>
       <Card style={{ position: 'relative', overflow: 'hidden' }}>
-        <CardHeader>
-          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
-            <Group gap="sm" align="center">
-              <ThemeIcon
-                size="md"
-                radius="md"
-                variant="light"
-                color="cyan"
-                style={{ backgroundColor: 'rgba(56, 189, 248, 0.15)' }}
-              >
-                <TbScale size={18} color="#38bdf8" />
-              </ThemeIcon>
+        <Box
+          style={{
+            position: 'absolute',
+            top: -24,
+            right: -24,
+            width: 120,
+            height: 120,
+            background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%)',
+            pointerEvents: 'none'
+          }}
+        />
 
-              <CardTitle style={{ fontSize: '15px', fontWeight: 700 }}>Peso & IMC</CardTitle>
+        <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
+          <Group justify="space-between" align="center" wrap="wrap" gap="xs">
+            <Group gap={6} align="center">
+              <TbScale size={18} color="#38bdf8" />
+              <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Peso & IMC</CardTitle>
             </Group>
 
-            <Group gap="xs" align="center">
+            <Group gap={8} align="center">
               <SegmentedControl
                 size="xs"
                 value={chartType}
@@ -133,7 +135,7 @@ export const WeightImcCard = ({
               />
 
               <ActionIcon
-                size="lg"
+                size="sm"
                 radius="md"
                 variant="outline"
                 onClick={() => handleOpenCheckin()}
@@ -144,13 +146,13 @@ export const WeightImcCard = ({
                   color: '#38bdf8'
                 }}
               >
-                <TbCalendarCheck size={18} />
+                <TbCalendarCheck size={15} />
               </ActionIcon>
             </Group>
           </Group>
         </CardHeader>
 
-        <CardContent>
+        <CardContent style={{ paddingTop: 0 }}>
           {chartType === 'line' ? (
             <WeightHistoryChart
               records={weightHistory}
