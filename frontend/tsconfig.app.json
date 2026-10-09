@@ -17,6 +17,8 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@package": ["../package.json"],
+      "@rootPackage": ["../package.json"],
       "@actions/*": ["./src/actions/*"],
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],

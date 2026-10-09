@@ -57,6 +57,8 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
+        '@package': fileURLToPath(new URL('../package.json', import.meta.url)),
+        '@rootPackage': fileURLToPath(new URL('../package.json', import.meta.url)),
         '@actions': fileURLToPath(new URL('./src/actions', import.meta.url)),
         '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
         '@hooks': fileURLToPath(new URL('./src/hooks', import.meta.url)),

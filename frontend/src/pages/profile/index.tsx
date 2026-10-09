@@ -1,4 +1,5 @@
-import { Stack, Box } from '@mantine/core'
+import { Stack, Box, Text } from '@mantine/core'
+import packageJson from '@package'
 
 import ProfileHeader from './components/profileHeader'
 import ProfileProgressCard from './components/profileProgressCard'
@@ -81,6 +82,10 @@ export const ProfilePage = () => {
           onSaveCalendarName={handleSaveCalendarName}
           onRecreateCalendar={handleRecreateCalendar}
         />
+
+        <Text size="xs" c="dimmed" ta="center" pb="sm">
+          Versão {packageJson.version}
+        </Text>
       </Stack>
     </Box>
   )
