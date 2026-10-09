@@ -3,6 +3,7 @@ import { registerSW } from 'virtual:pwa-register'
 import { createRoot } from 'react-dom/client'
 import { StrictMode, useEffect } from 'react'
 import '@mantine/core/styles.css'
+import '@styles/global.css'
 
 registerSW({ immediate: true })
 
