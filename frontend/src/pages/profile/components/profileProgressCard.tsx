@@ -1,7 +1,7 @@
 import { Group, Box, Text, Progress, SimpleGrid, ThemeIcon } from '@mantine/core'
 import {
   TbRuler,
-  TbScale,
+  TbCalendarTime,
   TbBrandGoogle,
   TbCheck,
   TbAlertCircle,
@@ -23,14 +23,10 @@ export const ProfileProgressCard = ({
   calendarStatus,
   onConnectCalendar
 }: ProfileProgressCardProps) => {
-  const { profile, weightHistory } = useHealthStore()
+  const { profile } = useHealthStore()
 
   const hasHeight = Boolean(profile.height && profile.height > 0)
-  const latestWeight =
-    weightHistory.length > 0 && weightHistory[weightHistory.length - 1].weight > 0
-      ? weightHistory[weightHistory.length - 1].weight
-      : null
-  const hasWeight = Boolean(latestWeight)
+  const hasAge = Boolean(profile.age && profile.age > 0)
   const hasCalendar = Boolean(calendarStatus?.connected && !calendarStatus?.calendarDeleted)
 
   const steps = [
@@ -45,13 +41,13 @@ export const ProfileProgressCard = ({
       targetId: 'profile-physical-card'
     },
     {
-      key: 'weight',
-      title: 'Peso',
-      completed: hasWeight,
-      valueText: hasWeight ? `${latestWeight} kg` : undefined,
-      description: 'Necessário para histórico de evolução e hidratação',
-      icon: TbScale,
-      iconColor: '#a3e635',
+      key: 'age',
+      title: 'Idade',
+      completed: hasAge,
+      valueText: hasAge ? `${profile.age} anos` : undefined,
+      description: 'Necessária para calibrar taxa metabólica e hidratação',
+      icon: TbCalendarTime,
+      iconColor: '#a855f7',
       targetId: 'profile-physical-card'
     },
     {
