@@ -8,6 +8,7 @@ import {
 import {
   TbScale,
   TbCalendarCheck,
+  TbCalendarPlus,
   TbCheck
 } from 'react-icons/tb'
 
@@ -46,6 +47,14 @@ export const WeightImcCard = ({
   const [isCheckinModalOpen, setIsCheckinModalOpen] = useState(false)
   const [targetCheckinDate, setTargetCheckinDate] = useState(activeDate)
   const [inputWeight, setInputWeight] = useState<number | string>('')
+
+  const isTargetRecorded = useMemo(() => {
+    return weightHistory.some((r) => r.date === activeDate)
+  }, [weightHistory, activeDate])
+
+  const isEditing = useMemo(() => {
+    return weightHistory.some((r) => r.date === targetCheckinDate)
+  }, [weightHistory, targetCheckinDate])
 
   const latestRecord = useMemo(() => {
     if (weightHistory.length === 0) return null
@@ -89,12 +98,22 @@ export const WeightImcCard = ({
 
     onSaveWeight(weightNum, targetCheckinDate)
     setIsCheckinModalOpen(false)
-    showToast(
-      targetCheckinDate === todayStr
-        ? `Check-in de hoje salvo: ${weightNum.toFixed(1)} kg!`
-        : `Peso de ${formatDateDisplay(targetCheckinDate)} salvo: ${weightNum.toFixed(1)} kg!`,
-      'success'
-    )
+
+    if (isEditing) {
+      showToast(
+        targetCheckinDate === todayStr
+          ? `Check-in de hoje atualizado: ${weightNum.toFixed(1)} kg!`
+          : `Peso de ${formatDateDisplay(targetCheckinDate)} atualizado: ${weightNum.toFixed(1)} kg!`,
+        'success'
+      )
+    } else {
+      showToast(
+        targetCheckinDate === todayStr
+          ? `Check-in de hoje salvo: ${weightNum.toFixed(1)} kg!`
+          : `Peso de ${formatDateDisplay(targetCheckinDate)} salvo: ${weightNum.toFixed(1)} kg!`,
+        'success'
+      )
+    }
   }
 
   const previewImc = useMemo(() => {
@@ -141,14 +160,22 @@ export const WeightImcCard = ({
                 radius="md"
                 variant="outline"
                 onClick={() => handleOpenCheckin()}
-                title="Fazer Check-in de Peso"
+                title={
+                  isTargetRecorded
+                    ? (activeDate === todayStr
+                        ? `Editar Check-in de Peso (Hoje: ${activeWeight ? activeWeight.toFixed(1) + ' kg' : ''})`
+                        : `Editar Check-in de Peso (${formatDateDisplay(activeDate)})`)
+                    : (activeDate === todayStr
+                        ? 'Fazer Check-in de Peso (Hoje)'
+                        : `Fazer Check-in de Peso (${formatDateDisplay(activeDate)})`)
+                }
                 style={{
-                  backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                  borderColor: 'rgba(56, 189, 248, 0.35)',
+                  backgroundColor: isTargetRecorded ? 'rgba(56, 189, 248, 0.18)' : 'rgba(56, 189, 248, 0.1)',
+                  borderColor: isTargetRecorded ? 'rgba(56, 189, 248, 0.45)' : 'rgba(56, 189, 248, 0.25)',
                   color: '#38bdf8'
                 }}
               >
-                <TbCalendarCheck size={15} />
+                {isTargetRecorded ? <TbCalendarCheck size={15} /> : <TbCalendarPlus size={15} />}
               </ActionIcon>
             </Group>
           </Group>
@@ -179,8 +206,16 @@ export const WeightImcCard = ({
       <Modal
         opened={isCheckinModalOpen}
         onClose={handleCloseCheckin}
-        title={targetCheckinDate === todayStr ? 'Check-in de Peso - Hoje' : `Atualizar Peso - ${formatDateDisplay(targetCheckinDate)}`}
-        description="Informe seu peso para atualizar a trajetória e índice de massa corporal."
+        title={
+          isEditing
+            ? (targetCheckinDate === todayStr ? 'Editar Check-in de Peso - Hoje' : `Editar Peso - ${formatDateDisplay(targetCheckinDate)}`)
+            : (targetCheckinDate === todayStr ? 'Check-in de Peso - Hoje' : `Novo Check-in de Peso - ${formatDateDisplay(targetCheckinDate)}`)
+        }
+        description={
+          isEditing
+            ? 'Altere o seu peso registrado para atualizar a trajetória e índice de massa corporal.'
+            : 'Informe seu peso para atualizar a trajetória e índice de massa corporal.'
+        }
         variant="indigo"
         size="sm"
       >
@@ -236,7 +271,7 @@ export const WeightImcCard = ({
             onClick={handleConfirmCheckin}
             leftIcon={<TbCheck size={15} />}
           >
-            Salvar Check-in
+            {isEditing ? 'Atualizar Check-in' : 'Salvar Check-in'}
           </Button>
         </ModalFooter>
       </Modal>
