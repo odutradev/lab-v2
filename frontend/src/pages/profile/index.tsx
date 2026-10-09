@@ -5,6 +5,7 @@ import ProfileHeader from './components/profileHeader'
 import ProfileProgressCard from './components/profileProgressCard'
 import ProfileInfoCard from './components/profileInfoCard'
 import ProfilePhysicalCard from './components/profilePhysicalCard'
+import ProfilePerformanceWeightsCard from './components/profilePerformanceWeightsCard'
 import ProfileSecurityCard from './components/profileSecurityCard'
 import { containerStyle } from './styles'
 import useProfile from './hook'
@@ -60,6 +61,8 @@ export const ProfilePage = () => {
         />
 
         <ProfilePhysicalCard />
+
+        <ProfilePerformanceWeightsCard />
 
         <ProfileSecurityCard
           onNavigateResetPassword={handleNavigateResetPassword}

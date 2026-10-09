@@ -64,7 +64,11 @@ export const GeneralPerformanceCard = ({
 
           <Group gap={8} align="center">
             <Tooltip
-              label={`Média do mês:\n• Hábitos: ${stats.averageHabitRate}%\n• Água: ${stats.averageWaterRate}%\n• Sono: ${stats.averageSleepRate}%`}
+              label={`Média do mês:\n• Hábitos: ${stats.averageHabitRate}%\n• Água: ${stats.averageWaterRate}%\n• Sono: ${stats.averageSleepRate}%${
+                metrics?.performanceWeights
+                  ? `\n\nPesos configurados:\n• Hábitos: ${metrics.performanceWeights.habits}%\n• Água: ${metrics.performanceWeights.water}%\n• Sono: ${metrics.performanceWeights.sleep}%`
+                  : ''
+              }`}
               multiline
               withArrow
               position="bottom-end"
