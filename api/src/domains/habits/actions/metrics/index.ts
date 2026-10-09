@@ -59,6 +59,8 @@ export const getMonthlyMetricsAction = defineAction(
     const waterDailyMap = body.waterDailyMap || {}
     const defaultWaterGoal = body.waterGoalBottles || 4
     const waterExtraTargetMap = body.waterExtraTargetMap || {}
+    const sleepDailyMap = body.sleepDailyMap || {}
+    const defaultSleepGoal = body.sleepMinRecommendedHours || 7
 
     const days: MonthlyMetricsDayItem[] = []
 
@@ -85,16 +87,25 @@ export const getMonthlyMetricsAction = defineAction(
         ? Math.min(100, Math.round((waterConsumedBottles / waterGoalBottles) * 100))
         : 100
 
+      const sleepHours = sleepDailyMap[dateStr] || 0
+      const sleepGoalHours = defaultSleepGoal
+      const sleepGoalReached = sleepGoalHours > 0 ? sleepHours >= sleepGoalHours : false
+      const sleepRate = sleepGoalHours > 0
+        ? Math.min(100, Math.round((sleepHours / sleepGoalHours) * 100))
+        : 100
+
       let overallRate = 0
 
       if (!isFuture) {
+        const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
+        const sleepFraction = sleepGoalHours > 0 ? Math.min(1, sleepHours / sleepGoalHours) : 1
+
         if (totalHabits > 0) {
-          const totalGoals = totalHabits + 1
-          const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
-          const completedGoals = completedHabits + waterFraction
+          const totalGoals = totalHabits + 2
+          const completedGoals = completedHabits + waterFraction + sleepFraction
           overallRate = Math.min(100, Math.round((completedGoals / totalGoals) * 100))
         } else {
-          overallRate = waterRate
+          overallRate = Math.min(100, Math.round(((waterFraction + sleepFraction) / 2) * 100))
         }
       }
 
@@ -111,6 +122,10 @@ export const getMonthlyMetricsAction = defineAction(
         waterGoalBottles,
         waterGoalReached,
         waterRate: isFuture ? 0 : waterRate,
+        sleepHours,
+        sleepGoalHours,
+        sleepGoalReached,
+        sleepRate: isFuture ? 0 : sleepRate,
         overallRate
       })
     }
@@ -121,15 +136,17 @@ export const getMonthlyMetricsAction = defineAction(
     const sumOverall = trackedDays.reduce((acc, d) => acc + d.overallRate, 0)
     const sumHabits = trackedDays.reduce((acc, d) => acc + d.habitRate, 0)
     const sumWater = trackedDays.reduce((acc, d) => acc + d.waterRate, 0)
+    const sumSleep = trackedDays.reduce((acc, d) => acc + d.sleepRate, 0)
     const perfectDaysCount = trackedDays.filter((d) => d.overallRate >= 100).length
 
     const averageOverallRate = trackedDaysCount > 0 ? Math.round(sumOverall / trackedDaysCount) : 0
     const averageHabitRate = trackedDaysCount > 0 ? Math.round(sumHabits / trackedDaysCount) : 0
     const averageWaterRate = trackedDaysCount > 0 ? Math.round(sumWater / trackedDaysCount) : 0
+    const averageSleepRate = trackedDaysCount > 0 ? Math.round(sumSleep / trackedDaysCount) : 0
 
     const monthLabel = `${monthNamesPT[month - 1]} de ${year}`
     const formulaExplanation =
-      'O índice de constância diária pondera todos os hábitos agendados mais a sua meta diária de hidratação. Por exemplo: se você tiver 3 hábitos e 1 meta de água, o dia possui 4 metas totais (cada uma valendo 25%). Ao cumprir os 3 hábitos e atingir a meta de água, sua taxa diária é de 100%.'
+      'O índice de constância diária pondera todos os seus hábitos agendados mais a sua meta diária de hidratação e a meta de sono (mínimo de 7h). Por exemplo: se você tiver 3 hábitos, 1 meta de água e 1 meta de sono, o dia possui 5 metas totais (cada uma valendo 20%). Ao cumprir os 3 hábitos, atingir a meta de água e dormir o mínimo recomendado, sua taxa diária é de 100%.'
 
     const response: MonthlyMetricsResponse = {
       month: targetMonth,
@@ -137,6 +154,7 @@ export const getMonthlyMetricsAction = defineAction(
       averageOverallRate,
       averageHabitRate,
       averageWaterRate,
+      averageSleepRate,
       perfectDaysCount,
       trackedDaysCount,
       daysInMonth,

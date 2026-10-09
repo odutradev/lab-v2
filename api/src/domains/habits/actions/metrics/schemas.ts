@@ -9,7 +9,9 @@ export const monthlyMetricsBodySchema = registry.register('MonthlyMetricsBody', 
   month: z.string().regex(/^\d{4}-\d{2}$/, 'Mês deve estar no formato YYYY-MM').optional(),
   waterDailyMap: z.record(z.string(), z.number()).optional(),
   waterGoalBottles: z.number().min(1).max(20).optional().default(4),
-  waterExtraTargetMap: z.record(z.string(), z.number()).optional()
+  waterExtraTargetMap: z.record(z.string(), z.number()).optional(),
+  sleepDailyMap: z.record(z.string(), z.number()).optional(),
+  sleepMinRecommendedHours: z.number().min(1).max(24).optional().default(7)
 }))
 
 export const monthlyMetricsDayItemSchema = registry.register('MonthlyMetricsDayItem', z.object({
@@ -25,6 +27,10 @@ export const monthlyMetricsDayItemSchema = registry.register('MonthlyMetricsDayI
   waterGoalBottles: z.number(),
   waterGoalReached: z.boolean(),
   waterRate: z.number(),
+  sleepHours: z.number(),
+  sleepGoalHours: z.number(),
+  sleepGoalReached: z.boolean(),
+  sleepRate: z.number(),
   overallRate: z.number()
 }))
 
@@ -34,6 +40,7 @@ export const monthlyMetricsResponseSchema = registry.register('MonthlyMetricsRes
   averageOverallRate: z.number(),
   averageHabitRate: z.number(),
   averageWaterRate: z.number(),
+  averageSleepRate: z.number(),
   perfectDaysCount: z.number(),
   trackedDaysCount: z.number(),
   daysInMonth: z.number(),
