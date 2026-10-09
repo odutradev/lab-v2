@@ -43,7 +43,13 @@ const userSchema = new Schema<UserDocument>(
       waterDailyMap: { type: Schema.Types.Mixed, default: {} },
       waterExtraTargetMap: { type: Schema.Types.Mixed, default: {} },
       waterBottleMl: { type: Number, default: 500 },
-      waterTargetBottles: { type: Number, required: false }
+      waterTargetBottles: { type: Number, required: false },
+      performanceWeights: {
+        _id: false,
+        habits: { type: Number, default: 50 },
+        water: { type: Number, default: 25 },
+        sleep: { type: Number, default: 25 }
+      }
     }
   },
   {

@@ -62,6 +62,13 @@ export const getMonthlyMetricsAction = defineAction(
     const sleepDailyMap = body.sleepDailyMap || {}
     const defaultSleepGoal = body.sleepMinRecommendedHours || 7
 
+    const userWeights = body.performanceWeights || { habits: 50, water: 25, sleep: 25 }
+    const rawSum = (userWeights.habits ?? 50) + (userWeights.water ?? 25) + (userWeights.sleep ?? 25)
+    const normFactor = rawSum > 0 ? 100 / rawSum : 1
+    const weightHabits = Math.round((userWeights.habits ?? 50) * normFactor)
+    const weightWater = Math.round((userWeights.water ?? 25) * normFactor)
+    const weightSleep = Math.max(0, 100 - weightHabits - weightWater)
+
     const days: MonthlyMetricsDayItem[] = []
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -99,13 +106,23 @@ export const getMonthlyMetricsAction = defineAction(
       if (!isFuture) {
         const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
         const sleepFraction = sleepGoalHours > 0 ? Math.min(1, sleepHours / sleepGoalHours) : 1
+        const habitFraction = totalHabits > 0 ? completedHabits / totalHabits : 0
 
         if (totalHabits > 0) {
-          const totalGoals = totalHabits + 2
-          const completedGoals = completedHabits + waterFraction + sleepFraction
-          overallRate = Math.min(100, Math.round((completedGoals / totalGoals) * 100))
+          overallRate = Math.min(100, Math.round(
+            (habitFraction * weightHabits) +
+            (waterFraction * weightWater) +
+            (sleepFraction * weightSleep)
+          ))
         } else {
-          overallRate = Math.min(100, Math.round(((waterFraction + sleepFraction) / 2) * 100))
+          const healthTotal = weightWater + weightSleep
+          if (healthTotal > 0) {
+            overallRate = Math.min(100, Math.round(
+              ((waterFraction * weightWater + sleepFraction * weightSleep) / healthTotal) * 100
+            ))
+          } else {
+            overallRate = 100
+          }
         }
       }
 
@@ -146,7 +163,7 @@ export const getMonthlyMetricsAction = defineAction(
 
     const monthLabel = `${monthNamesPT[month - 1]} de ${year}`
     const formulaExplanation =
-      'O índice de constância diária pondera todos os seus hábitos agendados mais a sua meta diária de hidratação e a meta de sono (mínimo de 7h). Por exemplo: se você tiver 3 hábitos, 1 meta de água e 1 meta de sono, o dia possui 5 metas totais (cada uma valendo 20%). Ao cumprir os 3 hábitos, atingir a meta de água e dormir o mínimo recomendado, sua taxa diária é de 100%.'
+      `O índice de constância diária pondera os três pilares com base nas suas metas e pesos configurados: Hábitos (${weightHabits}%), Água (${weightWater}%) e Sono (${weightSleep}%). Cada item contribui com sua respectiva porcentagem para compor até 100% no dia.`
 
     const response: MonthlyMetricsResponse = {
       month: targetMonth,
@@ -159,6 +176,11 @@ export const getMonthlyMetricsAction = defineAction(
       trackedDaysCount,
       daysInMonth,
       formulaExplanation,
+      performanceWeights: {
+        habits: weightHabits,
+        water: weightWater,
+        sleep: weightSleep
+      },
       days
     }
 

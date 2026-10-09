@@ -5,13 +5,20 @@ import registry from '@factories/docs/registry'
 
 extendZodWithOpenApi(z)
 
+export const performanceWeightsSchema = registry.register('PerformanceWeightsPayload', z.object({
+  habits: z.number().min(0).max(100),
+  water: z.number().min(0).max(100),
+  sleep: z.number().min(0).max(100)
+}))
+
 export const monthlyMetricsBodySchema = registry.register('MonthlyMetricsBody', z.object({
   month: z.string().regex(/^\d{4}-\d{2}$/, 'Mês deve estar no formato YYYY-MM').optional(),
   waterDailyMap: z.record(z.string(), z.number()).optional(),
   waterGoalBottles: z.number().min(1).max(20).optional().default(4),
   waterExtraTargetMap: z.record(z.string(), z.number()).optional(),
   sleepDailyMap: z.record(z.string(), z.number()).optional(),
-  sleepMinRecommendedHours: z.number().min(1).max(24).optional().default(7)
+  sleepMinRecommendedHours: z.number().min(1).max(24).optional().default(7),
+  performanceWeights: performanceWeightsSchema.optional()
 }))
 
 export const monthlyMetricsDayItemSchema = registry.register('MonthlyMetricsDayItem', z.object({
@@ -45,5 +52,6 @@ export const monthlyMetricsResponseSchema = registry.register('MonthlyMetricsRes
   trackedDaysCount: z.number(),
   daysInMonth: z.number(),
   formulaExplanation: z.string(),
+  performanceWeights: performanceWeightsSchema.optional(),
   days: z.array(monthlyMetricsDayItemSchema)
 }))

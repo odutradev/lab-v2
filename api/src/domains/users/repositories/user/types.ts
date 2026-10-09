@@ -24,10 +24,17 @@ export interface UserSleepRecord {
   quality: number
 }
 
+export interface PerformanceWeights {
+  habits: number
+  water: number
+  sleep: number
+}
+
 export interface UserHealth {
   height?: number
   age?: number
   characterId?: string
+  performanceWeights?: PerformanceWeights
   weightHistory?: UserWeightRecord[]
   sleepHistory?: UserSleepRecord[]
   waterDailyMap?: Record<string, number>
