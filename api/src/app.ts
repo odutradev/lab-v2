@@ -7,6 +7,7 @@ import configureDocs from '@factories/docs'
 import habitsDomain from '@domains/habits'
 import systemDomain from '@domains/system'
 import configureCors from '@config/cors'
+import challengesDomain from '@domains/challenges'
 import googleDomain from '@domains/google'
 import usersDomain from '@domains/users'
 
@@ -14,7 +15,7 @@ import type { Application } from 'express'
 
 const logger = createLocalLogger('app')
 
-const domains = [systemDomain, usersDomain, habitsDomain, googleDomain]
+const domains = [systemDomain, usersDomain, habitsDomain, challengesDomain, googleDomain]
 
 const buildApp = (): Application => {
   const app = express()
