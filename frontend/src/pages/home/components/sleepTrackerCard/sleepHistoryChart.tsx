@@ -38,7 +38,9 @@ export const SleepHistoryChart = ({
   selectedYear,
   selectedMonth,
   targetDate,
-  onOpenCheckinModal
+  hoveredDate,
+  onOpenCheckinModal,
+  onHoverDate
 }: SleepHistoryChartProps) => {
   const todayStr = getTodayDateString()
   const activeTargetDate = targetDate || todayStr
@@ -148,6 +150,15 @@ export const SleepHistoryChart = ({
     }
   }, [records, selectedYear, selectedMonth, todayStr, activeTargetDate])
 
+  const hoveredX = useMemo(() => {
+    if (!hoveredDate) return null
+    const monthPrefix = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`
+    if (!hoveredDate.startsWith(monthPrefix)) return null
+    const dayNum = parseInt(hoveredDate.split('-')[2], 10)
+    if (isNaN(dayNum) || dayNum < 1 || dayNum > daysInMonth) return null
+    return Math.round((14 + ((dayNum - 1) / (daysInMonth - 1)) * (width - 28)) * 10) / 10
+  }, [hoveredDate, selectedYear, selectedMonth, daysInMonth, width])
+
   const hasData = activePoints.length > 0
   const topQualityOpt = getSleepQualityOption(mostFrequentQuality)
 
@@ -220,6 +231,7 @@ export const SleepHistoryChart = ({
         <svg
           viewBox={`0 0 ${width} ${height}`}
           style={{ width: '100%', height: '100%', display: 'block' }}
+          onMouseLeave={() => onHoverDate?.(null)}
         >
           <defs>
             <linearGradient id="sleepAreaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -233,6 +245,19 @@ export const SleepHistoryChart = ({
               <stop offset="100%" stopColor="#e879f9" />
             </linearGradient>
           </defs>
+
+          {hoveredX !== null && (
+            <line
+              x1={hoveredX}
+              y1={0}
+              x2={hoveredX}
+              y2={height}
+              stroke="rgba(192, 132, 252, 0.45)"
+              strokeDasharray="2 2"
+              strokeWidth="1.2"
+              pointerEvents="none"
+            />
+          )}
 
           {/* Faixa ideal da meta (7h - 9h) */}
           <rect
@@ -272,7 +297,7 @@ export const SleepHistoryChart = ({
           )}
 
           {activePoints.map((point) => {
-            const isHighlighted = point.isTarget || (point.isToday && !targetDate)
+            const isHighlighted = point.isTarget || (point.isToday && !targetDate) || point.date === hoveredDate
             const qualityOpt = getSleepQualityOption(point.quality)
 
             return (
@@ -285,14 +310,16 @@ export const SleepHistoryChart = ({
                 <g
                   style={{ cursor: 'pointer' }}
                   onClick={() => onOpenCheckinModal(point.date)}
+                  onMouseEnter={() => onHoverDate?.(point.date)}
+                  onMouseLeave={() => onHoverDate?.(null)}
                 >
                   <circle
                     cx={point.x}
                     cy={point.y}
-                    r={isHighlighted ? 4.2 : 2.5}
+                    r={isHighlighted ? 4.4 : 2.5}
                     fill={isHighlighted ? '#c084fc' : qualityOpt.color}
                     stroke={isHighlighted ? '#ffffff' : '#0f172a'}
-                    strokeWidth={isHighlighted ? 1.5 : 1.2}
+                    strokeWidth={isHighlighted ? 1.6 : 1.2}
                   />
                 </g>
               </Tooltip>

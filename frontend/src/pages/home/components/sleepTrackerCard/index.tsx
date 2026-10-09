@@ -34,7 +34,9 @@ import type { SleepTrackerCardProps } from './types'
 export const SleepTrackerCard = ({
   sleepHistory,
   selectedDate,
-  onSaveSleep
+  hoveredDate,
+  onSaveSleep,
+  onHoverDate
 }: SleepTrackerCardProps) => {
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
@@ -156,7 +158,9 @@ export const SleepTrackerCard = ({
             selectedYear={selectedYear}
             selectedMonth={selectedMonth}
             targetDate={selectedDate}
+            hoveredDate={hoveredDate}
             onOpenCheckinModal={handleOpenCheckin}
+            onHoverDate={onHoverDate}
           />
         </CardContent>
       </Card>

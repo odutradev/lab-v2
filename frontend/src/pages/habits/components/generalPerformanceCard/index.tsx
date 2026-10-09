@@ -9,13 +9,17 @@ interface GeneralPerformanceCardProps {
   metrics: MonthlyMetricsResponse | null
   isLoading?: boolean
   selectedDate?: string
+  hoveredDate?: string | null
   onSelectDate?: (date: string) => void
+  onHoverDate?: (date: string | null) => void
 }
 
 export const GeneralPerformanceCard = ({
   metrics,
   selectedDate,
-  onSelectDate
+  hoveredDate,
+  onSelectDate,
+  onHoverDate
 }: GeneralPerformanceCardProps) => {
   const days = metrics?.days ?? []
 
@@ -102,6 +106,7 @@ export const GeneralPerformanceCard = ({
           </Group>
 
           <Box
+            onMouseLeave={() => onHoverDate?.(null)}
             style={{
               display: 'flex',
               alignItems: 'flex-end',
@@ -116,6 +121,7 @@ export const GeneralPerformanceCard = ({
           >
             {days.map((item) => {
               const isSelected = item.date === selectedDate
+              const isHovered = item.date === hoveredDate
               const barHeight = item.isFuture
                 ? 4
                 : item.overallRate === 0
@@ -146,6 +152,7 @@ export const GeneralPerformanceCard = ({
                 >
                   <Box
                     onClick={() => onSelectDate?.(item.date)}
+                    onMouseEnter={() => onHoverDate?.(item.date)}
                     style={{
                       flex: 1,
                       minWidth: 0,
@@ -157,14 +164,18 @@ export const GeneralPerformanceCard = ({
                       opacity: item.isFuture ? 0.35 : 1,
                       border: isSelected
                         ? '1.5px solid #ffffff'
-                        : item.isToday
-                          ? '1.5px solid #c084fc'
-                          : 'none',
+                        : isHovered
+                          ? '1.5px solid #38bdf8'
+                          : item.isToday
+                            ? '1.5px solid #c084fc'
+                            : 'none',
                       boxShadow: isSelected
                         ? '0 0 8px rgba(255, 255, 255, 0.5)'
-                        : item.overallRate >= 100
-                          ? '0 0 6px rgba(16, 185, 129, 0.4)'
-                          : 'none',
+                        : isHovered
+                          ? '0 0 8px rgba(56, 189, 248, 0.6)'
+                          : item.overallRate >= 100
+                            ? '0 0 6px rgba(16, 185, 129, 0.4)'
+                            : 'none',
                       transition: 'all 0.15s ease'
                     }}
                   />

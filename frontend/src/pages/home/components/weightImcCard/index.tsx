@@ -26,7 +26,9 @@ export const WeightImcCard = ({
   heightCm,
   weightHistory,
   selectedDate,
-  onSaveWeight
+  hoveredDate,
+  onSaveWeight,
+  onHoverDate
 }: WeightImcCardProps) => {
   const { showToast } = useToastStore()
   const todayStr = getTodayDateString()
@@ -160,7 +162,9 @@ export const WeightImcCard = ({
               selectedYear={selectedYear}
               selectedMonth={selectedMonth}
               targetDate={selectedDate}
+              hoveredDate={hoveredDate}
               onOpenCheckinModal={handleOpenCheckin}
+              onHoverDate={onHoverDate}
             />
           ) : (
             <ImcGaugeChart

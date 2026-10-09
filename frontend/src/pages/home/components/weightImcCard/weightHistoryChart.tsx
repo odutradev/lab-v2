@@ -36,7 +36,9 @@ export const WeightHistoryChart = ({
   selectedYear,
   selectedMonth,
   targetDate,
-  onOpenCheckinModal
+  hoveredDate,
+  onOpenCheckinModal,
+  onHoverDate
 }: WeightHistoryChartProps) => {
   const todayStr = getTodayDateString()
   const activeTargetDate = targetDate || todayStr
@@ -145,6 +147,15 @@ export const WeightHistoryChart = ({
     }
   }, [records, selectedYear, selectedMonth, heightCm, todayStr, activeTargetDate])
 
+  const hoveredX = useMemo(() => {
+    if (!hoveredDate) return null
+    const monthPrefix = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`
+    if (!hoveredDate.startsWith(monthPrefix)) return null
+    const dayNum = parseInt(hoveredDate.split('-')[2], 10)
+    if (isNaN(dayNum) || dayNum < 1 || dayNum > monthDaysCount) return null
+    return Math.round((14 + ((dayNum - 1) / (monthDaysCount - 1)) * (width - 28)) * 10) / 10
+  }, [hoveredDate, selectedYear, selectedMonth, monthDaysCount, width])
+
   const hasData = activePoints.length > 0
 
   return (
@@ -194,6 +205,7 @@ export const WeightHistoryChart = ({
         <svg
           viewBox={`0 0 ${width} ${height}`}
           style={{ width: '100%', height: '100%', display: 'block' }}
+          onMouseLeave={() => onHoverDate?.(null)}
         >
           <defs>
             <linearGradient id="monthWeightAreaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -214,6 +226,19 @@ export const WeightHistoryChart = ({
               <stop offset="100%" stopColor="#c084fc" />
             </linearGradient>
           </defs>
+
+          {hoveredX !== null && (
+            <line
+              x1={hoveredX}
+              y1={0}
+              x2={hoveredX}
+              y2={height}
+              stroke="rgba(56, 189, 248, 0.45)"
+              strokeDasharray="2 2"
+              strokeWidth="1.2"
+              pointerEvents="none"
+            />
+          )}
 
           <line
             x1={14}
@@ -250,7 +275,7 @@ export const WeightHistoryChart = ({
           )}
 
           {activePoints.map((p) => {
-            const isHighlighted = p.isTarget || (p.isToday && !targetDate)
+            const isHighlighted = p.isTarget || (p.isToday && !targetDate) || p.date === hoveredDate
 
             return (
               <Tooltip
@@ -262,13 +287,15 @@ export const WeightHistoryChart = ({
                 <g
                   style={{ cursor: 'pointer' }}
                   onClick={() => onOpenCheckinModal(p.date)}
+                  onMouseEnter={() => onHoverDate?.(p.date)}
+                  onMouseLeave={() => onHoverDate?.(null)}
                 >
                   <line
                     x1={p.x}
                     y1={p.weightY}
                     x2={p.x}
                     y2={p.imcY}
-                    stroke={isHighlighted ? 'rgba(56, 189, 248, 0.4)' : 'rgba(255, 255, 255, 0.08)'}
+                    stroke={isHighlighted ? 'rgba(56, 189, 248, 0.5)' : 'rgba(255, 255, 255, 0.08)'}
                     strokeDasharray="1 2"
                   />
 
@@ -276,20 +303,20 @@ export const WeightHistoryChart = ({
                   <circle
                     cx={p.x}
                     cy={p.weightY}
-                    r={isHighlighted ? 4.2 : 2.5}
+                    r={isHighlighted ? 4.4 : 2.5}
                     fill={isHighlighted ? '#38bdf8' : '#0b1329'}
                     stroke={isHighlighted ? '#ffffff' : '#38bdf8'}
-                    strokeWidth={isHighlighted ? 1.5 : 1.2}
+                    strokeWidth={isHighlighted ? 1.6 : 1.2}
                   />
 
                   {/* Ponto de IMC */}
                   <circle
                     cx={p.x}
                     cy={p.imcY}
-                    r={isHighlighted ? 4.0 : 2.2}
+                    r={isHighlighted ? 4.2 : 2.2}
                     fill={isHighlighted ? '#c084fc' : '#0b1329'}
                     stroke={isHighlighted ? '#ffffff' : '#c084fc'}
-                    strokeWidth={isHighlighted ? 1.4 : 1.2}
+                    strokeWidth={isHighlighted ? 1.5 : 1.2}
                   />
                 </g>
               </Tooltip>

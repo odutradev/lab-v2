@@ -74,6 +74,7 @@ export const HabitsPage = () => {
   } = useHealthStore()
 
   const [metricsRevision, setMetricsRevision] = useState(0)
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null)
   const currentMonth = selectedDate.slice(0, 7)
 
   const { metrics, isLoading: isMetricsLoading } = useMonthlyMetrics({
@@ -224,7 +225,9 @@ export const HabitsPage = () => {
               metrics={metrics}
               isLoading={isMetricsLoading}
               selectedDate={selectedDate}
+              hoveredDate={hoveredDate}
               onSelectDate={handleSelectDate}
+              onHoverDate={setHoveredDate}
             />
 
             {isBioConfigured ? (
@@ -233,13 +236,17 @@ export const HabitsPage = () => {
                   heightCm={healthProfile.height}
                   weightHistory={weightHistory}
                   selectedDate={selectedDate}
+                  hoveredDate={hoveredDate}
                   onSaveWeight={handleSaveWeightWithMetrics}
+                  onHoverDate={setHoveredDate}
                 />
 
                 <CompactSleepCard
                   sleepHistory={sleepHistory}
                   selectedDate={selectedDate}
+                  hoveredDate={hoveredDate}
                   onSaveSleep={handleSaveSleepWithMetrics}
+                  onHoverDate={setHoveredDate}
                 />
 
                 <CompactWaterCard
