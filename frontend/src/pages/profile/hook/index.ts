@@ -10,6 +10,7 @@ import {
 } from '@actions/google/calendar'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
+import { STORAGE_KEYS } from '@api/config'
 import { getInitials } from '@utils/string'
 
 import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
@@ -37,6 +38,8 @@ export const useProfile = (): UseProfileReturn => {
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false)
   const [isEditCalendarNameModalOpen, setIsEditCalendarNameModalOpen] = useState(false)
   const [calendarNameInput, setCalendarNameInput] = useState('')
+  const [isClearCacheModalOpen, setIsClearCacheModalOpen] = useState(false)
+  const [isClearingCache, setIsClearingCache] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -181,6 +184,54 @@ export const useProfile = (): UseProfileReturn => {
     }
   }, [showToast])
 
+  const openClearCacheModal = useCallback(() => {
+    setIsClearCacheModalOpen(true)
+  }, [])
+
+  const closeClearCacheModal = useCallback(() => {
+    if (!isClearingCache) {
+      setIsClearCacheModalOpen(false)
+    }
+  }, [isClearingCache])
+
+  const handleClearCache = useCallback(async () => {
+    try {
+      setIsClearingCache(true)
+
+      if ('caches' in window) {
+        const cacheNames = await caches.keys()
+        await Promise.all(cacheNames.map((name) => caches.delete(name)))
+      }
+
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        await Promise.all(registrations.map((registration) => registration.unregister()))
+      }
+
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN)
+      const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
+      const savedUser = localStorage.getItem(STORAGE_KEYS.USER)
+
+      localStorage.clear()
+
+      if (token) localStorage.setItem(STORAGE_KEYS.TOKEN, token)
+      if (refreshToken) localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken)
+      if (savedUser) localStorage.setItem(STORAGE_KEYS.USER, savedUser)
+
+      sessionStorage.clear()
+
+      showToast('Cache local limpo com sucesso!', 'success')
+      setIsClearCacheModalOpen(false)
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+    } catch {
+      showToast('Erro ao limpar cache local.', 'error')
+      setIsClearingCache(false)
+    }
+  }, [showToast])
+
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Não informado'
     const date = new Date(dateStr)
@@ -215,6 +266,11 @@ export const useProfile = (): UseProfileReturn => {
     handleConnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
+    isClearCacheModalOpen,
+    isClearingCache,
+    openClearCacheModal,
+    closeClearCacheModal,
+    handleClearCache,
     formatDate
   }
 }

@@ -34,6 +34,11 @@ export const ProfilePage = () => {
     handleConnectGoogleCalendar,
     handleNavigateResetPassword,
     handleNavigateHome,
+    isClearCacheModalOpen,
+    isClearingCache,
+    openClearCacheModal,
+    closeClearCacheModal,
+    handleClearCache,
     formatDate
   } = useProfile()
 
@@ -84,6 +89,11 @@ export const ProfilePage = () => {
           onCloseEditCalendarNameModal={closeEditCalendarNameModal}
           onSaveCalendarName={handleSaveCalendarName}
           onRecreateCalendar={handleRecreateCalendar}
+          isClearCacheModalOpen={isClearCacheModalOpen}
+          isClearingCache={isClearingCache}
+          onOpenClearCacheModal={openClearCacheModal}
+          onCloseClearCacheModal={closeClearCacheModal}
+          onConfirmClearCache={handleClearCache}
         />
 
         <Text size="xs" c="dimmed" ta="center" pb="sm">

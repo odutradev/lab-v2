@@ -39,7 +39,12 @@ export const ProfileSecurityCard = ({
   onOpenEditCalendarNameModal,
   onCloseEditCalendarNameModal,
   onSaveCalendarName,
-  onRecreateCalendar
+  onRecreateCalendar,
+  isClearCacheModalOpen,
+  isClearingCache = false,
+  onOpenClearCacheModal,
+  onCloseClearCacheModal,
+  onConfirmClearCache
 }: ProfileSecurityCardProps) => {
   const isConnected = !!calendarStatus?.connected
   const isCalendarDeleted = !!calendarStatus?.calendarDeleted
@@ -230,9 +235,49 @@ export const ProfileSecurityCard = ({
                 Redefinir Senha
               </Button>
             </Group>
+
+            <Divider color="rgba(255, 255, 255, 0.08)" />
+
+            <Group justify="space-between" align="center" wrap="wrap" gap="md">
+              <Group gap="md">
+                <ThemeIcon size="lg" radius="md" variant="light" color="indigo">
+                  <TbTrash size={20} />
+                </ThemeIcon>
+                <Box>
+                  <Text size="sm" fw={600} c="white">
+                    Cache Local
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Limpe arquivos temporários e dados em cache armazenados no navegador
+                  </Text>
+                </Box>
+              </Group>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onOpenClearCacheModal}
+                leftIcon={<TbTrash size={16} />}
+              >
+                Limpar Cache
+              </Button>
+            </Group>
           </Stack>
         </CardContent>
       </Card>
+
+      <Modal
+        opened={isClearCacheModalOpen}
+        onClose={onCloseClearCacheModal}
+        type="confirm"
+        variant="warning"
+        title="Limpar Cache Local"
+        description="Tem certeza que deseja limpar o cache local? Arquivos em cache e dados temporários serão removidos e a página será recarregada. Sua sessão permanecerá ativa."
+        confirmText="Limpar Cache"
+        cancelText="Cancelar"
+        onConfirm={onConfirmClearCache}
+        isConfirmLoading={isClearingCache}
+      />
 
       <Modal
         opened={isDisconnectModalOpen}

@@ -24,5 +24,10 @@ export interface UseProfileReturn {
   handleConnectGoogleCalendar: () => Promise<void>
   handleNavigateResetPassword: () => void
   handleNavigateHome: () => void
+  isClearCacheModalOpen: boolean
+  isClearingCache: boolean
+  openClearCacheModal: () => void
+  closeClearCacheModal: () => void
+  handleClearCache: () => Promise<void>
   formatDate: (dateStr?: string) => string
 }

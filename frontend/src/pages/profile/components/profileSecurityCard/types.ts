@@ -20,4 +20,9 @@ export interface ProfileSecurityCardProps {
   onCloseEditCalendarNameModal: () => void
   onSaveCalendarName: () => void
   onRecreateCalendar?: () => void
+  isClearCacheModalOpen: boolean
+  isClearingCache?: boolean
+  onOpenClearCacheModal: () => void
+  onCloseClearCacheModal: () => void
+  onConfirmClearCache: () => void
 }
