@@ -25,9 +25,22 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
       - FRONTEND_URL=${FRONTEND_URL}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+    depends_on:
+      - redis
     dns:
       - 8.8.8.8
       - 1.1.1.1
+    networks:
+      - lab-network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
     networks:
       - lab-network
 
@@ -44,6 +57,10 @@ services:
       - api
     networks:
       - lab-network
+
+volumes:
+  redis-data:
+    driver: local
 
 networks:
   lab-network:
