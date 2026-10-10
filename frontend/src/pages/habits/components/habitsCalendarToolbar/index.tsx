@@ -31,21 +31,37 @@ export const HabitsCalendarToolbar = ({
     <Box
       pb="md"
       style={{
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        width: '100%',
+        minWidth: 0,
+        overflowX: 'auto',
+        scrollbarWidth: 'none'
       }}
     >
-      <Group justify="space-between" align="center" wrap="wrap" gap="sm">
-        <Group gap="xs" align="center" wrap="wrap">
+      <Group
+        justify="space-between"
+        align="center"
+        wrap="nowrap"
+        gap="xs"
+        style={{ width: '100%', minWidth: 0 }}
+      >
+        <Group
+          gap="xs"
+          align="center"
+          wrap="nowrap"
+          style={{ minWidth: 0, flexShrink: 1, overflow: 'hidden' }}
+        >
           <Button
             variant={isToday ? 'outline' : 'secondary'}
             size="sm"
             h={TOOLBAR_CONTROL_HEIGHT}
             onClick={onToday}
+            style={{ flexShrink: 0 }}
           >
             Hoje
           </Button>
 
-          <Group gap={4}>
+          <Group gap={2} wrap="nowrap" style={{ flexShrink: 0 }}>
             <ActionIcon
               variant="subtle"
               size="md"
@@ -71,20 +87,38 @@ export const HabitsCalendarToolbar = ({
             </ActionIcon>
           </Group>
 
-          <Text fw={700} size="md" c="white" ml="xs">
+          <Text
+            fw={700}
+            size="md"
+            c="white"
+            ml={4}
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minWidth: 0
+            }}
+          >
             {headerTitle}
           </Text>
         </Group>
 
-        <Group gap="xs" align="center" wrap="wrap" style={{ maxWidth: '100%' }}>
-          <SegmentedControl
-            value={viewMode}
-            onChange={(val) => onViewModeChange(val as CalendarViewMode)}
-            data={viewModeOptions}
-            size="sm"
-            height={TOOLBAR_CONTROL_HEIGHT}
-            radius="md"
-          />
+        <Group
+          gap="xs"
+          align="center"
+          wrap="nowrap"
+          style={{ flexShrink: 0 }}
+        >
+          <Box style={{ flexShrink: 0 }}>
+            <SegmentedControl
+              value={viewMode}
+              onChange={(val) => onViewModeChange(val as CalendarViewMode)}
+              data={viewModeOptions}
+              size="sm"
+              height={TOOLBAR_CONTROL_HEIGHT}
+              radius="md"
+            />
+          </Box>
 
           <Tooltip label="Configurar agendas" withArrow position="bottom">
             <ActionIcon
@@ -95,6 +129,7 @@ export const HabitsCalendarToolbar = ({
               radius="md"
               onClick={onOpenSettingsModal}
               aria-label="Configurar agendas"
+              style={{ flexShrink: 0 }}
             >
               <TbSettings size={18} />
             </ActionIcon>
