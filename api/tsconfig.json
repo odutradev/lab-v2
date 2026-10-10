@@ -20,6 +20,8 @@
       "@email/*": ["./src/email/*"],
       "@storage/*": ["./src/storage/*"],
       "@google/*": ["./src/google/*"],
+      "@cache": ["./src/cache/index.ts"],
+      "@cache/*": ["./src/cache/*"],
       "@config/*": ["./src/config/*"],
       "@utils/*": ["./src/utils/*"]
     },

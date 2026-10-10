@@ -5,6 +5,7 @@ import 'dotenv/config'
 import createLocalLogger from '@utils/localLogger'
 import connectMongoose from '@database/connect'
 import { connectEmail } from '@email/connect'
+import { connectRedis, disconnectRedis } from '@cache'
 import buildApp from './app'
 
 import type { Server } from 'http'
@@ -19,6 +20,7 @@ const startServer = async (): Promise<void> => {
   await Promise.all([
     connectMongoose(),
     connectEmail(),
+    connectRedis()
   ])
 
   server.listen(port, () => {
@@ -34,11 +36,14 @@ const startServer = async (): Promise<void> => {
       }
 
       try {
-        await mongoose.disconnect()
-        localLogger.info('Mongoose disconnected. Server shut down successfully.')
+        await Promise.allSettled([
+          mongoose.disconnect(),
+          disconnectRedis()
+        ])
+        localLogger.info('Databases and cache disconnected. Server shut down successfully.')
         process.exit(0)
       } catch (disconnectError) {
-        localLogger.error(`Error disconnecting Mongoose: ${(disconnectError as Error).message}`)
+        localLogger.error(`Error disconnecting services: ${(disconnectError as Error).message}`)
         process.exit(1)
       }
     })
