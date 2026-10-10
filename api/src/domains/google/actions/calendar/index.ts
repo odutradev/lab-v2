@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 
 import {
   getCalendarAuthUrlResponseSchema,
+  getCalendarAuthUrlQuerySchema,
   calendarCallbackQuerySchema,
   calendarStatusResponseSchema,
   disconnectCalendarBodySchema,
@@ -35,6 +36,7 @@ import createAuditLog from '@createAuditLog'
 
 import type {
   GetCalendarAuthUrlResponse,
+  GetCalendarAuthUrlQuery,
   CalendarCallbackQuery,
   CalendarStatusResponse,
   DisconnectCalendarBody,
@@ -51,16 +53,32 @@ import type {
 const logger = createLocalLogger('google-calendar-actions')
 
 const getFrontendBaseUrl = (): string => {
+  if (process.env.FRONTEND_URL) {
+    return process.env.FRONTEND_URL.replace(/\/$/, '')
+  }
+
   const corsOrigins = (process.env.CORS_ORIGIN || '')
     .split(',')
     .map((o) => o.trim().replace(/\/$/, ''))
     .filter((o) => o && o !== '*')
 
+  const isProduction =
+    process.env.NODE_ENV === 'production' ||
+    process.env.PRODUCTION === 'true'
+
+  if (isProduction) {
+    const prodOrigin = corsOrigins.find((o) => !o.includes('localhost') && !o.includes('127.0.0.1'))
+    if (prodOrigin) return prodOrigin
+  }
+
   return corsOrigins[0] || 'http://localhost:8080'
 }
 
 export const getCalendarAuthUrlAction = defineAction<
-  { body: unknown; params: unknown; query: unknown; response: GetCalendarAuthUrlResponse }
+  { body: unknown; params: unknown; query: GetCalendarAuthUrlQuery; response: GetCalendarAuthUrlResponse },
+  any,
+  any,
+  { userId: string }
 >(
   {
     method: 'get',
@@ -68,6 +86,9 @@ export const getCalendarAuthUrlAction = defineAction<
     summary: 'Gera a URL de autorização OAuth para o Google Calendar',
     tags: ['Google'],
     middlewares: [authMiddleware],
+    schema: {
+      query: getCalendarAuthUrlQuerySchema
+    },
     responses: {
       200: {
         description: 'URL de autorização gerada com sucesso',
@@ -79,13 +100,30 @@ export const getCalendarAuthUrlAction = defineAction<
       }
     }
   },
-  async ({ ids, manageError }) => {
+  async ({ ids, query, defaultExpress, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const originHeader = defaultExpress?.req?.headers?.origin as string | undefined
+    const refererHeader = defaultExpress?.req?.headers?.referer as string | undefined
+
+    let clientOrigin: string | undefined
+
+    if (query?.origin) {
+      clientOrigin = query.origin.trim().replace(/\/$/, '')
+    } else if (originHeader) {
+      clientOrigin = originHeader.trim().replace(/\/$/, '')
+    } else if (refererHeader) {
+      try {
+        const parsed = new URL(refererHeader)
+        clientOrigin = parsed.origin
+      } catch {}
+    }
 
     const secret = process.env.JWT_SECRET as string
     const statePayload: GoogleOAuthStatePayload = {
       userId: ids.userId,
-      action: 'calendar_sync'
+      action: 'calendar_sync',
+      frontendUrl: clientOrigin
     }
 
     const state = jwt.sign(statePayload, secret, { expiresIn: '15m' })
@@ -102,8 +140,22 @@ const handleOAuthCallback = async ({
   query: CalendarCallbackQuery
   defaultExpress: { req: unknown; res: import('express').Response }
 }) => {
-  const frontendUrl = getFrontendBaseUrl()
+  const fallbackFrontendUrl = getFrontendBaseUrl()
   const { code, state, error } = query
+
+  let statePayload: GoogleOAuthStatePayload | undefined
+  if (state) {
+    try {
+      const secret = process.env.JWT_SECRET as string
+      statePayload = jwt.verify(state, secret) as GoogleOAuthStatePayload
+    } catch (err) {
+      logger.error('Google OAuth callback invalid state:', err)
+      defaultExpress.res.redirect(`${fallbackFrontendUrl}/profile?google=invalid_state`)
+      return
+    }
+  }
+
+  const frontendUrl = statePayload?.frontendUrl || fallbackFrontendUrl
 
   if (error) {
     logger.error('Google OAuth callback returned error:', error)
@@ -111,19 +163,9 @@ const handleOAuthCallback = async ({
     return
   }
 
-  if (!code || !state) {
+  if (!code || !statePayload) {
     logger.error('Google OAuth callback missing code or state')
     defaultExpress.res.redirect(`${frontendUrl}/profile?google=missing_params`)
-    return
-  }
-
-  let statePayload: GoogleOAuthStatePayload
-  try {
-    const secret = process.env.JWT_SECRET as string
-    statePayload = jwt.verify(state, secret) as GoogleOAuthStatePayload
-  } catch (err) {
-    logger.error('Google OAuth callback invalid state:', err)
-    defaultExpress.res.redirect(`${frontendUrl}/profile?google=invalid_state`)
     return
   }
 

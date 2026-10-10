@@ -12,6 +12,13 @@ export const getCalendarAuthUrlResponseSchema = registry.register(
   })
 )
 
+export const getCalendarAuthUrlQuerySchema = registry.register(
+  'GetCalendarAuthUrlQuery',
+  z.object({
+    origin: z.string().optional()
+  })
+)
+
 export const calendarCallbackQuerySchema = registry.register(
   'CalendarCallbackQuery',
   z.object({

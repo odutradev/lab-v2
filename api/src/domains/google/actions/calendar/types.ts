@@ -1,6 +1,7 @@
 import type { z } from 'zod'
 import type {
   getCalendarAuthUrlResponseSchema,
+  getCalendarAuthUrlQuerySchema,
   calendarCallbackQuerySchema,
   calendarStatusResponseSchema,
   disconnectCalendarBodySchema,
@@ -15,6 +16,7 @@ import type {
 } from './schemas'
 
 export type GetCalendarAuthUrlResponse = z.infer<typeof getCalendarAuthUrlResponseSchema>
+export type GetCalendarAuthUrlQuery = z.infer<typeof getCalendarAuthUrlQuerySchema>
 export type CalendarCallbackQuery = z.infer<typeof calendarCallbackQuerySchema>
 export type CalendarStatusResponse = z.infer<typeof calendarStatusResponseSchema>
 export type DisconnectCalendarBody = z.infer<typeof disconnectCalendarBodySchema>
@@ -30,4 +32,5 @@ export type UpdateSelectedCalendarsResponse = z.infer<typeof updateSelectedCalen
 export interface GoogleOAuthStatePayload {
   userId: string
   action: 'calendar_sync'
+  frontendUrl?: string
 }
