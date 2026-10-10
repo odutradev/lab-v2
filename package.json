@@ -4,8 +4,9 @@
   "private": true,
   "description": "Lab V2 monorepo workspace",
   "scripts": {
-    "dev": "concurrently -n \"api,frontend\" -c \"cyan,green\" \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev": "concurrently -n \"redis,api,frontend\" -c \"magenta,cyan,green\" \"npm run dev:redis\" \"npm run dev:api\" \"npm run dev:frontend\"",
     "publish": "npx project-publisher --bump-package --push",
+    "dev:redis": "node scripts/redis-server.mjs",
     "dev:api": "npm --prefix api run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "build": "npm run build:api && npm run build:frontend",
@@ -16,6 +17,7 @@
     "start": "npm --prefix api run start"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "redis-memory-server": "^0.17.1"
   }
 }
