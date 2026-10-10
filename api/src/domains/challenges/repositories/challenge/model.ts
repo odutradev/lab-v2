@@ -2,12 +2,23 @@ import { Schema, model } from 'mongoose'
 
 import type { ChallengeDocument } from '@domains/challenges/repositories/challenge/types'
 
+const checklistItemSchema = new Schema(
+  {
+    id: { type: String, required: true },
+    text: { type: String, required: true, trim: true },
+    completed: { type: Boolean, default: false }
+  },
+  { _id: false }
+)
+
 const challengeSchema = new Schema<ChallengeDocument>(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: false },
     motivation: { type: String, required: false },
+    notes: { type: String, required: false },
+    checklist: { type: [checklistItemSchema], default: [] },
     emoji: { type: String, default: '🎯' },
     targetDays: { type: Number, required: true, min: 1 },
     startDate: { type: String, required: true },

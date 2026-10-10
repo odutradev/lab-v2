@@ -78,7 +78,9 @@ export const createChallengeAction = defineAction(
       startDate: payload.startDate,
       type: payload.type,
       resetOnMiss: payload.resetOnMiss,
-      freezeDaysPerMonth: payload.freezeDaysPerMonth
+      freezeDaysPerMonth: payload.freezeDaysPerMonth,
+      notes: payload.notes,
+      checklist: payload.checklist
     })
 
     await createAuditLog({

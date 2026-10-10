@@ -3,11 +3,19 @@ import type { HydratedDocument, Document, Types } from 'mongoose'
 export type ChallengeStatus = 'active' | 'completed' | 'paused'
 export type ChallengeType = 'streak' | 'accumulative'
 
+export interface ChallengeChecklistItem {
+  id: string
+  text: string
+  completed: boolean
+}
+
 export interface Challenge {
   userId: Types.ObjectId | string
   title: string
   description?: string
   motivation?: string
+  notes?: string
+  checklist?: ChallengeChecklistItem[]
   emoji: string
   targetDays: number
   startDate: string
@@ -32,6 +40,8 @@ export interface CreateChallengePayload {
   title: string
   description?: string
   motivation?: string
+  notes?: string
+  checklist?: ChallengeChecklistItem[]
   emoji?: string
   targetDays: number
   startDate?: string
@@ -44,6 +54,8 @@ export interface UpdateChallengePayload {
   title?: string
   description?: string
   motivation?: string
+  notes?: string
+  checklist?: ChallengeChecklistItem[]
   emoji?: string
   targetDays?: number
   startDate?: string

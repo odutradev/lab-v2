@@ -25,6 +25,8 @@ const challengeRepository = {
       title: payload.title.trim(),
       description: payload.description?.trim() || undefined,
       motivation: payload.motivation?.trim() || undefined,
+      notes: payload.notes?.trim() || undefined,
+      checklist: payload.checklist || [],
       emoji: payload.emoji?.trim() || '🎯',
       targetDays: payload.targetDays,
       startDate,
@@ -78,6 +80,8 @@ const challengeRepository = {
     if (payload.title !== undefined) updateData.title = payload.title.trim()
     if (payload.description !== undefined) updateData.description = payload.description.trim() || undefined
     if (payload.motivation !== undefined) updateData.motivation = payload.motivation.trim() || undefined
+    if (payload.notes !== undefined) updateData.notes = payload.notes.trim() || undefined
+    if (payload.checklist !== undefined) updateData.checklist = payload.checklist
     if (payload.emoji !== undefined) updateData.emoji = payload.emoji.trim() || '🎯'
     if (payload.targetDays !== undefined) updateData.targetDays = payload.targetDays
     if (payload.startDate !== undefined) updateData.startDate = payload.startDate
@@ -225,6 +229,28 @@ const challengeRepository = {
       challenge: { ...result, id: result._id.toString() } as unknown as ChallengeModelType,
       frozen: true
     }
+  },
+
+  toggleChecklistItem: async (
+    id: string,
+    userId: string,
+    itemId: string
+  ): Promise<ChallengeModelType | null> => {
+    const challenge = await ChallengeModel.findOne({
+      _id: toObjectId(id),
+      userId: toObjectId(userId)
+    })
+
+    if (!challenge) return null
+
+    const checklist = challenge.checklist || []
+    challenge.checklist = checklist.map((item) =>
+      item.id === itemId ? { id: item.id, text: item.text, completed: !item.completed } : item
+    )
+
+    await challenge.save()
+    const result = challenge.toObject()
+    return { ...result, id: result._id.toString() } as unknown as ChallengeModelType
   }
 }
 

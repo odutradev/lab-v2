@@ -5,6 +5,15 @@ import registry from '@factories/docs/registry'
 
 extendZodWithOpenApi(z)
 
+export const challengeChecklistItemSchema = registry.register(
+  'ChallengeChecklistItem',
+  z.object({
+    id: z.string(),
+    text: z.string().min(1, 'Texto do item é obrigatório').max(200),
+    completed: z.boolean().default(false)
+  })
+)
+
 export const challengeResponseSchema = registry.register(
   'ChallengeResponse',
   z.object({
@@ -13,6 +22,8 @@ export const challengeResponseSchema = registry.register(
     title: z.string(),
     description: z.string().optional(),
     motivation: z.string().optional(),
+    notes: z.string().optional(),
+    checklist: z.array(challengeChecklistItemSchema).optional(),
     emoji: z.string(),
     targetDays: z.number(),
     startDate: z.string(),
@@ -39,6 +50,8 @@ export const createChallengeBodySchema = registry.register(
     title: z.string().min(1, 'Título é obrigatório').max(120),
     description: z.string().max(500).optional(),
     motivation: z.string().max(500).optional(),
+    notes: z.string().max(2000).optional(),
+    checklist: z.array(challengeChecklistItemSchema).optional(),
     emoji: z.string().max(10).optional(),
     targetDays: z.number().int().min(1, 'Meta mínima de 1 dia').max(3650),
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inicial deve seguir o formato YYYY-MM-DD').optional(),
@@ -61,6 +74,8 @@ export const updateChallengeBodySchema = registry.register(
     title: z.string().min(1).max(120).optional(),
     description: z.string().max(500).optional(),
     motivation: z.string().max(500).optional(),
+    notes: z.string().max(2000).optional(),
+    checklist: z.array(challengeChecklistItemSchema).optional(),
     emoji: z.string().max(10).optional(),
     targetDays: z.number().int().min(1).max(3650).optional(),
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
