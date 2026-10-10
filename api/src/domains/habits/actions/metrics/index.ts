@@ -85,7 +85,7 @@ export const getMonthlyMetricsAction = defineAction(
 
       const totalHabits = scheduledHabits.length
       const completedHabits = scheduledHabits.filter((h) => checkinMap.get(`${dateStr}_${h.id.toString()}`)).length
-      const habitRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
+      const habitRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 100
 
       const waterConsumedBottles = waterDailyMap[dateStr] || 0
       const waterGoalBottles = defaultWaterGoal + (waterExtraTargetMap[dateStr] || 0)
@@ -106,24 +106,13 @@ export const getMonthlyMetricsAction = defineAction(
       if (!isFuture) {
         const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
         const sleepFraction = sleepGoalHours > 0 ? Math.min(1, sleepHours / sleepGoalHours) : 1
-        const habitFraction = totalHabits > 0 ? completedHabits / totalHabits : 0
+        const habitFraction = totalHabits > 0 ? completedHabits / totalHabits : 1
 
-        if (totalHabits > 0) {
-          overallRate = Math.min(100, Math.round(
-            (habitFraction * weightHabits) +
-            (waterFraction * weightWater) +
-            (sleepFraction * weightSleep)
-          ))
-        } else {
-          const healthTotal = weightWater + weightSleep
-          if (healthTotal > 0) {
-            overallRate = Math.min(100, Math.round(
-              ((waterFraction * weightWater + sleepFraction * weightSleep) / healthTotal) * 100
-            ))
-          } else {
-            overallRate = 100
-          }
-        }
+        overallRate = Math.min(100, Math.round(
+          (habitFraction * weightHabits) +
+          (waterFraction * weightWater) +
+          (sleepFraction * weightSleep)
+        ))
       }
 
       days.push({
@@ -163,7 +152,7 @@ export const getMonthlyMetricsAction = defineAction(
 
     const monthLabel = `${monthNamesPT[month - 1]} de ${year}`
     const formulaExplanation =
-      `O índice de constância diária pondera os três pilares com base nas suas metas e pesos configurados: Hábitos (${weightHabits}%), Água (${weightWater}%) e Sono (${weightSleep}%). Cada item contribui com sua respectiva porcentagem para compor até 100% no dia.`
+      `O índice de constância diária pondera os três pilares com base nas suas metas e pesos configurados: Hábitos (${weightHabits}%), Água (${weightWater}%) e Sono (${weightSleep}%). A contagem começa em 100% no dia e desconta o que não for cumprido (dias sem hábitos programados mantêm 100% desse pilar).`
 
     const response: MonthlyMetricsResponse = {
       month: targetMonth,

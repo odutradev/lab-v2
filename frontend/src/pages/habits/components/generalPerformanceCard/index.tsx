@@ -49,7 +49,7 @@ export const GeneralPerformanceCard = ({
             <Tooltip
               label={
                 metrics?.formulaExplanation ||
-                'O índice diário considera seus hábitos programados + a meta diária de hidratação + a meta recomendada de sono (mínimo de 7h). Cada hábito equivale a 1 meta, a água a 1 meta de saúde e o sono a 1 meta de saúde. Se você tiver 3 hábitos, bater a meta de água e dormir 7h+, são 5 metas de 20% cada (totalizando 100%).'
+                'O índice diário pondera hábitos programados, água e sono. A contagem começa em 100% no dia e desconta o que não for cumprido. Se não houver hábitos programados na data, o valor desse pilar é considerado 100%.'
               }
               multiline
               w={280}
@@ -155,9 +155,13 @@ export const GeneralPerformanceCard = ({
                 ? `${item.sleepHours}h/${item.sleepGoalHours}h (${item.sleepRate}%)`
                 : `Sem registro (0%)`
 
+              const habitInfo = item.totalHabits > 0
+                ? `${item.completedHabits}/${item.totalHabits} (${item.habitRate}%)`
+                : `Sem itens (${item.habitRate}%)`
+
               const tooltipText = item.isFuture
                 ? `Dia ${item.day}: Dia futuro`
-                : `Dia ${item.day} (${item.dayOfWeek}): ${item.overallRate}% de constância\n• Hábitos: ${item.completedHabits}/${item.totalHabits} (${item.habitRate}%)\n• Água: ${item.waterConsumedBottles}/${item.waterGoalBottles} garrafas (${item.waterRate}%)\n• Sono: ${sleepInfo}`
+                : `Dia ${item.day} (${item.dayOfWeek}): ${item.overallRate}% de constância\n• Hábitos: ${habitInfo}\n• Água: ${item.waterConsumedBottles}/${item.waterGoalBottles} garrafas (${item.waterRate}%)\n• Sono: ${sleepInfo}`
 
               return (
                 <Tooltip
