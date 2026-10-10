@@ -13,8 +13,10 @@ import type {
   UpdateSelectedGoogleCalendarsResponse
 } from './types'
 
-export const getGoogleCalendarAuthUrlAction = async (): Promise<GoogleCalendarAuthUrlResponse> => {
-  return apiClient.get<GoogleCalendarAuthUrlResponse>('/google/calendar/auth-url')
+export const getGoogleCalendarAuthUrlAction = async (originUrl?: string): Promise<GoogleCalendarAuthUrlResponse> => {
+  const currentOrigin = originUrl || (typeof window !== 'undefined' ? window.location.origin : '')
+  const queryParam = currentOrigin ? `?origin=${encodeURIComponent(currentOrigin)}` : ''
+  return apiClient.get<GoogleCalendarAuthUrlResponse>(`/google/calendar/auth-url${queryParam}`)
 }
 
 export const getGoogleCalendarStatusAction = async (): Promise<GoogleCalendarStatusResponse> => {
