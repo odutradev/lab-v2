@@ -21,7 +21,8 @@ export const ChallengesSection = () => {
     updateChallenge,
     removeChallenge,
     toggleCheckin,
-    recordSlip
+    recordSlip,
+    toggleFreeze
   } = useChallengesStore()
 
   const [isSectionOpen, setIsSectionOpen] = useState(true)
@@ -82,6 +83,17 @@ export const ChallengesSection = () => {
       setSelectedChallenge(updated)
     }
     setIsSlipOpen(false)
+  }
+
+  const handleToggleFreeze = async (id: string, date?: string) => {
+    const res = await toggleFreeze(id, date)
+    if (res.error) {
+      alert(res.error)
+    }
+    if (selectedChallenge?.id === id) {
+      setSelectedChallenge(res.challenge)
+    }
+    return res
   }
 
   const handleRemove = async (id: string) => {
@@ -243,6 +255,7 @@ export const ChallengesSection = () => {
         challenge={selectedChallenge}
         onClose={() => setSelectedChallenge(null)}
         onToggleCheckin={handleToggleCheckin}
+        onToggleFreeze={handleToggleFreeze}
         onOpenEdit={handleOpenEdit}
         onOpenSlip={handleOpenSlip}
         onRemove={handleRemove}

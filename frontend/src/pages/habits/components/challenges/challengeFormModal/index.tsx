@@ -35,6 +35,7 @@ export const ChallengeFormModal = ({
   const [startDate, setStartDate] = useState(getTodayDateString())
   const [type, setType] = useState<ChallengeType>('streak')
   const [resetOnMiss, setResetOnMiss] = useState(false)
+  const [freezeDaysPerMonth, setFreezeDaysPerMonth] = useState<number>(2)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export const ChallengeFormModal = ({
       setStartDate(initialChallenge.startDate || getTodayDateString())
       setType(initialChallenge.type || 'streak')
       setResetOnMiss(Boolean(initialChallenge.resetOnMiss))
+      setFreezeDaysPerMonth(typeof initialChallenge.freezeDaysPerMonth === 'number' ? initialChallenge.freezeDaysPerMonth : 2)
     } else {
       setEmoji('🥤')
       setTitle('')
@@ -56,6 +58,7 @@ export const ChallengeFormModal = ({
       setStartDate(getTodayDateString())
       setType('streak')
       setResetOnMiss(false)
+      setFreezeDaysPerMonth(2)
     }
     setError(null)
   }, [initialChallenge, isOpen])
@@ -82,7 +85,8 @@ export const ChallengeFormModal = ({
         targetDays: numDays,
         startDate: startDate || getTodayDateString(),
         type,
-        resetOnMiss
+        resetOnMiss,
+        freezeDaysPerMonth: Number(freezeDaysPerMonth)
       })
       onClose()
     } catch (err: unknown) {
@@ -238,6 +242,33 @@ export const ChallengeFormModal = ({
             description="Se ativado, perder a sequência exige recomeçar a contagem a partir do dia 1."
           />
         )}
+
+        {/* Dias Livres / Freeze */}
+        <Box>
+          <Group justify="space-between" align="center" mb={6}>
+            <Text size="xs" fw={600} c="dimmed">
+              Dias Livres (Freeze ❄️) por Mês: {freezeDaysPerMonth} {freezeDaysPerMonth === 1 ? 'dia' : 'dias'}
+            </Text>
+            <Text size="11px" c="cyan.4" fw={600}>
+              Até 7 dias / mês
+            </Text>
+          </Group>
+          <Group gap="xs" mb="xs">
+            {[0, 1, 2, 3, 5, 7].map((num) => (
+              <Button
+                key={num}
+                size="sm"
+                variant={Number(freezeDaysPerMonth) === num ? 'primary' : 'secondary'}
+                onClick={() => setFreezeDaysPerMonth(num)}
+              >
+                {num === 0 ? 'Nenhum' : `${num}d`}
+              </Button>
+            ))}
+          </Group>
+          <Text size="xs" c="dimmed">
+            Permite congelar dias sem quebrar sua sequência contínua de ofensiva (ex: viagens ou aniversários).
+          </Text>
+        </Box>
 
         {/* Data de início */}
         <TextInput

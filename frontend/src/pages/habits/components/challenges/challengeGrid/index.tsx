@@ -6,6 +6,7 @@ interface ChallengeGridProps {
   targetDays: number
   checkins: string[]
   slipDates?: string[]
+  freezeDates?: string[]
   onToggleDate?: (date: string) => void
 }
 
@@ -14,16 +15,19 @@ export const ChallengeGrid = ({
   targetDays,
   checkins,
   slipDates = [],
+  freezeDates = [],
   onToggleDate
 }: ChallengeGridProps) => {
   const todayStr = getTodayDateString()
   const checkinSet = new Set(checkins)
   const slipSet = new Set(slipDates)
+  const freezeSet = new Set(freezeDates)
 
   const daysArray = Array.from({ length: targetDays }, (_, idx) => {
     const dayNumber = idx + 1
     const dateStr = addDaysToDateString(startDate, idx)
     const isCompleted = checkinSet.has(dateStr)
+    const isFreeze = freezeSet.has(dateStr)
     const isSlip = slipSet.has(dateStr)
     const isToday = dateStr === todayStr
     const isPast = dateStr < todayStr
@@ -39,6 +43,11 @@ export const ChallengeGrid = ({
       bgColor = '#10b981'
       borderColor = '#34d399'
       boxShadow = '0 0 8px rgba(16, 185, 129, 0.4)'
+    } else if (isFreeze) {
+      statusLabel = 'Dia Livre (Freeze ❄️)'
+      bgColor = 'rgba(6, 182, 212, 0.25)'
+      borderColor = '#22d3ee'
+      boxShadow = '0 0 8px rgba(6, 182, 212, 0.4)'
     } else if (isSlip) {
       statusLabel = 'Deslize registrado'
       bgColor = '#f59e0b'
@@ -122,6 +131,10 @@ export const ChallengeGrid = ({
         <Group gap={6}>
           <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: 'rgba(99, 102, 241, 0.2)', border: '1px solid #818cf8' }} />
           <Text size="xs" c="dimmed">Hoje</Text>
+        </Group>
+        <Group gap={6}>
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: 'rgba(6, 182, 212, 0.4)', border: '1px solid #22d3ee' }} />
+          <Text size="xs" c="dimmed">Dia Livre (Freeze ❄️)</Text>
         </Group>
         <Group gap={6}>
           <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: '#f59e0b' }} />

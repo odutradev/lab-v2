@@ -14,6 +14,7 @@ interface ChallengeDetailModalProps {
   challenge: Challenge | null
   onClose: () => void
   onToggleCheckin: (id: string, date?: string) => Promise<unknown>
+  onToggleFreeze?: (id: string, date?: string) => Promise<any>
   onOpenEdit: (challenge: Challenge) => void
   onOpenSlip: (challenge: Challenge) => void
   onRemove: (id: string) => Promise<void>
@@ -25,6 +26,7 @@ export const ChallengeDetailModal = ({
   challenge,
   onClose,
   onToggleCheckin,
+  onToggleFreeze,
   onOpenEdit,
   onOpenSlip,
   onRemove,
@@ -252,6 +254,23 @@ export const ChallengeDetailModal = ({
               Tive um Deslize
             </Button>
           )}
+
+          {isStreakMode && stats.freezeDaysPerMonth > 0 && onToggleFreeze && (
+            <Button
+              size="md"
+              variant={stats.isFrozenToday ? 'primary' : 'secondary'}
+              onClick={() => onToggleFreeze(challenge.id)}
+              isLoading={isLoading}
+              style={{
+                backgroundColor: stats.isFrozenToday ? '#0891b2' : undefined,
+                borderColor: stats.isFrozenToday ? '#22d3ee' : undefined
+              }}
+            >
+              {stats.isFrozenToday
+                ? '❄️ Hoje Congelado (Desfazer)'
+                : `Congelar Hoje ❄️ (${stats.freezesRemainingThisMonth} livres)`}
+            </Button>
+          )}
         </Group>
 
         {/* Histórico Visual de Dias (Grade estilo GitHub) */}
@@ -269,6 +288,7 @@ export const ChallengeDetailModal = ({
             targetDays={challenge.targetDays}
             checkins={challenge.checkins}
             slipDates={challenge.slipDates}
+            freezeDates={challenge.freezeDates}
             onToggleDate={handleToggleSpecificDate}
           />
         </Box>

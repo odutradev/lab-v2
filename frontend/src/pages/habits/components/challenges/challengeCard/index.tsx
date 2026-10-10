@@ -145,7 +145,7 @@ export const ChallengeCard = ({
         </Box>
 
         {/* Estatísticas Chave */}
-        <Group justify="space-between" align="center" mt={4}>
+        <Group justify="space-between" align="center" mt={4} wrap="wrap">
           <Group gap={4}>
             <TbFlame size={15} color={stats.streak > 0 ? '#f97316' : 'rgba(255, 255, 255, 0.4)'} />
             <Text size="xs" fw={600} c={stats.streak > 0 ? 'orange.4' : 'dimmed'}>
@@ -153,7 +153,31 @@ export const ChallengeCard = ({
             </Text>
           </Group>
 
-          <Tooltip label={`Previsão de conclusão do 90º dia: ${formatDisplayDate(stats.estimatedEndDate)}`} withArrow>
+          {isStreakMode && stats.freezeDaysPerMonth > 0 && (
+            <Tooltip
+              label={
+                stats.isFrozenToday
+                  ? 'Hoje está congelado! O streak não será quebrado.'
+                  : `${stats.freezesRemainingThisMonth} de ${stats.freezeDaysPerMonth} dias livres restantes neste mês`
+              }
+              withArrow
+            >
+              <Text
+                size="11px"
+                fw={600}
+                c={stats.isFrozenToday ? 'cyan.3' : stats.freezesRemainingThisMonth > 0 ? 'dimmed' : 'red.4'}
+                style={{
+                  backgroundColor: stats.isFrozenToday ? 'rgba(6, 182, 212, 0.15)' : undefined,
+                  padding: stats.isFrozenToday ? '1px 6px' : undefined,
+                  borderRadius: 6
+                }}
+              >
+                ❄️ {stats.isFrozenToday ? 'Hoje Congelado' : `${stats.freezesRemainingThisMonth}/${stats.freezeDaysPerMonth} livres`}
+              </Text>
+            </Tooltip>
+          )}
+
+          <Tooltip label={`Previsão de conclusão da meta: ${formatDisplayDate(stats.estimatedEndDate)}`} withArrow>
             <Group gap={4}>
               <TbCalendar size={14} color="rgba(255, 255, 255, 0.4)" />
               <Text size="xs" c="dimmed">
