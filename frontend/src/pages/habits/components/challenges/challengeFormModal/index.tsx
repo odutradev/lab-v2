@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Stack, Text, Group, Box, TextInput, Textarea, NumberInput, SegmentedControl, Switch, UnstyledButton } from '@mantine/core'
-import { TbTarget, TbFlame, TbTrophy } from 'react-icons/tb'
+import { Stack, Text, Group, Box, TextInput, Textarea, NumberInput, SegmentedControl, Switch, UnstyledButton, ActionIcon } from '@mantine/core'
+import { TbTarget, TbFlame, TbTrophy, TbPlus, TbTrash, TbListCheck, TbNotes } from 'react-icons/tb'
 
 import Modal from '@components/ui/modal'
 import Button from '@components/ui/button'
 import { getTodayDateString } from '@stores/challenges/utils'
 
-import type { Challenge, ChallengeType, CreateChallengePayload } from '@actions/challenges/types'
+import type { Challenge, ChallengeType, CreateChallengePayload, ChallengeChecklistItem } from '@actions/challenges/types'
 
 interface ChallengeFormModalProps {
   isOpen: boolean
@@ -31,6 +31,9 @@ export const ChallengeFormModal = ({
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [motivation, setMotivation] = useState('')
+  const [notes, setNotes] = useState('')
+  const [checklist, setChecklist] = useState<ChallengeChecklistItem[]>([])
+  const [newChecklistText, setNewChecklistText] = useState('')
   const [targetDays, setTargetDays] = useState<number | string>(90)
   const [startDate, setStartDate] = useState(getTodayDateString())
   const [type, setType] = useState<ChallengeType>('streak')
@@ -44,6 +47,8 @@ export const ChallengeFormModal = ({
       setTitle(initialChallenge.title || '')
       setDescription(initialChallenge.description || '')
       setMotivation(initialChallenge.motivation || '')
+      setNotes(initialChallenge.notes || '')
+      setChecklist(initialChallenge.checklist ? [...initialChallenge.checklist] : [])
       setTargetDays(initialChallenge.targetDays || 90)
       setStartDate(initialChallenge.startDate || getTodayDateString())
       setType(initialChallenge.type || 'streak')
@@ -54,14 +59,33 @@ export const ChallengeFormModal = ({
       setTitle('')
       setDescription('')
       setMotivation('')
+      setNotes('')
+      setChecklist([])
       setTargetDays(90)
       setStartDate(getTodayDateString())
       setType('streak')
       setResetOnMiss(false)
       setFreezeDaysPerMonth(2)
     }
+    setNewChecklistText('')
     setError(null)
   }, [initialChallenge, isOpen])
+
+  const handleAddChecklistItem = () => {
+    const text = newChecklistText.trim()
+    if (!text) return
+    const newItem: ChallengeChecklistItem = {
+      id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      text,
+      completed: false
+    }
+    setChecklist((prev) => [...prev, newItem])
+    setNewChecklistText('')
+  }
+
+  const handleRemoveChecklistItem = (itemId: string) => {
+    setChecklist((prev) => prev.filter((item) => item.id !== itemId))
+  }
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -81,6 +105,8 @@ export const ChallengeFormModal = ({
         title: title.trim(),
         description: description.trim() || undefined,
         motivation: motivation.trim() || undefined,
+        notes: notes.trim() || undefined,
+        checklist: checklist.length > 0 ? checklist : undefined,
         emoji: emoji || '🎯',
         targetDays: numDays,
         startDate: startDate || getTodayDateString(),
@@ -150,7 +176,7 @@ export const ChallengeFormModal = ({
 
         {/* "Por que comecei?" Motivação */}
         <Textarea
-          label='Por que comecei? (Gatilho Motivacional)'
+          label="Por que comecei? (Gatilho Motivacional)"
           placeholder="Ex: Melhorar digestão, clareza mental e economizar R$ 300 por mês."
           value={motivation}
           onChange={(e) => setMotivation(e.currentTarget.value)}
@@ -163,6 +189,105 @@ export const ChallengeFormModal = ({
             }
           }}
         />
+
+        {/* Anotações / Regras em Texto */}
+        <Textarea
+          label={
+            <Group gap={6}>
+              <TbNotes size={15} color="#818cf8" />
+              <span>Anotações / Regras do Desafio (Opcional)</span>
+            </Group>
+          }
+          placeholder="Ex: Permitido chá verde e suco natural; em caso de vontade extrema, beber 500ml de água..."
+          value={notes}
+          onChange={(e) => setNotes(e.currentTarget.value)}
+          minRows={2}
+          styles={{
+            input: {
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              color: 'white'
+            }
+          }}
+        />
+
+        {/* Checklist do Desafio */}
+        <Box>
+          <Group justify="space-between" align="center" mb={6}>
+            <Group gap={6}>
+              <TbListCheck size={16} color="#34d399" />
+              <Text size="xs" fw={600} c="dimmed">
+                Checklist / Metas do Desafio ({checklist.length})
+              </Text>
+            </Group>
+            {checklist.length > 0 && (
+              <Text size="11px" c="dimmed">
+                {checklist.filter((i) => i.completed).length}/{checklist.length} concluídos
+              </Text>
+            )}
+          </Group>
+
+          <Group gap="xs" mb="xs">
+            <TextInput
+              placeholder="Adicionar item à checklist... (Enter para adicionar)"
+              value={newChecklistText}
+              onChange={(e) => setNewChecklistText(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleAddChecklistItem()
+                }
+              }}
+              style={{ flex: 1 }}
+              styles={{
+                input: {
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'white'
+                }
+              }}
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleAddChecklistItem}
+              leftIcon={<TbPlus size={15} />}
+            >
+              Adicionar
+            </Button>
+          </Group>
+
+          {checklist.length > 0 && (
+            <Stack gap={6} mt="xs">
+              {checklist.map((item) => (
+                <Group
+                  key={item.id}
+                  justify="space-between"
+                  align="center"
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)'
+                  }}
+                >
+                  <Text size="sm" c="gray.2" style={{ wordBreak: 'break-word', flex: 1 }}>
+                    • {item.text}
+                  </Text>
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    color="red"
+                    onClick={() => handleRemoveChecklistItem(item.id)}
+                    title="Remover item"
+                  >
+                    <TbTrash size={14} />
+                  </ActionIcon>
+                </Group>
+              ))}
+            </Stack>
+          )}
+        </Box>
 
         {/* Meta de Dias com Presets */}
         <Box>

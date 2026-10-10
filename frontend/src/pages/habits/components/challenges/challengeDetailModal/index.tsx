@@ -1,5 +1,5 @@
-import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid } from '@mantine/core'
-import { TbFlame, TbTrophy, TbCalendar, TbTrash, TbEdit, TbAlertTriangle, TbCheck, TbQuote } from 'react-icons/tb'
+import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid, Checkbox } from '@mantine/core'
+import { TbFlame, TbTrophy, TbCalendar, TbTrash, TbEdit, TbAlertTriangle, TbCheck, TbQuote, TbNotes, TbListCheck } from 'react-icons/tb'
 
 import Modal from '@components/ui/modal'
 import Button from '@components/ui/button'
@@ -14,6 +14,7 @@ interface ChallengeDetailModalProps {
   onClose: () => void
   onToggleCheckin: (id: string, date?: string) => Promise<unknown>
   onToggleFreeze?: (id: string, date?: string) => Promise<any>
+  onToggleChecklistItem?: (id: string, itemId: string) => Promise<unknown>
   onOpenEdit: (challenge: Challenge) => void
   onOpenSlip: (challenge: Challenge) => void
   onRemove: (id: string) => Promise<void>
@@ -26,6 +27,7 @@ export const ChallengeDetailModal = ({
   onClose,
   onToggleCheckin,
   onToggleFreeze,
+  onToggleChecklistItem,
   onOpenEdit,
   onOpenSlip,
   onRemove,
@@ -138,6 +140,96 @@ export const ChallengeDetailModal = ({
                 </Text>
               </Box>
             </Group>
+          </Box>
+        )}
+
+        {/* Anotações / Regras do Desafio */}
+        {challenge.notes && (
+          <Box
+            style={{
+              padding: '12px 16px',
+              borderRadius: 12,
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}
+          >
+            <Group gap="xs" align="center" mb={6}>
+              <ThemeIcon size="xs" radius="sm" color="cyan" variant="light">
+                <TbNotes size={13} />
+              </ThemeIcon>
+              <Text size="11px" fw={700} c="cyan.3" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+                Anotações & Regras do Desafio
+              </Text>
+            </Group>
+            <Text size="sm" c="gray.2" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
+              {challenge.notes}
+            </Text>
+          </Box>
+        )}
+
+        {/* Checklist do Desafio */}
+        {challenge.checklist && challenge.checklist.length > 0 && (
+          <Box
+            style={{
+              padding: '14px 16px',
+              borderRadius: 12,
+              backgroundColor: 'rgba(16, 185, 129, 0.04)',
+              border: '1px solid rgba(16, 185, 129, 0.2)'
+            }}
+          >
+            <Group justify="space-between" align="center" mb="xs">
+              <Group gap="xs" align="center">
+                <ThemeIcon size="xs" radius="sm" color="teal" variant="light">
+                  <TbListCheck size={14} />
+                </ThemeIcon>
+                <Text size="11px" fw={700} c="teal.3" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+                  Checklist do Desafio
+                </Text>
+              </Group>
+              <Badge color="teal" variant="light" size="xs">
+                {challenge.checklist.filter((i) => i.completed).length} de {challenge.checklist.length} concluídos
+              </Badge>
+            </Group>
+
+            <Stack gap={8}>
+              {challenge.checklist.map((item) => (
+                <Group
+                  key={item.id}
+                  gap="sm"
+                  wrap="nowrap"
+                  onClick={() => onToggleChecklistItem && onToggleChecklistItem(challenge.id, item.id)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    backgroundColor: item.completed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                    border: item.completed ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.06)',
+                    cursor: onToggleChecklistItem ? 'pointer' : 'default',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <Checkbox
+                    checked={item.completed}
+                    onChange={() => {}}
+                    size="xs"
+                    color="teal"
+                    styles={{
+                      input: { cursor: 'pointer' }
+                    }}
+                  />
+                  <Text
+                    size="sm"
+                    c={item.completed ? 'dimmed' : 'white'}
+                    style={{
+                      textDecoration: item.completed ? 'line-through' : 'none',
+                      wordBreak: 'break-word',
+                      flex: 1
+                    }}
+                  >
+                    {item.text}
+                  </Text>
+                </Group>
+              ))}
+            </Stack>
           </Box>
         )}
 

@@ -22,7 +22,8 @@ export const ChallengesSection = () => {
     removeChallenge,
     toggleCheckin,
     recordSlip,
-    toggleFreeze
+    toggleFreeze,
+    toggleChecklistItem
   } = useChallengesStore()
 
   const [isSectionOpen, setIsSectionOpen] = useState(true)
@@ -100,6 +101,13 @@ export const ChallengesSection = () => {
     await removeChallenge(id)
     if (selectedChallenge?.id === id) {
       setSelectedChallenge(null)
+    }
+  }
+
+  const handleToggleChecklistItem = async (id: string, itemId: string) => {
+    const updated = await toggleChecklistItem(id, itemId)
+    if (selectedChallenge?.id === id) {
+      setSelectedChallenge(updated)
     }
   }
 
@@ -252,10 +260,11 @@ export const ChallengesSection = () => {
       {/* Modais */}
       <ChallengeDetailModal
         isOpen={Boolean(selectedChallenge)}
-        challenge={selectedChallenge}
+        challenge={challenges.find((c) => c.id === selectedChallenge?.id) || selectedChallenge}
         onClose={() => setSelectedChallenge(null)}
         onToggleCheckin={handleToggleCheckin}
         onToggleFreeze={handleToggleFreeze}
+        onToggleChecklistItem={handleToggleChecklistItem}
         onOpenEdit={handleOpenEdit}
         onOpenSlip={handleOpenSlip}
         onRemove={handleRemove}

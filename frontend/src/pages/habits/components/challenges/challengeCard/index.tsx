@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Group, Stack, Text, Progress, Badge, Tooltip } from '@mantine/core'
-import { TbFlame, TbTrophy, TbCalendar, TbCheck, TbChevronRight } from 'react-icons/tb'
+import { TbFlame, TbTrophy, TbCalendar, TbCheck, TbChevronRight, TbNotes } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import { calculateChallengeStats, formatDisplayDate } from '@stores/challenges/utils'
@@ -97,7 +97,7 @@ export const ChallengeCard = ({
               <Text fw={700} size="sm" c="white" truncate>
                 {challenge.title}
               </Text>
-              <Group gap={6} mt={2}>
+              <Group gap={6} mt={2} wrap="wrap">
                 <Badge
                   size="xs"
                   variant="light"
@@ -105,6 +105,18 @@ export const ChallengeCard = ({
                 >
                   {isCompleted ? 'Concluído' : isStreakMode ? 'Ofensiva' : 'Acumulativo'}
                 </Badge>
+                {challenge.checklist && challenge.checklist.length > 0 && (
+                  <Badge size="xs" variant="outline" color="teal">
+                    ☑ {challenge.checklist.filter((i) => i.completed).length}/{challenge.checklist.length}
+                  </Badge>
+                )}
+                {challenge.notes && (
+                  <Tooltip label="Possui anotações e regras" withArrow>
+                    <Box style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <TbNotes size={13} color="#94a3b8" />
+                    </Box>
+                  </Tooltip>
+                )}
                 <Text size="11px" c="dimmed">
                   Dia {stats.completedDays} de {stats.targetDays}
                 </Text>
