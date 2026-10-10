@@ -8,7 +8,10 @@ import {
   disconnectCalendarResponseSchema,
   updateCalendarNameBodySchema,
   updateCalendarNameResponseSchema,
-  recreateCalendarResponseSchema
+  recreateCalendarResponseSchema,
+  listCalendarsResponseSchema,
+  updateSelectedCalendarsBodySchema,
+  updateSelectedCalendarsResponseSchema
 } from '@domains/google/actions/calendar/schemas'
 import {
   generateGoogleAuthUrl,
@@ -19,7 +22,8 @@ import {
   getOrCreateLabCalendar,
   updateGoogleCalendarSummary,
   deleteGoogleCalendar,
-  checkGoogleCalendarStatus
+  checkGoogleCalendarStatus,
+  listUserGoogleCalendars
 } from '@google/utils'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { syncAllUserHabitsToGoogle } from '@domains/habits/utils/googleSync'
@@ -38,6 +42,9 @@ import type {
   UpdateCalendarNameBody,
   UpdateCalendarNameResponse,
   RecreateCalendarResponse,
+  ListCalendarsResponse,
+  UpdateSelectedCalendarsBody,
+  UpdateSelectedCalendarsResponse,
   GoogleOAuthStatePayload
 } from '@domains/google/actions/calendar/types'
 
@@ -479,6 +486,121 @@ export const recreateCalendarAction = defineAction<
       calendarName: newCalendar.summary,
       calendarUrl,
       message: 'Agenda recriada com sucesso no Google Calendar'
+    }
+  }
+)
+
+export const listCalendarsAction = defineAction<
+  { body: unknown; params: unknown; query: unknown; response: ListCalendarsResponse }
+>(
+  {
+    method: 'get',
+    path: '/google/calendar/list',
+    summary: 'Lista todas as agendas da conta do Google Calendar do usuário e status de seleção',
+    tags: ['Google'],
+    middlewares: [authMiddleware],
+    responses: {
+      200: {
+        description: 'Lista de agendas retornada com sucesso',
+        schema: listCalendarsResponseSchema
+      },
+      401: {
+        description: 'Não autorizado',
+        schema: errorResponseSchema
+      }
+    }
+  },
+  async ({ ids, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
+    const isConnected = !!userWithToken?.integrations?.googleCalendar?.connected
+    const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
+    const labCalendarId = userWithToken?.integrations?.googleCalendar?.calendarId
+    const labCalendarName = userWithToken?.integrations?.googleCalendar?.calendarName || 'Lab V2'
+    const storedSelectedIds = userWithToken?.integrations?.googleCalendar?.selectedCalendarIds || []
+
+    if (!isConnected || !refreshToken) {
+      return {
+        connected: false,
+        items: [],
+        selectedCalendarIds: storedSelectedIds
+      }
+    }
+
+    try {
+      const gcalItems = await listUserGoogleCalendars(refreshToken)
+      const normalizedLabName = labCalendarName.trim().toLowerCase()
+
+      const items = gcalItems.map((item) => {
+        const isLabV2 = Boolean(
+          (labCalendarId && item.id === labCalendarId) ||
+          item.summary.trim().toLowerCase() === normalizedLabName
+        )
+        const selected = isLabV2 || storedSelectedIds.includes(item.id)
+
+        return {
+          id: item.id,
+          summary: item.summary,
+          description: item.description,
+          primary: item.primary,
+          backgroundColor: item.backgroundColor,
+          foregroundColor: item.foregroundColor,
+          accessRole: item.accessRole,
+          isLabV2,
+          selected
+        }
+      })
+
+      return {
+        connected: true,
+        items,
+        selectedCalendarIds: storedSelectedIds
+      }
+    } catch (err) {
+      logger.error('Failed to list user google calendars:', err)
+      return {
+        connected: true,
+        items: [],
+        selectedCalendarIds: storedSelectedIds
+      }
+    }
+  }
+)
+
+export const updateSelectedCalendarsAction = defineAction<
+  { body: UpdateSelectedCalendarsBody; params: unknown; query: unknown; response: UpdateSelectedCalendarsResponse }
+>(
+  {
+    method: 'put',
+    path: '/google/calendar/selected',
+    summary: 'Atualiza quais agendas devem ser exibidas no calendário',
+    tags: ['Google'],
+    middlewares: [authMiddleware],
+    schema: {
+      body: updateSelectedCalendarsBodySchema
+    },
+    responses: {
+      200: {
+        description: 'Preferências de agendas atualizadas com sucesso',
+        schema: updateSelectedCalendarsResponseSchema
+      },
+      401: {
+        description: 'Não autorizado',
+        schema: errorResponseSchema
+      }
+    }
+  },
+  async ({ ids, body, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const calendarIds = Array.isArray(body?.calendarIds) ? body.calendarIds : []
+    await userRepository.updateGoogleCalendarSelectedIds(ids.userId, calendarIds)
+
+    return {
+      success: true,
+      selectedCalendarIds: calendarIds,
+      message: 'Agendas visíveis atualizadas com sucesso'
     }
   }
 )

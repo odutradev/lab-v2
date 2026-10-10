@@ -7,6 +7,7 @@ export interface UserGoogleCalendarIntegration {
   calendarId?: string
   calendarName?: string
   connectedAt?: Date
+  selectedCalendarIds?: string[]
 }
 
 export interface UserIntegrations {

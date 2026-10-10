@@ -3,7 +3,13 @@ import { google } from 'googleapis'
 import googleService from '@google/connect'
 import createLocalLogger from '@utils/localLogger'
 
-import type { GoogleAuthTokens, GoogleCalendarEventInput, GoogleCalendarInstance } from '@google/types'
+import type {
+  GoogleAuthTokens,
+  GoogleCalendarEventInput,
+  GoogleCalendarInstance,
+  GoogleCalendarListItem,
+  NormalizedGoogleEvent
+} from '@google/types'
 import type { Auth } from 'googleapis'
 
 const logger = createLocalLogger('google-utils')
@@ -295,3 +301,147 @@ export const deleteCalendarEvent = async (
     return false
   }
 }
+
+export const listUserGoogleCalendars = async (
+  refreshToken: string
+): Promise<GoogleCalendarListItem[]> => {
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    const response = await calendar.calendarList.list({ maxResults: 250 })
+    const items = response.data.items || []
+
+    return items
+      .filter((item) => item.id && !item.deleted)
+      .map((item) => ({
+        id: item.id!,
+        summary: item.summaryOverride || item.summary || 'Sem título',
+        description: item.description || undefined,
+        primary: !!item.primary,
+        backgroundColor: item.backgroundColor || undefined,
+        foregroundColor: item.foregroundColor || undefined,
+        accessRole: item.accessRole || undefined
+      }))
+  } catch (error) {
+    logger.error('Error listing user Google Calendars:', error)
+    throw error
+  }
+}
+
+const parseEventDateTime = (dateTimeStr?: string | null): { date: string; time: string | null } => {
+  if (!dateTimeStr) return { date: '', time: null }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateTimeStr)) {
+    return { date: dateTimeStr, time: null }
+  }
+  const match = dateTimeStr.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/)
+  if (match) {
+    return { date: match[1], time: match[2] }
+  }
+  const d = new Date(dateTimeStr)
+  if (isNaN(d.getTime())) return { date: '', time: null }
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return { date: `${yyyy}-${mm}-${dd}`, time: `${hh}:${min}` }
+}
+
+export const fetchGoogleCalendarEvents = async (
+  refreshToken: string,
+  calendarIds: string[],
+  timeMin: string,
+  timeMax: string,
+  calendarMetaMap?: Map<string, { summary: string; color?: string }>
+): Promise<NormalizedGoogleEvent[]> => {
+  if (!calendarIds.length) return []
+
+  try {
+    const calendar = createGoogleCalendarClient(refreshToken)
+    const results = await Promise.allSettled(
+      calendarIds.map(async (calendarId) => {
+        const response = await calendar.events.list({
+          calendarId,
+          timeMin,
+          timeMax,
+          singleEvents: true,
+          orderBy: 'startTime',
+          maxResults: 250
+        })
+        const meta = calendarMetaMap?.get(calendarId)
+        return (response.data.items || []).map((ev) => ({
+          event: ev,
+          calendarId,
+          calendarName: meta?.summary,
+          calendarColor: meta?.color
+        }))
+      })
+    )
+
+    const normalizedEvents: NormalizedGoogleEvent[] = []
+
+    for (const res of results) {
+      if (res.status !== 'fulfilled') {
+        logger.warn('Failed to fetch events for a calendar:', res.reason)
+        continue
+      }
+
+      for (const { event, calendarId, calendarName, calendarColor } of res.value) {
+        if (!event.id || event.status === 'cancelled') continue
+
+        const isAllDay = Boolean(event.start?.date)
+        const startRaw = event.start?.dateTime || event.start?.date
+        const endRaw = event.end?.dateTime || event.end?.date
+
+        const { date: startDate, time: startTime } = parseEventDateTime(startRaw)
+        const { date: endDate, time: endTime } = parseEventDateTime(endRaw)
+
+        if (!startDate) continue
+
+        if (isAllDay && endDate && endDate > startDate) {
+          const [sy, sm, sd] = startDate.split('-').map(Number)
+          const [ey, em, ed] = endDate.split('-').map(Number)
+          const curr = new Date(sy, sm - 1, sd)
+          const last = new Date(ey, em - 1, ed)
+          while (curr < last) {
+            const yyyy = curr.getFullYear()
+            const mm = String(curr.getMonth() + 1).padStart(2, '0')
+            const dd = String(curr.getDate()).padStart(2, '0')
+            const dayStr = `${yyyy}-${mm}-${dd}`
+            normalizedEvents.push({
+              id: `${event.id}_${dayStr}`,
+              calendarId,
+              calendarName,
+              calendarColor,
+              summary: event.summary || '(Sem título)',
+              description: event.description || undefined,
+              allDay: true,
+              date: dayStr,
+              startTime: null,
+              endTime: null
+            })
+            curr.setDate(curr.getDate() + 1)
+          }
+        } else {
+          normalizedEvents.push({
+            id: event.id,
+            calendarId,
+            calendarName,
+            calendarColor,
+            summary: event.summary || '(Sem título)',
+            description: event.description || undefined,
+            allDay: isAllDay,
+            date: startDate,
+            startTime,
+            endTime
+          })
+        }
+      }
+    }
+
+    return normalizedEvents
+  } catch (error) {
+    logger.error('Error fetching Google calendar events:', error)
+    return []
+  }
+}
+

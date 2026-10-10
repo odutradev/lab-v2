@@ -76,3 +76,43 @@ export const recreateCalendarResponseSchema = registry.register(
   })
 )
 
+export const calendarItemSchema = registry.register(
+  'CalendarListItem',
+  z.object({
+    id: z.string(),
+    summary: z.string(),
+    description: z.string().optional(),
+    primary: z.boolean().optional(),
+    backgroundColor: z.string().optional(),
+    foregroundColor: z.string().optional(),
+    accessRole: z.string().optional(),
+    isLabV2: z.boolean(),
+    selected: z.boolean()
+  })
+)
+
+export const listCalendarsResponseSchema = registry.register(
+  'ListCalendarsResponse',
+  z.object({
+    connected: z.boolean(),
+    items: z.array(calendarItemSchema),
+    selectedCalendarIds: z.array(z.string())
+  })
+)
+
+export const updateSelectedCalendarsBodySchema = registry.register(
+  'UpdateSelectedCalendarsBody',
+  z.object({
+    calendarIds: z.array(z.string())
+  })
+)
+
+export const updateSelectedCalendarsResponseSchema = registry.register(
+  'UpdateSelectedCalendarsResponse',
+  z.object({
+    success: z.boolean(),
+    selectedCalendarIds: z.array(z.string()),
+    message: z.string()
+  })
+)
+

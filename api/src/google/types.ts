@@ -32,3 +32,26 @@ export interface GoogleCalendarEventInput {
 }
 
 export type GoogleCalendarInstance = calendar_v3.Calendar
+
+export interface GoogleCalendarListItem {
+  id: string
+  summary: string
+  description?: string
+  primary?: boolean
+  backgroundColor?: string
+  foregroundColor?: string
+  accessRole?: string
+}
+
+export interface NormalizedGoogleEvent {
+  id: string
+  calendarId: string
+  calendarName?: string
+  calendarColor?: string
+  summary: string
+  description?: string
+  allDay: boolean
+  date: string
+  startTime?: string | null
+  endTime?: string | null
+}

@@ -138,6 +138,17 @@ const userRepository = {
       { new: true }
     )
   },
+  updateGoogleCalendarSelectedIds: async (id: string, selectedCalendarIds: string[]): Promise<UserModelType | null> => {
+    return UserModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          'integrations.googleCalendar.selectedCalendarIds': selectedCalendarIds
+        }
+      },
+      { new: true }
+    )
+  },
   findWithGoogleCalendarRefreshToken: async (id: string): Promise<UserModelType | null> => {
     const user = await UserModel.findById(id).select('+integrations.googleCalendar.refreshToken').lean()
     if (!user) return null

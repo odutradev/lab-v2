@@ -7,8 +7,81 @@ import { formatTimestamp } from '@utils/date'
 import { isValidObjectId } from '@database/utils'
 import defineAction from '@factories/defineAction'
 import createAuditLog from '@createAuditLog'
+import userRepository from '@domains/users/repositories/user'
+import { listUserGoogleCalendars, fetchGoogleCalendarEvents } from '@google/utils'
+import createLocalLogger from '@utils/localLogger'
 
 import type { RangeSummaryResponse, ToggleCheckinResponse, DaySummaryResponse, RangeSummaryQuery, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from '@domains/habits/actions/checkin/types'
+
+const logger = createLocalLogger('checkin-actions')
+
+const fetchExternalCalendarItems = async (
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<Map<string, DaySummaryItem[]>> => {
+  const result = new Map<string, DaySummaryItem[]>()
+  try {
+    const user = await userRepository.findWithGoogleCalendarRefreshToken(userId)
+    const isConnected = !!user?.integrations?.googleCalendar?.connected
+    const refreshToken = user?.integrations?.googleCalendar?.refreshToken
+    const selectedIds = user?.integrations?.googleCalendar?.selectedCalendarIds || []
+    const labCalendarId = user?.integrations?.googleCalendar?.calendarId
+
+    if (!isConnected || !refreshToken || selectedIds.length === 0) {
+      return result
+    }
+
+    const externalIds = selectedIds.filter((id) => id !== labCalendarId)
+    if (externalIds.length === 0) {
+      return result
+    }
+
+    let metaMap: Map<string, { summary: string; color?: string }> | undefined
+    try {
+      const gcalList = await listUserGoogleCalendars(refreshToken)
+      metaMap = new Map(gcalList.map((c) => [c.id, { summary: c.summary, color: c.backgroundColor }]))
+    } catch {
+      // continua sem metaMap se falhar listagem
+    }
+
+    const events = await fetchGoogleCalendarEvents(
+      refreshToken,
+      externalIds,
+      `${startDate}T00:00:00Z`,
+      `${endDate}T23:59:59Z`,
+      metaMap
+    )
+
+    for (const ev of events) {
+      const item: DaySummaryItem = {
+        habitId: `gcal_${ev.id}`,
+        title: ev.summary,
+        description: ev.description,
+        category: 'schedule',
+        frequency: 'none',
+        startDate: ev.date,
+        allDay: ev.allDay,
+        startTime: ev.startTime,
+        endTime: ev.endTime,
+        completed: false,
+        readOnly: true,
+        calendarId: ev.calendarId,
+        calendarName: ev.calendarName,
+        calendarColor: ev.calendarColor
+      }
+
+      const list = result.get(ev.date) || []
+      list.push(item)
+      result.set(ev.date, list)
+    }
+  } catch (err) {
+    logger.warn('Failed to load external google calendar events:', err)
+  }
+
+  return result
+}
+
 
 export const toggleCheckinAction = defineAction(
   {
@@ -134,12 +207,21 @@ export const getDaySummaryAction = defineAction(
     const completedHabits = items.filter((item) => item.completed).length
     const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
 
+    const externalItemsMap = await fetchExternalCalendarItems(ids.userId, targetDate, targetDate)
+    const externalItems = externalItemsMap.get(targetDate) || []
+
+    const allItems = [...items, ...externalItems].sort((a, b) => {
+      if (a.allDay && !b.allDay) return -1
+      if (!a.allDay && b.allDay) return 1
+      return (a.startTime || '').localeCompare(b.startTime || '')
+    })
+
     const summary: DaySummaryResponse = {
       date: targetDate,
       totalHabits,
       completedHabits,
       completionRate,
-      items
+      items: allItems
     }
 
     return summary
@@ -171,6 +253,7 @@ export const getRangeSummaryAction = defineAction(
 
     const activeHabits = await habitRepository.findAllByUser(ids.userId, { active: true })
     const checkins = await habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate)
+    const externalItemsMap = await fetchExternalCalendarItems(ids.userId, startDate, endDate)
 
     const checkinsByDateAndHabit = new Map<string, boolean>()
     checkins.forEach((item) => {
@@ -224,12 +307,19 @@ export const getRangeSummaryAction = defineAction(
       const completedHabits = items.filter((item) => item.completed).length
       const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
 
+      const externalItems = externalItemsMap.get(dateStr) || []
+      const allItems = [...items, ...externalItems].sort((a, b) => {
+        if (a.allDay && !b.allDay) return -1
+        if (!a.allDay && b.allDay) return 1
+        return (a.startTime || '').localeCompare(b.startTime || '')
+      })
+
       return {
         date: dateStr,
         totalHabits,
         completedHabits,
         completionRate,
-        items
+        items: allItems
       }
     })
 

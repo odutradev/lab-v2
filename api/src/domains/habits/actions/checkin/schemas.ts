@@ -31,7 +31,11 @@ export const daySummaryItemSchema = registry.register('DaySummaryItem', z.object
   allDay: z.boolean().optional(),
   startTime: z.string().optional().nullable(),
   endTime: z.string().optional().nullable(),
-  completed: z.boolean()
+  completed: z.boolean(),
+  readOnly: z.boolean().optional(),
+  calendarId: z.string().optional(),
+  calendarName: z.string().optional(),
+  calendarColor: z.string().optional()
 }))
 
 export const daySummaryResponseSchema = registry.register('DaySummaryResponse', z.object({
