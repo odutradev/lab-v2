@@ -6,7 +6,7 @@ import ActionIcon from '@components/ui/actionIcon'
 import SegmentedControl from '@components/ui/segmentedControl'
 
 import type { HabitsCalendarToolbarProps } from './types'
-import type { CalendarViewMode } from '@pages/habits/types'
+import type { CalendarViewMode } from '@pages/home/types'
 
 const TOOLBAR_CONTROL_HEIGHT = 34
 

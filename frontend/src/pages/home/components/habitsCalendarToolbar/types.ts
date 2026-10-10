@@ -1,4 +1,4 @@
-import type { CalendarViewMode } from '@pages/habits/types'
+import type { CalendarViewMode } from '@pages/home/types'
 
 export interface HabitsCalendarToolbarProps {
   headerTitle: string

@@ -1,5 +1,5 @@
 import type { DaySummaryResponse } from '@actions/habits/types'
-import type { CalendarDayCell } from '@pages/habits/types'
+import type { CalendarDayCell } from '@pages/home/types'
 
 export interface HabitsMonthViewProps {
   monthCells: CalendarDayCell[]

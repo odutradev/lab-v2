@@ -1,5 +1,6 @@
+import WeightImcCard from '../weightImcCard'
+
 import type { WeightRecord } from '@stores/health/types'
-import WeightImcCard from '@pages/home/components/weightImcCard'
 
 export interface CompactWeightCardProps {
   heightCm?: number

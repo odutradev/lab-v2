@@ -1,5 +1,6 @@
+import SleepTrackerCard from '../sleepTrackerCard'
+
 import type { SleepRecord } from '@stores/health/types'
-import SleepTrackerCard from '@pages/home/components/sleepTrackerCard'
 
 export interface CompactSleepCardProps {
   sleepHistory: SleepRecord[]
