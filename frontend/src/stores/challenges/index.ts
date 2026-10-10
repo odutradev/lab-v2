@@ -21,6 +21,7 @@ interface ChallengesState {
   toggleCheckin: (id: string, date?: string) => Promise<{ completedToday: boolean; challenge: Challenge }>
   recordSlip: (id: string, payload?: SlipChallengePayload) => Promise<Challenge>
   toggleFreeze: (id: string, date?: string) => Promise<{ frozen: boolean; challenge: Challenge; error?: string }>
+  toggleChecklistItem: (id: string, itemId: string) => Promise<Challenge>
 }
 
 export const useChallengesStore = create<ChallengesState>((set, get) => ({
@@ -147,6 +148,40 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
       return response
     } catch (err) {
       set({ isActionLoading: false })
+      throw err
+    }
+  },
+
+  toggleChecklistItem: async (id: string, itemId: string) => {
+    const current = get().challenges.find((c) => c.id === id)
+    if (!current || !current.checklist) {
+      throw new Error('Challenge or checklist not found')
+    }
+
+    const updatedChecklist = current.checklist.map((item) =>
+      item.id === itemId ? { ...item, completed: !item.completed } : item
+    )
+
+    // Optimistic update
+    set((state) => ({
+      challenges: state.challenges.map((c) =>
+        c.id === id ? { ...c, checklist: updatedChecklist } : c
+      )
+    }))
+
+    try {
+      const updated = await challengesActions.updateChallenge(id, {
+        checklist: updatedChecklist
+      })
+      set((state) => ({
+        challenges: state.challenges.map((c) => (c.id === id ? updated : c))
+      }))
+      return updated
+    } catch (err) {
+      // Revert on error
+      set((state) => ({
+        challenges: state.challenges.map((c) => (c.id === id ? current : c))
+      }))
       throw err
     }
   }
