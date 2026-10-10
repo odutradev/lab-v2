@@ -2,10 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import { ProtectedRoute, PublicRoute, AppLayout } from './components'
 import PageContainer from '@components/layout/pageContainer'
+import TermsOfServicePage from '@pages/termsOfService'
+import PrivacyPolicyPage from '@pages/privacyPolicy'
 import ResetPasswordPage from '@pages/resetPassword'
 import HabitsPage from '@pages/habits'
-import AuthPage from '@pages/auth'
 import ProfilePage from '@pages/profile'
+import AuthPage from '@pages/auth'
 
 import type { RouteItem } from './types'
 
@@ -30,6 +32,14 @@ const routes: RouteItem[] = [
     path: '/reset-password',
     component: ResetPasswordPage,
     center: true
+  },
+  {
+    path: '/privacy',
+    component: PrivacyPolicyPage
+  },
+  {
+    path: '/terms',
+    component: TermsOfServicePage
   }
 ]
 
@@ -64,6 +74,8 @@ export const Router = () => {
               element={renderRouteElement(route)}
             />
           ))}
+          <Route path="/politica-de-privacidade" element={<Navigate to="/privacy" replace />} />
+          <Route path="/termos-de-servico" element={<Navigate to="/terms" replace />} />
           <Route path="/habits" element={<Navigate to="/" replace />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />

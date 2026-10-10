@@ -1,4 +1,5 @@
-import { Box } from '@mantine/core'
+import { Box, Group, Text, Anchor } from '@mantine/core'
+import { Link } from 'react-router-dom'
 
 import ResetPasswordForm from '@components/shared/resetPasswordForm'
 import Card, { CardContent } from '@components/ui/card'
@@ -51,6 +52,18 @@ export const AuthPage = () => {
           )}
         </CardContent>
       </Card>
+
+      <Group justify="center" gap="sm" mt="lg">
+        <Anchor component={Link} to="/privacy" size="xs" c="dimmed">
+          Política de Privacidade
+        </Anchor>
+        <Text size="xs" c="dimmed">
+          •
+        </Text>
+        <Anchor component={Link} to="/terms" size="xs" c="dimmed">
+          Termos de Serviço
+        </Anchor>
+      </Group>
     </Box>
   )
 }
