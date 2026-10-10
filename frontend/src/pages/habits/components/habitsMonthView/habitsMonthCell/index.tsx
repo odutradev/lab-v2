@@ -181,74 +181,100 @@ export const HabitsMonthCell = ({
       </Group>
 
       <Stack ref={containerRef} gap={ITEM_GAP} style={{ flex: 1, overflow: 'hidden', minWidth: 0, width: '100%' }}>
-        {visibleItems.map((item) => (
-          <Box
-            key={item.habitId}
-            px={{ base: '2px', sm: '4px' }}
-            py={{ base: '2px', sm: '3px' }}
-            title={`${item.title}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
-            style={{
-              background: item.completed ? 'rgba(45, 212, 191, 0.14)' : 'rgba(99, 102, 241, 0.14)',
-              borderRadius: 4,
-              border: item.completed ? '1px solid rgba(45, 212, 191, 0.25)' : '1px solid rgba(99, 102, 241, 0.2)',
-              fontSize: 10,
-              lineHeight: 1.2,
-              minWidth: 0,
-              maxWidth: '100%',
-              overflow: 'hidden',
-              flexShrink: 0
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              if (onEditItem) {
-                onEditItem(item.habitId, cell.date)
-              }
-            }}
-          >
-            <Group gap={3} wrap="nowrap" align="center" style={{ minWidth: 0, width: '100%', overflow: 'hidden' }}>
-              <Box
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onToggleCheckin(item.habitId, cell.date)
-                }}
-                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
-              >
-                {item.completed ? (
-                  <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
+        {visibleItems.map((item) => {
+          const isReadOnly = !!item.readOnly
+          const itemColor = item.calendarColor || '#6366f1'
+
+          return (
+            <Box
+              key={item.habitId}
+              px={{ base: '2px', sm: '4px' }}
+              py={{ base: '2px', sm: '3px' }}
+              title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
+              style={{
+                background: item.completed
+                  ? 'rgba(45, 212, 191, 0.14)'
+                  : isReadOnly
+                    ? `${itemColor}22`
+                    : 'rgba(99, 102, 241, 0.14)',
+                borderRadius: 4,
+                border: item.completed
+                  ? '1px solid rgba(45, 212, 191, 0.25)'
+                  : isReadOnly
+                    ? `1px solid ${itemColor}44`
+                    : '1px solid rgba(99, 102, 241, 0.2)',
+                fontSize: 10,
+                lineHeight: 1.2,
+                minWidth: 0,
+                maxWidth: '100%',
+                overflow: 'hidden',
+                flexShrink: 0,
+                cursor: isReadOnly ? 'default' : 'pointer'
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (!isReadOnly && onEditItem) {
+                  onEditItem(item.habitId, cell.date)
+                }
+              }}
+            >
+              <Group gap={3} wrap="nowrap" align="center" style={{ minWidth: 0, width: '100%', overflow: 'hidden' }}>
+                {isReadOnly ? (
+                  <Box
+                    w={6}
+                    h={6}
+                    style={{
+                      borderRadius: '50%',
+                      backgroundColor: itemColor,
+                      flexShrink: 0
+                    }}
+                  />
                 ) : (
-                  <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
-                )}
-              </Box>
-              {item.startTime && (
-                <Box visibleFrom="sm" style={{ flexShrink: 0 }}>
-                  <Text
-                    size="9px"
-                    fw={700}
-                    c={item.completed ? 'dimmed' : '#93c5fd'}
-                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                  <Box
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onToggleCheckin(item.habitId, cell.date)
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
                   >
-                    {item.startTime}
-                  </Text>
-                </Box>
-              )}
-              <Text
-                size="10px"
-                fw={500}
-                c={item.completed ? 'dimmed' : 'white'}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  textDecoration: item.completed ? 'line-through' : 'none',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {item.title}
-              </Text>
-            </Group>
-          </Box>
-        ))}
+                    {item.completed ? (
+                      <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                    ) : (
+                      <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
+                    )}
+                  </Box>
+                )}
+                {item.startTime && (
+                  <Box visibleFrom="sm" style={{ flexShrink: 0 }}>
+                    <Text
+                      size="9px"
+                      fw={700}
+                      c={item.completed ? 'dimmed' : '#93c5fd'}
+                      style={{ fontVariantNumeric: 'tabular-nums' }}
+                    >
+                      {item.startTime}
+                    </Text>
+                  </Box>
+                )}
+                <Text
+                  size="10px"
+                  fw={500}
+                  c={item.completed ? 'dimmed' : 'white'}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    textDecoration: item.completed ? 'line-through' : 'none',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {item.title}
+                </Text>
+              </Group>
+            </Box>
+          )
+        })}
 
         {remainingCount > 0 && (
           <Popover
@@ -321,75 +347,100 @@ export const HabitsMonthCell = ({
 
               <ScrollArea.Autosize mah={220} offsetScrollbars>
                 <Stack gap={4}>
-                  {hiddenItems.map((item) => (
-                    <Box
-                      key={item.habitId}
-                      px={6}
-                      py={4}
-                      title={`${item.title}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
-                      style={{
-                        background: item.completed ? 'rgba(45, 212, 191, 0.14)' : 'rgba(99, 102, 241, 0.14)',
-                        borderRadius: 6,
-                        border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : '1px solid rgba(99, 102, 241, 0.25)',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.15s ease'
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (onEditItem) {
-                          onEditItem(item.habitId, cell.date)
-                        }
-                      }}
-                    >
-                      <Group gap={6} wrap="nowrap" align="center">
-                        <Box
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onToggleCheckin(item.habitId, cell.date)
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            cursor: 'pointer',
-                            flexShrink: 0
-                          }}
-                        >
-                          {item.completed ? (
-                            <TbCheck size={13} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                  {hiddenItems.map((item) => {
+                    const isReadOnly = !!item.readOnly
+                    const itemColor = item.calendarColor || '#6366f1'
+
+                    return (
+                      <Box
+                        key={item.habitId}
+                        px={6}
+                        py={4}
+                        title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
+                        style={{
+                          background: item.completed
+                            ? 'rgba(45, 212, 191, 0.14)'
+                            : isReadOnly
+                              ? `${itemColor}22`
+                              : 'rgba(99, 102, 241, 0.14)',
+                          borderRadius: 6,
+                          border: item.completed
+                            ? '1px solid rgba(45, 212, 191, 0.3)'
+                            : isReadOnly
+                              ? `1px solid ${itemColor}44`
+                              : '1px solid rgba(99, 102, 241, 0.25)',
+                          cursor: isReadOnly ? 'default' : 'pointer',
+                          transition: 'background-color 0.15s ease'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!isReadOnly && onEditItem) {
+                            onEditItem(item.habitId, cell.date)
+                          }
+                        }}
+                      >
+                        <Group gap={6} wrap="nowrap" align="center">
+                          {isReadOnly ? (
+                            <Box
+                              w={8}
+                              h={8}
+                              style={{
+                                borderRadius: '50%',
+                                backgroundColor: itemColor,
+                                flexShrink: 0
+                              }}
+                            />
                           ) : (
-                            <TbCircle size={13} color="#818cf8" style={{ flexShrink: 0 }} />
+                            <Box
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onToggleCheckin(item.habitId, cell.date)
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                flexShrink: 0
+                              }}
+                            >
+                              {item.completed ? (
+                                <TbCheck size={13} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                              ) : (
+                                <TbCircle size={13} color="#818cf8" style={{ flexShrink: 0 }} />
+                              )}
+                            </Box>
                           )}
-                        </Box>
 
-                        {item.startTime && (
+                          {item.startTime && (
+                            <Text
+                              size="10px"
+                              fw={700}
+                              c={item.completed ? 'dimmed' : '#93c5fd'}
+                              style={{ fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
+                            >
+                              {item.startTime}
+                            </Text>
+                          )}
+
                           <Text
-                            size="10px"
-                            fw={700}
-                            c={item.completed ? 'dimmed' : '#93c5fd'}
-                            style={{ fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
+                            size="11px"
+                            fw={500}
+                            c={item.completed ? 'dimmed' : 'white'}
+                            style={{
+                              flex: 1,
+                              minWidth: 0,
+                              textDecoration: item.completed ? 'line-through' : 'none',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
                           >
-                            {item.startTime}
+                            {item.title}
                           </Text>
-                        )}
-
-                        <Text
-                          size="11px"
-                          fw={500}
-                          c={item.completed ? 'dimmed' : 'white'}
-                          style={{
-                            flex: 1,
-                            minWidth: 0,
-                            textDecoration: item.completed ? 'line-through' : 'none',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}
-                        >
-                          {item.title}
-                        </Text>
-                      </Group>
-                    </Box>
-                  ))}
+                        </Group>
+                      </Box>
+                    )
+                  })}
                 </Stack>
               </ScrollArea.Autosize>
             </Popover.Dropdown>

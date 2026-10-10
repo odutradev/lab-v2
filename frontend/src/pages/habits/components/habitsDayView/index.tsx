@@ -1,5 +1,5 @@
 import { ActionIcon, Stack, Group, Text, Box, Loader } from '@mantine/core'
-import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent } from 'react-icons/tb'
+import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent, TbLock } from 'react-icons/tb'
 
 import Badge from '@components/ui/badge'
 
@@ -81,30 +81,53 @@ export const HabitsDayView = ({
           <Stack gap="xs">
             {items.map((item) => {
               const isToggling = togglingId === item.habitId
+              const isReadOnly = !!item.readOnly
+              const itemColor = item.calendarColor || '#6366f1'
 
               return (
                 <Box
                   key={item.habitId}
                   p="sm"
                   style={{
-                    background: item.completed ? 'rgba(45, 212, 191, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                    border: item.completed ? '1px solid rgba(45, 212, 191, 0.25)' : '1px solid rgba(255, 255, 255, 0.06)',
+                    background: isReadOnly
+                      ? `${itemColor}15`
+                      : item.completed
+                        ? 'rgba(45, 212, 191, 0.08)'
+                        : 'rgba(255, 255, 255, 0.02)',
+                    border: isReadOnly
+                      ? `1px solid ${itemColor}35`
+                      : item.completed
+                        ? '1px solid rgba(45, 212, 191, 0.25)'
+                        : '1px solid rgba(255, 255, 255, 0.06)',
                     borderRadius: 10,
                     transition: 'all 0.15s ease'
                   }}
                 >
                   <Group justify="space-between" align="center" wrap="wrap" gap="xs">
                     <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 'min(100%, 180px)' }}>
-                      <ActionIcon
-                        size="md"
-                        variant="subtle"
-                        color={item.completed ? 'teal' : 'gray'}
-                        loading={isToggling}
-                        onClick={() => onToggleCheckin(item.habitId, selectedDate)}
-                        aria-label={item.completed ? 'Desmarcar conclusão' : 'Marcar conclusão'}
-                      >
-                        {item.completed ? <TbCheck size={18} color="#2dd4bf" /> : <TbCircle size={18} />}
-                      </ActionIcon>
+                      {isReadOnly ? (
+                        <Box
+                          w={14}
+                          h={14}
+                          style={{
+                            borderRadius: '50%',
+                            backgroundColor: itemColor,
+                            flexShrink: 0,
+                            margin: '0 6px 0 2px'
+                          }}
+                        />
+                      ) : (
+                        <ActionIcon
+                          size="md"
+                          variant="subtle"
+                          color={item.completed ? 'teal' : 'gray'}
+                          loading={isToggling}
+                          onClick={() => onToggleCheckin(item.habitId, selectedDate)}
+                          aria-label={item.completed ? 'Desmarcar conclusão' : 'Marcar conclusão'}
+                        >
+                          {item.completed ? <TbCheck size={18} color="#2dd4bf" /> : <TbCircle size={18} />}
+                        </ActionIcon>
+                      )}
 
                       <Box style={{ flex: 1, minWidth: 0 }}>
                         <Text
@@ -132,31 +155,49 @@ export const HabitsDayView = ({
                     </Group>
 
                     <Group gap="xs" wrap="wrap" style={{ flexShrink: 0 }}>
-                      {getItemTypeBadge(item.category)}
-                      {getFrequencyBadge(item.frequency || 'daily')}
+                      {isReadOnly ? (
+                        <>
+                          {item.calendarName && (
+                            <Badge variant="primary">
+                              {item.calendarName}
+                            </Badge>
+                          )}
+                          <Badge variant="warning">
+                            <Group gap={4} wrap="nowrap" align="center">
+                              <TbLock size={11} />
+                              <span>Somente visualização</span>
+                            </Group>
+                          </Badge>
+                        </>
+                      ) : (
+                        <>
+                          {getItemTypeBadge(item.category)}
+                          {getFrequencyBadge(item.frequency || 'daily')}
 
-                      {onEditItem && (
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          color="gray"
-                          onClick={() => onEditItem(item.habitId, selectedDate)}
-                          aria-label="Editar item"
-                        >
-                          <TbPencil size={15} />
-                        </ActionIcon>
-                      )}
+                          {onEditItem && (
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              color="gray"
+                              onClick={() => onEditItem(item.habitId, selectedDate)}
+                              aria-label="Editar item"
+                            >
+                              <TbPencil size={15} />
+                            </ActionIcon>
+                          )}
 
-                      {onRemoveItem && (
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          color="red"
-                          onClick={() => onRemoveItem(item.habitId, selectedDate)}
-                          aria-label="Excluir item"
-                        >
-                          <TbTrash size={15} />
-                        </ActionIcon>
+                          {onRemoveItem && (
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              color="red"
+                              onClick={() => onRemoveItem(item.habitId, selectedDate)}
+                              aria-label="Excluir item"
+                            >
+                              <TbTrash size={15} />
+                            </ActionIcon>
+                          )}
+                        </>
                       )}
                     </Group>
                   </Group>

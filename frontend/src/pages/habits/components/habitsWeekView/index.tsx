@@ -96,25 +96,41 @@ export const HabitsWeekView = ({
                   </Text>
                 ) : (
                   items.map((item) => {
+                    const isReadOnly = !!item.readOnly
+                    const itemColor = item.calendarColor || '#6366f1'
                     const isItemToggling = togglingId === item.habitId
                     const isTask = item.category === 'task'
                     const isSchedule = item.category === 'schedule'
-                    const baseBorder = isSchedule ? 'rgba(245, 158, 11, 0.3)' : isTask ? 'rgba(6, 182, 212, 0.3)' : 'rgba(99, 102, 241, 0.25)'
-                    const baseBg = isSchedule ? 'rgba(245, 158, 11, 0.1)' : isTask ? 'rgba(6, 182, 212, 0.1)' : 'rgba(99, 102, 241, 0.12)'
+                    const baseBorder = isReadOnly
+                      ? `${itemColor}44`
+                      : isSchedule
+                        ? 'rgba(245, 158, 11, 0.3)'
+                        : isTask
+                          ? 'rgba(6, 182, 212, 0.3)'
+                          : 'rgba(99, 102, 241, 0.25)'
+                    const baseBg = isReadOnly
+                      ? `${itemColor}1f`
+                      : isSchedule
+                        ? 'rgba(245, 158, 11, 0.1)'
+                        : isTask
+                          ? 'rgba(6, 182, 212, 0.1)'
+                          : 'rgba(99, 102, 241, 0.12)'
 
                     return (
                       <Box
                         key={item.habitId}
                         p={6}
+                        title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}`}
                         style={{
                           background: item.completed ? 'rgba(45, 212, 191, 0.12)' : baseBg,
                           border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : `1px solid ${baseBorder}`,
                           borderRadius: 6,
-                          transition: 'all 0.15s ease'
+                          transition: 'all 0.15s ease',
+                          cursor: isReadOnly ? 'default' : 'pointer'
                         }}
                         onClick={(e) => {
                           e.stopPropagation()
-                          if (onEditItem) {
+                          if (!isReadOnly && onEditItem) {
                             onEditItem(item.habitId, dateStr)
                           }
                         }}
@@ -141,19 +157,31 @@ export const HabitsWeekView = ({
                             ) : null}
                           </Box>
 
-                          <ActionIcon
-                            size="xs"
-                            variant="subtle"
-                            color={item.completed ? 'teal' : 'gray'}
-                            loading={isItemToggling}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              onToggleCheckin(item.habitId, dateStr)
-                            }}
-                            aria-label="Concluir item"
-                          >
-                            {item.completed ? <TbCheck size={14} /> : <TbCircle size={14} />}
-                          </ActionIcon>
+                          {isReadOnly ? (
+                            <Box
+                              w={8}
+                              h={8}
+                              style={{
+                                borderRadius: '50%',
+                                backgroundColor: itemColor,
+                                flexShrink: 0
+                              }}
+                            />
+                          ) : (
+                            <ActionIcon
+                              size="xs"
+                              variant="subtle"
+                              color={item.completed ? 'teal' : 'gray'}
+                              loading={isItemToggling}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onToggleCheckin(item.habitId, dateStr)
+                              }}
+                              aria-label="Concluir item"
+                            >
+                              {item.completed ? <TbCheck size={14} /> : <TbCircle size={14} />}
+                            </ActionIcon>
+                          )}
                         </Group>
                       </Box>
                     )
