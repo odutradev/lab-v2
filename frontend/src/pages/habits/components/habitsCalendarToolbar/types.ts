@@ -9,4 +9,6 @@ export interface HabitsCalendarToolbarProps {
   onNext: () => void
   onToday: () => void
   onOpenNewHabitModal: () => void
+  onOpenSettingsModal: () => void
 }
+

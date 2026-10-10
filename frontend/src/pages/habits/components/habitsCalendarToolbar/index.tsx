@@ -1,5 +1,5 @@
-import { Group, Text, Box } from '@mantine/core'
-import { TbChevronLeft, TbChevronRight, TbPlus } from 'react-icons/tb'
+import { Group, Text, Box, Tooltip } from '@mantine/core'
+import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import ActionIcon from '@components/ui/actionIcon'
@@ -24,7 +24,8 @@ export const HabitsCalendarToolbar = ({
   onPrevious,
   onNext,
   onToday,
-  onOpenNewHabitModal
+  onOpenNewHabitModal,
+  onOpenSettingsModal
 }: HabitsCalendarToolbarProps) => {
   return (
     <Box
@@ -84,6 +85,20 @@ export const HabitsCalendarToolbar = ({
             height={TOOLBAR_CONTROL_HEIGHT}
             radius="md"
           />
+
+          <Tooltip label="Configurar agendas" withArrow position="bottom">
+            <ActionIcon
+              variant="subtle"
+              size="md"
+              h={TOOLBAR_CONTROL_HEIGHT}
+              w={TOOLBAR_CONTROL_HEIGHT}
+              radius="md"
+              onClick={onOpenSettingsModal}
+              aria-label="Configurar agendas"
+            >
+              <TbSettings size={18} />
+            </ActionIcon>
+          </Tooltip>
 
           <Button
             variant="primary"

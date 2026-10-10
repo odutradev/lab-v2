@@ -13,6 +13,7 @@ import HabitsWeekView from './components/habitsWeekView'
 import HabitsDayView from './components/habitsDayView'
 import HabitsModal from './components/habitsModal'
 import RecurringScopeModal from './components/recurringScopeModal'
+import CalendarSettingsModal from './components/calendarSettingsModal'
 import GeneralPerformanceCard from './components/generalPerformanceCard'
 import CompactWeightCard from './components/compactWeightCard'
 import CompactSleepCard from './components/compactSleepCard'
@@ -56,7 +57,11 @@ export const HabitsPage = () => {
     handleToggleCheckin,
     handleRemoveHabit,
     handleConfirmScopeAction,
-    handleCloseScopeModal
+    handleCloseScopeModal,
+    isSettingsModalOpen,
+    handleOpenSettingsModal,
+    handleCloseSettingsModal,
+    handleReloadCalendar
   } = useHabitsPage()
 
   const {
@@ -179,6 +184,7 @@ export const HabitsPage = () => {
                 onNext={handleNextPeriod}
                 onToday={handleToday}
                 onOpenNewHabitModal={handleOpenModal}
+                onOpenSettingsModal={handleOpenSettingsModal}
               />
 
               {viewMode === 'month' && (
@@ -339,6 +345,12 @@ export const HabitsPage = () => {
         onClose={handleCloseScopeModal}
         onConfirm={handleConfirmScopeActionWithMetrics}
         isLoading={isCreating}
+      />
+
+      <CalendarSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={handleCloseSettingsModal}
+        onSaved={handleReloadCalendar}
       />
     </Box>
   )

@@ -105,6 +105,7 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     date: string
     payload?: CreateHabitFormData
   } | null>(null)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false)
 
   const { showToast } = useToastStore()
 
@@ -524,6 +525,18 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     }
   }
 
+  const handleOpenSettingsModal = () => {
+    setIsSettingsModalOpen(true)
+  }
+
+  const handleCloseSettingsModal = () => {
+    setIsSettingsModalOpen(false)
+  }
+
+  const handleReloadCalendar = () => {
+    reloadData(visibleRange.startDate, visibleRange.endDate)
+  }
+
   return {
     selectedDate,
     todayStr,
@@ -558,7 +571,11 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
     handleScheduleForDay,
     handleRemoveHabit,
     handleConfirmScopeAction,
-    handleCloseScopeModal
+    handleCloseScopeModal,
+    isSettingsModalOpen,
+    handleOpenSettingsModal,
+    handleCloseSettingsModal,
+    handleReloadCalendar
   }
 }
 

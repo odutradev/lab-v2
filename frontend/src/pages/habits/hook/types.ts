@@ -38,4 +38,9 @@ export interface UseHabitsPageReturn {
   handleRemoveHabit: (habitId: string, date?: string) => Promise<void>
   handleConfirmScopeAction: (mode: RecurrenceScopeMode) => Promise<void>
   handleCloseScopeModal: () => void
+  isSettingsModalOpen: boolean
+  handleOpenSettingsModal: () => void
+  handleCloseSettingsModal: () => void
+  handleReloadCalendar: () => void
 }
+
