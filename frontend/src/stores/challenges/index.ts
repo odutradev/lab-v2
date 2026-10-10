@@ -20,6 +20,7 @@ interface ChallengesState {
   removeChallenge: (id: string) => Promise<void>
   toggleCheckin: (id: string, date?: string) => Promise<{ completedToday: boolean; challenge: Challenge }>
   recordSlip: (id: string, payload?: SlipChallengePayload) => Promise<Challenge>
+  toggleFreeze: (id: string, date?: string) => Promise<{ frozen: boolean; challenge: Challenge; error?: string }>
 }
 
 export const useChallengesStore = create<ChallengesState>((set, get) => ({
@@ -128,6 +129,22 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
         isActionLoading: false
       }))
       return updated
+    } catch (err) {
+      set({ isActionLoading: false })
+      throw err
+    }
+  },
+
+  toggleFreeze: async (id: string, date?: string) => {
+    const targetDate = date || getTodayDateString()
+    set({ isActionLoading: true })
+    try {
+      const response = await challengesActions.freezeChallenge(id, { date: targetDate })
+      set((state) => ({
+        challenges: state.challenges.map((c) => (c.id === id ? response.challenge : c)),
+        isActionLoading: false
+      }))
+      return response
     } catch (err) {
       set({ isActionLoading: false })
       throw err

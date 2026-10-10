@@ -7,6 +7,8 @@ import type {
   CheckinChallengePayload,
   CheckinChallengeResponse,
   SlipChallengePayload,
+  FreezeChallengePayload,
+  FreezeChallengeResponse,
   ChallengeActionSuccessResponse,
   ListChallengesParams
 } from './types'
@@ -45,13 +47,21 @@ export const slipChallengeAction = async (
   return apiClient.post<Challenge>(`/challenges/${id}/slip`, payload || {})
 }
 
+export const freezeChallengeAction = async (
+  id: string,
+  payload?: FreezeChallengePayload
+): Promise<FreezeChallengeResponse> => {
+  return apiClient.post<FreezeChallengeResponse>(`/challenges/${id}/freeze`, payload || {})
+}
+
 const challengesActions = {
   createChallenge: createChallengeAction,
   listChallenges: listChallengesAction,
   updateChallenge: updateChallengeAction,
   removeChallenge: removeChallengeAction,
   checkinChallenge: checkinChallengeAction,
-  slipChallenge: slipChallengeAction
+  slipChallenge: slipChallengeAction,
+  freezeChallenge: freezeChallengeAction
 }
 
 export default challengesActions

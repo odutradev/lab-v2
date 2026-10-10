@@ -35,22 +35,26 @@ export const formatDisplayDate = (dateStr: string): string => {
 /**
  * Calcula a sequência contínua (streak) até uma data de referência (padrão hoje).
  */
-export const calculateStreak = (checkins: string[], referenceDate = getTodayDateString()): number => {
-  if (!checkins || checkins.length === 0) return 0
+export const calculateStreak = (
+  checkins: string[],
+  freezeDates: string[] = [],
+  referenceDate = getTodayDateString()
+): number => {
+  if ((!checkins || checkins.length === 0) && (!freezeDates || freezeDates.length === 0)) return 0
 
-  const checkinSet = new Set(checkins)
+  const checkinSet = new Set(checkins || [])
+  const freezeSet = new Set(freezeDates || [])
 
-  // Verifica se o dia de referência ou o dia anterior está marcado
+  // Verifica se o dia de referência ou o dia anterior está marcado ou congelado
   let current = referenceDate
-  if (!checkinSet.has(current)) {
-    // Pode ser que hoje ainda não tenha feito checkin, então checa ontem
+  if (!checkinSet.has(current) && !freezeSet.has(current)) {
     const [y, m, d] = referenceDate.split('-').map(Number)
     const yesterday = new Date(y, m - 1, d - 1)
     const py = yesterday.getFullYear()
     const pm = String(yesterday.getMonth() + 1).padStart(2, '0')
     const pd = String(yesterday.getDate()).padStart(2, '0')
     current = `${py}-${pm}-${pd}`
-    if (!checkinSet.has(current)) {
+    if (!checkinSet.has(current) && !freezeSet.has(current)) {
       return 0
     }
   }
@@ -58,8 +62,10 @@ export const calculateStreak = (checkins: string[], referenceDate = getTodayDate
   let streak = 0
   let iterDate = current
 
-  while (checkinSet.has(iterDate)) {
-    streak++
+  while (checkinSet.has(iterDate) || freezeSet.has(iterDate)) {
+    if (checkinSet.has(iterDate)) {
+      streak++
+    }
     const [y, m, d] = iterDate.split('-').map(Number)
     const prev = new Date(y, m - 1, d - 1)
     const py = prev.getFullYear()
@@ -77,6 +83,10 @@ export interface ChallengeStats {
   percentage: number
   streak: number
   isCompletedToday: boolean
+  isFrozenToday: boolean
+  freezeDaysPerMonth: number
+  freezesUsedThisMonth: number
+  freezesRemainingThisMonth: number
   estimatedEndDate: string
   milestones: ChallengeMilestone[]
 }
@@ -89,10 +99,16 @@ export const calculateChallengeStats = (
   const targetDays = challenge.targetDays || 90
   const percentage = Math.min(100, Math.round((completedDays / targetDays) * 100))
   const streak = challenge.type === 'streak'
-    ? calculateStreak(challenge.checkins, referenceDate)
+    ? calculateStreak(challenge.checkins, challenge.freezeDates, referenceDate)
     : completedDays
 
   const isCompletedToday = Boolean(challenge.checkins?.includes(referenceDate))
+  const isFrozenToday = Boolean(challenge.freezeDates?.includes(referenceDate))
+
+  const freezeDaysPerMonth = typeof challenge.freezeDaysPerMonth === 'number' ? challenge.freezeDaysPerMonth : 2
+  const currentMonth = referenceDate.slice(0, 7)
+  const freezesUsedThisMonth = (challenge.freezeDates || []).filter((d) => d.startsWith(currentMonth)).length
+  const freezesRemainingThisMonth = Math.max(0, freezeDaysPerMonth - freezesUsedThisMonth)
 
   // Previsão de data de conclusão
   const remaining = Math.max(0, targetDays - completedDays)
@@ -123,6 +139,10 @@ export const calculateChallengeStats = (
     percentage,
     streak,
     isCompletedToday,
+    isFrozenToday,
+    freezeDaysPerMonth,
+    freezesUsedThisMonth,
+    freezesRemainingThisMonth,
     estimatedEndDate,
     milestones
   }
