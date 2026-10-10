@@ -20,13 +20,13 @@ import CompactSleepCard from './components/compactSleepCard'
 import CompactWaterCard from './components/compactWaterCard'
 import ChallengesSection from './components/challenges'
 import { containerStyle } from './styles'
-import useHabitsPage from './hook'
+import useHomePage from './hook'
 import useMonthlyMetrics from './hook/useMonthlyMetrics'
 
 import type { CreateHabitFormData } from './components/habitsModal/types'
 import type { RecurrenceScopeMode } from '@actions/habits/types'
 
-export const HabitsPage = () => {
+export const HomePage = () => {
   const navigate = useNavigate()
   const {
     selectedDate,
@@ -62,7 +62,7 @@ export const HabitsPage = () => {
     handleOpenSettingsModal,
     handleCloseSettingsModal,
     handleReloadCalendar
-  } = useHabitsPage()
+  } = useHomePage()
 
   const {
     profile: healthProfile,
@@ -406,4 +406,5 @@ export const HabitsPage = () => {
   )
 }
 
-export default HabitsPage
+export const HabitsPage = HomePage
+export default HomePage

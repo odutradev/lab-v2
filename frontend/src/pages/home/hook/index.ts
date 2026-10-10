@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getRangeSummaryAction, scheduleHabitAction, createHabitAction, updateHabitAction, toggleCheckinAction, removeHabitAction, listHabitsAction } from '@actions/habits'
 import useToastStore from '@stores/toast'
 
-import type { CalendarViewMode, CalendarDayCell } from '@pages/habits/types'
-import type { CreateHabitFormData } from '@pages/habits/components/habitsModal/types'
-import type { RecurringActionType } from '@pages/habits/components/recurringScopeModal/types'
+import type { RecurringActionType } from '@pages/home/components/recurringScopeModal/types'
 import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from '@actions/habits/types'
-import type { UseHabitsPageReturn } from './types'
+import type { CreateHabitFormData } from '@pages/home/components/habitsModal/types'
+import type { CalendarViewMode, CalendarDayCell } from '@pages/home/types'
+import type { UseHomePageReturn } from './types'
 
 const formatDateToString = (date: Date): string => {
   const yyyy = date.getFullYear()
@@ -85,7 +85,7 @@ const calculateMonthCells = (dateStr: string, todayStr: string, selectedDateStr:
   return cells
 }
 
-export const useHabitsPage = (): UseHabitsPageReturn => {
+export const useHomePage = (): UseHomePageReturn => {
   const todayStr = useMemo(() => getTodayString(), [])
   const [selectedDate, setSelectedDate] = useState<string>(todayStr)
   const [viewMode, setViewMode] = useState<CalendarViewMode>('month')
@@ -579,5 +579,6 @@ export const useHabitsPage = (): UseHabitsPageReturn => {
   }
 }
 
-export default useHabitsPage
+export const useHabitsPage = useHomePage
+export default useHomePage
 
