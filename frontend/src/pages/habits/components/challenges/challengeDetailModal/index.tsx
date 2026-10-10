@@ -4,7 +4,6 @@ import { TbFlame, TbTrophy, TbCalendar, TbTrash, TbEdit, TbAlertTriangle, TbChec
 import Modal from '@components/ui/modal'
 import Button from '@components/ui/button'
 import ChallengeGrid from '../challengeGrid'
-import ChallengeMilestones from '../challengeMilestones'
 import { calculateChallengeStats, formatDisplayDate } from '@stores/challenges/utils'
 
 import type { Challenge } from '@actions/challenges/types'
@@ -290,17 +289,6 @@ export const ChallengeDetailModal = ({
             slipDates={challenge.slipDates}
             freezeDates={challenge.freezeDates}
             onToggleDate={handleToggleSpecificDate}
-          />
-        </Box>
-
-        {/* Marcos de Conquista Intermediários */}
-        <Box>
-          <Text size="xs" fw={700} c="dimmed" tt="uppercase" mb={6}>
-            Marcos de Conquista
-          </Text>
-          <ChallengeMilestones
-            milestones={stats.milestones}
-            completedDays={stats.completedDays}
           />
         </Box>
       </Stack>
