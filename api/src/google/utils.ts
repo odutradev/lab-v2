@@ -363,6 +363,7 @@ export const fetchGoogleCalendarEvents = async (
           calendarId,
           timeMin,
           timeMax,
+          timeZone: 'America/Sao_Paulo',
           singleEvents: true,
           orderBy: 'startTime',
           maxResults: 250

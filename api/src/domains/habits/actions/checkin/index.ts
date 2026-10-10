@@ -45,15 +45,22 @@ const fetchExternalCalendarItems = async (
       // continua sem metaMap se falhar listagem
     }
 
+    const [sYear, sMonth, sDay] = startDate.split('-').map(Number)
+    const [eYear, eMonth, eDay] = endDate.split('-').map(Number)
+    const minDate = new Date(sYear, sMonth - 1, sDay - 1)
+    const maxDate = new Date(eYear, eMonth - 1, eDay + 2)
+
     const events = await fetchGoogleCalendarEvents(
       refreshToken,
       externalIds,
-      `${startDate}T00:00:00Z`,
-      `${endDate}T23:59:59Z`,
+      minDate.toISOString(),
+      maxDate.toISOString(),
       metaMap
     )
 
     for (const ev of events) {
+      if (ev.date < startDate || ev.date > endDate) continue
+
       const item: DaySummaryItem = {
         habitId: `gcal_${ev.id}`,
         title: ev.summary,

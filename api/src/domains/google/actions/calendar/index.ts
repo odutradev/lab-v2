@@ -591,10 +591,10 @@ export const updateSelectedCalendarsAction = defineAction<
       }
     }
   },
-  async ({ ids, body, manageError }) => {
+  async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const calendarIds = Array.isArray(body?.calendarIds) ? body.calendarIds : []
+    const calendarIds = Array.isArray(data?.calendarIds) ? data.calendarIds : []
     await userRepository.updateGoogleCalendarSelectedIds(ids.userId, calendarIds)
 
     return {
