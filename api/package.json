@@ -10,7 +10,6 @@
     "build": "tsup",
     "start": "node dist/server.js",
     "make:superadmin": "tsx scripts/makeSuperAdmin.ts",
-    "db:reset": "tsx scripts/resetDatabase.ts",
     "publish": "npx pub --bump-package --build --push"
   },
   "dependencies": {
