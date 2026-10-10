@@ -1,6 +1,6 @@
 {
   "name": "lab-v2",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "description": "Lab V2 monorepo workspace",
   "scripts": {
