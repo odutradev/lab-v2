@@ -21,11 +21,7 @@ import {
 
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
-import {
-  listGoogleCalendarsAction,
-  updateSelectedGoogleCalendarsAction,
-  getGoogleCalendarAuthUrlAction
-} from '@actions/google/calendar'
+import useCalendarStore from '@stores/calendar'
 
 import type { GoogleCalendarItem } from '@actions/google/calendar/types'
 import type { CalendarSettingsModalProps } from './types'
@@ -36,13 +32,18 @@ export const CalendarSettingsModal = ({
   onSaved
 }: CalendarSettingsModalProps) => {
   const { showToast } = useToastStore()
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-  const [calendars, setCalendars] = useState<GoogleCalendarItem[]>([])
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const {
+    calendars,
+    selectedCalendarIds,
+    isConnected,
+    isLoading,
+    isSaving,
+    isConnecting,
+    fetchCalendars,
+    toggleCalendar,
+    saveSelectedCalendars,
+    connectGoogle
+  } = useCalendarStore()
 
   const [isMyCalendarsOpen, setIsMyCalendarsOpen] = useState(true)
   const [isOtherCalendarsOpen, setIsOtherCalendarsOpen] = useState(true)
@@ -50,70 +51,22 @@ export const CalendarSettingsModal = ({
   useEffect(() => {
     if (!isOpen) return
 
-    let isCancelled = false
-
-    const loadCalendars = async () => {
-      setIsLoading(true)
-      try {
-        const res = await listGoogleCalendarsAction()
-        if (isCancelled) return
-        setIsConnected(res.connected)
-        setCalendars(res.items)
-
-        const selected = new Set<string>()
-        res.items.forEach((item) => {
-          if (item.selected) {
-            selected.add(item.id)
-          }
-        })
-        setSelectedIds(selected)
-      } catch {
-        if (!isCancelled) {
-          showToast('Não foi possível carregar as agendas do Google.', 'error')
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    loadCalendars()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [isOpen, showToast])
-
-  const handleToggleCalendar = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
+    fetchCalendars().catch(() => {
+      showToast('Não foi possível carregar as agendas do Google.', 'error')
     })
-  }
+  }, [isOpen, fetchCalendars, showToast])
 
   const handleConnectGoogle = async () => {
     try {
-      setIsConnecting(true)
-      const { url } = await getGoogleCalendarAuthUrlAction()
-      window.location.href = url
+      await connectGoogle()
     } catch {
       showToast('Falha ao obter URL de autenticação do Google.', 'error')
-      setIsConnecting(false)
     }
   }
 
   const handleSave = async () => {
     try {
-      setIsSaving(true)
-      await updateSelectedGoogleCalendarsAction({
-        calendarIds: Array.from(selectedIds)
-      })
+      await saveSelectedCalendars()
       showToast('Preferências de agendas salvas com sucesso!', 'success')
       if (onSaved) {
         onSaved()
@@ -121,8 +74,6 @@ export const CalendarSettingsModal = ({
       onClose()
     } catch {
       showToast('Falha ao salvar preferências de agendas.', 'error')
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -134,26 +85,28 @@ export const CalendarSettingsModal = ({
   )
 
   const renderCalendarRow = (item: GoogleCalendarItem) => {
-    const isChecked = selectedIds.has(item.id)
+    const isChecked = selectedCalendarIds.includes(item.id)
     const color = item.backgroundColor || '#6366f1'
 
     return (
       <Box
         key={item.id}
         p="xs"
+        onClick={() => toggleCalendar(item.id)}
         style={{
           borderRadius: 8,
-          backgroundColor: isChecked ? 'rgba(255, 255, 255, 0.04)' : 'transparent',
+          backgroundColor: isChecked ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
           border: '1px solid',
-          borderColor: isChecked ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-          transition: 'all 0.15s ease'
+          borderColor: isChecked ? 'rgba(99, 102, 241, 0.35)' : 'transparent',
+          transition: 'all 0.15s ease',
+          cursor: 'pointer'
         }}
       >
         <Group justify="space-between" align="center" wrap="nowrap" gap="sm">
           <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
             <Checkbox
               checked={isChecked}
-              onChange={() => handleToggleCalendar(item.id)}
+              onChange={() => {}}
               color="indigo"
               size="sm"
               styles={{
