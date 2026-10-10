@@ -39,3 +39,31 @@ export interface UpdateGoogleCalendarNameResponse {
   message: string
 }
 
+export interface GoogleCalendarItem {
+  id: string
+  summary: string
+  description?: string
+  primary?: boolean
+  backgroundColor?: string
+  foregroundColor?: string
+  accessRole?: string
+  isLabV2: boolean
+  selected: boolean
+}
+
+export interface ListGoogleCalendarsResponse {
+  connected: boolean
+  items: GoogleCalendarItem[]
+  selectedCalendarIds: string[]
+}
+
+export interface UpdateSelectedGoogleCalendarsPayload {
+  calendarIds: string[]
+}
+
+export interface UpdateSelectedGoogleCalendarsResponse {
+  success: boolean
+  selectedCalendarIds: string[]
+  message: string
+}
+

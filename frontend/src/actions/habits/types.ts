@@ -96,9 +96,13 @@ export interface DaySummaryItem {
   frequency?: HabitFrequency
   startDate?: string
   allDay?: boolean
-  startTime?: string | null
+  startTime: string | null
   endTime?: string | null
   completed: boolean
+  readOnly?: boolean
+  calendarId?: string
+  calendarName?: string
+  calendarColor?: string
 }
 
 export interface DaySummaryResponse {

@@ -7,7 +7,10 @@ import type {
   DisconnectGoogleCalendarResponse,
   UpdateGoogleCalendarNamePayload,
   UpdateGoogleCalendarNameResponse,
-  RecreateGoogleCalendarResponse
+  RecreateGoogleCalendarResponse,
+  ListGoogleCalendarsResponse,
+  UpdateSelectedGoogleCalendarsPayload,
+  UpdateSelectedGoogleCalendarsResponse
 } from './types'
 
 export const getGoogleCalendarAuthUrlAction = async (): Promise<GoogleCalendarAuthUrlResponse> => {
@@ -33,5 +36,16 @@ export const updateGoogleCalendarNameAction = async (
 export const recreateGoogleCalendarAction = async (): Promise<RecreateGoogleCalendarResponse> => {
   return apiClient.post<RecreateGoogleCalendarResponse>('/google/calendar/recreate')
 }
+
+export const listGoogleCalendarsAction = async (): Promise<ListGoogleCalendarsResponse> => {
+  return apiClient.get<ListGoogleCalendarsResponse>('/google/calendar/list')
+}
+
+export const updateSelectedGoogleCalendarsAction = async (
+  payload: UpdateSelectedGoogleCalendarsPayload
+): Promise<UpdateSelectedGoogleCalendarsResponse> => {
+  return apiClient.put<UpdateSelectedGoogleCalendarsResponse>('/google/calendar/selected', payload)
+}
+
 
 
