@@ -5,6 +5,7 @@ import {
   updateCalendarEvent,
   deleteCalendarEvent
 } from '@google/utils'
+import { invalidateUserGoogleEvents } from '@google/cache'
 import createLocalLogger from '@utils/localLogger'
 
 import type { GoogleCalendarEventInput } from '@google/types'
@@ -136,6 +137,7 @@ export const syncHabitToGoogle = async (
           habit.googleEventId,
           eventPayload
         )
+        await invalidateUserGoogleEvents(userId)
         return habit.googleEventId
       } catch (err: unknown) {
         const status = (err as { status?: number; code?: number })?.status || (err as { status?: number; code?: number })?.code
@@ -157,6 +159,7 @@ export const syncHabitToGoogle = async (
       })
     }
 
+    await invalidateUserGoogleEvents(userId)
     return newEventId
   } catch (error) {
     logger.error(`Error syncing habit "${habit.id}" to Google Calendar:`, error)
@@ -176,11 +179,15 @@ export const removeHabitFromGoogle = async (
       return false
     }
 
-    return await deleteCalendarEvent(
+    const deleted = await deleteCalendarEvent(
       integration.refreshToken,
       integration.calendarId,
       googleEventId
     )
+    if (deleted) {
+      await invalidateUserGoogleEvents(userId)
+    }
+    return deleted
   } catch (error) {
     logger.error(`Error deleting Google event "${googleEventId}":`, error)
     return false
@@ -231,6 +238,9 @@ export const syncAllUserHabitsToGoogle = async (userId: string): Promise<number>
     }
 
     logger.info(`Successfully bulk-synced ${syncedCount} habits to Google Calendar for user "${userId}"`)
+    if (syncedCount > 0) {
+      await invalidateUserGoogleEvents(userId)
+    }
     return syncedCount
   } catch (error) {
     logger.error(`Error in syncAllUserHabitsToGoogle for user "${userId}":`, error)

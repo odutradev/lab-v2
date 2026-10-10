@@ -8,7 +8,7 @@ import { isValidObjectId } from '@database/utils'
 import defineAction from '@factories/defineAction'
 import createAuditLog from '@createAuditLog'
 import userRepository from '@domains/users/repositories/user'
-import { listUserGoogleCalendars, fetchGoogleCalendarEvents } from '@google/utils'
+import { getCachedUserGoogleCalendars, getCachedGoogleCalendarEvents } from '@google/cache'
 import createLocalLogger from '@utils/localLogger'
 
 import type { RangeSummaryResponse, ToggleCheckinResponse, DaySummaryResponse, RangeSummaryQuery, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from '@domains/habits/actions/checkin/types'
@@ -39,7 +39,7 @@ const fetchExternalCalendarItems = async (
 
     let metaMap: Map<string, { summary: string; color?: string }> | undefined
     try {
-      const gcalList = await listUserGoogleCalendars(refreshToken)
+      const gcalList = await getCachedUserGoogleCalendars(userId, refreshToken)
       metaMap = new Map(gcalList.map((c) => [c.id, { summary: c.summary, color: c.backgroundColor }]))
     } catch {
       // continua sem metaMap se falhar listagem
@@ -50,13 +50,14 @@ const fetchExternalCalendarItems = async (
     const minDate = new Date(sYear, sMonth - 1, sDay - 1)
     const maxDate = new Date(eYear, eMonth - 1, eDay + 2)
 
-    const events = await fetchGoogleCalendarEvents(
+    const events = await getCachedGoogleCalendarEvents({
+      userId,
       refreshToken,
-      externalIds,
-      minDate.toISOString(),
-      maxDate.toISOString(),
-      metaMap
-    )
+      calendarIds: externalIds,
+      timeMin: minDate.toISOString(),
+      timeMax: maxDate.toISOString(),
+      calendarMetaMap: metaMap
+    })
 
     for (const ev of events) {
       if (ev.date < startDate || ev.date > endDate) continue

@@ -26,6 +26,11 @@ import {
   checkGoogleCalendarStatus,
   listUserGoogleCalendars
 } from '@google/utils'
+import {
+  getCachedUserGoogleCalendars,
+  invalidateAllUserGoogleCache,
+  invalidateUserGoogleEvents
+} from '@google/cache'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { syncAllUserHabitsToGoogle } from '@domains/habits/utils/googleSync'
 import userRepository from '@domains/users/repositories/user'
@@ -375,6 +380,8 @@ export const disconnectCalendarAction = defineAction<
       connectedAt: undefined
     })
 
+    await invalidateAllUserGoogleCache(ids.userId)
+
     await createAuditLog({
       actorId: ids.userId,
       action: 'google_calendar_disconnected',
@@ -447,6 +454,7 @@ export const updateCalendarNameAction = defineAction<
     }
 
     await userRepository.updateGoogleCalendarName(ids.userId, updatedSummary)
+    await invalidateAllUserGoogleCache(ids.userId)
 
     await createAuditLog({
       actorId: ids.userId,
@@ -519,6 +527,7 @@ export const recreateCalendarAction = defineAction<
     })
 
     await syncAllUserHabitsToGoogle(ids.userId)
+    await invalidateAllUserGoogleCache(ids.userId)
 
     const calendarUrl = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(newCalendar.id)}`
 
@@ -571,7 +580,7 @@ export const listCalendarsAction = defineAction<
     }
 
     try {
-      const gcalItems = await listUserGoogleCalendars(refreshToken)
+      const gcalItems = await getCachedUserGoogleCalendars(ids.userId, refreshToken)
       const normalizedLabName = labCalendarName.trim().toLowerCase()
 
       const items = gcalItems.map((item) => {
@@ -638,6 +647,7 @@ export const updateSelectedCalendarsAction = defineAction<
 
     const calendarIds = Array.isArray(data?.calendarIds) ? data.calendarIds : []
     await userRepository.updateGoogleCalendarSelectedIds(ids.userId, calendarIds)
+    await invalidateUserGoogleEvents(ids.userId)
 
     return {
       success: true,
