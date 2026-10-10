@@ -41,9 +41,7 @@ const fetchExternalCalendarItems = async (
     try {
       const gcalList = await getCachedUserGoogleCalendars(userId, refreshToken)
       metaMap = new Map(gcalList.map((c) => [c.id, { summary: c.summary, color: c.backgroundColor }]))
-    } catch {
-      // continua sem metaMap se falhar listagem
-    }
+    } catch {}
 
     const [sYear, sMonth, sDay] = startDate.split('-').map(Number)
     const [eYear, eMonth, eDay] = endDate.split('-').map(Number)

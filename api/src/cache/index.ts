@@ -1,4 +1,5 @@
 import Redis from 'ioredis'
+
 import createLocalLogger from '@utils/localLogger'
 
 const logger = createLocalLogger('cache')
@@ -16,10 +17,7 @@ const getRedisClient = (): Redis => {
     enableOfflineQueue: false,
     maxRetriesPerRequest: 1,
     connectTimeout: 2000,
-    retryStrategy: (times) => {
-      // Exponential backoff limitado a no máximo 5 segundos
-      return Math.min(times * 200, 5000)
-    }
+    retryStrategy: (times) => Math.min(times * 200, 5000)
   })
 
   redisClient.on('connect', () => {
@@ -43,44 +41,32 @@ const getRedisClient = (): Redis => {
   return redisClient
 }
 
-/**
- * Conecta ao Redis de forma não bloqueante.
- * Se o Redis não estiver disponível, registra o aviso e mantém a API operacional sem cache.
- */
 export const connectRedis = async (): Promise<void> => {
   try {
     const client = getRedisClient()
     await client.connect()
-  } catch (error) {
+  } catch {
     isRedisReady = false
     logger.warn('Could not establish initial connection to Redis. Continuing in bypass mode.')
   }
 }
 
-/**
- * Desconecta o cliente Redis graciosamente.
- */
 export const disconnectRedis = async (): Promise<void> => {
-  if (redisClient) {
-    try {
-      await redisClient.quit()
-      logger.info('Redis client disconnected cleanly')
-    } catch (error) {
-      logger.error('Error disconnecting Redis client:', error)
-    } finally {
-      isRedisReady = false
-      redisClient = null
-    }
+  if (!redisClient) return
+
+  try {
+    await redisClient.quit()
+    logger.info('Redis client disconnected cleanly')
+  } catch (error) {
+    logger.error('Error disconnecting Redis client:', error)
+  } finally {
+    isRedisReady = false
+    redisClient = null
   }
 }
 
-// Mapa em memória para deduplicação de chamadas concorrentes (Single-flight)
 const flightMap = new Map<string, Promise<unknown>>()
 
-/**
- * Executa uma função assíncrona garantindo que chamadas idênticas em andamento
- * compartilhem a mesma Promise (evita Cache Stampede / Thundering Herd).
- */
 export const singleFlight = async <T>(flightKey: string, fn: () => Promise<T>): Promise<T> => {
   const existing = flightMap.get(flightKey)
   if (existing) {
@@ -96,12 +82,10 @@ export const singleFlight = async <T>(flightKey: string, fn: () => Promise<T>): 
 }
 
 export const cacheService = {
-  isAvailable(): boolean {
-    return isRedisReady && redisClient !== null
-  },
+  isAvailable: (): boolean => isRedisReady && redisClient !== null,
 
-  async get<T>(key: string): Promise<T | null> {
-    if (!this.isAvailable()) return null
+  get: async <T>(key: string): Promise<T | null> => {
+    if (!cacheService.isAvailable()) return null
 
     try {
       const data = await redisClient!.get(key)
@@ -113,8 +97,8 @@ export const cacheService = {
     }
   },
 
-  async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
-    if (!this.isAvailable() || ttlSeconds <= 0) return
+  set: async (key: string, value: unknown, ttlSeconds: number): Promise<void> => {
+    if (!cacheService.isAvailable() || ttlSeconds <= 0) return
 
     try {
       const payload = JSON.stringify(value)
@@ -124,8 +108,8 @@ export const cacheService = {
     }
   },
 
-  async del(key: string): Promise<void> {
-    if (!this.isAvailable()) return
+  del: async (key: string): Promise<void> => {
+    if (!cacheService.isAvailable()) return
 
     try {
       await redisClient!.del(key)
@@ -134,8 +118,8 @@ export const cacheService = {
     }
   },
 
-  async delPattern(pattern: string): Promise<void> {
-    if (!this.isAvailable()) return
+  delPattern: async (pattern: string): Promise<void> => {
+    if (!cacheService.isAvailable()) return
 
     try {
       let cursor = '0'
@@ -151,28 +135,21 @@ export const cacheService = {
     }
   },
 
-  /**
-   * Padrão Cache-Aside com Single-Flight integrado:
-   * 1. Consulta o cache no Redis.
-   * 2. Se não encontrar, protege com singleFlight para não duplicar chamadas à fonte externa.
-   * 3. Salva no Redis com o TTL especificado.
-   */
-  async getOrSet<T>(key: string, ttlSeconds: number, fetcher: () => Promise<T>): Promise<T> {
-    const cached = await this.get<T>(key)
+  getOrSet: async <T>(key: string, ttlSeconds: number, fetcher: () => Promise<T>): Promise<T> => {
+    const cached = await cacheService.get<T>(key)
     if (cached !== null) {
       return cached
     }
 
     return singleFlight(key, async () => {
-      // Re-checa o cache caso outra promise concorrente tenha recém-populado
-      const secondCheck = await this.get<T>(key)
+      const secondCheck = await cacheService.get<T>(key)
       if (secondCheck !== null) {
         return secondCheck
       }
 
       const freshData = await fetcher()
       if (freshData !== undefined && freshData !== null) {
-        await this.set(key, freshData, ttlSeconds)
+        await cacheService.set(key, freshData, ttlSeconds)
       }
       return freshData
     })

@@ -1,15 +1,11 @@
-import userRepository from '@domains/users/repositories/user'
+import { createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@google/utils'
 import habitRepository from '@domains/habits/repositories/habit'
-import {
-  createCalendarEvent,
-  updateCalendarEvent,
-  deleteCalendarEvent
-} from '@google/utils'
 import { invalidateUserGoogleEvents } from '@google/cache'
+import userRepository from '@domains/users/repositories/user'
 import createLocalLogger from '@utils/localLogger'
 
-import type { GoogleCalendarEventInput } from '@google/types'
 import type { HabitModelType } from '@domains/habits/repositories/habit/types'
+import type { GoogleCalendarEventInput } from '@google/types'
 
 const logger = createLocalLogger('google-sync')
 

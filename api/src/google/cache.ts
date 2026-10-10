@@ -1,31 +1,23 @@
-import cacheService from '@cache'
-import {
-  listUserGoogleCalendars,
-  fetchGoogleCalendarEvents
-} from '@google/utils'
+import { listUserGoogleCalendars, fetchGoogleCalendarEvents } from '@google/utils'
 import createLocalLogger from '@utils/localLogger'
+import cacheService from '@cache'
 
 import type { GoogleCalendarListItem, NormalizedGoogleEvent } from '@google/types'
 
 const logger = createLocalLogger('google-cache')
 
-// TTLs em segundos
-export const GCAL_CALENDARS_TTL = 900 // 15 minutos
-export const GCAL_EVENTS_TTL = 300 // 5 minutos
+export const GCAL_CALENDARS_TTL = 900
+export const GCAL_EVENTS_TTL = 300
 
 const getCalendarsKey = (userId: string): string => `gcal:calendars:${userId}`
 
 const getEventsKey = (userId: string, calendarIds: string[], timeMin: string, timeMax: string): string => {
   const sortedIds = calendarIds.slice().sort().join(',')
-  // Normaliza o range para a precisão de data (YYYY-MM-DD) para maximizar reutilização de cache
   const minDateStr = timeMin.slice(0, 10)
   const maxDateStr = timeMax.slice(0, 10)
   return `gcal:events:${userId}:${sortedIds}:${minDateStr}_${maxDateStr}`
 }
 
-/**
- * Retorna as agendas do usuário do cache ou consulta a API do Google Calendar.
- */
 export const getCachedUserGoogleCalendars = async (
   userId: string,
   refreshToken: string
@@ -37,10 +29,6 @@ export const getCachedUserGoogleCalendars = async (
   })
 }
 
-/**
- * Retorna os eventos das agendas selecionadas do cache ou consulta a API do Google Calendar.
- * Protegido com deduplicação Single-Flight para evitar múltiplas requisições paralelas idênticas.
- */
 export const getCachedGoogleCalendarEvents = async (options: {
   userId: string
   refreshToken: string
@@ -66,23 +54,14 @@ export const getCachedGoogleCalendarEvents = async (options: {
   })
 }
 
-/**
- * Invalida o cache de lista de agendas de um usuário.
- */
 export const invalidateUserGoogleCalendars = async (userId: string): Promise<void> => {
   await cacheService.del(getCalendarsKey(userId))
 }
 
-/**
- * Invalida todo o cache de eventos de um usuário.
- */
 export const invalidateUserGoogleEvents = async (userId: string): Promise<void> => {
   await cacheService.delPattern(`gcal:events:${userId}:*`)
 }
 
-/**
- * Invalida todo o cache associado ao Google Calendar de um usuário (agendas e eventos).
- */
 export const invalidateAllUserGoogleCache = async (userId: string): Promise<void> => {
   await Promise.allSettled([
     invalidateUserGoogleCalendars(userId),
