@@ -18,7 +18,13 @@ import SegmentedControl from '@components/ui/segmentedControl'
 import Modal, { ModalBody, ModalFooter } from '@components/ui/modal'
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
-import { calculateImc, getTodayDateString, formatDateDisplay } from '@stores/health/utils'
+import {
+  calculateImc,
+  getTodayDateString,
+  formatDateDisplay,
+  parseDecimalNumber,
+  roundToOneDecimal
+} from '@stores/health/utils'
 import { WeightHistoryChart } from './weightHistoryChart'
 import { ImcGaugeChart } from './imcGaugeChart'
 import type { WeightImcCardProps } from './types'
@@ -81,7 +87,8 @@ export const WeightImcCard = ({
     setTargetCheckinDate(dateToUse)
 
     const rec = weightHistory.find((r) => r.date === dateToUse)
-    setInputWeight(rec ? rec.weight : latestRecord ? latestRecord.weight : '')
+    const initialVal = rec ? rec.weight : latestRecord ? latestRecord.weight : undefined
+    setInputWeight(initialVal !== undefined ? roundToOneDecimal(initialVal).toFixed(1) : '')
     setIsCheckinModalOpen(true)
   }
 
@@ -90,9 +97,10 @@ export const WeightImcCard = ({
   }
 
   const handleConfirmCheckin = () => {
-    const weightNum = Number(inputWeight)
-    if (!weightNum || isNaN(weightNum) || weightNum < 25 || weightNum > 350) {
-      showToast('Por favor, informe um peso válido entre 25 kg e 350 kg.', 'error')
+    const parsedWeight = parseDecimalNumber(inputWeight)
+    const weightNum = roundToOneDecimal(parsedWeight)
+    if (!weightNum || isNaN(weightNum) || weightNum < 20 || weightNum > 350) {
+      showToast('Por favor, informe um peso válido entre 20 kg e 350 kg.', 'error')
       return
     }
 
@@ -117,7 +125,7 @@ export const WeightImcCard = ({
   }
 
   const previewImc = useMemo(() => {
-    const w = Number(inputWeight)
+    const w = roundToOneDecimal(parseDecimalNumber(inputWeight))
     if (!w || !heightCm) return null
     return calculateImc(w, heightCm)
   }, [inputWeight, heightCm])
@@ -224,12 +232,14 @@ export const WeightImcCard = ({
             <NumberInput
               autoFocus
               label="Peso corporal"
-              placeholder="Ex: 69.0"
+              placeholder="Ex: 70.0"
               value={inputWeight}
-              onChange={(val) => setInputWeight(typeof val === 'number' ? val : '')}
+              onChange={(val) => setInputWeight(val)}
               decimalScale={1}
+              fixedDecimalScale
+              allowedDecimalSeparators={['.', ',']}
               step={0.1}
-              min={25}
+              min={20}
               max={350}
               suffix=" kg"
               onKeyDown={(e) => {

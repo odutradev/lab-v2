@@ -250,3 +250,15 @@ export const getSleepStatus = (hours: number): {
     description: 'Descanso acima de 9 horas.'
   }
 }
+
+export const parseDecimalNumber = (value: number | string | undefined | null): number => {
+  if (typeof value === 'number') return isNaN(value) ? 0 : value
+  if (!value) return 0
+  const normalized = String(value).trim().replace(',', '.')
+  const num = parseFloat(normalized)
+  return isNaN(num) ? 0 : num
+}
+
+export const roundToOneDecimal = (value: number): number => {
+  return Math.round(value * 10) / 10
+}

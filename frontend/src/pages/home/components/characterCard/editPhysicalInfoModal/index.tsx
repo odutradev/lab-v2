@@ -5,7 +5,7 @@ import { TbUser, TbRulerMeasure, TbCalendar, TbSparkles } from 'react-icons/tb'
 import Modal from '@components/ui/modal'
 import Button from '@components/ui/button'
 import useToastStore from '@stores/toast'
-import { CHARACTERS } from '@stores/health/utils'
+import { CHARACTERS, parseDecimalNumber } from '@stores/health/utils'
 import type { CharacterId, HealthProfile } from '@stores/health/types'
 import { CharacterAvatar } from '../characterAvatars'
 import type { EditPhysicalInfoModalProps } from './types'
@@ -24,7 +24,11 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
 
   const handleConfirm = () => {
     const ageNum = Number(age)
-    const heightNum = Number(height)
+    const rawHeight = parseDecimalNumber(height)
+    let heightNum = rawHeight
+    if (rawHeight > 0 && rawHeight <= 2.8) {
+      heightNum = Math.round(rawHeight * 100)
+    }
 
     if (age && (isNaN(ageNum) || ageNum < 1 || ageNum > 120)) {
       showToast('Por favor, informe uma idade válida (1 a 120 anos).', 'error')
@@ -32,7 +36,7 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
     }
 
     if (height && (isNaN(heightNum) || heightNum < 50 || heightNum > 260)) {
-      showToast('Por favor, informe uma altura válida em centímetros (ex: 175 cm).', 'error')
+      showToast('Por favor, informe uma altura válida (ex: 175 cm ou 1,75 m).', 'error')
       return
     }
 
@@ -94,7 +98,7 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
           description="Ex: 26"
           placeholder="Ex: 26"
           value={age}
-          onChange={(val) => setAge(typeof val === 'number' ? val : '')}
+          onChange={(val) => setAge(val)}
           min={1}
           max={120}
           leftSection={<TbCalendar size={18} color="rgba(255, 255, 255, 0.5)" />}
@@ -108,13 +112,12 @@ const PhysicalInfoFormContent = ({ currentProfile, onSave, onClose }: FormConten
         />
 
         <NumberInput
-          label="Altura (cm)"
-          description="Ex: 175 para 1,75 m"
-          placeholder="Ex: 175"
+          label="Altura (cm ou m)"
+          description="Ex: 1,75 ou 175"
+          placeholder="Ex: 1,75"
           value={height}
-          onChange={(val) => setHeight(typeof val === 'number' ? val : '')}
-          min={50}
-          max={260}
+          onChange={(val) => setHeight(val)}
+          allowedDecimalSeparators={['.', ',']}
           leftSection={<TbRulerMeasure size={18} color="rgba(255, 255, 255, 0.5)" />}
           styles={{
             input: {

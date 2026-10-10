@@ -30,7 +30,7 @@ export const ProfileProgressCard = ({
       key: 'height',
       title: 'Altura',
       completed: hasHeight,
-      valueText: hasHeight ? `${profile.height} cm` : undefined,
+      valueText: profile.height ? `${(profile.height / 100).toFixed(2)} m` : undefined,
       description: 'Necessária para cálculo do IMC e metas metabólicas',
       icon: TbRuler,
       iconColor: '#38bdf8',
