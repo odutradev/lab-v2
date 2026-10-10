@@ -1,5 +1,5 @@
 import { Group, Text, Box, Tooltip } from '@mantine/core'
-import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings } from 'react-icons/tb'
+import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings, TbMaximize, TbMinimize } from 'react-icons/tb'
 
 import Button from '@components/ui/button'
 import ActionIcon from '@components/ui/actionIcon'
@@ -20,6 +20,8 @@ export const HabitsCalendarToolbar = ({
   headerTitle,
   viewMode,
   isToday,
+  isMaximized = false,
+  onToggleMaximize,
   onViewModeChange,
   onPrevious,
   onNext,
@@ -134,6 +136,27 @@ export const HabitsCalendarToolbar = ({
               <TbSettings size={18} />
             </ActionIcon>
           </Tooltip>
+
+          {onToggleMaximize && (
+            <Tooltip
+              label={isMaximized ? 'Restaurar visualização (Esc)' : 'Maximizar calendário (Modo foco)'}
+              withArrow
+              position="bottom"
+            >
+              <ActionIcon
+                variant={isMaximized ? 'secondary' : 'subtle'}
+                size="md"
+                h={TOOLBAR_CONTROL_HEIGHT}
+                w={TOOLBAR_CONTROL_HEIGHT}
+                radius="md"
+                onClick={onToggleMaximize}
+                aria-label={isMaximized ? 'Restaurar visualização' : 'Maximizar calendário'}
+                style={{ flexShrink: 0 }}
+              >
+                {isMaximized ? <TbMinimize size={18} /> : <TbMaximize size={18} />}
+              </ActionIcon>
+            </Tooltip>
+          )}
 
           <Button
             variant="primary"

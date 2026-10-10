@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Stack, Box, Grid, Text } from '@mantine/core'
 import { TbRulerMeasure, TbUser } from 'react-icons/tb'
@@ -81,7 +81,31 @@ export const HabitsPage = () => {
 
   const [metricsRevision, setMetricsRevision] = useState(0)
   const [hoveredDate, setHoveredDate] = useState<string | null>(null)
+  const [isMaximized, setIsMaximized] = useState(false)
   const currentMonth = selectedDate.slice(0, 7)
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMaximized) {
+        setIsMaximized(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isMaximized])
+
+  useEffect(() => {
+    if (isMaximized) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMaximized])
 
   const { metrics, isLoading: isMetricsLoading } = useMonthlyMetrics({
     month: currentMonth,
@@ -161,24 +185,50 @@ export const HabitsPage = () => {
         <Grid gap="md" align="stretch" style={{ flex: 1 }}>
         <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%', maxWidth: '100%' }}>
           <Card
-            p={{ base: 'xs', sm: 'md', md: 'xl' }}
-            style={{
-              height: '100%',
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: 0,
-              minWidth: 0,
-              width: '100%',
-              maxWidth: '100%',
-              overflow: 'hidden'
-            }}
+            p={isMaximized ? { base: 'sm', sm: 'md', md: 'xl' } : { base: 'xs', sm: 'md', md: 'xl' }}
+            style={
+              isMaximized
+                ? {
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    zIndex: 150,
+                    borderRadius: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                    minWidth: 0,
+                    backgroundColor: '#0c101c',
+                    backgroundImage:
+                      'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, rgba(6, 182, 212, 0.1), transparent 60%)',
+                    border: 'none',
+                    boxShadow: 'none',
+                    overflow: 'hidden'
+                  }
+                : {
+                    height: '100%',
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                    minWidth: 0,
+                    width: '100%',
+                    maxWidth: '100%',
+                    overflow: 'hidden'
+                  }
+            }
           >
             <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0, width: '100%', maxWidth: '100%' }}>
               <HabitsCalendarToolbar
                 headerTitle={headerTitle}
                 viewMode={viewMode}
                 isToday={isToday}
+                isMaximized={isMaximized}
+                onToggleMaximize={() => setIsMaximized((prev) => !prev)}
                 onViewModeChange={setViewMode}
                 onPrevious={handlePreviousPeriod}
                 onNext={handleNextPeriod}

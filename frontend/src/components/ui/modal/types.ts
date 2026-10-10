@@ -34,6 +34,7 @@ export interface ModalProps {
   closeOnEscape?: boolean
   centered?: boolean
   withCloseButton?: boolean
+  zIndex?: number
 }
 
 export interface ModalHeaderProps {

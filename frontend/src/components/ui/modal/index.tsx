@@ -90,7 +90,8 @@ export const Modal = ({
   closeOnClickOutside = true,
   closeOnEscape = true,
   centered = true,
-  withCloseButton = true
+  withCloseButton = true,
+  zIndex = 400
 }: ModalProps) => {
   const buttonVariant = variant === 'danger' ? 'danger' : 'primary'
 
@@ -103,6 +104,7 @@ export const Modal = ({
       withCloseButton={withCloseButton}
       closeOnClickOutside={closeOnClickOutside}
       closeOnEscape={closeOnEscape}
+      zIndex={zIndex}
       styles={{
         content: {
           background: 'linear-gradient(180deg, rgba(26, 28, 43, 0.98) 0%, rgba(16, 17, 26, 0.99) 100%)',

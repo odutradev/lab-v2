@@ -89,7 +89,7 @@ export const HabitsWeekView = ({
                 </Box>
               </Stack>
 
-              <Stack gap={6} mt="xs" style={{ flex: 1 }}>
+              <Stack gap={6} mt="xs" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
                 {items.length === 0 ? (
                   <Text size="xs" c="dimmed" ta="center" mt="md">
                     Sem itens
