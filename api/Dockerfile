@@ -1,5 +1,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
+ENV REDISMS_DISABLE_POSTINSTALL=1
 COPY package*.json ./
 RUN npm ci
 COPY . .
