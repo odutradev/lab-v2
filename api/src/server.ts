@@ -1,6 +1,7 @@
+import '@config/environment'
+
 import { createServer } from 'http'
 import mongoose from 'mongoose'
-import 'dotenv/config'
 
 import { connectRedis, disconnectRedis } from '@cache'
 import createLocalLogger from '@utils/localLogger'

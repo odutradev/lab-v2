@@ -3,21 +3,21 @@
   "version": "1.2.2",
   "private": true,
   "description": "Lab V2 monorepo workspace",
+  "workspaces": ["api", "ui"],
   "scripts": {
-    "dev": "concurrently -n \"redis,api,frontend\" -c \"magenta,cyan,green\" \"npm run dev:redis\" \"npm run dev:api\" \"npm run dev:frontend\"",
-    "publish": "npx project-publisher --bump-package --push",
-    "dev:redis": "node scripts/redis-server.mjs",
-    "dev:api": "npm --prefix api run dev",
-    "dev:frontend": "npm --prefix frontend run dev",
-    "build": "npm run build:api && npm run build:frontend",
-    "build:api": "npm --prefix api run build",
-    "build:frontend": "npm --prefix frontend run build",
-    "lint": "npm --prefix frontend run lint",
-    "make:superadmin": "npm --prefix api run make:superadmin --",
-    "start": "npm --prefix api run start"
+    "dev": "concurrently -n \"redis,api,web\" -c \"magenta,cyan,green\" \"npm run dev:redis\" \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:redis": "npm run dev:redis -w api",
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w ui",
+    "build": "npm run build:api && npm run build:web",
+    "build:api": "npm run build -w api",
+    "build:web": "npm run build -w ui",
+    "lint": "npm run lint -w ui",
+    "start": "npm run start -w api",
+    "make:superadmin": "npm run make:superadmin -w api --",
+    "up": "docker compose up -d --build"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2",
-    "redis-memory-server": "^0.17.1"
+    "concurrently": "^9.1.2"
   }
 }

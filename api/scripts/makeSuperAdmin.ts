@@ -1,4 +1,5 @@
-import 'dotenv/config'
+import '@config/environment'
+
 import mongoose from 'mongoose'
 
 import connectMongoose from '@database/connect'

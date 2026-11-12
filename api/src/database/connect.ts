@@ -10,7 +10,7 @@ const connectMongoose = async () => {
   try {
     mongoose.set('strictQuery', true)
 
-    const mongoUri = process.env.MONGO_URI || process.env.MONGOURI
+    const mongoUri = process.env.MONGO_URI
 
     if (!mongoUri) {
       localLogger.error('[connectMongoose] Missing environment variable: "MONGO_URI"')
