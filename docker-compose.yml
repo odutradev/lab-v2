@@ -47,7 +47,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: ui/Dockerfile
       args:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
     restart: unless-stopped
