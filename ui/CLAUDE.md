@@ -10,12 +10,12 @@ This guide defines this frontend's architecture, component, state and code rules
 | :--- | :--- |
 | Framework | React + Vite |
 | Language | TypeScript (100% typed) |
-| Base components | Material UI |
-| Styling | Styled Components |
+| Base components | Mantine |
+| Styling | Mantine style props + style objects |
 | Global state | Zustand |
 | Requests | Axios |
 | Forms | Zod |
-| E2E tests | Cypress |
+| Tests | No tests |
 
 ## 2. Architecture: Folders by type
 
@@ -34,14 +34,6 @@ The root of `src` splits code by role: API actions, components, hooks, pages, ro
 
 ```text
 .
-├── cypress/
-│   ├── e2e/
-│   │   ├── 01.auth.cy.ts  # E2E
-│   │   └── 02.users.cy.ts  # E2E
-│   ├── fixtures/
-│   │   └── users.json
-│   └── support/
-│       └── commands.ts  # comandos customizados
 └── src/
     ├── actions/
     │   └── user/
@@ -157,8 +149,8 @@ const UserFilters = () => {
 - **Structure:** Folder with index, styles and types. One component per folder with `index.tsx`, `styles.ts` and `types.ts`.
 - **Exports:** Mixed. Default for the file's main component, hook or store and named for types and API functions. One component per file.
 - **Props:** always typed in the component's types file.
-- **Base components:** Material UI. MUI's base components and theme system.
-- **Styles:** Styled Components. Styles in `styles.ts` with access to the theme.
+- **Base components:** Mantine. Mantine's base components and theme system (`MantineProvider` + `createTheme`).
+- **Styles:** Mantine style props and style objects. Layout and spacing go through Mantine style props (`p`, `gap`, `c`, `bg`); anything else lives in `styles.ts` as `CSSProperties` objects that read theme tokens (`var(--mantine-*)` or `theme.other`).
 
 ```text
 userCard/
@@ -259,14 +251,13 @@ const UsersPage = lazy(() => import('@pages/users'))
 Styles start from mobile and grow with breakpoints.
 
 ✅ Do:
-```typescript
-padding: 1rem;
-@media (min-width: 768px) { padding: 2rem; }
+```tsx
+<Box p={{ base: "md", sm: "xl" }} />
 ```
 
 ❌ Don't:
-```typescript
-@media (max-width: 768px) { padding: 1rem; }
+```tsx
+<Box p={isMobile ? "md" : "xl"} />
 ```
 
 ### Accessibility (WCAG)
@@ -275,7 +266,7 @@ Semantic elements, labels on icon buttons and visible focus.
 
 ✅ Do:
 ```typescript
-<IconButton aria-label="Excluir usuário">
+<ActionIcon aria-label="Excluir usuário">
 ```
 
 ❌ Don't:
@@ -289,12 +280,13 @@ No hard-coded colors or spacing: use the theme.
 
 ✅ Do:
 ```typescript
-color: ${({ theme }) => theme.palette.primary.main};
+color: "var(--mantine-color-indigo-6)",
+background: colors.surface
 ```
 
 ❌ Don't:
 ```typescript
-color: #1976d2;
+color: "#4c6ef5"
 ```
 
 ### Persisted stores
@@ -308,10 +300,7 @@ create<UserStore>()(persist((set) => ({ ... }), { name: 'user' }))
 
 ## 10. Tests
 
-- Unit tests are not required.
-- E2E: **Cypress**. Numbered scenarios in `cypress/e2e`, with custom commands and factories.
-- Scenarios numbered by run order (`01.auth.cy.ts`, `02.users.cy.ts`). Test data in `cypress/fixtures` and reusable commands (login, factories) in `cypress/support`.
-- Before opening a PR, run the linter and the E2E suite in headless mode.
+This project does not require automated tests. Before opening a PR, run the linter and the build.
 
 ## 11. Commits and Git
 
@@ -332,8 +321,8 @@ Use these files as a template. They follow every rule above.
 ### `src/components/userCard/index.tsx`
 
 ```tsx
-import { Button, Typography } from "@mui/material";
-import { Container } from "./styles";
+import { Button, Group, Text } from "@mantine/core";
+import { containerStyle } from "./styles";
 import type { UserCardProps } from "./types";
 import useAction from "@hooks/useAction";
 import { updateUser } from "@actions/user";
@@ -351,10 +340,10 @@ const UserCard = ({ userId, name, onSaved }: UserCardProps) => {
     });
 
   return (
-    <Container>
-      <Typography variant="h6">{name}</Typography>
-      <Button variant="contained" onClick={handleSave}>Salvar</Button>
-    </Container>
+    <Group justify="space-between" gap="md" p="md" style={containerStyle}>
+      <Text fw={600}>{name}</Text>
+      <Button onClick={handleSave}>Salvar</Button>
+    </Group>
   );
 };
 
@@ -364,16 +353,12 @@ export default UserCard;
 ### `src/components/userCard/styles.ts`
 
 ```typescript
-import styled from "styled-components";
+import type { CSSProperties } from "react";
 
-export const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing(2)};
-  padding: ${({ theme }) => theme.spacing(2)};
-  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-`
+export const containerStyle: CSSProperties = {
+  borderRadius: "var(--mantine-radius-md)",
+  border: "1px solid var(--mantine-color-dark-4)"
+};
 ```
 
 ### `src/components/userCard/types.ts`
@@ -431,7 +416,7 @@ export default useUserStore;
 - [ ] Components follow "Folder with index, styles and types" and "Arrow with typed props".
 - [ ] Props and state are typed, with no `any`.
 - [ ] API calls go through "actions/ folder" and use "useAction hook".
-- [ ] Styles use Styled Components with theme tokens.
+- [ ] Styles use Mantine style props and theme tokens.
 - [ ] Imports follow "Alias per folder".
 - [ ] Principle "Strict typing" applied.
 - [ ] Principle "Protected private routes" applied.
