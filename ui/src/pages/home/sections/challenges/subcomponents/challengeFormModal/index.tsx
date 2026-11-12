@@ -290,7 +290,8 @@ export const ChallengeFormModal = ({
                   <Text size="sm" c="gray.2" style={{ wordBreak: "break-word", flex: 1 }}>
                     • {item.text}
                   </Text>
-                  <ActionIcon aria-label="Remover item"
+                  <ActionIcon
+                    aria-label="Remover item"
                     size="sm"
                     variant="subtle"
                     color="red"

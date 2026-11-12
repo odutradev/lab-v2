@@ -10,6 +10,7 @@ import {
   listHabitsAction
 } from "@actions/habits";
 import useToastStore from "@stores/toast";
+import useAction from "@hooks/useAction";
 
 import type { RecurringActionType } from "../subcomponents/recurringScopeModal/types";
 import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from "@actions/habits/types";
@@ -116,6 +117,7 @@ export const useHomePage = (): UseHomePageReturn => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
   const { showToast } = useToastStore();
+  const runAction = useAction();
 
   const isToday = selectedDate === todayStr;
   const formattedDate = useMemo(() => formatDateBR(selectedDate), [selectedDate]);
@@ -421,16 +423,17 @@ export const useHomePage = (): UseHomePageReturn => {
       return;
     }
 
-    try {
-      await removeHabitAction(habitId, { mode: "all" });
-      showToast("Item removido com sucesso.", "info");
-      if (isModalOpen) {
-        handleCloseModal();
-      }
-      await reloadData(visibleRange.startDate, visibleRange.endDate);
-    } catch {
-      showToast("Não foi possível remover o item.", "error");
-    }
+    await runAction({
+      action: async () => {
+        await removeHabitAction(habitId, { mode: "all" });
+        showToast("Item removido com sucesso.", "info");
+        if (isModalOpen) {
+          handleCloseModal();
+        }
+        await reloadData(visibleRange.startDate, visibleRange.endDate);
+      },
+      toastMessages: { error: "Não foi possível remover o item." }
+    });
   };
 
   const handleConfirmScopeAction = async (mode: RecurrenceScopeMode) => {
@@ -522,18 +525,15 @@ export const useHomePage = (): UseHomePageReturn => {
 
   const handleScheduleForDay = async (habitId: string) => {
     setIsScheduling(true);
-    try {
-      await scheduleHabitAction({
-        habitId,
-        date: selectedDate
-      });
-      showToast("Meta agendada para este dia!", "success");
-      await reloadData(visibleRange.startDate, visibleRange.endDate);
-    } catch {
-      showToast("Erro ao incluir meta na agenda.", "error");
-    } finally {
-      setIsScheduling(false);
-    }
+    await runAction({
+      action: async () => {
+        await scheduleHabitAction({ habitId, date: selectedDate });
+        showToast("Meta agendada para este dia!", "success");
+        await reloadData(visibleRange.startDate, visibleRange.endDate);
+      },
+      toastMessages: { error: "Erro ao incluir meta na agenda." }
+    });
+    setIsScheduling(false);
   };
 
   const handleOpenSettingsModal = () => {
