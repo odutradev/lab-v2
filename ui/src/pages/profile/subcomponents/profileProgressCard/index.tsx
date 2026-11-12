@@ -7,7 +7,7 @@ import Button from "@components/button";
 import useHealthStore from "@stores/health";
 
 import type { ProfileProgressCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: ProfileProgressCardProps) => {
   const { profile } = useHealthStore();
@@ -105,8 +105,8 @@ export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: Profi
                 p="md"
                 style={{
                   borderRadius: "8px",
-                  backgroundColor: step.completed ? alpha(colors.green500, 0.05) : alpha(colors.white, 0.03),
-                  border: `1px solid ${step.completed ? alpha(colors.green500, 0.2) : alpha(colors.white, 0.08)}`,
+                  backgroundColor: step.completed ? alpha(colors.green500, 0.05) : tokens.surfaceSubtle,
+                  border: `1px solid ${step.completed ? alpha(colors.green500, 0.2) : tokens.border}`,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -122,7 +122,7 @@ export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: Profi
                         variant="light"
                         color={step.completed ? "teal" : "gray"}
                         style={{
-                          backgroundColor: step.completed ? alpha(colors.green500, 0.15) : alpha(colors.white, 0.06)
+                          backgroundColor: step.completed ? alpha(colors.green500, 0.15) : tokens.surfaceHover
                         }}
                       >
                         <Icon size={18} color={step.completed ? colors.green400 : step.iconColor} />

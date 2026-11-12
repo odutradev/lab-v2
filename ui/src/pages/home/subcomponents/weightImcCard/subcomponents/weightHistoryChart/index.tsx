@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Box, Text, Group, Tooltip, alpha } from "@mantine/core";
 import { getTodayDateString, calculateImc } from "@utils/functions/health";
 import type { WeightHistoryChartProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return "";
@@ -199,8 +199,8 @@ export const WeightHistoryChart = ({
         style={{
           height: 48,
           borderRadius: 8,
-          background: alpha(colors.white, 0.02),
-          border: `1px solid ${alpha(colors.white, 0.05)}`,
+          background: tokens.surfaceSubtle,
+          border: `1px solid ${tokens.border}`,
           overflow: "hidden",
           position: "relative"
         }}
@@ -243,7 +243,7 @@ export const WeightHistoryChart = ({
             />
           )}
 
-          <line x1={14} y1={21} x2={width - 14} y2={21} stroke={alpha(colors.white, 0.03)} strokeDasharray="1 3" />
+          <line x1={14} y1={21} x2={width - 14} y2={21} stroke={tokens.border} strokeDasharray="1 3" />
 
           {weightAreaD && <path d={weightAreaD} fill="url(#monthWeightAreaGrad)" />}
           {imcAreaD && <path d={imcAreaD} fill="url(#monthImcAreaGrad)" />}
@@ -291,7 +291,7 @@ export const WeightHistoryChart = ({
                     y1={p.weightY}
                     x2={p.x}
                     y2={p.imcY}
-                    stroke={isHighlighted ? alpha(colors.sky400, 0.5) : alpha(colors.white, 0.08)}
+                    stroke={isHighlighted ? alpha(colors.sky400, 0.5) : tokens.border}
                     strokeDasharray="1 2"
                   />
 
@@ -320,7 +320,7 @@ export const WeightHistoryChart = ({
           })}
 
           {!hasData && (
-            <text x={width / 2} y={28} textAnchor="middle" fill={alpha(colors.white, 0.3)} fontSize="10">
+            <text x={width / 2} y={28} textAnchor="middle" fill={tokens.surfaceActive} fontSize="10">
               Sem check-ins neste mês
             </text>
           )}

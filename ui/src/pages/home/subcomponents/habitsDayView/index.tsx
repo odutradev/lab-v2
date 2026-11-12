@@ -4,7 +4,7 @@ import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent, TbLock 
 import Badge from "@components/badge";
 
 import type { HabitsDayViewProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const HabitsDayView = ({
   selectedDate,
@@ -55,7 +55,7 @@ export const HabitsDayView = ({
         pb="sm"
         wrap="wrap"
         gap="xs"
-        style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}
+        style={{ borderBottom: `1px solid ${tokens.border}` }}
       >
         <Group gap="xs" wrap="wrap">
           <TbCalendarEvent size={20} color={colors.indigo400} />
@@ -99,12 +99,12 @@ export const HabitsDayView = ({
                       ? `${itemColor}15`
                       : item.completed
                         ? alpha(colors.teal400, 0.08)
-                        : alpha(colors.white, 0.02),
+                        : tokens.surfaceSubtle,
                     border: isReadOnly
                       ? `1px solid ${itemColor}35`
                       : item.completed
                         ? `1px solid ${alpha(colors.teal400, 0.25)}`
-                        : `1px solid ${alpha(colors.white, 0.06)}`,
+                        : `1px solid ${tokens.border}`,
                     borderRadius: 10,
                     transition: "all 0.15s ease"
                   }}

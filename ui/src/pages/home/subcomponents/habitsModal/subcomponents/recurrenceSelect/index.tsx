@@ -6,7 +6,7 @@ import CustomRecurrenceModal from "../customRecurrenceModal";
 import type { HabitRecurrence } from "@actions/habits/types";
 
 import type { RecurrenceSelectProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const weekdayNames = [
   "domingo",
@@ -176,8 +176,8 @@ export const RecurrenceSelect = ({ startDate, recurrence, onChange }: Recurrence
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              backgroundColor: alpha(colors.white, 0.04),
-              border: isOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
+              backgroundColor: tokens.surfaceHover,
+              border: isOpen ? `1px solid ${colors.indigo500}` : `1px solid ${tokens.border}`,
               borderRadius: 10,
               padding: "8px 12px",
               cursor: "pointer",
@@ -205,9 +205,9 @@ export const RecurrenceSelect = ({ startDate, recurrence, onChange }: Recurrence
           p={6}
           style={{
             backgroundColor: colors.night700,
-            border: `1px solid ${alpha(colors.white, 0.12)}`,
+            border: `1px solid ${tokens.borderStrong}`,
             borderRadius: 8,
-            boxShadow: `0 16px 36px ${alpha(colors.black, 0.7)}`,
+            boxShadow: tokens.shadow,
             minWidth: 280
           }}
         >
@@ -229,7 +229,7 @@ export const RecurrenceSelect = ({ startDate, recurrence, onChange }: Recurrence
                     fontWeight: isSelected ? 600 : 400,
                     transition: "background-color 0.1s ease",
                     "&:hover": {
-                      backgroundColor: alpha(colors.white, 0.08)
+                      backgroundColor: tokens.surfaceActive
                     }
                   }}
                 >
@@ -244,7 +244,7 @@ export const RecurrenceSelect = ({ startDate, recurrence, onChange }: Recurrence
               my={4}
               style={{
                 height: 1,
-                backgroundColor: alpha(colors.white, 0.08)
+                backgroundColor: tokens.surfaceActive
               }}
             />
 
@@ -261,7 +261,7 @@ export const RecurrenceSelect = ({ startDate, recurrence, onChange }: Recurrence
                 fontWeight: 500,
                 transition: "background-color 0.1s ease",
                 "&:hover": {
-                  backgroundColor: alpha(colors.white, 0.08)
+                  backgroundColor: tokens.surfaceActive
                 }
               }}
             >

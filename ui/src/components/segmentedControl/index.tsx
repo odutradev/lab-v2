@@ -1,7 +1,7 @@
-import { SegmentedControl as MantineSegmentedControl, alpha } from "@mantine/core";
+import { SegmentedControl as MantineSegmentedControl } from "@mantine/core";
 
 import type { SegmentedControlProps } from "./types";
-import { colors } from "@styles/theme";
+import { tokens } from "@styles/theme";
 
 export const SegmentedControl = ({
   value,
@@ -9,7 +9,7 @@ export const SegmentedControl = ({
   data,
   size = "sm",
   height,
-  color = "indigo",
+  color,
   radius = "md",
   fullWidth = false,
   disabled = false,
@@ -28,8 +28,8 @@ export const SegmentedControl = ({
       className={className}
       styles={{
         root: {
-          backgroundColor: alpha(colors.black, 0.35),
-          border: `1px solid ${alpha(colors.white, 0.08)}`,
+          backgroundColor: tokens.surfaceSubtle,
+          border: `1px solid ${tokens.border}`,
           ...(height !== undefined ? { height, minHeight: height } : {})
         },
         control: height !== undefined ? { height: "100%" } : undefined,

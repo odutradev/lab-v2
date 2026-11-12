@@ -6,7 +6,7 @@ import Button from "@components/button";
 import { calculateChallengeStats, formatDisplayDate } from "@utils/functions/challenges";
 
 import type { Challenge } from "@actions/challenges/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -37,13 +37,13 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
       style={{
         padding: "16px 18px",
         borderRadius: 16,
-        backgroundColor: alpha(colors.white, 0.03),
+        backgroundColor: tokens.surfaceSubtle,
         border: stats.isCompletedToday
           ? `1px solid ${alpha(colors.emerald500, 0.35)}`
-          : `1px solid ${alpha(colors.white, 0.08)}`,
+          : `1px solid ${tokens.border}`,
         boxShadow: stats.isCompletedToday
           ? `0 4px 20px ${alpha(colors.emerald500, 0.08)}`
-          : `0 4px 16px ${alpha(colors.black, 0.2)}`,
+          : tokens.shadow,
         transition: "all 0.2s ease",
         cursor: "pointer",
         display: "flex",
@@ -54,20 +54,6 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
       }}
     >
       {/* Glow de fundo */}
-      <Box
-        style={{
-          position: "absolute",
-          top: -30,
-          right: -30,
-          width: 100,
-          height: 100,
-          borderRadius: "50%",
-          background: stats.isCompletedToday
-            ? `radial-gradient(circle, ${alpha(colors.emerald500, 0.15)} 0%, transparent 70%)`
-            : `radial-gradient(circle, ${alpha(colors.indigo500, 0.12)} 0%, transparent 70%)`,
-          pointerEvents: "none"
-        }}
-      />
 
       <Stack gap="xs">
         {/* Cabeçalho do Card */}
@@ -118,8 +104,8 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
 
           <Badge
             size="md"
-            variant="gradient"
-            gradient={isCompleted ? { from: "teal", to: "green", deg: 90 } : { from: "indigo", to: "cyan", deg: 90 }}
+            variant="light"
+            color={isCompleted ? "teal" : "indigo"}
           >
             {stats.percentage}%
           </Badge>
@@ -147,7 +133,7 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
         {/* Estatísticas Chave */}
         <Group justify="space-between" align="center" mt={4} wrap="wrap">
           <Group gap={4}>
-            <TbFlame size={15} color={stats.streak > 0 ? colors.orange500 : alpha(colors.white, 0.4)} />
+            <TbFlame size={15} color={stats.streak > 0 ? colors.orange500 : tokens.textMuted} />
             <Text size="xs" fw={600} c={stats.streak > 0 ? "orange.4" : "dimmed"}>
               {stats.streak} {stats.streak === 1 ? "dia" : "dias"} de ofensiva
             </Text>
@@ -182,7 +168,7 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
 
           <Tooltip label={`Previsão de conclusão da meta: ${formatDisplayDate(stats.estimatedEndDate)}`} withArrow>
             <Group gap={4}>
-              <TbCalendar size={14} color={alpha(colors.white, 0.4)} />
+              <TbCalendar size={14} color={tokens.textMuted} />
               <Text size="xs" c="dimmed">
                 Meta: {formatDisplayDate(stats.estimatedEndDate)}
               </Text>

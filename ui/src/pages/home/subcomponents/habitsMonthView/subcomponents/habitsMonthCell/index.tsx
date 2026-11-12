@@ -6,7 +6,7 @@ import Badge from "@components/badge";
 
 import type { DaySummaryItem } from "@actions/habits/types";
 import type { HabitsMonthCellProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const itemGap = 2;
 const defaultItemHeight = 22;
@@ -125,13 +125,13 @@ export const HabitsMonthCell = ({
           : cell.isToday
             ? alpha(colors.indigo500, 0.06)
             : cell.isCurrentMonth
-              ? alpha(colors.white, 0.02)
+              ? tokens.surfaceSubtle
               : alpha(colors.black, 0.25),
         border: isSelected
           ? `1px solid ${alpha(colors.indigo400, 0.6)}`
           : cell.isToday
             ? `1px solid ${alpha(colors.indigo400, 0.35)}`
-            : `1px solid ${alpha(colors.white, 0.05)}`,
+            : `1px solid ${tokens.border}`,
         borderRadius: 8,
         opacity: cell.isCurrentMonth ? 1 : 0.45,
         display: "flex",
@@ -305,7 +305,7 @@ export const HabitsMonthCell = ({
                   maxWidth: "100%",
                   cursor: "pointer",
                   borderRadius: 4,
-                  backgroundColor: isPopoverOpen ? alpha(colors.indigo500, 0.25) : alpha(colors.white, 0.04),
+                  backgroundColor: isPopoverOpen ? alpha(colors.indigo500, 0.25) : tokens.surfaceHover,
                   border: isPopoverOpen ? `1px solid ${alpha(colors.indigo400, 0.4)}` : "1px solid transparent",
                   transition: "all 0.15s ease",
                   flexShrink: 0
@@ -334,9 +334,9 @@ export const HabitsMonthCell = ({
               onClick={(e) => e.stopPropagation()}
               style={{
                 backgroundColor: colors.night800,
-                border: `1px solid ${alpha(colors.white, 0.14)}`,
+                border: `1px solid ${tokens.borderStrong}`,
                 borderRadius: 8,
-                boxShadow: `0 12px 28px ${alpha(colors.black, 0.65)}`,
+                boxShadow: tokens.shadow,
                 minWidth: 210,
                 maxWidth: 280
               }}
@@ -346,7 +346,7 @@ export const HabitsMonthCell = ({
                 align="center"
                 mb={6}
                 pb={4}
-                style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}
+                style={{ borderBottom: `1px solid ${tokens.border}` }}
               >
                 <Text size="xs" fw={700} c={colors.indigo100}>
                   Hábitos ({hiddenItems.length})

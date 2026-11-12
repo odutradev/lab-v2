@@ -3,7 +3,7 @@ import { TbAlertTriangle, TbRotateClockwise, TbCheck } from "react-icons/tb";
 
 import Modal from "@components/modal";
 import Button from "@components/button";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeSlipModalProps {
   isOpen: boolean;
@@ -44,8 +44,8 @@ export const ChallengeSlipModal = ({
             style={{
               padding: "14px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.08)}`,
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`,
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}

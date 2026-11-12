@@ -7,7 +7,7 @@ import Select from "@components/select";
 import type { HabitRecurrence } from "@actions/habits/types";
 
 import type { CustomRecurrenceModalProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const dayLetters = [
   { dayIndex: 0, label: "D", full: "Domingo" },
@@ -90,8 +90,8 @@ export const CustomRecurrenceModal = ({
       styles={{
         content: {
           backgroundColor: colors.graphite800,
-          border: `1px solid ${alpha(colors.white, 0.12)}`,
-          boxShadow: `0 20px 40px ${alpha(colors.black, 0.6)}`,
+          border: `1px solid ${tokens.borderStrong}`,
+          boxShadow: tokens.shadow,
           color: colors.mist200
         },
         header: {
@@ -120,7 +120,7 @@ export const CustomRecurrenceModal = ({
             styles={{
               input: {
                 backgroundColor: colors.graphite700,
-                borderColor: alpha(colors.white, 0.15),
+                borderColor: tokens.borderStrong,
                 color: colors.white,
                 textAlign: "center"
               }
@@ -152,11 +152,11 @@ export const CustomRecurrenceModal = ({
                     onClick={() => toggleDay(dayIndex)}
                     title={full}
                     style={{
-                      backgroundColor: isSelected ? colors.periwinkle200 : alpha(colors.white, 0.05),
+                      backgroundColor: isSelected ? colors.periwinkle200 : tokens.surfaceHover,
                       color: isSelected ? colors.navy900 : colors.mist300,
                       fontWeight: 700,
                       fontSize: 13,
-                      border: isSelected ? "none" : `1px solid ${alpha(colors.white, 0.1)}`
+                      border: isSelected ? "none" : `1px solid ${tokens.border}`
                     }}
                   >
                     {label}
@@ -199,7 +199,7 @@ export const CustomRecurrenceModal = ({
                   styles={{
                     input: {
                       backgroundColor: endType === "on_date" ? colors.graphite700 : alpha(colors.white, 0.04),
-                      borderColor: alpha(colors.white, 0.15),
+                      borderColor: tokens.borderStrong,
                       color: endType === "on_date" ? colors.white : colors.mist500,
                       maxWidth: 150
                     }
@@ -226,7 +226,7 @@ export const CustomRecurrenceModal = ({
                   styles={{
                     input: {
                       backgroundColor: endType === "after_occurrences" ? colors.graphite700 : alpha(colors.white, 0.04),
-                      borderColor: alpha(colors.white, 0.15),
+                      borderColor: tokens.borderStrong,
                       color: endType === "after_occurrences" ? colors.white : colors.mist500,
                       textAlign: "center"
                     }

@@ -1,6 +1,6 @@
 import { Box, Group, Tooltip, Text, alpha } from "@mantine/core";
 import { addDaysToDateString, formatDisplayDate, getTodayDateString } from "@utils/functions/challenges";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeGridProps {
   startDate: string;
@@ -36,19 +36,19 @@ export const ChallengeGrid = ({
 
     let statusLabel = "Pendente";
     let bgColor = alpha(colors.white, 0.05);
-    let borderColor = alpha(colors.white, 0.1);
+    let borderColor = tokens.border;
     let boxShadow = "none";
 
     if (isCompleted) {
       statusLabel = "Concluído ✓";
       bgColor = colors.emerald500;
       borderColor = colors.emerald400;
-      boxShadow = `0 0 8px ${alpha(colors.emerald500, 0.4)}`;
+      boxShadow = "none";
     } else if (isFreeze) {
       statusLabel = "Dia Livre (Freeze ❄️)";
       bgColor = alpha(colors.cyan500, 0.25);
       borderColor = colors.cyan400;
-      boxShadow = `0 0 8px ${alpha(colors.cyan500, 0.4)}`;
+      boxShadow = "none";
     } else if (isSlip) {
       statusLabel = "Deslize registrado";
       bgColor = colors.amber500;
@@ -64,7 +64,7 @@ export const ChallengeGrid = ({
     } else if (isFuture) {
       statusLabel = "Futuro";
       bgColor = alpha(colors.white, 0.03);
-      borderColor = alpha(colors.white, 0.06);
+      borderColor = tokens.border;
     }
 
     return {
@@ -92,7 +92,7 @@ export const ChallengeGrid = ({
           padding: "12px",
           backgroundColor: alpha(colors.black, 0.25),
           borderRadius: 12,
-          border: `1px solid ${alpha(colors.white, 0.06)}`,
+          border: `1px solid ${tokens.border}`,
           maxHeight: 240,
           overflowY: "auto"
         }}
@@ -171,8 +171,8 @@ export const ChallengeGrid = ({
             h={12}
             style={{
               borderRadius: 3,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px dashed ${alpha(colors.white, 0.15)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px dashed ${tokens.borderStrong}`
             }}
           />
           <Text size="xs" c="dimmed">

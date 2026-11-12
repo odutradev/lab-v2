@@ -1,12 +1,12 @@
 import type { CSSProperties } from "react";
 import { alpha } from "@mantine/core";
 
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const dayCardStyle = (isToday: boolean): CSSProperties => ({
   borderRadius: "var(--mantine-radius-lg)",
-  backgroundColor: alpha(colors.gray900, 0.7),
-  border: `1px solid ${isToday ? alpha(colors.indigo400, 0.6) : alpha(colors.white, 0.08)}`,
+  backgroundColor: tokens.surface,
+  border: `1px solid ${isToday ? alpha(colors.indigo400, 0.6) : tokens.border}`,
   boxShadow: isToday ? `0 0 0 1px ${alpha(colors.indigo400, 0.25)}` : undefined,
   minHeight: 150
 });

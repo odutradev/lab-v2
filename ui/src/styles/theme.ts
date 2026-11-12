@@ -1,4 +1,5 @@
-import { createTheme } from "@mantine/core";
+import { alpha, createTheme } from "@mantine/core";
+import type { MantineColorsTuple } from "@mantine/core";
 
 // Paleta de cores do app. Componentes usam estes tokens (ou `alpha(colors.x, opacidade)`)
 // em vez de valores hexadecimais ou rgba fixos.
@@ -65,13 +66,93 @@ export const colors = {
 
 export type ColorToken = keyof typeof colors;
 
+// Tokens semânticos do design minimalista: componentes usam estes nomes em vez de
+// escolher opacidades soltas, para que superfícies, bordas e textos fiquem iguais em todo o app.
+export const tokens = {
+  background: "#0b0d12",
+  surface: "#12151c",
+  surfaceRaised: "#171b24",
+  surfaceSubtle: alpha(colors.white, 0.025),
+  surfaceHover: alpha(colors.white, 0.05),
+  surfaceActive: alpha(colors.white, 0.08),
+  border: alpha(colors.white, 0.07),
+  borderStrong: alpha(colors.white, 0.12),
+  textPrimary: "#e8eaf0",
+  textSecondary: alpha(colors.white, 0.6),
+  textMuted: alpha(colors.white, 0.4),
+  accent: colors.indigo400,
+  accentSoft: alpha(colors.indigo500, 0.14),
+  accentBorder: alpha(colors.indigo400, 0.45),
+  success: colors.emerald400,
+  successSoft: alpha(colors.emerald500, 0.12),
+  successBorder: alpha(colors.emerald500, 0.35),
+  danger: colors.red400,
+  dangerSoft: alpha(colors.red500, 0.1),
+  dangerBorder: alpha(colors.red500, 0.3),
+  overlay: alpha(colors.black, 0.6),
+  shadow: `0 8px 24px ${alpha(colors.black, 0.35)}`
+} as const;
+
+export type DesignToken = keyof typeof tokens;
+
+const darkPalette: MantineColorsTuple = [
+  "#e8eaf0",
+  "#b8bcc8",
+  "#8b90a0",
+  "#5f6474",
+  "#2a2e39",
+  "#20242e",
+  "#181b23",
+  "#12151c",
+  "#0e1016",
+  "#0b0d12"
+];
+
 export const theme = createTheme({
   primaryColor: "indigo",
+  primaryShade: { light: 6, dark: 5 },
   defaultRadius: "md",
   fontFamily: "Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
   fontFamilyMonospace: "JetBrains Mono, monospace",
   cursorType: "pointer",
-  other: { colors }
+  colors: { dark: darkPalette },
+  radius: { xs: "4px", sm: "6px", md: "8px", lg: "12px", xl: "16px" },
+  headings: {
+    fontWeight: "600",
+    sizes: {
+      h1: { fontSize: "1.75rem", lineHeight: "1.25" },
+      h2: { fontSize: "1.375rem", lineHeight: "1.3" },
+      h3: { fontSize: "1.125rem", lineHeight: "1.35" },
+      h4: { fontSize: "1rem", lineHeight: "1.4" }
+    }
+  },
+  components: {
+    Button: { defaultProps: { radius: "md" } },
+    ActionIcon: { defaultProps: { radius: "md" } },
+    Badge: { defaultProps: { radius: "sm", variant: "light" }, styles: { root: { textTransform: "none", fontWeight: 600 } } },
+    Paper: { defaultProps: { radius: "lg" } },
+    ThemeIcon: { defaultProps: { radius: "md", variant: "light" } },
+    Tooltip: { defaultProps: { withArrow: true, openDelay: 200 } },
+    Menu: {
+      defaultProps: { radius: "md", shadow: "sm" },
+      styles: { dropdown: { backgroundColor: tokens.surfaceRaised, borderColor: tokens.border } }
+    },
+    Popover: { styles: { dropdown: { backgroundColor: tokens.surfaceRaised, borderColor: tokens.border } } },
+    Modal: {
+      defaultProps: { radius: "lg", centered: true, overlayProps: { backgroundOpacity: 0.6, blur: 0 } },
+      styles: { content: { backgroundColor: tokens.surface, border: `1px solid ${tokens.border}` }, header: { backgroundColor: tokens.surface } }
+    },
+    Input: {
+      styles: { input: { backgroundColor: tokens.surfaceSubtle, borderColor: tokens.border } }
+    },
+    SegmentedControl: {
+      defaultProps: { radius: "md" },
+      styles: { root: { backgroundColor: tokens.surfaceSubtle, border: `1px solid ${tokens.border}` } }
+    },
+    Progress: { defaultProps: { radius: "xl" } },
+    Skeleton: { styles: { root: { "--skeleton-color": tokens.surfaceActive } } }
+  },
+  other: { colors, tokens }
 });
 
 export default theme;

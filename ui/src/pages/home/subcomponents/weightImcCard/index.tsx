@@ -18,7 +18,7 @@ import {
 import { WeightHistoryChart } from "./subcomponents/weightHistoryChart";
 import { ImcGaugeChart } from "./subcomponents/imcGaugeChart";
 import type { WeightImcCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const WeightImcCard = ({
   heightCm,
@@ -124,17 +124,6 @@ export const WeightImcCard = ({
   return (
     <>
       <Card style={{ position: "relative", overflow: "hidden" }}>
-        <Box
-          style={{
-            position: "absolute",
-            top: -24,
-            right: -24,
-            width: 120,
-            height: 120,
-            background: `radial-gradient(circle, ${alpha(colors.sky400, 0.15)} 0%, transparent 70%)`,
-            pointerEvents: "none"
-          }}
-        />
 
         <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
@@ -240,8 +229,8 @@ export const WeightImcCard = ({
               }}
               styles={{
                 input: {
-                  backgroundColor: alpha(colors.white, 0.06),
-                  borderColor: alpha(colors.white, 0.15),
+                  backgroundColor: tokens.surfaceHover,
+                  borderColor: tokens.borderStrong,
                   color: colors.white,
                   fontWeight: 700,
                   fontSize: "16px",
@@ -256,7 +245,7 @@ export const WeightImcCard = ({
                 align="center"
                 mt="sm"
                 p="xs"
-                style={{ background: alpha(colors.white, 0.03), borderRadius: 8 }}
+                style={{ background: tokens.surfaceSubtle, borderRadius: 8 }}
               >
                 <Text size="xs" c="dimmed">
                   IMC correspondente:

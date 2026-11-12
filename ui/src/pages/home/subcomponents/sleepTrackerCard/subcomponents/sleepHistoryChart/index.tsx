@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Box, Text, Group, Tooltip, alpha } from "@mantine/core";
 import { getTodayDateString, getSleepQualityOption } from "@utils/functions/health";
 import type { SleepHistoryChartProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return "";
@@ -224,8 +224,8 @@ export const SleepHistoryChart = ({
         style={{
           height: 48,
           borderRadius: 8,
-          background: alpha(colors.white, 0.02),
-          border: `1px solid ${alpha(colors.white, 0.05)}`,
+          background: tokens.surfaceSubtle,
+          border: `1px solid ${tokens.border}`,
           overflow: "hidden",
           position: "relative"
         }}
@@ -329,7 +329,7 @@ export const SleepHistoryChart = ({
           })}
 
           {!hasData && (
-            <text x={width / 2} y={28} textAnchor="middle" fill={alpha(colors.white, 0.3)} fontSize="10">
+            <text x={width / 2} y={28} textAnchor="middle" fill={tokens.surfaceActive} fontSize="10">
               Sem check-ins de sono neste mês
             </text>
           )}

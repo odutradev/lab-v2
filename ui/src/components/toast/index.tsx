@@ -2,6 +2,7 @@ import { TbCheck, TbAlertCircle, TbAlertTriangle, TbInfoCircle } from "react-ico
 import { Notification, Stack } from "@mantine/core";
 
 import useToastStore from "@stores/toast";
+import { tokens } from "@styles/theme";
 
 export const ToastContainer = () => {
   const { toasts, removeToast } = useToastStore();
@@ -53,6 +54,8 @@ export const ToastContainer = () => {
           onClose={() => removeToast(toast.id)}
           radius="md"
           withBorder
+          bg={tokens.surfaceRaised}
+          style={{ borderColor: tokens.border }}
         >
           {toast.message}
         </Notification>

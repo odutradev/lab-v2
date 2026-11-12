@@ -2,6 +2,17 @@
   color-scheme: dark;
 }
 
+body {
+  background-color: var(--mantine-color-dark-9);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mantine-color-indigo-4);
+  outline-offset: 2px;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -9,7 +20,7 @@ html {
 /* W3C standard (Firefox, etc.) */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
 }
 
 /* WebKit & Chromium (Chrome, Edge, Safari, Opera) */

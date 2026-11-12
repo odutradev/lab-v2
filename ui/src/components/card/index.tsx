@@ -1,7 +1,7 @@
-import { Paper, Title, Text, Box, alpha } from "@mantine/core";
+import { Paper, Title, Text, Box } from "@mantine/core";
 
 import type { CardProps } from "./types";
-import { colors } from "@styles/theme";
+import { tokens } from "@styles/theme";
 
 export const CardHeader = ({ children, className, ...props }: CardProps) => {
   return (
@@ -9,7 +9,7 @@ export const CardHeader = ({ children, className, ...props }: CardProps) => {
       mb="md"
       pb="xs"
       className={className}
-      style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}
+      style={{ borderBottom: `1px solid ${tokens.border}` }}
       {...props}
     >
       {children}
@@ -19,7 +19,7 @@ export const CardHeader = ({ children, className, ...props }: CardProps) => {
 
 export const CardTitle = ({ children, className, ...props }: CardProps) => {
   return (
-    <Title order={4} fw={600} c="white" className={className} {...props}>
+    <Title order={4} fw={600} c={tokens.textPrimary} className={className} {...props}>
       {children}
     </Title>
   );
@@ -47,7 +47,7 @@ export const CardFooter = ({ children, className, ...props }: CardProps) => {
       mt="md"
       pt="xs"
       className={className}
-      style={{ borderTop: `1px solid ${alpha(colors.white, 0.08)}` }}
+      style={{ borderTop: `1px solid ${tokens.border}` }}
       {...props}
     >
       {children}
@@ -55,16 +55,15 @@ export const CardFooter = ({ children, className, ...props }: CardProps) => {
   );
 };
 
-export const Card = ({ children, className, p = "xl", ...props }: CardProps) => {
+export const Card = ({ children, className, p = { base: "md", sm: "lg" }, ...props }: CardProps) => {
   return (
     <Paper
       p={p}
       radius="lg"
       withBorder
-      shadow="md"
-      bg={alpha(colors.gray900, 0.7)}
+      bg={tokens.surface}
       className={className}
-      style={{ backdropFilter: "blur(16px)" }}
+      style={{ borderColor: tokens.border }}
       {...props}
     >
       {children}

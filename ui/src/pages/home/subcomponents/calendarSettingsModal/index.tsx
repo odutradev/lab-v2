@@ -9,7 +9,7 @@ import useCalendarStore from "@stores/calendar";
 
 import type { GoogleCalendarItem } from "@actions/google/calendar/types";
 import type { CalendarSettingsModalProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSettingsModalProps) => {
   const { showToast } = useToastStore();
@@ -77,7 +77,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
         onClick={() => toggleCalendar(item.id)}
         style={{
           borderRadius: 8,
-          backgroundColor: isChecked ? alpha(colors.white, 0.05) : "transparent",
+          backgroundColor: isChecked ? tokens.surfaceHover : "transparent",
           border: "1px solid",
           borderColor: isChecked ? alpha(colors.indigo500, 0.35) : "transparent",
           transition: "all 0.15s ease",
@@ -94,7 +94,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
               styles={{
                 input: {
                   cursor: "pointer",
-                  borderColor: isChecked ? color : alpha(colors.white, 0.2)
+                  borderColor: isChecked ? color : tokens.textMuted
                 }
               }}
             />
@@ -184,14 +184,14 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
       styles={{
         content: {
           backgroundColor: colors.night800,
-          border: `1px solid ${alpha(colors.white, 0.08)}`,
-          boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
+          border: `1px solid ${tokens.border}`,
+          boxShadow: tokens.shadow,
           color: colors.gray200,
           padding: "20px 24px"
         },
         header: {
           backgroundColor: colors.night800,
-          borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
+          borderBottom: `1px solid ${tokens.border}`,
           paddingBottom: 14,
           marginBottom: 16
         }
@@ -230,8 +230,8 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                 p="md"
                 style={{
                   borderRadius: 10,
-                  backgroundColor: alpha(colors.white, 0.02),
-                  border: `1px solid ${alpha(colors.white, 0.06)}`
+                  backgroundColor: tokens.surfaceSubtle,
+                  border: `1px solid ${tokens.border}`
                 }}
               >
                 <Group justify="space-between" align="center">
@@ -258,8 +258,8 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                 p="md"
                 style={{
                   borderRadius: 10,
-                  backgroundColor: alpha(colors.white, 0.03),
-                  border: `1px dashed ${alpha(colors.white, 0.12)}`,
+                  backgroundColor: tokens.surfaceSubtle,
+                  border: `1px dashed ${tokens.borderStrong}`,
                   textAlign: "center"
                 }}
               >
@@ -341,7 +341,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
             gap="sm"
             mt="md"
             pt="sm"
-            style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}
+            style={{ borderTop: `1px solid ${tokens.border}` }}
           >
             <Button variant="secondary" size="sm" onClick={onClose} disabled={isSaving}>
               Cancelar

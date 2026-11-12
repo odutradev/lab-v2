@@ -1,6 +1,6 @@
 import { Box, Group, Text, Badge, alpha } from "@mantine/core";
 import type { ImcGaugeChartProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ClassificationBand {
   label: string;
@@ -52,8 +52,8 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
         style={{
           height: 89,
           borderRadius: 8,
-          background: alpha(colors.white, 0.02),
-          border: `1px dashed ${alpha(colors.white, 0.08)}`,
+          background: tokens.surfaceSubtle,
+          border: `1px dashed ${tokens.border}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -75,8 +75,8 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
         style={{
           height: 89,
           borderRadius: 8,
-          background: alpha(colors.white, 0.02),
-          border: `1px dashed ${alpha(colors.white, 0.08)}`,
+          background: tokens.surfaceSubtle,
+          border: `1px dashed ${tokens.border}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -101,7 +101,7 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
         <Group gap={6} align="center">
           <Text size="12px" fw={800} c={colors.white} style={{ lineHeight: 1 }}>
             {imc.toFixed(1)}{" "}
-            <span style={{ fontSize: "10px", fontWeight: 600, color: alpha(colors.white, 0.5) }}>kg/m²</span>
+            <span style={{ fontSize: "10px", fontWeight: 600, color: tokens.textMuted }}>kg/m²</span>
           </Text>
           <Badge
             variant="light"
@@ -140,8 +140,8 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
         style={{
           height: 48,
           borderRadius: 8,
-          background: alpha(colors.white, 0.02),
-          border: `1px solid ${alpha(colors.white, 0.05)}`,
+          background: tokens.surfaceSubtle,
+          border: `1px solid ${tokens.border}`,
           overflow: "hidden",
           display: "flex",
           padding: 3,
@@ -158,8 +158,8 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
                 minWidth: 0,
                 height: "100%",
                 borderRadius: 6,
-                backgroundColor: isCurrent ? `${b.color}22` : alpha(colors.white, 0.02),
-                border: isCurrent ? `1px solid ${b.color}99` : `1px solid ${alpha(colors.white, 0.03)}`,
+                backgroundColor: isCurrent ? `${b.color}22` : tokens.surfaceSubtle,
+                border: isCurrent ? `1px solid ${b.color}99` : `1px solid ${tokens.border}`,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -179,14 +179,14 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
                   height: isCurrent ? 3 : 2,
                   backgroundColor: b.color,
                   opacity: isCurrent ? 1 : 0.35,
-                  boxShadow: isCurrent ? `0 0 6px ${b.color}` : "none"
+                  boxShadow: isCurrent ? "none" : "none"
                 }}
               />
               <Text
                 size="10px"
                 fw={isCurrent ? 700 : 500}
                 style={{
-                  color: isCurrent ? b.color : alpha(colors.white, 0.65),
+                  color: isCurrent ? b.color : tokens.textSecondary,
                   lineHeight: 1.1,
                   marginTop: 2,
                   whiteSpace: "nowrap",

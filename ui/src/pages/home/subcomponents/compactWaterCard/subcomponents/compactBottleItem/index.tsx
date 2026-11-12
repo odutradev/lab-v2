@@ -3,7 +3,7 @@ import { Box, Text, UnstyledButton, alpha } from "@mantine/core";
 import { TbCheck, TbPlus, TbX } from "react-icons/tb";
 
 import type { CompactBottleItemProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
   index,
@@ -28,12 +28,12 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
           height: 54,
           padding: "4px 2px",
           borderRadius: 8,
-          background: isFilled ? alpha(colors.sky400, 0.12) : alpha(colors.white, 0.02),
+          background: isFilled ? alpha(colors.sky400, 0.12) : tokens.surfaceSubtle,
           border: isFilled
             ? `1px solid ${alpha(colors.sky400, 0.5)}`
             : isExtra
               ? `1px dashed ${alpha(colors.purple500, 0.35)}`
-              : `1px solid ${alpha(colors.white, 0.08)}`,
+              : `1px solid ${tokens.border}`,
           cursor: "pointer",
           transition: "all 0.15s ease"
         }}
@@ -47,14 +47,14 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               </linearGradient>
             </defs>
 
-            <rect x="7" y="1" width="6" height="3" rx="1" fill={isFilled ? colors.sky400 : alpha(colors.white, 0.25)} />
+            <rect x="7" y="1" width="6" height="3" rx="1" fill={isFilled ? colors.sky400 : tokens.surfaceActive} />
 
-            <rect x="6" y="4" width="8" height="3" rx="1" fill={isFilled ? colors.sky600 : alpha(colors.white, 0.15)} />
+            <rect x="6" y="4" width="8" height="3" rx="1" fill={isFilled ? colors.sky600 : tokens.surfaceActive} />
 
             <path
               d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
-              fill={isFilled ? `url(#compactWater-${index})` : alpha(colors.white, 0.03)}
-              stroke={isFilled ? colors.sky400 : alpha(colors.white, 0.2)}
+              fill={isFilled ? `url(#compactWater-${index})` : tokens.surfaceSubtle}
+              stroke={isFilled ? colors.sky400 : tokens.borderStrong}
               strokeWidth="1.2"
             />
           </svg>
@@ -73,7 +73,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: `0 1px 3px ${alpha(colors.black, 0.5)}`
+                boxShadow: tokens.shadow
               }}
             >
               <TbCheck size={9} color={colors.sky400} />
@@ -107,7 +107,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
-            boxShadow: `0 1px 4px ${alpha(colors.black, 0.4)}`,
+            boxShadow: tokens.shadow,
             zIndex: 2,
             transition: "transform 0.15s ease"
           }}
@@ -139,8 +139,8 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
         height: 54,
         padding: "4px 2px",
         borderRadius: 8,
-        background: alpha(colors.white, 0.02),
-        border: `1px dashed ${alpha(colors.white, 0.2)}`,
+        background: tokens.surfaceSubtle,
+        border: `1px dashed ${tokens.borderStrong}`,
         cursor: "pointer",
         transition: "all 0.15s ease"
       }}
@@ -149,8 +149,8 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
         e.currentTarget.style.background = alpha(colors.purple500, 0.08);
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = alpha(colors.white, 0.2);
-        e.currentTarget.style.background = alpha(colors.white, 0.02);
+        e.currentTarget.style.borderColor = tokens.borderStrong;
+        e.currentTarget.style.background = tokens.surfaceSubtle;
       }}
     >
       <Box style={{ width: 18, height: 32, position: "relative" }}>
@@ -161,7 +161,7 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             width="6"
             height="3"
             rx="1"
-            stroke={alpha(colors.white, 0.3)}
+            stroke={tokens.borderStrong}
             strokeDasharray="2 2"
             strokeWidth="1"
           />
@@ -171,13 +171,13 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             width="8"
             height="3"
             rx="1"
-            stroke={alpha(colors.white, 0.2)}
+            stroke={tokens.borderStrong}
             strokeDasharray="2 2"
             strokeWidth="1"
           />
           <path
             d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
-            stroke={alpha(colors.white, 0.3)}
+            stroke={tokens.borderStrong}
             strokeDasharray="3 2"
             strokeWidth="1.2"
           />

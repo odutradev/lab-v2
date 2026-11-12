@@ -10,7 +10,7 @@ import ChallengeSlipModal from "./subcomponents/challengeSlipModal";
 import useChallengesStore from "@stores/challenges";
 
 import type { Challenge, CreateChallengePayload } from "@actions/challenges/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const ChallengesSection = () => {
   const {
@@ -116,8 +116,7 @@ export const ChallengesSection = () => {
     <Box
       style={{
         backgroundColor: alpha(colors.slate900, 0.45),
-        backdropFilter: "blur(12px)",
-        border: `1px solid ${alpha(colors.white, 0.08)}`,
+        border: `1px solid ${tokens.border}`,
         borderRadius: 16,
         padding: "16px 20px",
         width: "100%"
@@ -131,7 +130,7 @@ export const ChallengesSection = () => {
           style={{ cursor: "pointer", userSelect: "none" }}
           onClick={() => setIsSectionOpen((prev) => !prev)}
         >
-          <ThemeIcon size="md" radius="md" variant="gradient" gradient={{ from: "orange", to: "pink" }}>
+          <ThemeIcon size="md" radius="md" variant="light" color="indigo">
             <TbFlame size={18} />
           </ThemeIcon>
           <Box>
@@ -187,9 +186,9 @@ export const ChallengesSection = () => {
               style={{
                 padding: "24px 20px",
                 textAlign: "center",
-                backgroundColor: alpha(colors.white, 0.02),
+                backgroundColor: tokens.surfaceSubtle,
                 borderRadius: 14,
-                border: `1px dashed ${alpha(colors.white, 0.1)}`
+                border: `1px dashed ${tokens.border}`
               }}
             >
               <Stack align="center" gap="xs">

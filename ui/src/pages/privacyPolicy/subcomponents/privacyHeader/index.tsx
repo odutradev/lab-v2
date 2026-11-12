@@ -1,8 +1,8 @@
-import { Stack, ThemeIcon, Title, Text, Group, Button, alpha } from "@mantine/core";
+import { Stack, ThemeIcon, Title, Text, Group, Button } from "@mantine/core";
 import { TbShieldLock, TbArrowLeft } from "react-icons/tb";
 
 import type { PrivacyHeaderProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const PrivacyHeader = ({ lastUpdated, onBack }: PrivacyHeaderProps) => {
   return (
@@ -18,7 +18,7 @@ export const PrivacyHeader = ({ lastUpdated, onBack }: PrivacyHeaderProps) => {
               color: colors.slate400,
               "&:hover": {
                 color: colors.white,
-                backgroundColor: alpha(colors.white, 0.05)
+                backgroundColor: tokens.surfaceHover
               }
             }
           }}
@@ -31,7 +31,7 @@ export const PrivacyHeader = ({ lastUpdated, onBack }: PrivacyHeaderProps) => {
       </Group>
 
       <Group gap="md" align="center">
-        <ThemeIcon size={52} radius="xl" variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+        <ThemeIcon size={52} radius="xl" variant="light" color="indigo">
           <TbShieldLock size={28} />
         </ThemeIcon>
         <div>

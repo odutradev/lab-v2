@@ -1,8 +1,7 @@
 import type { CSSProperties } from "react";
-import { alpha } from "@mantine/core";
 
-import { colors } from "@styles/theme";
+import { tokens } from "@styles/theme";
 
 export const entryRowStyle: CSSProperties = {
-  borderTop: `1px solid ${alpha(colors.white, 0.06)}`
+  borderTop: `1px solid ${tokens.border}`
 };

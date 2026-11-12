@@ -6,7 +6,7 @@ import type { AuthHeaderProps } from "./types";
 export const AuthHeader = ({ title, subtitle, isResetMode }: AuthHeaderProps) => {
   return (
     <Stack align="center" gap="xs" mb="xl" ta="center">
-      <ThemeIcon size={56} radius="xl" variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+      <ThemeIcon size={56} radius="xl" variant="light" color="indigo">
         {isResetMode ? <TbKey size={28} /> : <TbStack2 size={28} />}
       </ThemeIcon>
       <Title order={1} size="h2" fw={800} c="white">

@@ -1,12 +1,12 @@
 import type { CSSProperties } from "react";
 import { alpha } from "@mantine/core";
 
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const mealBlockStyle: CSSProperties = {
   borderRadius: "var(--mantine-radius-md)",
-  backgroundColor: alpha(colors.white, 0.03),
-  border: `1px solid ${alpha(colors.white, 0.06)}`
+  backgroundColor: tokens.surfaceSubtle,
+  border: `1px solid ${tokens.border}`
 };
 
 export const totalsBarStyle: CSSProperties = {
@@ -19,5 +19,5 @@ export const totalsBarStyle: CSSProperties = {
 };
 
 export const itemRowStyle: CSSProperties = {
-  borderTop: `1px solid ${alpha(colors.white, 0.05)}`
+  borderTop: `1px solid ${tokens.border}`
 };

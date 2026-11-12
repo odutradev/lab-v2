@@ -1,11 +1,11 @@
-import { Modal, Stack, Group, Radio, alpha } from "@mantine/core";
+import { Modal, Stack, Group, Radio } from "@mantine/core";
 import { useState } from "react";
 
 import Button from "@components/button";
 
 import type { RecurringScopeModalProps } from "./types";
 import type { RecurrenceScopeMode } from "@actions/habits/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const RecurringScopeModal = ({
   isOpen,
@@ -39,8 +39,8 @@ export const RecurringScopeModal = ({
       styles={{
         content: {
           backgroundColor: colors.graphite900,
-          border: `1px solid ${alpha(colors.white, 0.1)}`,
-          boxShadow: `0 20px 40px ${alpha(colors.black, 0.65)}`,
+          border: `1px solid ${tokens.border}`,
+          boxShadow: tokens.shadow,
           color: colors.mist200
         },
         header: {

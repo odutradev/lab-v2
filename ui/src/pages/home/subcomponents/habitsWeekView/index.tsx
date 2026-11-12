@@ -4,7 +4,7 @@ import { TbCheck, TbCircle } from "react-icons/tb";
 import Badge from "@components/badge";
 
 import type { HabitsWeekViewProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const dayNames = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
@@ -39,12 +39,12 @@ export const HabitsWeekView = ({
                 ? alpha(colors.indigo500, 0.1)
                 : isToday
                   ? alpha(colors.indigo500, 0.05)
-                  : alpha(colors.white, 0.02),
+                  : tokens.surfaceSubtle,
               border: isSelected
                 ? `1px solid ${alpha(colors.indigo400, 0.5)}`
                 : isToday
                   ? `1px solid ${alpha(colors.indigo400, 0.35)}`
-                  : `1px solid ${alpha(colors.white, 0.06)}`,
+                  : `1px solid ${tokens.border}`,
               borderRadius: 10,
               height: "100%",
               minHeight: 0,
@@ -54,7 +54,7 @@ export const HabitsWeekView = ({
             }}
             onClick={() => onSelectDate(dateStr)}
           >
-            <Stack gap={6} align="center" pb="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}>
+            <Stack gap={6} align="center" pb="xs" style={{ borderBottom: `1px solid ${tokens.border}` }}>
               <Text size="xs" fw={700} c={isToday ? colors.indigo300 : "dimmed"}>
                 {dayNames[index]}
               </Text>

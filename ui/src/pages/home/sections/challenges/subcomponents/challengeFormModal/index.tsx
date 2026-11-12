@@ -25,7 +25,7 @@ import type {
   CreateChallengePayload,
   ChallengeChecklistItem
 } from "@actions/challenges/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeFormModalProps {
   isOpen: boolean;
@@ -169,7 +169,7 @@ export const ChallengeFormModal = ({
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: emoji === item ? alpha(colors.indigo500, 0.25) : alpha(colors.white, 0.04),
-                  border: emoji === item ? `2px solid ${colors.indigo400}` : `1px solid ${alpha(colors.white, 0.08)}`,
+                  border: emoji === item ? `2px solid ${colors.indigo400}` : `1px solid ${tokens.border}`,
                   transition: "all 0.15s ease"
                 }}
               >
@@ -188,8 +188,8 @@ export const ChallengeFormModal = ({
           required
           styles={{
             input: {
-              backgroundColor: alpha(colors.white, 0.04),
-              borderColor: alpha(colors.white, 0.1),
+              backgroundColor: tokens.surfaceHover,
+              borderColor: tokens.border,
               color: "white"
             }
           }}
@@ -204,8 +204,8 @@ export const ChallengeFormModal = ({
           minRows={2}
           styles={{
             input: {
-              backgroundColor: alpha(colors.white, 0.04),
-              borderColor: alpha(colors.white, 0.1),
+              backgroundColor: tokens.surfaceHover,
+              borderColor: tokens.border,
               color: "white"
             }
           }}
@@ -225,8 +225,8 @@ export const ChallengeFormModal = ({
           minRows={2}
           styles={{
             input: {
-              backgroundColor: alpha(colors.white, 0.04),
-              borderColor: alpha(colors.white, 0.1),
+              backgroundColor: tokens.surfaceHover,
+              borderColor: tokens.border,
               color: "white"
             }
           }}
@@ -262,8 +262,8 @@ export const ChallengeFormModal = ({
               style={{ flex: 1 }}
               styles={{
                 input: {
-                  backgroundColor: alpha(colors.white, 0.04),
-                  borderColor: alpha(colors.white, 0.1),
+                  backgroundColor: tokens.surfaceHover,
+                  borderColor: tokens.border,
                   color: "white"
                 }
               }}
@@ -283,8 +283,8 @@ export const ChallengeFormModal = ({
                   style={{
                     padding: "8px 12px",
                     borderRadius: 8,
-                    backgroundColor: alpha(colors.white, 0.03),
-                    border: `1px solid ${alpha(colors.white, 0.06)}`
+                    backgroundColor: tokens.surfaceSubtle,
+                    border: `1px solid ${tokens.border}`
                   }}
                 >
                   <Text size="sm" c="gray.2" style={{ wordBreak: "break-word", flex: 1 }}>
@@ -330,8 +330,8 @@ export const ChallengeFormModal = ({
             max={3650}
             styles={{
               input: {
-                backgroundColor: alpha(colors.white, 0.04),
-                borderColor: alpha(colors.white, 0.1),
+                backgroundColor: tokens.surfaceHover,
+                borderColor: tokens.border,
                 color: "white"
               }
             }}
@@ -420,8 +420,8 @@ export const ChallengeFormModal = ({
           onChange={(e) => setStartDate(e.currentTarget.value)}
           styles={{
             input: {
-              backgroundColor: alpha(colors.white, 0.04),
-              borderColor: alpha(colors.white, 0.1),
+              backgroundColor: tokens.surfaceHover,
+              borderColor: tokens.border,
               color: "white"
             }
           }}

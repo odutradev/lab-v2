@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import useAuthStore from "@stores/auth";
 import { formatDisplayName, getInitials } from "@utils/functions/string";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 import { navLinkStyle } from "./styles";
 
@@ -30,14 +30,13 @@ export const Navbar = () => {
       top={0}
       style={{
         zIndex: 100,
-        backdropFilter: "blur(16px)",
         backgroundColor: alpha(colors.night950, 0.75),
-        borderBottom: `1px solid ${alpha(colors.white, 0.08)}`
+        borderBottom: `1px solid ${tokens.border}`
       }}
     >
       <Container size="lg" h={64} display="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
         <Group gap="xs" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-          <ThemeIcon size="md" radius="md" variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+          <ThemeIcon size="md" radius="md" variant="light" color="indigo">
             <TbStack2 size={18} />
           </ThemeIcon>
           <Text fw={700} size="md" c="white" style={{ letterSpacing: "-0.02em" }}>
@@ -85,7 +84,7 @@ export const Navbar = () => {
                       color="indigo"
                       style={{
                         border: `2px solid ${avatarBorderColor}`,
-                        boxShadow: isAdmin ? `0 0 8px ${alpha(colors.amber500, 0.4)}` : undefined
+                        boxShadow: isAdmin ? "none" : undefined
                       }}
                     >
                       {getInitials(user.name)}
@@ -94,16 +93,15 @@ export const Navbar = () => {
                   <Text size="sm" fw={600} c="white">
                     {formatDisplayName(user.name)}
                   </Text>
-                  <TbChevronDown size={14} color={alpha(colors.white, 0.5)} />
+                  <TbChevronDown size={14} color={tokens.textMuted} />
                 </Group>
               </UnstyledButton>
             </Menu.Target>
 
             <Menu.Dropdown
               style={{
-                backgroundColor: alpha(colors.gray900, 0.95),
-                borderColor: alpha(colors.white, 0.1),
-                backdropFilter: "blur(16px)"
+                backgroundColor: tokens.surface,
+                borderColor: tokens.border,
               }}
             >
               <Box hiddenFrom="sm">
@@ -112,12 +110,12 @@ export const Navbar = () => {
                     {item.label}
                   </Menu.Item>
                 ))}
-                <Menu.Divider style={{ borderColor: alpha(colors.white, 0.08) }} />
+                <Menu.Divider style={{ borderColor: tokens.border }} />
               </Box>
               <Menu.Item leftSection={<TbUser size={16} />} onClick={() => navigate("/profile")}>
                 Perfil
               </Menu.Item>
-              <Menu.Divider style={{ borderColor: alpha(colors.white, 0.08) }} />
+              <Menu.Divider style={{ borderColor: tokens.border }} />
               <Menu.Item color="red" leftSection={<TbLogout size={16} />} onClick={logout}>
                 Sair
               </Menu.Item>

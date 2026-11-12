@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Group, Stack, Progress, Box, Badge as MantineBadge, Text, alpha } from "@mantine/core";
+import { Group, Stack, Progress, Box, Badge as MantineBadge, Text } from "@mantine/core";
 import { TbDropletFilled, TbPencil, TbTrophy } from "react-icons/tb";
 
 import Card from "@components/card";
@@ -10,7 +10,7 @@ import { CompactBottleItem, AddBottleButton } from "./subcomponents/compactBottl
 import EditWaterModal from "./subcomponents/editWaterModal";
 
 import type { CompactWaterCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const CompactWaterCard = ({
   currentWeight,
@@ -86,9 +86,8 @@ export const CompactWaterCard = ({
               </Text>
               <MantineBadge
                 size="xs"
-                variant={isViewingToday ? "light" : "gradient"}
-                gradient={!isViewingToday ? { from: "grape", to: "violet" } : undefined}
-                color={isViewingToday ? "cyan" : undefined}
+                variant="light"
+                color={isViewingToday ? "cyan" : "gray"}
               >
                 {isViewingToday ? "Hoje" : formatDateDisplay(activeDate)}
               </MantineBadge>
@@ -97,8 +96,7 @@ export const CompactWaterCard = ({
             <Group gap={6} align="center" wrap="wrap">
               {isGoalReached ? (
                 <MantineBadge
-                  variant="gradient"
-                  gradient={{ from: "grape", to: "violet" }}
+                  variant="light" color="indigo"
                   size="xs"
                   leftSection={<TbTrophy size={10} />}
                   styles={{ root: { height: 18, padding: "0 6px", fontSize: 10 } }}
@@ -140,11 +138,11 @@ export const CompactWaterCard = ({
             animated={false}
             styles={{
               root: {
-                backgroundColor: alpha(colors.white, 0.06),
+                backgroundColor: tokens.surfaceHover,
                 height: 4
               },
               section: {
-                background: `linear-gradient(90deg, ${colors.purple600} 0%, ${colors.purple400} 100%)`,
+                background: colors.purple400,
                 transition: "none"
               }
             }}

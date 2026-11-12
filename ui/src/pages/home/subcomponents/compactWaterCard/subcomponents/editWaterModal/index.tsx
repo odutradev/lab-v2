@@ -8,7 +8,7 @@ import Button from "@components/button";
 import { calculateIdealWaterMl } from "@utils/functions/health";
 
 import type { EditWaterModalProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const presetBottleSizes = [500, 600, 750, 1000];
 
@@ -109,11 +109,11 @@ const EditWaterForm = ({
                   borderRadius: 6,
                   fontSize: 11,
                   fontWeight: 600,
-                  background: isSelected ? alpha(colors.purple500, 0.25) : alpha(colors.white, 0.05),
+                  background: isSelected ? alpha(colors.purple500, 0.25) : tokens.surfaceHover,
                   color: isSelected ? colors.purple400 : colors.gray400,
                   border: isSelected
                     ? `1px solid ${alpha(colors.purple500, 0.6)}`
-                    : `1px solid ${alpha(colors.white, 0.08)}`,
+                    : `1px solid ${tokens.border}`,
                   cursor: "pointer",
                   transition: "all 0.15s ease"
                 }}

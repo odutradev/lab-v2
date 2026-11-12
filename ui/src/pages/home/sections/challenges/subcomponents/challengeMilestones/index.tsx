@@ -2,7 +2,7 @@ import { SimpleGrid, Box, Text, Group, ThemeIcon, Progress, alpha } from "@manti
 import { TbCheck } from "react-icons/tb";
 
 import type { ChallengeMilestone } from "@utils/functions/challenges";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeMilestonesProps {
   milestones: ChallengeMilestone[];
@@ -22,10 +22,10 @@ export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMile
             style={{
               padding: "12px",
               borderRadius: 12,
-              backgroundColor: isAchieved ? alpha(colors.emerald500, 0.08) : alpha(colors.white, 0.03),
+              backgroundColor: isAchieved ? alpha(colors.emerald500, 0.08) : tokens.surfaceSubtle,
               border: isAchieved
                 ? `1px solid ${alpha(colors.emerald500, 0.3)}`
-                : `1px solid ${alpha(colors.white, 0.08)}`,
+                : `1px solid ${tokens.border}`,
               transition: "all 0.2s ease",
               display: "flex",
               flexDirection: "column",

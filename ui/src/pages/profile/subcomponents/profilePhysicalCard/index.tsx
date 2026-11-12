@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Group, Stack, Text, NumberInput, SimpleGrid, Box, alpha } from "@mantine/core";
+import { Group, Stack, Text, NumberInput, SimpleGrid, Box } from "@mantine/core";
 import { TbRuler, TbCalendarTime, TbHeartRateMonitor, TbScale } from "react-icons/tb";
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
@@ -10,7 +10,7 @@ import useToastStore from "@stores/toast";
 import useAction from "@hooks/useAction";
 import { parseDecimalNumber, roundToOneDecimal } from "@utils/functions/health";
 import { infoCardItemStyle } from "../../styles";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const ProfilePhysicalCard = () => {
   const { profile, updateProfile, weightHistory, saveWeightRecord } = useHealthStore();
@@ -128,8 +128,8 @@ export const ProfilePhysicalCard = () => {
                 }
                 styles={{
                   input: {
-                    backgroundColor: alpha(colors.white, 0.04),
-                    borderColor: alpha(colors.white, 0.1),
+                    backgroundColor: tokens.surfaceHover,
+                    borderColor: tokens.border,
                     color: colors.white,
                     fontWeight: 600
                   }
@@ -163,8 +163,8 @@ export const ProfilePhysicalCard = () => {
                 }
                 styles={{
                   input: {
-                    backgroundColor: alpha(colors.white, 0.04),
-                    borderColor: alpha(colors.white, 0.1),
+                    backgroundColor: tokens.surfaceHover,
+                    borderColor: tokens.border,
                     color: colors.white,
                     fontWeight: 600
                   }
@@ -191,8 +191,8 @@ export const ProfilePhysicalCard = () => {
                 description="Necessário para ajustar taxa de hidratação"
                 styles={{
                   input: {
-                    backgroundColor: alpha(colors.white, 0.04),
-                    borderColor: alpha(colors.white, 0.1),
+                    backgroundColor: tokens.surfaceHover,
+                    borderColor: tokens.border,
                     color: colors.white,
                     fontWeight: 600
                   }

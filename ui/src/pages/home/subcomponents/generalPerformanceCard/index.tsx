@@ -5,7 +5,7 @@ import { TbActivity, TbInfoCircle } from "react-icons/tb";
 import Card, { CardHeader, CardTitle, CardContent } from "@components/card";
 
 import type { GeneralPerformanceCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const GeneralPerformanceCard = ({
   metrics,
@@ -30,17 +30,6 @@ export const GeneralPerformanceCard = ({
 
   return (
     <Card style={{ position: "relative", overflow: "hidden" }}>
-      <Box
-        style={{
-          position: "absolute",
-          top: -24,
-          right: -24,
-          width: 120,
-          height: 120,
-          background: `radial-gradient(circle, ${alpha(colors.purple500, 0.16)} 0%, transparent 70%)`,
-          pointerEvents: "none"
-        }}
-      />
 
       <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
         <Group justify="space-between" align="center" wrap="wrap" gap="xs">
@@ -75,14 +64,8 @@ export const GeneralPerformanceCard = ({
               position="bottom-end"
             >
               <Badge
-                variant="gradient"
-                gradient={
-                  stats.average >= 80
-                    ? { from: "teal", to: "emerald" }
-                    : stats.average >= 50
-                      ? { from: "indigo", to: "cyan" }
-                      : { from: "orange", to: "red" }
-                }
+                variant="light"
+                color={stats.average >= 80 ? "teal" : stats.average >= 50 ? "indigo" : "orange"}
                 size="sm"
                 style={{ cursor: "pointer" }}
               >
@@ -113,7 +96,7 @@ export const GeneralPerformanceCard = ({
                 </Text>
               </Group>
               <Group gap={3} align="center">
-                <Box w={6} h={6} style={{ borderRadius: "50%", background: alpha(colors.white, 0.1) }} />
+                <Box w={6} h={6} style={{ borderRadius: "50%", background: tokens.surfaceActive }} />
                 <Text size="10px" c="dimmed">
                   0%
                 </Text>
@@ -130,8 +113,8 @@ export const GeneralPerformanceCard = ({
               height: 48,
               padding: "6px 8px",
               borderRadius: 8,
-              background: alpha(colors.white, 0.02),
-              border: `1px solid ${alpha(colors.white, 0.05)}`,
+              background: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`,
               overflow: "hidden"
             }}
           >
@@ -190,11 +173,11 @@ export const GeneralPerformanceCard = ({
                             ? `1.5px solid ${colors.purple400}`
                             : "none",
                       boxShadow: isSelected
-                        ? `0 0 8px ${alpha(colors.white, 0.5)}`
+                        ? "none"
                         : isHovered
-                          ? `0 0 8px ${alpha(colors.sky400, 0.6)}`
+                          ? "none"
                           : item.overallRate >= 100
-                            ? `0 0 6px ${alpha(colors.emerald500, 0.4)}`
+                            ? "none"
                             : "none",
                       transition: "all 0.15s ease"
                     }}

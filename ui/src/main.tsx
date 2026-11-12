@@ -10,7 +10,7 @@ registerSW({ immediate: true });
 import useAuthStore from "@stores/auth";
 import theme from "@styles/theme";
 import Router from "@routes";
-import { colors } from "@styles/theme";
+import { tokens } from "@styles/theme";
 
 export const App = () => {
   const { isLoading, initializeAuth } = useAuthStore();
@@ -21,7 +21,7 @@ export const App = () => {
 
   if (isLoading) {
     return (
-      <Center h="100vh" bg={colors.night900}>
+      <Center h="100vh" bg={tokens.background}>
         <Loader color="indigo" size="lg" />
       </Center>
     );

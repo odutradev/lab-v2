@@ -1,4 +1,4 @@
-import { Group, Box, Title, Text, Avatar, Stack, Tooltip, alpha } from "@mantine/core";
+import { Group, Box, Title, Text, Avatar, Stack, Tooltip } from "@mantine/core";
 import { TbArrowLeft } from "react-icons/tb";
 
 import Button from "@components/button";
@@ -25,7 +25,7 @@ export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) =>
               variant="filled"
               style={{
                 border: `3px solid ${avatarBorderColor}`,
-                boxShadow: isAdmin ? `0 0 14px ${alpha(colors.amber500, 0.45)}` : undefined
+                boxShadow: isAdmin ? "none" : undefined
               }}
             >
               <Text fw={700} size="xl">

@@ -18,7 +18,7 @@ import ChallengeGrid from "../challengeGrid";
 import { calculateChallengeStats, formatDisplayDate } from "@utils/functions/challenges";
 
 import type { Challenge } from "@actions/challenges/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 interface ChallengeDetailModalProps {
   isOpen: boolean;
@@ -146,8 +146,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: "12px 16px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.08)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`
             }}
           >
             <Group gap="xs" align="center" mb={6}>
@@ -198,10 +198,10 @@ export const ChallengeDetailModal = ({
                   style={{
                     padding: "8px 12px",
                     borderRadius: 8,
-                    backgroundColor: item.completed ? alpha(colors.emerald500, 0.1) : alpha(colors.white, 0.02),
+                    backgroundColor: item.completed ? alpha(colors.emerald500, 0.1) : tokens.surfaceSubtle,
                     border: item.completed
                       ? `1px solid ${alpha(colors.emerald500, 0.3)}`
-                      : `1px solid ${alpha(colors.white, 0.06)}`,
+                      : `1px solid ${tokens.border}`,
                     cursor: onToggleChecklistItem ? "pointer" : "default",
                     transition: "all 0.15s ease"
                   }}
@@ -238,8 +238,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: "12px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.06)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`
             }}
           >
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
@@ -257,8 +257,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: "12px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.06)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`
             }}
           >
             <Group justify="space-between" align="center">
@@ -279,8 +279,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: "12px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.06)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`
             }}
           >
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
@@ -298,8 +298,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: "12px",
               borderRadius: 12,
-              backgroundColor: alpha(colors.white, 0.03),
-              border: `1px solid ${alpha(colors.white, 0.06)}`
+              backgroundColor: tokens.surfaceSubtle,
+              border: `1px solid ${tokens.border}`
             }}
           >
             <Group justify="space-between" align="center">

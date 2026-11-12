@@ -1,4 +1,4 @@
-import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton, alpha } from "@mantine/core";
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from "react-icons/tb";
 
@@ -8,7 +8,7 @@ import RecurrenceSelect from "./subcomponents/recurrenceSelect";
 
 import type { HabitsModalProps } from "./types";
 import type { HabitCategory, HabitFrequency, HabitRecurrence } from "@actions/habits/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const getTodayString = (): string => {
   const now = new Date();
@@ -210,14 +210,14 @@ export const HabitsModal = ({
       styles={{
         content: {
           backgroundColor: colors.night800,
-          border: `1px solid ${alpha(colors.white, 0.08)}`,
-          boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
+          border: `1px solid ${tokens.border}`,
+          boxShadow: tokens.shadow,
           color: colors.gray200,
           padding: "22px 26px"
         },
         header: {
           backgroundColor: colors.night800,
-          borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
+          borderBottom: `1px solid ${tokens.border}`,
           paddingBottom: 16,
           marginBottom: 18
         }
@@ -234,8 +234,8 @@ export const HabitsModal = ({
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
                 gap: 4,
-                backgroundColor: alpha(colors.white, 0.03),
-                border: `1px solid ${alpha(colors.white, 0.07)}`,
+                backgroundColor: tokens.surfaceSubtle,
+                border: `1px solid ${tokens.border}`,
                 borderRadius: 10,
                 padding: 3
               }}
@@ -256,10 +256,10 @@ export const HabitsModal = ({
                       gap: 8,
                       height: 38,
                       borderRadius: 8,
-                      backgroundColor: isSelected ? alpha(colors.white, 0.1) : "transparent",
-                      border: isSelected ? `1px solid ${alpha(colors.white, 0.12)}` : "1px solid transparent",
+                      backgroundColor: isSelected ? tokens.surfaceActive : "transparent",
+                      border: isSelected ? `1px solid ${tokens.borderStrong}` : "1px solid transparent",
                       color: isSelected ? colors.white : colors.gray400,
-                      boxShadow: isSelected ? `0 2px 6px ${alpha(colors.black, 0.25)}` : "none",
+                      boxShadow: isSelected ? tokens.shadow : "none",
                       fontWeight: isSelected ? 600 : 500,
                       fontSize: 13,
                       transition: "all 0.15s ease",
@@ -288,8 +288,8 @@ export const HabitsModal = ({
               required
               styles={{
                 input: {
-                  backgroundColor: alpha(colors.white, 0.04),
-                  borderColor: error ? colors.red500 : alpha(colors.white, 0.08),
+                  backgroundColor: tokens.surfaceHover,
+                  borderColor: error ? colors.red500 : tokens.border,
                   color: colors.white,
                   fontSize: 14,
                   height: 42,
@@ -319,8 +319,8 @@ export const HabitsModal = ({
                 leftSection={<TbCalendar size={16} color={colors.gray400} />}
                 styles={{
                   input: {
-                    backgroundColor: alpha(colors.white, 0.04),
-                    borderColor: alpha(colors.white, 0.08),
+                    backgroundColor: tokens.surfaceHover,
+                    borderColor: tokens.border,
                     color: colors.white,
                     fontSize: 14,
                     height: 42,
@@ -362,8 +362,8 @@ export const HabitsModal = ({
               autosize
               styles={{
                 input: {
-                  backgroundColor: alpha(colors.white, 0.04),
-                  borderColor: alpha(colors.white, 0.08),
+                  backgroundColor: tokens.surfaceHover,
+                  borderColor: tokens.border,
                   color: colors.gray200,
                   fontSize: 14,
                   borderRadius: 10
@@ -383,7 +383,7 @@ export const HabitsModal = ({
             align="center"
             mt="xs"
             pt="md"
-            style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}
+            style={{ borderTop: `1px solid ${tokens.border}` }}
           >
             {initialHabit && onDelete ? (
               <Button

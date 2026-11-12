@@ -4,7 +4,7 @@ import { TbAlertTriangle, TbAlertCircle, TbCheck, TbInfoCircle, TbChevronRight }
 import Button from "@components/button";
 
 import type { ModalProps, ModalHeaderProps, ModalBodyProps, ModalFooterProps, ModalVariant } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 const variantColors: Record<ModalVariant, string> = {
   indigo: "indigo",
@@ -33,7 +33,7 @@ export const ModalHeader = ({ title, description, icon, variant = "indigo" }: Mo
   const color = variantColors[variant];
 
   return (
-    <Box mb="md" pb="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}>
+    <Box mb="md" pb="xs" style={{ borderBottom: `1px solid ${tokens.border}` }}>
       <Group gap="sm" align="flex-start" wrap="nowrap">
         {icon || (
           <ThemeIcon size="lg" radius="md" variant="light" color={color}>
@@ -65,7 +65,7 @@ export const ModalBody = ({ children }: ModalBodyProps) => {
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
   return (
-    <Box mt="lg" pt="md" style={{ borderTop: `1px solid ${alpha(colors.white, 0.08)}` }}>
+    <Box mt="lg" pt="md" style={{ borderTop: `1px solid ${tokens.border}` }}>
       <Group justify="flex-end" gap="sm">
         {children}
       </Group>
@@ -108,28 +108,21 @@ export const Modal = ({
       zIndex={zIndex}
       styles={{
         content: {
-          background: `linear-gradient(180deg, ${alpha(colors.night600, 0.98)} 0%, ${alpha(colors.night850, 0.99)} 100%)`,
-          border: `1px solid ${alpha(colors.white, 0.08)}`,
-          borderRadius: 16,
-          boxShadow: `0 20px 40px ${alpha(colors.black, 0.45)}`,
-          backdropFilter: "blur(16px)",
-          padding: "24px"
+          backgroundColor: tokens.surface,
+          border: `1px solid ${tokens.border}`,
+          borderRadius: 12,
+          padding: "20px"
         },
         header: {
           background: "transparent",
           padding: 0,
-          marginBottom: title || description ? 16 : 0
+          marginBottom: title || description ? 12 : 0
         },
         body: {
           padding: 0
         },
         close: {
-          color: alpha(colors.white, 0.5),
-          transition: "all 0.2s ease",
-          "&:hover": {
-            color: colors.white,
-            backgroundColor: alpha(colors.white, 0.08)
-          }
+          color: tokens.textMuted
         }
       }}
     >
@@ -168,7 +161,7 @@ export const Modal = ({
                     border:
                       action.variant === "danger"
                         ? `1px solid ${alpha(colors.red500, 0.25)}`
-                        : `1px solid ${alpha(colors.white, 0.08)}`,
+                        : `1px solid ${tokens.border}`,
                     transition: "all 0.2s ease",
                     cursor: action.disabled ? "not-allowed" : "pointer",
                     opacity: action.disabled ? 0.6 : 1
@@ -197,7 +190,7 @@ export const Modal = ({
                         )}
                       </Box>
                     </Group>
-                    <TbChevronRight size={18} color={alpha(colors.white, 0.4)} />
+                    <TbChevronRight size={18} color={tokens.textMuted} />
                   </Group>
                 </UnstyledButton>
               ))}

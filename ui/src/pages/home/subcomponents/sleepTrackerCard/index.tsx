@@ -16,7 +16,7 @@ import {
 } from "@utils/functions/health";
 import { SleepHistoryChart } from "./subcomponents/sleepHistoryChart";
 import type { SleepTrackerCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const SleepTrackerCard = ({
   sleepHistory,
@@ -106,17 +106,6 @@ export const SleepTrackerCard = ({
   return (
     <>
       <Card style={{ position: "relative", overflow: "hidden" }}>
-        <Box
-          style={{
-            position: "absolute",
-            top: -24,
-            right: -24,
-            width: 120,
-            height: 120,
-            background: `radial-gradient(circle, ${alpha(colors.purple500, 0.15)} 0%, transparent 70%)`,
-            pointerEvents: "none"
-          }}
-        />
 
         <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
@@ -245,16 +234,16 @@ export const SleepTrackerCard = ({
                 color="violet"
                 styles={{
                   track: {
-                    backgroundColor: alpha(colors.white, 0.1)
+                    backgroundColor: tokens.surfaceActive
                   },
                   bar: {
-                    background: `linear-gradient(90deg, ${colors.violet600} 0%, ${colors.purple400} 100%)`
+                    background: colors.purple400
                   },
                   thumb: {
                     borderColor: colors.purple400
                   },
                   markLabel: {
-                    color: alpha(colors.white, 0.45),
+                    color: tokens.textMuted,
                     fontSize: "11px",
                     marginTop: 6
                   }
@@ -289,8 +278,8 @@ export const SleepTrackerCard = ({
                         flexDirection: "column",
                         alignItems: "center",
                         gap: 4,
-                        backgroundColor: isSelected ? `${opt.color}25` : alpha(colors.white, 0.04),
-                        border: isSelected ? `2px solid ${opt.color}` : `1px solid ${alpha(colors.white, 0.1)}`,
+                        backgroundColor: isSelected ? `${opt.color}25` : tokens.surfaceHover,
+                        border: isSelected ? `2px solid ${opt.color}` : `1px solid ${tokens.border}`,
                         transition: "all 0.15s ease",
                         cursor: "pointer"
                       }}
@@ -302,7 +291,7 @@ export const SleepTrackerCard = ({
                         size="11px"
                         fw={isSelected ? 700 : 500}
                         style={{
-                          color: isSelected ? opt.color : alpha(colors.white, 0.7),
+                          color: isSelected ? opt.color : tokens.textSecondary,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",

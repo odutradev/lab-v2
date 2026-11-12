@@ -10,7 +10,7 @@ import useToastStore from "@stores/toast";
 import useAction from "@hooks/useAction";
 import { infoCardItemStyle } from "../../styles";
 import type { ProfilePerformanceWeightsCardProps } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceWeightsCardProps) => {
   const { performanceWeights, updatePerformanceWeights } = useHealthStore();
@@ -110,8 +110,8 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                 borderRadius: 999,
                 overflow: "hidden",
                 display: "flex",
-                backgroundColor: alpha(colors.white, 0.05),
-                border: `1px solid ${alpha(colors.white, 0.08)}`
+                backgroundColor: tokens.surfaceHover,
+                border: `1px solid ${tokens.border}`
               }}
             >
               {habits > 0 && (
@@ -186,7 +186,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   border:
                     habits === 50 && water === 25 && sleep === 25
                       ? `1px solid ${alpha(colors.purple500, 0.4)}`
-                      : `1px solid ${alpha(colors.white, 0.08)}`,
+                      : `1px solid ${tokens.border}`,
                   transition: "all 0.15s ease"
                 }}
               >
@@ -208,7 +208,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   border:
                     habits === 34 && water === 33 && sleep === 33
                       ? `1px solid ${alpha(colors.indigo500, 0.4)}`
-                      : `1px solid ${alpha(colors.white, 0.08)}`,
+                      : `1px solid ${tokens.border}`,
                   transition: "all 0.15s ease"
                 }}
               >
@@ -230,7 +230,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   border:
                     habits === 30 && water === 35 && sleep === 35
                       ? `1px solid ${alpha(colors.cyan500, 0.4)}`
-                      : `1px solid ${alpha(colors.white, 0.08)}`,
+                      : `1px solid ${tokens.border}`,
                   transition: "all 0.15s ease"
                 }}
               >

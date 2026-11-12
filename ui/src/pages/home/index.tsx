@@ -204,7 +204,6 @@ export const HomePage = () => {
                       minHeight: 0,
                       minWidth: 0,
                       backgroundColor: colors.night900,
-                      backgroundImage: `radial-gradient(ellipse 80% 50% at 50% -20%, ${alpha(colors.indigo500, 0.18)}, transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, ${alpha(colors.cyan500, 0.1)}, transparent 60%)`,
                       border: "none",
                       boxShadow: "none",
                       overflow: "hidden"
@@ -334,17 +333,6 @@ export const HomePage = () => {
                 </>
               ) : (
                 <Card style={{ position: "relative", overflow: "hidden", padding: "24px 20px", textAlign: "center" }}>
-                  <Box
-                    style={{
-                      position: "absolute",
-                      top: -24,
-                      right: -24,
-                      width: 110,
-                      height: 110,
-                      background: `radial-gradient(circle, ${alpha(colors.indigo500, 0.15)} 0%, transparent 70%)`,
-                      pointerEvents: "none"
-                    }}
-                  />
                   <Stack align="center" gap="sm">
                     <Box
                       style={{
