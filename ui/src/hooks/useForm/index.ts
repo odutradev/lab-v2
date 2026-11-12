@@ -1,44 +1,29 @@
-import { useState, useCallback, type ChangeEvent, type FormEvent } from 'react'
+import { useState, useCallback, type ChangeEvent, type FormEvent, type FocusEvent } from 'react'
 
-import type { UseFormOptions, UseFormReturn } from '@hooks/useForm/types'
+import { getFieldError, getFormErrors } from '@utils/validations'
 
-const useForm = <T extends object>({
-  initialValues,
-  validationRules = {},
-  onSubmit
-}: UseFormOptions<T>): UseFormReturn<T> => {
+import type { UseFormOptions, UseFormReturn, FormErrors } from '@hooks/useForm/types'
+
+const useForm = <T extends object>({ initialValues, schema, onSubmit }: UseFormOptions<T>): UseFormReturn<T> => {
   const [values, setValues] = useState<T>(initialValues)
-  const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({})
+  const [errors, setErrors] = useState<FormErrors<T>>({})
   const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const validateField = useCallback(
-    (name: keyof T, value: T[keyof T]): string | undefined => {
-      const validator = validationRules[name]
-      if (validator) {
-        return validator(value, values)
-      }
-      return undefined
-    },
-    [validationRules, values]
-  )
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const { name, value, type } = e.target
-      const fieldValue =
-        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      const fieldValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
 
       setValues((prev) => {
         const next = { ...prev, [name]: fieldValue }
-        if (touched[name as keyof T]) {
-          const error = validationRules[name as keyof T]?.(fieldValue as T[keyof T], next)
-          setErrors((prevErrors) => ({ ...prevErrors, [name]: error }))
+        if (schema && touched[name as keyof T]) {
+          setErrors((prevErrors) => ({ ...prevErrors, [name]: getFieldError(schema, next, name as keyof T) }))
         }
         return next
       })
     },
-    [touched, validationRules]
+    [touched, schema]
   )
 
   const setFieldValue = useCallback((name: keyof T, value: unknown) => {
@@ -46,48 +31,30 @@ const useForm = <T extends object>({
   }, [])
 
   const handleBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    (e: FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target
       setTouched((prev) => ({ ...prev, [name]: true }))
-      const error = validateField(name as keyof T, value as T[keyof T])
-      setErrors((prev) => ({ ...prev, [name]: error }))
+      if (!schema) return
+      setErrors((prev) => ({ ...prev, [name]: getFieldError(schema, { ...values, [name]: value }, name as keyof T) }))
     },
-    [validateField]
+    [schema, values]
   )
 
   const validateAll = useCallback((): boolean => {
-    const newErrors: Partial<Record<keyof T, string>> = {}
-    let isValid = true
-
-    Object.keys(validationRules).forEach((key) => {
-      const fieldKey = key as keyof T
-      const validator = validationRules[fieldKey]
-      if (validator) {
-        const error = validator(values[fieldKey], values)
-        if (error) {
-          newErrors[fieldKey] = error
-          isValid = false
-        }
-      }
-    })
-
+    if (!schema) return true
+    const newErrors = getFormErrors(schema, values)
     setErrors(newErrors)
-    return isValid
-  }, [validationRules, values])
+    return Object.keys(newErrors).length === 0
+  }, [schema, values])
 
   const handleSubmit = useCallback(
     async (e?: FormEvent<HTMLFormElement>) => {
       if (e) e.preventDefault()
 
-      const allTouched: Partial<Record<keyof T, boolean>> = {}
-      Object.keys(values).forEach((key) => {
-        allTouched[key as keyof T] = true
-      })
+      const allTouched = Object.fromEntries(Object.keys(values).map((key) => [key, true])) as Partial<Record<keyof T, boolean>>
       setTouched(allTouched)
 
-      if (!validateAll()) {
-        return
-      }
+      if (!validateAll()) return
 
       setIsSubmitting(true)
       try {

@@ -14,12 +14,14 @@ import Button from '@components/button'
 import Badge from '@components/badge'
 import useHealthStore from '@stores/health'
 import useToastStore from '@stores/toast'
+import useAction from '@hooks/useAction'
 import { infoCardItemStyle } from '../../styles'
 import type { ProfilePerformanceWeightsCardProps } from './types'
 
 export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceWeightsCardProps) => {
   const { performanceWeights, updatePerformanceWeights } = useHealthStore()
   const { showToast } = useToastStore()
+  const runAction = useAction()
 
   const [habits, setHabits] = useState<number>(performanceWeights.habits)
   const [water, setWater] = useState<number>(performanceWeights.water)
@@ -52,18 +54,14 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
     }
 
     setIsSaving(true)
-    try {
-      await updatePerformanceWeights({
-        habits,
-        water,
-        sleep
-      })
-      showToast('Pesos do desempenho geral configurados com sucesso!', 'success')
-    } catch {
-      showToast('Ocorreu um erro ao salvar os pesos no servidor.', 'error')
-    } finally {
-      setIsSaving(false)
-    }
+    await runAction({
+      action: () => updatePerformanceWeights({ habits, water, sleep }),
+      toastMessages: {
+        success: 'Pesos do desempenho geral configurados com sucesso!',
+        error: 'Ocorreu um erro ao salvar os pesos no servidor.'
+      }
+    })
+    setIsSaving(false)
   }
 
   return (

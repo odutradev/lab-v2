@@ -1,5 +1,1 @@
-export interface RegisterFormValues {
-  name: string
-  email: string
-  password: string
-}
+export type { RegisterFormValues } from '@utils/validations/auth'

@@ -1,107 +1,53 @@
-import { API_BASE_URL, STORAGE_KEYS } from '@assets/config'
+import axios, { AxiosError } from 'axios'
+
+import { apiBaseUrl, storageKeys } from '@assets/config'
 
 import type { ApiError } from '@utils/types/api'
+import type { InternalAxiosRequestConfig } from 'axios'
 
-export interface RequestOptions extends RequestInit {
-  params?: Record<string, string | number | boolean | undefined>
-  skipAuth?: boolean
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    skipAuth?: boolean
+  }
 }
 
-const getAuthToken = (): string | null => {
-  return localStorage.getItem(STORAGE_KEYS.TOKEN)
+type ApiErrorBody = {
+  error?: string
+  message?: string
+  code?: string
+  details?: ApiError['details']
 }
 
-const buildUrl = (path: string, params?: Record<string, string | number | boolean | undefined>): string => {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const url = new URL(`${API_BASE_URL}${normalizedPath}`)
+const api = axios.create({
+  baseURL: apiBaseUrl,
+  headers: { 'Content-Type': 'application/json' }
+})
 
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        url.searchParams.append(key, String(value))
-      }
-    })
+const attachAuthToken = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+  if (config.skipAuth) return config
+
+  const token = localStorage.getItem(storageKeys.token)
+  if (token) config.headers.set('Authorization', `Bearer ${token}`)
+
+  return config
+}
+
+const toApiError = (error: AxiosError<ApiErrorBody>): Promise<never> => {
+  const status = error.response?.status
+  const responseData = error.response?.data
+
+  if (!error.response) return Promise.reject({ message: error.message } satisfies ApiError)
+
+  const apiError: ApiError = {
+    message: responseData?.error || responseData?.message || `Request failed with status ${status}`,
+    status,
+    details: responseData?.details
   }
 
-  return url.toString()
+  return Promise.reject(apiError)
 }
 
-export const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
-  const { params, skipAuth, headers, ...restOptions } = options
-  const url = buildUrl(path, params)
+api.interceptors.request.use(attachAuthToken)
+api.interceptors.response.use((response) => response, toApiError)
 
-  const requestHeaders: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...((headers as Record<string, string>) || {})
-  }
-
-  if (!skipAuth) {
-    const token = getAuthToken()
-    if (token) {
-      requestHeaders['Authorization'] = `Bearer ${token}`
-    }
-  }
-
-  const response = await fetch(url, {
-    ...restOptions,
-    headers: requestHeaders
-  })
-
-  const isJson = response.headers.get('content-type')?.includes('application/json')
-  const responseData = isJson ? await response.json() : null
-
-  if (!response.ok) {
-    const apiError: ApiError = {
-      message: responseData?.error || responseData?.message || `Request failed with status ${response.status}`,
-      status: response.status,
-      details: responseData?.details
-    }
-    throw apiError
-  }
-
-  return responseData as T
-}
-
-export const get = <T>(path: string, options?: RequestOptions): Promise<T> => {
-  return request<T>(path, { ...options, method: 'GET' })
-}
-
-export const post = <T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> => {
-  return request<T>(path, {
-    ...options,
-    method: 'POST',
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  })
-}
-
-export const put = <T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> => {
-  return request<T>(path, {
-    ...options,
-    method: 'PUT',
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  })
-}
-
-export const patch = <T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> => {
-  return request<T>(path, {
-    ...options,
-    method: 'PATCH',
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  })
-}
-
-export const del = <T>(path: string, options?: RequestOptions): Promise<T> => {
-  return request<T>(path, { ...options, method: 'DELETE' })
-}
-
-export const apiClient = {
-  request,
-  get,
-  post,
-  put,
-  patch,
-  delete: del
-}
-
-export default apiClient
-
+export default api

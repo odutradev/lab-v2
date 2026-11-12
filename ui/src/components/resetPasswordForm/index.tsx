@@ -4,15 +4,16 @@ import { useState, type FormEvent } from 'react'
 
 import { requestCodeAction, verifyCodeAction } from '@actions/users/validation'
 import { resetPasswordAction } from '@actions/users/profile'
-import useToastStore from '@stores/toast'
+import { resetEmailSchema, verificationCodeSchema, newPasswordSchema } from '@utils/validations/auth'
+import { getFormErrors } from '@utils/validations'
+import useAction from '@hooks/useAction'
 import Button from '@components/button'
 import Input from '@components/input'
 
 import type { ResetPasswordFormProps, ResetPasswordStep } from './types'
-import type { ApiError } from '@utils/types/api'
 
 export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPasswordFormProps) => {
-  const { showToast } = useToastStore()
+  const runAction = useAction()
 
   const [step, setStep] = useState<ResetPasswordStep>('email')
   const [email, setEmail] = useState<string>(initialEmail || '')
@@ -33,112 +34,86 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
     if (e) e.preventDefault()
 
     const targetEmail = email.trim()
-    if (!targetEmail) {
-      setEmailError('E-mail é obrigatório')
-      return
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
-      setEmailError('E-mail inválido')
+    const { email: emailValidationError } = getFormErrors(resetEmailSchema, { email: targetEmail })
+    if (emailValidationError) {
+      setEmailError(emailValidationError)
       return
     }
 
     setEmailError(undefined)
     setIsLoading(true)
 
-    try {
-      await requestCodeAction('password_reset', { email: targetEmail })
-      showToast('Código de verificação enviado com sucesso!', 'success')
-      setStep('code')
-    } catch (err) {
-      const apiErr = err as ApiError
-      showToast(apiErr.message || 'Falha ao solicitar código', 'error', 'Erro na verificação')
-    } finally {
-      setIsLoading(false)
-    }
+    await runAction({
+      action: () => requestCodeAction('password_reset', { email: targetEmail }),
+      toastMessages: {
+        success: 'Código de verificação enviado com sucesso!',
+        error: 'Falha ao solicitar código',
+        errorTitle: 'Erro na verificação',
+        preferApiErrorMessage: true
+      },
+      callback: () => setStep('code')
+    })
+
+    setIsLoading(false)
   }
 
   const handleVerifyCode = async (e: FormEvent) => {
     e.preventDefault()
 
     const targetCode = code.trim()
-    if (!targetCode) {
-      setCodeError('Código é obrigatório')
-      return
-    }
-
-    if (targetCode.length !== 6) {
-      setCodeError('O código deve conter exatamente 6 dígitos')
+    const { code: codeValidationError } = getFormErrors(verificationCodeSchema, { code: targetCode })
+    if (codeValidationError) {
+      setCodeError(codeValidationError)
       return
     }
 
     setCodeError(undefined)
     setIsLoading(true)
 
-    try {
-      const response = await verifyCodeAction('password_reset', {
-        email: email.trim(),
-        code: targetCode
-      })
-
-      if (!response.resetToken) {
-        throw new Error('Token de redefinição não retornado pelo servidor')
+    await runAction({
+      action: async () => {
+        const response = await verifyCodeAction('password_reset', { email: email.trim(), code: targetCode })
+        if (!response.resetToken) throw new Error('Token de redefinição não retornado pelo servidor')
+        return response.resetToken
+      },
+      toastMessages: {
+        success: 'Código verificado com sucesso!',
+        error: 'Código de verificação inválido ou expirado',
+        errorTitle: 'Erro na validação',
+        preferApiErrorMessage: true
+      },
+      callback: (token) => {
+        setResetToken(token)
+        setStep('password')
       }
+    })
 
-      setResetToken(response.resetToken)
-      showToast('Código verificado com sucesso!', 'success')
-      setStep('password')
-    } catch (err) {
-      const apiErr = err as ApiError
-      showToast(apiErr.message || 'Código de verificação inválido ou expirado', 'error', 'Erro na validação')
-    } finally {
-      setIsLoading(false)
-    }
+    setIsLoading(false)
   }
 
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault()
 
-    let hasError = false
+    const validationErrors = getFormErrors(newPasswordSchema, { password, confirmPassword })
+    setPasswordError(validationErrors.password)
+    setConfirmPasswordError(validationErrors.confirmPassword)
 
-    if (!password) {
-      setPasswordError('Nova senha é obrigatória')
-      hasError = true
-    } else if (password.length < 8) {
-      setPasswordError('A senha deve conter no mínimo 8 caracteres')
-      hasError = true
-    } else {
-      setPasswordError(undefined)
-    }
-
-    if (!confirmPassword) {
-      setConfirmPasswordError('Confirmação de senha é obrigatória')
-      hasError = true
-    } else if (confirmPassword !== password) {
-      setConfirmPasswordError('As senhas não coincidem')
-      hasError = true
-    } else {
-      setConfirmPasswordError(undefined)
-    }
-
-    if (hasError) return
+    if (validationErrors.password || validationErrors.confirmPassword) return
 
     setIsLoading(true)
 
-    try {
-      await resetPasswordAction({
-        token: resetToken,
-        password
-      })
+    await runAction({
+      action: () => resetPasswordAction({ token: resetToken, password }),
+      toastMessages: {
+        success: 'Senha redefinida com sucesso!',
+        error: 'Falha ao redefinir senha',
+        errorTitle: 'Erro na redefinição',
+        preferApiErrorMessage: true
+      },
+      callback: () => setStep('success')
+    })
 
-      showToast('Senha redefinida com sucesso!', 'success')
-      setStep('success')
-    } catch (err) {
-      const apiErr = err as ApiError
-      showToast(apiErr.message || 'Falha ao redefinir senha', 'error', 'Erro na redefinição')
-    } finally {
-      setIsLoading(false)
-    }
+    setIsLoading(false)
   }
 
   if (step === 'success') {

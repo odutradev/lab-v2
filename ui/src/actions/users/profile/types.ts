@@ -15,7 +15,7 @@ export interface ResetPasswordPayload {
 }
 
 export interface ResetPasswordResponse {
-  success: boolean
+  id: string
 }
 
 export type ProfileResponse = UserProfile

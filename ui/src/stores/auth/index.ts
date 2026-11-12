@@ -1,136 +1,161 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import { STORAGE_KEYS } from '@assets/config'
+import { storageKeys } from '@assets/config'
 import { signInAction, signUpAction } from '@actions/users/auth'
 import { getProfileAction, updateHealthAction } from '@actions/users/profile'
+import { createRawPersistStorage, readJson } from '@utils/functions/storage'
 import useHealthStore from '@stores/health'
 
 import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
 import type { UserProfile } from '@utils/types/user'
 import type { AuthState } from '@stores/auth/types'
 
+type PersistedAuthState = Pick<AuthState, 'token' | 'refreshToken' | 'user'>
+
+const writeOrRemove = (key: string, value: string | null): void => {
+  if (value) {
+    localStorage.setItem(key, value)
+    return
+  }
+  localStorage.removeItem(key)
+}
+
+const authStorage = createRawPersistStorage<PersistedAuthState>({
+  read: () => ({
+    token: localStorage.getItem(storageKeys.token),
+    refreshToken: localStorage.getItem(storageKeys.refreshToken),
+    user: readJson<UserProfile>(storageKeys.user)
+  }),
+  write: (state) => {
+    writeOrRemove(storageKeys.token, state.token)
+    writeOrRemove(storageKeys.refreshToken, state.refreshToken)
+    writeOrRemove(storageKeys.user, state.user ? JSON.stringify(state.user) : null)
+  },
+  clear: () => {
+    localStorage.removeItem(storageKeys.token)
+    localStorage.removeItem(storageKeys.refreshToken)
+    localStorage.removeItem(storageKeys.user)
+  }
+})
+
 const syncProfileHealth = (profile: UserProfile) => {
   if (profile.health) {
     useHealthStore.getState().syncFromApi(profile.health)
-  } else {
-    const local = useHealthStore.getState()
-    if (local.profile.height || local.profile.age || local.weightHistory.length > 0) {
-      updateHealthAction({
-        height: local.profile.height,
-        age: local.profile.age,
-        characterId: local.profile.characterId,
-        weightHistory: local.weightHistory,
-        waterDailyMap: local.waterDailyMap,
-        waterExtraTargetMap: local.waterExtraTargetMap,
-        waterBottleMl: local.waterBottleMl,
-        waterTargetBottles: local.waterTargetBottles
-      }).catch(() => {})
-    }
+    return
+  }
+
+  const local = useHealthStore.getState()
+  if (local.profile.height || local.profile.age || local.weightHistory.length > 0) {
+    updateHealthAction({
+      height: local.profile.height,
+      age: local.profile.age,
+      characterId: local.profile.characterId,
+      weightHistory: local.weightHistory,
+      waterDailyMap: local.waterDailyMap,
+      waterExtraTargetMap: local.waterExtraTargetMap,
+      waterBottleMl: local.waterBottleMl,
+      waterTargetBottles: local.waterTargetBottles
+    }).catch(() => {})
   }
 }
 
-const getInitialUser = (): UserProfile | null => {
-  try {
-    const savedUser = localStorage.getItem(STORAGE_KEYS.USER)
-    return savedUser ? (JSON.parse(savedUser) as UserProfile) : null
-  } catch {
-    return null
-  }
-}
-
-const getInitialToken = (): string | null => {
-  try {
-    return localStorage.getItem(STORAGE_KEYS.TOKEN)
-  } catch {
-    return null
-  }
-}
-
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user: getInitialUser(),
-  token: getInitialToken(),
-  isAuthenticated: !!getInitialToken() && !!getInitialUser(),
-  isLoading: !!getInitialToken(),
-
-  logout: () => {
-    localStorage.removeItem(STORAGE_KEYS.TOKEN)
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
-    localStorage.removeItem(STORAGE_KEYS.USER)
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
-      isLoading: false
-    })
-  },
+      isLoading: false,
 
-  initializeAuth: async () => {
-    const storedToken = localStorage.getItem(STORAGE_KEYS.TOKEN)
-    if (!storedToken) {
-      set({ token: null, user: null, isAuthenticated: false, isLoading: false })
-      return
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isLoading: false
+        })
+      },
+
+      initializeAuth: async () => {
+        const storedToken = get().token
+        if (!storedToken) {
+          set({ token: null, user: null, isAuthenticated: false, isLoading: false })
+          return
+        }
+
+        try {
+          const profile = await getProfileAction()
+          syncProfileHealth(profile)
+          set({
+            token: storedToken,
+            user: profile,
+            isAuthenticated: true,
+            isLoading: false
+          })
+        } catch {
+          get().logout()
+        }
+      },
+
+      login: async (credentials: SignInPayload) => {
+        const response = await signInAction(credentials)
+        set({ token: response.token, refreshToken: response.refreshToken })
+
+        const profile = await getProfileAction()
+        syncProfileHealth(profile)
+
+        set({
+          token: response.token,
+          user: profile,
+          isAuthenticated: true
+        })
+      },
+
+      register: async (data: SignUpPayload) => {
+        const response = await signUpAction(data)
+        set({ token: response.token, refreshToken: response.refreshToken })
+
+        const profile = await getProfileAction()
+        syncProfileHealth(profile)
+
+        set({
+          token: response.token,
+          user: profile,
+          isAuthenticated: true
+        })
+      },
+
+      refreshUser: async () => {
+        const { token, logout } = get()
+        if (!token) return
+
+        try {
+          const profile = await getProfileAction()
+          syncProfileHealth(profile)
+          set({ user: profile, isAuthenticated: true })
+        } catch {
+          logout()
+        }
+      }
+    }),
+    {
+      name: storageKeys.token,
+      storage: authStorage,
+      partialize: (state) => ({ token: state.token, refreshToken: state.refreshToken, user: state.user }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as PersistedAuthState
+        return {
+          ...currentState,
+          ...persisted,
+          isAuthenticated: !!persisted.token && !!persisted.user,
+          isLoading: !!persisted.token
+        }
+      }
     }
-
-    try {
-      const profile = await getProfileAction()
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
-      syncProfileHealth(profile)
-      set({
-        token: storedToken,
-        user: profile,
-        isAuthenticated: true,
-        isLoading: false
-      })
-    } catch {
-      get().logout()
-    }
-  },
-
-  login: async (credentials: SignInPayload) => {
-    const response = await signInAction(credentials)
-    localStorage.setItem(STORAGE_KEYS.TOKEN, response.token)
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken)
-
-    const profile = await getProfileAction()
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
-    syncProfileHealth(profile)
-
-    set({
-      token: response.token,
-      user: profile,
-      isAuthenticated: true
-    })
-  },
-
-  register: async (data: SignUpPayload) => {
-    const response = await signUpAction(data)
-    localStorage.setItem(STORAGE_KEYS.TOKEN, response.token)
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken)
-
-    const profile = await getProfileAction()
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
-    syncProfileHealth(profile)
-
-    set({
-      token: response.token,
-      user: profile,
-      isAuthenticated: true
-    })
-  },
-
-  refreshUser: async () => {
-    const { token, logout } = get()
-    if (!token) return
-
-    try {
-      const profile = await getProfileAction()
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile))
-      syncProfileHealth(profile)
-      set({ user: profile, isAuthenticated: true })
-    } catch {
-      logout()
-    }
-  }
-}))
+  )
+)
 
 export default useAuthStore

@@ -119,7 +119,7 @@ export interface RangeSummaryParams {
 }
 
 export interface HabitActionSuccessResponse {
-  success: boolean
+  id: string
 }
 
 export interface PerformanceWeights {

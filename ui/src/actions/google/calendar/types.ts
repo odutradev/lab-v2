@@ -9,11 +9,9 @@ export interface GoogleCalendarStatusResponse {
 }
 
 export interface RecreateGoogleCalendarResponse {
-  success: boolean
   calendarId: string
   calendarName: string
   calendarUrl: string
-  message: string
 }
 
 export interface GoogleCalendarAuthUrlResponse {
@@ -25,8 +23,7 @@ export interface DisconnectGoogleCalendarPayload {
 }
 
 export interface DisconnectGoogleCalendarResponse {
-  success: boolean
-  message: string
+  calendarDeleted: boolean
 }
 
 export interface UpdateGoogleCalendarNamePayload {
@@ -34,9 +31,7 @@ export interface UpdateGoogleCalendarNamePayload {
 }
 
 export interface UpdateGoogleCalendarNameResponse {
-  success: boolean
   calendarName: string
-  message: string
 }
 
 export interface GoogleCalendarItem {
@@ -62,8 +57,6 @@ export interface UpdateSelectedGoogleCalendarsPayload {
 }
 
 export interface UpdateSelectedGoogleCalendarsResponse {
-  success: boolean
   selectedCalendarIds: string[]
-  message: string
 }
 

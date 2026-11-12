@@ -1,32 +1,25 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import {
-  listGoogleCalendarsAction,
-  updateSelectedGoogleCalendarsAction,
-  getGoogleCalendarAuthUrlAction
-} from '@actions/google/calendar'
+import { listGoogleCalendarsAction, updateSelectedGoogleCalendarsAction, getGoogleCalendarAuthUrlAction } from '@actions/google/calendar'
+import { createRawPersistStorage, readJson, writeJson } from '@utils/functions/storage'
+import { storageKeys } from '@assets/config'
 import type { CalendarStoreState } from '@stores/calendar/types'
 
-const CALENDAR_STORAGE_KEY = 'lab_calendar_selected_ids_v1'
+type PersistedCalendarState = Pick<CalendarStoreState, 'selectedCalendarIds'>
 
-const loadInitialSelectedIds = (): string[] => {
-  try {
-    const raw = localStorage.getItem(CALENDAR_STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed)) {
-        return parsed
-      }
-    }
-  } catch {
-    // ignorar falha ao ler localstorage
-  }
-  return []
-}
+const calendarStorage = createRawPersistStorage<PersistedCalendarState>({
+  read: () => {
+    const storedIds = readJson<unknown>(storageKeys.calendarSelectedIds)
+    return { selectedCalendarIds: Array.isArray(storedIds) ? (storedIds as string[]) : [] }
+  },
+  write: (state) => writeJson(storageKeys.calendarSelectedIds, state.selectedCalendarIds),
+  clear: () => localStorage.removeItem(storageKeys.calendarSelectedIds)
+})
 
-export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
+export const useCalendarStore = create<CalendarStoreState>()(persist((set, get) => ({
   calendars: [],
-  selectedCalendarIds: loadInitialSelectedIds(),
+  selectedCalendarIds: [],
   isConnected: false,
   isLoading: false,
   isSaving: false,
@@ -44,17 +37,11 @@ export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
         }
       })
 
-      // Se a resposta trouxe selectedCalendarIds explícitos da API
       if (Array.isArray(res.selectedCalendarIds) && res.selectedCalendarIds.length > 0) {
         res.selectedCalendarIds.forEach((id) => selected.add(id))
       }
 
       const selectedList = Array.from(selected)
-      try {
-        localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(selectedList))
-      } catch {
-        // ignorar
-      }
 
       set({
         isConnected: res.connected,
@@ -70,11 +57,6 @@ export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
   },
 
   setSelectedCalendarIds: (ids: string[]) => {
-    try {
-      localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(ids))
-    } catch {
-      // ignorar
-    }
     set({ selectedCalendarIds: ids })
   },
 
@@ -83,12 +65,6 @@ export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
     const next = current.includes(id)
       ? current.filter((item) => item !== id)
       : [...current, id]
-
-    try {
-      localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(next))
-    } catch {
-      // ignorar
-    }
 
     set({ selectedCalendarIds: next })
   },
@@ -102,11 +78,6 @@ export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
       })
 
       const updatedIds = res.selectedCalendarIds || selectedCalendarIds
-      try {
-        localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(updatedIds))
-      } catch {
-        // ignorar
-      }
 
       const updatedCalendars = calendars.map((cal) => ({
         ...cal,
@@ -134,6 +105,10 @@ export const useCalendarStore = create<CalendarStoreState>((set, get) => ({
       throw err
     }
   }
+}), {
+  name: storageKeys.calendarSelectedIds,
+  storage: calendarStorage,
+  partialize: (state) => ({ selectedCalendarIds: state.selectedCalendarIds })
 }))
 
 export default useCalendarStore

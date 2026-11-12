@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import challengesActions from '@actions/challenges'
+import { listChallengesAction, createChallengeAction, updateChallengeAction, removeChallengeAction, checkinChallengeAction, slipChallengeAction, freezeChallengeAction } from '@actions/challenges'
 import { getTodayDateString } from '@utils/functions/challenges'
 
 import type {
@@ -32,7 +32,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   fetchChallenges: async () => {
     set({ isLoading: true })
     try {
-      const items = await challengesActions.listChallenges()
+      const items = await listChallengesAction()
       set({ challenges: items, isLoading: false })
     } catch (err) {
       console.error('Failed to fetch challenges', err)
@@ -43,7 +43,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   createChallenge: async (payload: CreateChallengePayload) => {
     set({ isActionLoading: true })
     try {
-      const created = await challengesActions.createChallenge(payload)
+      const created = await createChallengeAction(payload)
       set((state) => ({
         challenges: [created, ...state.challenges],
         isActionLoading: false
@@ -58,7 +58,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   updateChallenge: async (id: string, payload: UpdateChallengePayload) => {
     set({ isActionLoading: true })
     try {
-      const updated = await challengesActions.updateChallenge(id, payload)
+      const updated = await updateChallengeAction(id, payload)
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? updated : c)),
         isActionLoading: false
@@ -73,7 +73,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   removeChallenge: async (id: string) => {
     set({ isActionLoading: true })
     try {
-      await challengesActions.removeChallenge(id)
+      await removeChallengeAction(id)
       set((state) => ({
         challenges: state.challenges.filter((c) => c.id !== id),
         isActionLoading: false
@@ -105,7 +105,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
     }
 
     try {
-      const response = await challengesActions.checkinChallenge(id, { date: targetDate })
+      const response = await checkinChallengeAction(id, { date: targetDate })
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? response.challenge : c))
       }))
@@ -124,7 +124,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   recordSlip: async (id: string, payload?: SlipChallengePayload) => {
     set({ isActionLoading: true })
     try {
-      const updated = await challengesActions.slipChallenge(id, payload)
+      const updated = await slipChallengeAction(id, payload)
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? updated : c)),
         isActionLoading: false
@@ -140,7 +140,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
     const targetDate = date || getTodayDateString()
     set({ isActionLoading: true })
     try {
-      const response = await challengesActions.freezeChallenge(id, { date: targetDate })
+      const response = await freezeChallengeAction(id, { date: targetDate })
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? response.challenge : c)),
         isActionLoading: false
@@ -170,7 +170,7 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
     }))
 
     try {
-      const updated = await challengesActions.updateChallenge(id, {
+      const updated = await updateChallengeAction(id, {
         checklist: updatedChecklist
       })
       set((state) => ({

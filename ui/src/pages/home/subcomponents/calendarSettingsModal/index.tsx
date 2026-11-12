@@ -21,6 +21,7 @@ import {
 
 import Button from '@components/button'
 import useToastStore from '@stores/toast'
+import useAction from '@hooks/useAction'
 import useCalendarStore from '@stores/calendar'
 
 import type { GoogleCalendarItem } from '@actions/google/calendar/types'
@@ -32,6 +33,7 @@ export const CalendarSettingsModal = ({
   onSaved
 }: CalendarSettingsModalProps) => {
   const { showToast } = useToastStore()
+  const runAction = useAction()
   const {
     calendars,
     selectedCalendarIds,
@@ -64,18 +66,18 @@ export const CalendarSettingsModal = ({
     }
   }
 
-  const handleSave = async () => {
-    try {
-      await saveSelectedCalendars()
-      showToast('Preferências de agendas salvas com sucesso!', 'success')
-      if (onSaved) {
-        onSaved()
+  const handleSave = () =>
+    runAction({
+      action: saveSelectedCalendars,
+      toastMessages: {
+        success: 'Preferências de agendas salvas com sucesso!',
+        error: 'Falha ao salvar preferências de agendas.'
+      },
+      callback: () => {
+        onSaved?.()
+        onClose()
       }
-      onClose()
-    } catch {
-      showToast('Falha ao salvar preferências de agendas.', 'error')
-    }
-  }
+    })
 
   const myCalendars = calendars.filter(
     (c) => c.isLabV2 || c.primary || c.accessRole === 'owner' || c.accessRole === 'writer'

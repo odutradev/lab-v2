@@ -1,67 +1,39 @@
-import apiClient from '@utils/api'
+import api from '@utils/api'
 
-import type {
-  Challenge,
-  CreateChallengePayload,
-  UpdateChallengePayload,
-  CheckinChallengePayload,
-  CheckinChallengeResponse,
-  SlipChallengePayload,
-  FreezeChallengePayload,
-  FreezeChallengeResponse,
-  ChallengeActionSuccessResponse,
-  ListChallengesParams
-} from '@actions/challenges/types'
+import type { Challenge, CreateChallengePayload, UpdateChallengePayload, CheckinChallengePayload, CheckinChallengeResponse, SlipChallengePayload, FreezeChallengePayload, FreezeChallengeResponse, ChallengeActionSuccessResponse, ListChallengesParams } from '@actions/challenges/types'
+import type { PaginatedResponse } from '@utils/types/api'
 
 export const createChallengeAction = async (payload: CreateChallengePayload): Promise<Challenge> => {
-  return apiClient.post<Challenge>('/challenges/create', payload)
+  const response = await api.post<Challenge>('/challenges/create', payload)
+  return response.data
 }
 
 export const listChallengesAction = async (params?: ListChallengesParams): Promise<Challenge[]> => {
-  const query = new URLSearchParams()
-  if (params?.status) query.append('status', params.status)
-
-  const queryString = query.toString() ? `?${query.toString()}` : ''
-  return apiClient.get<Challenge[]>(`/challenges/list${queryString}`)
+  const response = await api.get<PaginatedResponse<Challenge>>('/challenges/list', { params: { status: params?.status || undefined } })
+  return response.data.data
 }
 
 export const updateChallengeAction = async (id: string, payload: UpdateChallengePayload): Promise<Challenge> => {
-  return apiClient.patch<Challenge>(`/challenges/${id}/update`, payload)
+  const response = await api.patch<Challenge>(`/challenges/${id}/update`, payload)
+  return response.data
 }
 
 export const removeChallengeAction = async (id: string): Promise<ChallengeActionSuccessResponse> => {
-  return apiClient.delete<ChallengeActionSuccessResponse>(`/challenges/${id}/remove`)
+  const response = await api.delete<ChallengeActionSuccessResponse>(`/challenges/${id}/remove`)
+  return response.data
 }
 
-export const checkinChallengeAction = async (
-  id: string,
-  payload?: CheckinChallengePayload
-): Promise<CheckinChallengeResponse> => {
-  return apiClient.post<CheckinChallengeResponse>(`/challenges/${id}/checkin`, payload || {})
+export const checkinChallengeAction = async (id: string, payload?: CheckinChallengePayload): Promise<CheckinChallengeResponse> => {
+  const response = await api.post<CheckinChallengeResponse>(`/challenges/${id}/checkin`, payload || {})
+  return response.data
 }
 
-export const slipChallengeAction = async (
-  id: string,
-  payload?: SlipChallengePayload
-): Promise<Challenge> => {
-  return apiClient.post<Challenge>(`/challenges/${id}/slip`, payload || {})
+export const slipChallengeAction = async (id: string, payload?: SlipChallengePayload): Promise<Challenge> => {
+  const response = await api.post<Challenge>(`/challenges/${id}/slip`, payload || {})
+  return response.data
 }
 
-export const freezeChallengeAction = async (
-  id: string,
-  payload?: FreezeChallengePayload
-): Promise<FreezeChallengeResponse> => {
-  return apiClient.post<FreezeChallengeResponse>(`/challenges/${id}/freeze`, payload || {})
+export const freezeChallengeAction = async (id: string, payload?: FreezeChallengePayload): Promise<FreezeChallengeResponse> => {
+  const response = await api.post<FreezeChallengeResponse>(`/challenges/${id}/freeze`, payload || {})
+  return response.data
 }
-
-const challengesActions = {
-  createChallenge: createChallengeAction,
-  listChallenges: listChallengesAction,
-  updateChallenge: updateChallengeAction,
-  removeChallenge: removeChallengeAction,
-  checkinChallenge: checkinChallengeAction,
-  slipChallenge: slipChallengeAction,
-  freezeChallenge: freezeChallengeAction
-}
-
-export default challengesActions

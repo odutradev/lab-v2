@@ -2,18 +2,18 @@ import { TbMail, TbLock, TbLogin } from 'react-icons/tb'
 import { Stack, Box, Group } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 
-import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
+import useAction from '@hooks/useAction'
+import { loginSchema } from '@utils/validations/auth'
 import Button from '@components/button'
 import Input from '@components/input'
 import useForm from '@hooks/useForm'
 
 import type { LoginFormValues, LoginFormProps } from './types'
-import type { ApiError } from '@utils/types/api'
 
 export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
   const { login } = useAuthStore()
-  const { showToast } = useToastStore()
+  const runAction = useAction()
   const navigate = useNavigate()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
@@ -22,25 +22,17 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
         email: '',
         password: ''
       },
-      validationRules: {
-        email: (val) => {
-          if (!val) return 'E-mail é obrigatório'
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'E-mail inválido'
-          return undefined
-        },
-        password: (val) => {
-          if (!val) return 'Senha é obrigatória'
-          return undefined
-        }
-      },
+      schema: loginSchema,
       onSubmit: async (formValues) => {
-        try {
-          await login(formValues)
-          showToast('Login realizado com sucesso!', 'success')
-        } catch (err) {
-          const apiErr = err as ApiError
-          showToast(apiErr.message || 'Falha ao autenticar', 'error', 'Erro no login')
-        }
+        await runAction({
+          action: () => login(formValues),
+          toastMessages: {
+            success: 'Login realizado com sucesso!',
+            error: 'Falha ao autenticar',
+            errorTitle: 'Erro no login',
+            preferApiErrorMessage: true
+          }
+        })
       }
     })
 

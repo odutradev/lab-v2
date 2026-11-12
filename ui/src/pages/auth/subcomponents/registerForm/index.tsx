@@ -3,16 +3,16 @@ import { Stack, Box } from '@mantine/core'
 
 import Button from '@components/button'
 import Input from '@components/input'
-import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
+import useAction from '@hooks/useAction'
+import { registerSchema } from '@utils/validations/auth'
 import useForm from '@hooks/useForm'
 
 import type { RegisterFormValues } from './types'
-import type { ApiError } from '@utils/types/api'
 
 export const RegisterForm = () => {
   const { register } = useAuthStore()
-  const { showToast } = useToastStore()
+  const runAction = useAction()
 
   const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<RegisterFormValues>({
@@ -21,35 +21,22 @@ export const RegisterForm = () => {
         email: '',
         password: ''
       },
-      validationRules: {
-        name: (val) => {
-          if (!val) return 'Nome é obrigatório'
-          if (val.trim().length < 3) return 'Nome deve ter no mínimo 3 caracteres'
-          return undefined
-        },
-        email: (val) => {
-          if (!val) return 'E-mail é obrigatório'
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'E-mail inválido'
-          return undefined
-        },
-        password: (val) => {
-          if (!val) return 'Senha é obrigatória'
-          if (val.length < 8) return 'Senha deve ter no mínimo 8 caracteres'
-          return undefined
-        }
-      },
+      schema: registerSchema,
       onSubmit: async (formValues) => {
-        try {
-          await register({
-            name: formValues.name.trim(),
-            email: formValues.email.trim(),
-            password: formValues.password
-          })
-          showToast('Conta criada com sucesso!', 'success')
-        } catch (err) {
-          const apiErr = err as ApiError
-          showToast(apiErr.message || 'Falha ao realizar cadastro', 'error', 'Erro no cadastro')
-        }
+        await runAction({
+          action: () =>
+            register({
+              name: formValues.name.trim(),
+              email: formValues.email.trim(),
+              password: formValues.password
+            }),
+          toastMessages: {
+            success: 'Conta criada com sucesso!',
+            error: 'Falha ao realizar cadastro',
+            errorTitle: 'Erro no cadastro',
+            preferApiErrorMessage: true
+          }
+        })
       }
     })
 

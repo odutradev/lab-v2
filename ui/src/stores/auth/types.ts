@@ -4,6 +4,7 @@ import type { UserProfile } from '@utils/types/user'
 export interface AuthState {
   user: UserProfile | null
   token: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (credentials: SignInPayload) => Promise<void>

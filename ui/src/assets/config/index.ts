@@ -1,14 +1,16 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+export const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-export const STORAGE_KEYS = {
-  TOKEN: 'lab_auth_token',
-  REFRESH_TOKEN: 'lab_refresh_token',
-  USER: 'lab_auth_user'
+export const storageKeys = {
+  token: 'lab_auth_token',
+  refreshToken: 'lab_refresh_token',
+  user: 'lab_auth_user',
+  healthMetrics: 'lab_health_metrics_v1',
+  calendarSelectedIds: 'lab_calendar_selected_ids_v1'
 } as const
 
 const config = {
-  API_BASE_URL,
-  STORAGE_KEYS
+  apiBaseUrl,
+  storageKeys
 }
 
 export default config

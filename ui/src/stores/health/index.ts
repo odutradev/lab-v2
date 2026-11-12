@@ -1,12 +1,12 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import { STORAGE_KEYS } from '@assets/config'
+import { storageKeys } from '@assets/config'
+import { createRawPersistStorage, readJson, writeJson } from '@utils/functions/storage'
 import { updateHealthAction } from '@actions/users/profile'
 import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord, PerformanceWeights } from '@stores/health/types'
 import type { UserHealth } from '@utils/types/user'
 import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords, sortSleepRecords } from '@utils/functions/health'
-
-const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
 
 const defaultPerformanceWeights: PerformanceWeights = {
   habits: 50,
@@ -33,9 +33,8 @@ const defaultProfile: HealthProfile = {
 
 const loadPersistedData = (): PersistedData => {
   try {
-    const raw = localStorage.getItem(HEALTH_STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<PersistedData>
+    const parsed = readJson<Partial<PersistedData>>(storageKeys.healthMetrics)
+    if (parsed) {
       return {
         profile: { ...defaultProfile, ...(parsed.profile || {}) },
         weightHistory: Array.isArray(parsed.weightHistory) ? parsed.weightHistory : [],
@@ -63,23 +62,15 @@ const loadPersistedData = (): PersistedData => {
   }
 }
 
-const saveToLocalStorage = (data: PersistedData) => {
-  try {
-    const existing = loadPersistedData()
-    const merged: PersistedData = {
-      ...existing,
-      ...data,
-      performanceWeights: data.performanceWeights || existing.performanceWeights || defaultPerformanceWeights
-    }
-    localStorage.setItem(HEALTH_STORAGE_KEY, JSON.stringify(merged))
-  } catch (err) {
-    console.error('Failed to save health storage data', err)
-  }
-}
+const healthStorage = createRawPersistStorage<PersistedData>({
+  read: loadPersistedData,
+  write: (data) => writeJson(storageKeys.healthMetrics, { ...data, performanceWeights: data.performanceWeights || defaultPerformanceWeights }),
+  clear: () => localStorage.removeItem(storageKeys.healthMetrics)
+})
 
 const syncWithBackend = async (payload: Partial<UserHealth>) => {
   try {
-    const token = localStorage.getItem(STORAGE_KEYS.TOKEN)
+    const token = localStorage.getItem(storageKeys.token)
     if (!token) return
     await updateHealthAction(payload)
   } catch (err) {
@@ -87,18 +78,16 @@ const syncWithBackend = async (payload: Partial<UserHealth>) => {
   }
 }
 
-export const useHealthStore = create<HealthStoreState>((set, get) => {
-  const initial = loadPersistedData()
-
+export const useHealthStore = create<HealthStoreState>()(persist((set, get) => {
   return {
-    profile: initial.profile,
-    weightHistory: initial.weightHistory,
-    sleepHistory: initial.sleepHistory,
-    waterDailyMap: initial.waterDailyMap,
-    waterExtraTargetMap: initial.waterExtraTargetMap,
-    waterBottleMl: initial.waterBottleMl || 500,
-    waterTargetBottles: initial.waterTargetBottles,
-    performanceWeights: initial.performanceWeights || defaultPerformanceWeights,
+    profile: defaultProfile,
+    weightHistory: [],
+    sleepHistory: [],
+    waterDailyMap: {},
+    waterExtraTargetMap: {},
+    waterBottleMl: 500,
+    waterTargetBottles: undefined,
+    performanceWeights: defaultPerformanceWeights,
 
     syncFromApi: (data?: Partial<UserHealth>) => {
       if (!data) return
@@ -139,25 +128,10 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterTargetBottles: newWaterTargetBottles,
         performanceWeights: newPerformanceWeights
       })
-
-      saveToLocalStorage({
-        profile: newProfile,
-        weightHistory: newWeightHistory,
-        sleepHistory: newSleepHistory,
-        waterDailyMap: newWaterDailyMap,
-        waterExtraTargetMap: newWaterExtraTargetMap,
-        waterBottleMl: newWaterBottleMl,
-        waterTargetBottles: newWaterTargetBottles,
-        performanceWeights: newPerformanceWeights
-      })
     },
 
     updatePerformanceWeights: async (weights: PerformanceWeights) => {
       set({ performanceWeights: weights })
-      saveToLocalStorage({
-        ...get(),
-        performanceWeights: weights
-      })
 
       await syncWithBackend({
         performanceWeights: weights
@@ -172,15 +146,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       }
 
       set({ profile: newProfile })
-      saveToLocalStorage({
-        profile: newProfile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         height: newProfile.height,
@@ -198,15 +163,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const updated = sortWeightRecords([...filtered, { date, weight: sanitizedWeight }])
 
       set({ weightHistory: updated })
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: updated,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         weightHistory: updated
@@ -223,15 +179,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const updated = sortSleepRecords([...filtered, { date, hours: sanitizedHours, quality: sanitizedQuality }])
 
       set({ sleepHistory: updated })
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: updated,
-        waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         sleepHistory: updated
@@ -243,10 +190,7 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       const date = customDate || getTodayDateString()
       const currentConsumed = current.waterDailyMap[date] || 0
 
-      let newCount = index + 1
-      if (currentConsumed === index + 1) {
-        newCount = index
-      }
+      const newCount = currentConsumed === index + 1 ? index : index + 1
 
       const updatedMap = {
         ...current.waterDailyMap,
@@ -254,15 +198,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       }
 
       set({ waterDailyMap: updatedMap })
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: updatedMap,
-        waterExtraTargetMap: current.waterExtraTargetMap,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         waterDailyMap: updatedMap
@@ -280,15 +215,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
       }
 
       set({ waterExtraTargetMap: updatedExtras })
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: updatedExtras,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         waterExtraTargetMap: updatedExtras
@@ -329,15 +255,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterExtraTargetMap: updatedExtras,
         waterDailyMap: updatedDaily
       })
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: updatedDaily,
-        waterExtraTargetMap: updatedExtras,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
 
       await syncWithBackend({
         waterExtraTargetMap: updatedExtras,
@@ -364,16 +281,6 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterExtraTargetMap: updatedExtras
       })
 
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: updatedDaily,
-        waterExtraTargetMap: updatedExtras,
-        waterBottleMl: current.waterBottleMl,
-        waterTargetBottles: current.waterTargetBottles
-      })
-
       await syncWithBackend({
         waterDailyMap: updatedDaily,
         waterExtraTargetMap: updatedExtras
@@ -390,22 +297,25 @@ export const useHealthStore = create<HealthStoreState>((set, get) => {
         waterTargetBottles: newTargetBottles
       })
 
-      saveToLocalStorage({
-        profile: current.profile,
-        weightHistory: current.weightHistory,
-        sleepHistory: current.sleepHistory,
-        waterDailyMap: current.waterDailyMap,
-        waterExtraTargetMap: current.waterExtraTargetMap,
-        waterBottleMl: newBottleMl,
-        waterTargetBottles: newTargetBottles
-      })
-
       await syncWithBackend({
         waterBottleMl: newBottleMl,
         waterTargetBottles: newTargetBottles
       })
     }
   }
-})
+}, {
+  name: storageKeys.healthMetrics,
+  storage: healthStorage,
+  partialize: (state) => ({
+    profile: state.profile,
+    weightHistory: state.weightHistory,
+    sleepHistory: state.sleepHistory,
+    waterDailyMap: state.waterDailyMap,
+    waterExtraTargetMap: state.waterExtraTargetMap,
+    waterBottleMl: state.waterBottleMl || 500,
+    waterTargetBottles: state.waterTargetBottles,
+    performanceWeights: state.performanceWeights || defaultPerformanceWeights
+  })
+}))
 
 export default useHealthStore

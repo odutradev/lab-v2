@@ -7,12 +7,14 @@ import Button from '@components/button'
 import Badge from '@components/badge'
 import useHealthStore from '@stores/health'
 import useToastStore from '@stores/toast'
+import useAction from '@hooks/useAction'
 import { parseDecimalNumber, roundToOneDecimal } from '@utils/functions/health'
 import { infoCardItemStyle } from '../../styles'
 
 export const ProfilePhysicalCard = () => {
   const { profile, updateProfile, weightHistory, saveWeightRecord } = useHealthStore()
   const { showToast } = useToastStore()
+  const runAction = useAction()
 
   const latestWeight =
     weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
@@ -67,24 +69,22 @@ export const ProfilePhysicalCard = () => {
     }
 
     setIsSaving(true)
-    try {
-      const heightCm = heightM > 0 ? Math.round(heightM * 100) : undefined
-      await updateProfile({
-        height: heightCm,
-        age: ageNum > 0 ? ageNum : undefined
-      })
+    await runAction({
+      action: async () => {
+        const heightCm = heightM > 0 ? Math.round(heightM * 100) : undefined
+        await updateProfile({
+          height: heightCm,
+          age: ageNum > 0 ? ageNum : undefined
+        })
 
-      if (weightVal > 0) {
-        const roundedWeight = roundToOneDecimal(weightVal)
-        await saveWeightRecord(roundedWeight)
+        if (weightVal > 0) await saveWeightRecord(roundToOneDecimal(weightVal))
+      },
+      toastMessages: {
+        success: 'Dados biofísicos salvos com sucesso na sua conta!',
+        error: 'Ocorreu um erro ao salvar os dados no servidor.'
       }
-
-      showToast('Dados biofísicos salvos com sucesso na sua conta!', 'success')
-    } catch {
-      showToast('Ocorreu um erro ao salvar os dados no servidor.', 'error')
-    } finally {
-      setIsSaving(false)
-    }
+    })
+    setIsSaving(false)
   }
 
   return (

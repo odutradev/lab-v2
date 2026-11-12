@@ -9,8 +9,9 @@ import {
   recreateGoogleCalendarAction
 } from '@actions/google/calendar'
 import useToastStore from '@stores/toast'
+import useAction from '@hooks/useAction'
 import useAuthStore from '@stores/auth'
-import { STORAGE_KEYS } from '@assets/config'
+import { storageKeys } from '@assets/config'
 import { getInitials } from '@utils/functions/string'
 
 import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
@@ -21,6 +22,7 @@ export const useProfile = (): UseProfileReturn => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { showToast } = useToastStore()
+  const runAction = useAction()
 
   const [calendarStatus, setCalendarStatus] = useState<GoogleCalendarStatusResponse>({
     connected: !!user?.integrations?.googleCalendar?.connected,
@@ -148,41 +150,46 @@ export const useProfile = (): UseProfileReturn => {
       return
     }
 
-    try {
-      setIsSavingCalendarName(true)
-      const response = await updateGoogleCalendarNameAction({ name: trimmed })
-      setCalendarStatus((prev) => ({
-        ...prev,
-        calendarName: response.calendarName
-      }))
-      setIsEditCalendarNameModalOpen(false)
-      showToast('Nome da agenda atualizado com sucesso!', 'success', 'Google Agenda')
-    } catch {
-      showToast('Erro ao atualizar o nome da agenda.', 'error', 'Google Agenda')
-    } finally {
-      setIsSavingCalendarName(false)
-    }
-  }, [calendarNameInput, showToast])
+    setIsSavingCalendarName(true)
+    await runAction({
+      action: () => updateGoogleCalendarNameAction({ name: trimmed }),
+      toastMessages: {
+        success: 'Nome da agenda atualizado com sucesso!',
+        successTitle: 'Google Agenda',
+        error: 'Erro ao atualizar o nome da agenda.',
+        errorTitle: 'Google Agenda'
+      },
+      callback: (response) => {
+        setCalendarStatus((prev) => ({ ...prev, calendarName: response.calendarName }))
+        setIsEditCalendarNameModalOpen(false)
+      }
+    })
+    setIsSavingCalendarName(false)
+  }, [calendarNameInput, showToast, runAction])
 
   const handleRecreateCalendar = useCallback(async () => {
-    try {
-      setIsRecreatingCalendar(true)
-      const response = await recreateGoogleCalendarAction()
-      setCalendarStatus((prev) => ({
-        ...prev,
-        connected: true,
-        calendarId: response.calendarId,
-        calendarName: response.calendarName,
-        calendarUrl: response.calendarUrl,
-        calendarDeleted: false
-      }))
-      showToast('Agenda recriada com sucesso no Google Agenda!', 'success', 'Google Agenda')
-    } catch {
-      showToast('Erro ao recriar a agenda no Google Agenda.', 'error', 'Google Agenda')
-    } finally {
-      setIsRecreatingCalendar(false)
-    }
-  }, [showToast])
+    setIsRecreatingCalendar(true)
+    await runAction({
+      action: recreateGoogleCalendarAction,
+      toastMessages: {
+        success: 'Agenda recriada com sucesso no Google Agenda!',
+        successTitle: 'Google Agenda',
+        error: 'Erro ao recriar a agenda no Google Agenda.',
+        errorTitle: 'Google Agenda'
+      },
+      callback: (response) => {
+        setCalendarStatus((prev) => ({
+          ...prev,
+          connected: true,
+          calendarId: response.calendarId,
+          calendarName: response.calendarName,
+          calendarUrl: response.calendarUrl,
+          calendarDeleted: false
+        }))
+      }
+    })
+    setIsRecreatingCalendar(false)
+  }, [runAction])
 
   const openClearCacheModal = useCallback(() => {
     setIsClearCacheModalOpen(true)
@@ -208,15 +215,15 @@ export const useProfile = (): UseProfileReturn => {
         await Promise.all(registrations.map((registration) => registration.unregister()))
       }
 
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN)
-      const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
-      const savedUser = localStorage.getItem(STORAGE_KEYS.USER)
+      const token = localStorage.getItem(storageKeys.token)
+      const refreshToken = localStorage.getItem(storageKeys.refreshToken)
+      const savedUser = localStorage.getItem(storageKeys.user)
 
       localStorage.clear()
 
-      if (token) localStorage.setItem(STORAGE_KEYS.TOKEN, token)
-      if (refreshToken) localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken)
-      if (savedUser) localStorage.setItem(STORAGE_KEYS.USER, savedUser)
+      if (token) localStorage.setItem(storageKeys.token, token)
+      if (refreshToken) localStorage.setItem(storageKeys.refreshToken, refreshToken)
+      if (savedUser) localStorage.setItem(storageKeys.user, savedUser)
 
       sessionStorage.clear()
 

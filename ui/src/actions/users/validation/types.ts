@@ -10,6 +10,6 @@ export interface VerifyCodePayload {
 }
 
 export interface VerificationResponse {
-  success: boolean
+  id?: string
   resetToken?: string
 }

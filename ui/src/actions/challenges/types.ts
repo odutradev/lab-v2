@@ -84,7 +84,7 @@ export interface FreezeChallengeResponse {
 }
 
 export interface ChallengeActionSuccessResponse {
-  success: boolean
+  id: string
 }
 
 export interface ListChallengesParams {
