@@ -8,6 +8,8 @@ import termsOfServiceMetadata from "@pages/termsOfService/metadata";
 import privacyPolicyMetadata from "@pages/privacyPolicy/metadata";
 import resetPasswordMetadata from "@pages/resetPassword/metadata";
 import profileMetadata from "@pages/profile/metadata";
+import workoutsMetadata from "@pages/workouts/metadata";
+import nutritionMetadata from "@pages/nutrition/metadata";
 import homeMetadata from "@pages/home/metadata";
 import authMetadata from "@pages/auth/metadata";
 
@@ -15,6 +17,8 @@ import type { RouteItem } from "./types";
 
 const HomePage = lazy(() => import("@pages/home"));
 const ProfilePage = lazy(() => import("@pages/profile"));
+const WorkoutsPage = lazy(() => import("@pages/workouts"));
+const NutritionPage = lazy(() => import("@pages/nutrition"));
 const AuthPage = lazy(() => import("@pages/auth"));
 const ResetPasswordPage = lazy(() => import("@pages/resetPassword"));
 const PrivacyPolicyPage = lazy(() => import("@pages/privacyPolicy"));
@@ -23,6 +27,8 @@ const TermsOfServicePage = lazy(() => import("@pages/termsOfService"));
 const routes: RouteItem[] = [
   { path: "/", component: HomePage, metadata: homeMetadata },
   { path: "/profile", component: ProfilePage, metadata: profileMetadata },
+  { path: "/workouts", component: WorkoutsPage, metadata: workoutsMetadata },
+  { path: "/nutrition", component: NutritionPage, metadata: nutritionMetadata },
   { path: "/auth", component: AuthPage, metadata: authMetadata },
   { path: "/reset-password", component: ResetPasswordPage, metadata: resetPasswordMetadata },
   { path: "/privacy", component: PrivacyPolicyPage, metadata: privacyPolicyMetadata },
