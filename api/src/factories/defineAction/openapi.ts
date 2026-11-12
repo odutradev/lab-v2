@@ -15,27 +15,9 @@ export const registerOpenApiAction = (metadata: ActionMetadata): void => {
     500: { description: 'Erro interno' }
   }
 
-  const middlewareResponses: Record<string, ResponseConfig> = {}
-  let middlewareAuthenticate = false
-
-  if (metadata.middlewares) {
-    metadata.middlewares.forEach((mw) => {
-      const documentedMw = mw as {
-        authenticate?: boolean
-        responses?: Record<string, ResponseConfig>
-      }
-
-      if (documentedMw.authenticate) {
-        middlewareAuthenticate = true
-      }
-
-      if (documentedMw.responses) {
-        Object.entries(documentedMw.responses).forEach(([code, config]) => {
-          middlewareResponses[code] = config
-        })
-      }
-    })
-  }
+  const documentedMiddlewares = (metadata.middlewares || []).map((middleware) => middleware as { authenticate?: boolean; responses?: Record<string, ResponseConfig> })
+  const middlewareAuthenticate = documentedMiddlewares.some((middleware) => middleware.authenticate)
+  const middlewareResponses = documentedMiddlewares.reduce<Record<string, ResponseConfig>>((responses, middleware) => ({ ...responses, ...(middleware.responses || {}) }), {})
 
   const mergedResponses = { ...defaultResponses, ...middlewareResponses, ...metadata.responses }
 
@@ -58,22 +40,16 @@ export const registerOpenApiAction = (metadata: ActionMetadata): void => {
     ? [{ bearerAuth: [] }]
     : undefined)
 
-  let bodySchema = metadata.schema?.body
-
-  if (metadata.requestFormat === 'multipart') {
+  const buildMultipartSchema = () => {
     const fieldName = metadata.uploadFieldName ?? 'file'
     const fileSchema = z.string().openapi({ type: 'string', format: 'binary', description: 'Upload file' })
+    const originalBody = metadata.schema?.body
 
-    if (bodySchema instanceof z.ZodObject) {
-      bodySchema = bodySchema.extend({
-        [fieldName]: fileSchema
-      })
-    } else {
-      bodySchema = z.object({
-        [fieldName]: fileSchema
-      })
-    }
+    if (originalBody instanceof z.ZodObject) return originalBody.extend({ [fieldName]: fileSchema })
+    return z.object({ [fieldName]: fileSchema })
   }
+
+  const bodySchema = metadata.requestFormat === 'multipart' ? buildMultipartSchema() : metadata.schema?.body
 
   const requestBody = metadata.requestBody
     ?? (bodySchema

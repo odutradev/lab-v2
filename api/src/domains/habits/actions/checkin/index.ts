@@ -1,139 +1,160 @@
-import { rangeSummaryResponseSchema, toggleCheckinResponseSchema, rangeSummaryQuerySchema, daySummaryResponseSchema, toggleCheckinBodySchema, daySummaryQuerySchema } from '@domains/habits/actions/checkin/schemas'
-import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
-import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
-import habitRepository from '@domains/habits/repositories/habit'
-import { isHabitScheduledForDate } from '@domains/habits/utils/recurrence'
-import { formatTimestamp } from '@utils/date'
-import { isValidObjectId } from '@database/utils'
-import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
-import userRepository from '@domains/users/repositories/user'
+import { rangeSummaryResponseSchema, toggleCheckinResponseSchema, rangeSummaryQuerySchema, daySummaryResponseSchema, toggleCheckinBodySchema, daySummaryQuerySchema } from './schemas'
 import { getCachedUserGoogleCalendars, getCachedGoogleCalendarEvents } from '@google/cache'
+import { formatDateKey, parseDateKey, addDays, countDaysBetween } from '@utils/date'
+import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
+import { isHabitScheduledForDate } from '@domains/habits/utils/recurrence'
+import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
+import createAuditLog from '@domains/system/utils/createAuditLog'
+import habitRepository from '@domains/habits/repositories/habit'
+import userRepository from '@domains/users/repositories/user'
 import createLocalLogger from '@utils/localLogger'
+import defineAction from '@factories/defineAction'
+import { isValidObjectId } from '@database/utils'
 
-import type { RangeSummaryResponse, ToggleCheckinResponse, DaySummaryResponse, RangeSummaryQuery, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from '@domains/habits/actions/checkin/types'
+import type { RangeSummaryResponse, ToggleCheckinResponse, DaySummaryResponse, RangeSummaryQuery, ToggleCheckinBody, DaySummaryQuery, DaySummaryItem } from './types'
+import type { HabitModelType } from '@domains/habits/repositories/habit/types'
+import type { NormalizedGoogleEvent } from '@google/types'
 
 const logger = createLocalLogger('checkin-actions')
 
-const fetchExternalCalendarItems = async (
-  userId: string,
-  startDate: string,
-  endDate: string
-): Promise<Map<string, DaySummaryItem[]>> => {
-  const result = new Map<string, DaySummaryItem[]>()
+type CalendarMetaMap = Map<string, { summary: string; color?: string }>
+
+const sortByTime = (first: DaySummaryItem, second: DaySummaryItem): number => {
+  if (first.allDay && !second.allDay) return -1
+  if (!first.allDay && second.allDay) return 1
+  return (first.startTime || '').localeCompare(second.startTime || '')
+}
+
+const listDateKeysInRange = (startDate: string, endDate: string): string[] => {
+  const firstDay = parseDateKey(startDate)
+  const totalDays = countDaysBetween(firstDay, parseDateKey(endDate)) + 1
+  return Array.from({ length: Math.max(totalDays, 0) }, (_, index) => formatDateKey(addDays(firstDay, index)))
+}
+
+const loadCalendarMetaMap = async (userId: string, refreshToken: string): Promise<CalendarMetaMap | undefined> => {
+  try {
+    const googleCalendars = await getCachedUserGoogleCalendars(userId, refreshToken)
+    return new Map(googleCalendars.map((calendar) => [calendar.id, { summary: calendar.summary, color: calendar.backgroundColor }]))
+  } catch {
+    return undefined
+  }
+}
+
+const toExternalItem = (event: NormalizedGoogleEvent): DaySummaryItem => ({
+  habitId: `gcal_${event.id}`,
+  title: event.summary,
+  description: event.description,
+  category: 'schedule',
+  frequency: 'none',
+  startDate: event.date,
+  allDay: event.allDay,
+  startTime: event.startTime,
+  endTime: event.endTime,
+  completed: false,
+  readOnly: true,
+  calendarId: event.calendarId,
+  calendarName: event.calendarName,
+  calendarColor: event.calendarColor
+})
+
+const groupItemsByDate = (events: NormalizedGoogleEvent[], startDate: string, endDate: string): Map<string, DaySummaryItem[]> => {
+  return events
+    .filter((event) => event.date >= startDate && event.date <= endDate)
+    .reduce((itemsByDate, event) => itemsByDate.set(event.date, [...(itemsByDate.get(event.date) || []), toExternalItem(event)]), new Map<string, DaySummaryItem[]>())
+}
+
+const fetchExternalCalendarItems = async (userId: string, startDate: string, endDate: string): Promise<Map<string, DaySummaryItem[]>> => {
   try {
     const user = await userRepository.findWithGoogleCalendarRefreshToken(userId)
-    const isConnected = !!user?.integrations?.googleCalendar?.connected
-    const refreshToken = user?.integrations?.googleCalendar?.refreshToken
-    const selectedIds = user?.integrations?.googleCalendar?.selectedCalendarIds || []
-    const labCalendarId = user?.integrations?.googleCalendar?.calendarId
+    const googleCalendar = user?.integrations?.googleCalendar
+    const refreshToken = googleCalendar?.refreshToken
+    const selectedIds = googleCalendar?.selectedCalendarIds || []
 
-    if (!isConnected || !refreshToken || selectedIds.length === 0) {
-      return result
-    }
+    if (!googleCalendar?.connected || !refreshToken || selectedIds.length === 0) return new Map()
 
-    const externalIds = selectedIds.filter((id) => id !== labCalendarId)
-    if (externalIds.length === 0) {
-      return result
-    }
+    const externalIds = selectedIds.filter((calendarId) => calendarId !== googleCalendar.calendarId)
+    if (externalIds.length === 0) return new Map()
 
-    let metaMap: Map<string, { summary: string; color?: string }> | undefined
-    try {
-      const gcalList = await getCachedUserGoogleCalendars(userId, refreshToken)
-      metaMap = new Map(gcalList.map((c) => [c.id, { summary: c.summary, color: c.backgroundColor }]))
-    } catch {}
-
-    const [sYear, sMonth, sDay] = startDate.split('-').map(Number)
-    const [eYear, eMonth, eDay] = endDate.split('-').map(Number)
-    const minDate = new Date(sYear, sMonth - 1, sDay - 1)
-    const maxDate = new Date(eYear, eMonth - 1, eDay + 2)
+    const calendarMetaMap = await loadCalendarMetaMap(userId, refreshToken)
 
     const events = await getCachedGoogleCalendarEvents({
       userId,
       refreshToken,
       calendarIds: externalIds,
-      timeMin: minDate.toISOString(),
-      timeMax: maxDate.toISOString(),
-      calendarMetaMap: metaMap
+      timeMin: addDays(parseDateKey(startDate), -1).toISOString(),
+      timeMax: addDays(parseDateKey(endDate), 2).toISOString(),
+      calendarMetaMap
     })
 
-    for (const ev of events) {
-      if (ev.date < startDate || ev.date > endDate) continue
-
-      const item: DaySummaryItem = {
-        habitId: `gcal_${ev.id}`,
-        title: ev.summary,
-        description: ev.description,
-        category: 'schedule',
-        frequency: 'none',
-        startDate: ev.date,
-        allDay: ev.allDay,
-        startTime: ev.startTime,
-        endTime: ev.endTime,
-        completed: false,
-        readOnly: true,
-        calendarId: ev.calendarId,
-        calendarName: ev.calendarName,
-        calendarColor: ev.calendarColor
-      }
-
-      const list = result.get(ev.date) || []
-      list.push(item)
-      result.set(ev.date, list)
-    }
-  } catch (err) {
-    logger.warn('Failed to load external google calendar events:', err)
+    return groupItemsByDate(events, startDate, endDate)
+  } catch (error) {
+    logger.warn('Failed to load external google calendar events:', error)
+    return new Map()
   }
-
-  return result
 }
 
+const buildDaySummary = (date: string, activeHabits: HabitModelType[], getCompletion: (habitId: string) => boolean | undefined, externalItems: DaySummaryItem[]): DaySummaryResponse => {
+  const items: DaySummaryItem[] = activeHabits
+    .filter((habit) => getCompletion(habit.id.toString()) !== undefined || isHabitScheduledForDate(habit, date))
+    .map((habit) => {
+      const habitId = habit.id.toString()
 
-export const toggleCheckinAction = defineAction(
+      return {
+        habitId,
+        title: habit.title,
+        description: habit.description,
+        category: habit.category || 'event',
+        frequency: habit.frequency,
+        startDate: habit.startDate,
+        allDay: habit.allDay,
+        startTime: habit.startTime,
+        endTime: habit.endTime,
+        completed: getCompletion(habitId) ?? false
+      }
+    })
+    .sort(sortByTime)
+
+  const totalHabits = items.length
+  const completedHabits = items.filter((item) => item.completed).length
+  const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
+
+  return {
+    date,
+    totalHabits,
+    completedHabits,
+    completionRate,
+    items: [...items, ...externalItems].sort(sortByTime)
+  }
+}
+
+export const toggleCheckinAction = defineAction<{ body: ToggleCheckinBody }>(
   {
     method: 'post',
     path: '/habits/checkins/toggle',
     summary: 'Marca ou desmarca a conclusão de uma meta/hábito para uma data',
     tags: ['Habits'],
     authenticate: true,
-    schema: {
-      body: toggleCheckinBodySchema
-    },
+    schema: { body: toggleCheckinBodySchema },
     responses: {
-      200: {
-        description: 'Status de conclusão do hábito atualizado',
-        schema: toggleCheckinResponseSchema
-      },
-      404: {
-        description: 'Hábito não localizado'
-      }
+      200: { description: 'Status de conclusão do hábito atualizado', schema: toggleCheckinResponseSchema },
+      404: { description: 'Hábito não localizado' }
     },
     middlewares: [authMiddlewareWithDocs]
   },
-  async ({ ids, data, manageError }) => {
+  async ({ ids, data, manageError }): Promise<ToggleCheckinResponse | void> => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const { habitId, date, completed } = data as ToggleCheckinBody
+    const { habitId, date, completed } = data
     if (!isValidObjectId(habitId)) return manageError({ code: 'bad_request' })
 
     const habit = await habitRepository.findByIdAndUser(habitId, ids.userId)
     if (!habit) return manageError({ code: 'not_found' })
 
-    const targetDate = date || formatTimestamp().split(' ')[0]
+    const targetDate = date || formatDateKey(new Date())
     const existingCheckin = await habitCheckinRepository.findByUserHabitAndDate(ids.userId, habitId, targetDate)
+    const nextCompleted = typeof completed === 'boolean' ? completed : !existingCheckin?.completed
 
-    const nextCompleted = typeof completed === 'boolean'
-      ? completed
-      : existingCheckin
-        ? !existingCheckin.completed
-        : true
-
-    await habitCheckinRepository.upsertCheckin({
-      userId: ids.userId,
-      habitId,
-      date: targetDate,
-      completed: nextCompleted
-    })
+    await habitCheckinRepository.upsertCheckin({ userId: ids.userId, habitId, date: targetDate, completed: nextCompleted })
 
     await createAuditLog({
       actorId: ids.userId,
@@ -144,191 +165,68 @@ export const toggleCheckinAction = defineAction(
       details: { habitId, date: targetDate, completed: nextCompleted }
     })
 
-    return {
-      habitId,
-      date: targetDate,
-      completed: nextCompleted
-    }
+    return { habitId, date: targetDate, completed: nextCompleted }
   }
 )
 
-export const getDaySummaryAction = defineAction(
+export const getDaySummaryAction = defineAction<{ query: DaySummaryQuery }>(
   {
     method: 'get',
     path: '/habits/day-summary',
     summary: 'Calcula o resumo diário e taxa de aproveitamento das metas na data',
     tags: ['Habits'],
     authenticate: true,
-    schema: {
-      query: daySummaryQuerySchema
-    },
+    schema: { query: daySummaryQuerySchema },
     responses: {
-      200: {
-        description: 'Resumo e índice de aproveitamento do dia',
-        schema: daySummaryResponseSchema
-      }
+      200: { description: 'Resumo e índice de aproveitamento do dia', schema: daySummaryResponseSchema }
     },
     middlewares: [authMiddlewareWithDocs]
   },
-  async ({ ids, query, manageError }) => {
+  async ({ ids, query, manageError }): Promise<DaySummaryResponse | void> => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const parsedQuery = query as DaySummaryQuery
-    const targetDate = parsedQuery.date || formatTimestamp().split(' ')[0]
+    const targetDate = query.date || formatDateKey(new Date())
 
-    const activeHabits = await habitRepository.findAllByUser(ids.userId, { active: true })
-    const checkins = await habitCheckinRepository.findByUserAndDate(ids.userId, targetDate)
+    const [activeHabits, checkins, externalItemsMap] = await Promise.all([
+      habitRepository.findAllByUser(ids.userId, { active: true }),
+      habitCheckinRepository.findByUserAndDate(ids.userId, targetDate),
+      fetchExternalCalendarItems(ids.userId, targetDate, targetDate)
+    ])
 
-    const checkinMap = new Map(checkins.map((item) => [item.habitId.toString(), item.completed]))
+    const checkinMap = new Map(checkins.map((checkin) => [checkin.habitId.toString(), checkin.completed]))
 
-    const items: DaySummaryItem[] = activeHabits
-      .filter((habit) => {
-        if (checkinMap.has(habit.id.toString())) return true
-        return isHabitScheduledForDate(habit, targetDate)
-      })
-      .map((habit) => {
-        const habitId = habit.id.toString()
-        const completed = checkinMap.get(habitId) ?? false
-
-        return {
-          habitId,
-          title: habit.title,
-          description: habit.description,
-          category: habit.category || 'event',
-          frequency: habit.frequency,
-          startDate: habit.startDate,
-          allDay: habit.allDay,
-          startTime: habit.startTime,
-          endTime: habit.endTime,
-          completed
-        }
-      })
-      .sort((a, b) => {
-        if (a.allDay && !b.allDay) return -1
-        if (!a.allDay && b.allDay) return 1
-        return (a.startTime || '').localeCompare(b.startTime || '')
-      })
-
-    const totalHabits = items.length
-    const completedHabits = items.filter((item) => item.completed).length
-    const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
-
-    const externalItemsMap = await fetchExternalCalendarItems(ids.userId, targetDate, targetDate)
-    const externalItems = externalItemsMap.get(targetDate) || []
-
-    const allItems = [...items, ...externalItems].sort((a, b) => {
-      if (a.allDay && !b.allDay) return -1
-      if (!a.allDay && b.allDay) return 1
-      return (a.startTime || '').localeCompare(b.startTime || '')
-    })
-
-    const summary: DaySummaryResponse = {
-      date: targetDate,
-      totalHabits,
-      completedHabits,
-      completionRate,
-      items: allItems
-    }
-
-    return summary
+    return buildDaySummary(targetDate, activeHabits, (habitId) => checkinMap.get(habitId), externalItemsMap.get(targetDate) || [])
   }
 )
 
-export const getRangeSummaryAction = defineAction(
+export const getRangeSummaryAction = defineAction<{ query: RangeSummaryQuery }>(
   {
     method: 'get',
     path: '/habits/range-summary',
     summary: 'Calcula o resumo diário e taxa de aproveitamento das metas para um intervalo de datas',
     tags: ['Habits'],
     authenticate: true,
-    schema: {
-      query: rangeSummaryQuerySchema
-    },
+    schema: { query: rangeSummaryQuerySchema },
     responses: {
-      200: {
-        description: 'Lista de resumos e aproveitamentos no intervalo',
-        schema: rangeSummaryResponseSchema
-      }
+      200: { description: 'Lista de resumos e aproveitamentos no intervalo', schema: rangeSummaryResponseSchema }
     },
     middlewares: [authMiddlewareWithDocs]
   },
-  async ({ ids, query, manageError }) => {
+  async ({ ids, query, manageError }): Promise<RangeSummaryResponse | void> => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const { startDate, endDate } = query as RangeSummaryQuery
+    const { startDate, endDate } = query
 
-    const activeHabits = await habitRepository.findAllByUser(ids.userId, { active: true })
-    const checkins = await habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate)
-    const externalItemsMap = await fetchExternalCalendarItems(ids.userId, startDate, endDate)
+    const [activeHabits, checkins, externalItemsMap] = await Promise.all([
+      habitRepository.findAllByUser(ids.userId, { active: true }),
+      habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate),
+      fetchExternalCalendarItems(ids.userId, startDate, endDate)
+    ])
 
-    const checkinsByDateAndHabit = new Map<string, boolean>()
-    checkins.forEach((item) => {
-      checkinsByDateAndHabit.set(`${item.date}_${item.habitId.toString()}`, item.completed)
-    })
+    const checkinsByDateAndHabit = new Map(checkins.map((checkin) => [`${checkin.date}_${checkin.habitId.toString()}`, checkin.completed]))
 
-    const dates: string[] = []
-    const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
-    const [endYear, endMonth, endDay] = endDate.split('-').map(Number)
-    const current = new Date(startYear, startMonth - 1, startDay)
-    const end = new Date(endYear, endMonth - 1, endDay)
-
-    while (current <= end) {
-      const yyyy = current.getFullYear()
-      const mm = String(current.getMonth() + 1).padStart(2, '0')
-      const dd = String(current.getDate()).padStart(2, '0')
-      dates.push(`${yyyy}-${mm}-${dd}`)
-      current.setDate(current.getDate() + 1)
-    }
-
-    const summaries: DaySummaryResponse[] = dates.map((dateStr) => {
-      const items: DaySummaryItem[] = activeHabits
-        .filter((habit) => {
-          if (checkinsByDateAndHabit.has(`${dateStr}_${habit.id.toString()}`)) return true
-          return isHabitScheduledForDate(habit, dateStr)
-        })
-        .map((habit) => {
-          const habitId = habit.id.toString()
-          const completed = checkinsByDateAndHabit.get(`${dateStr}_${habitId}`) ?? false
-
-          return {
-            habitId,
-            title: habit.title,
-            description: habit.description,
-            category: habit.category || 'event',
-            frequency: habit.frequency,
-            startDate: habit.startDate,
-            allDay: habit.allDay,
-            startTime: habit.startTime,
-            endTime: habit.endTime,
-            completed
-          }
-        })
-        .sort((a, b) => {
-          if (a.allDay && !b.allDay) return -1
-          if (!a.allDay && b.allDay) return 1
-          return (a.startTime || '').localeCompare(b.startTime || '')
-        })
-
-      const totalHabits = items.length
-      const completedHabits = items.filter((item) => item.completed).length
-      const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0
-
-      const externalItems = externalItemsMap.get(dateStr) || []
-      const allItems = [...items, ...externalItems].sort((a, b) => {
-        if (a.allDay && !b.allDay) return -1
-        if (!a.allDay && b.allDay) return 1
-        return (a.startTime || '').localeCompare(b.startTime || '')
-      })
-
-      return {
-        date: dateStr,
-        totalHabits,
-        completedHabits,
-        completionRate,
-        items: allItems
-      }
-    })
-
-    return summaries
+    return listDateKeysInRange(startDate, endDate).map((dateKey) =>
+      buildDaySummary(dateKey, activeHabits, (habitId) => checkinsByDateAndHabit.get(`${dateKey}_${habitId}`), externalItemsMap.get(dateKey) || [])
+    )
   }
 )

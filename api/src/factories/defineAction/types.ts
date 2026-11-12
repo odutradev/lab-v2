@@ -1,6 +1,6 @@
+import type { ZodRequestBody } from '@asteasolutions/zod-to-openapi'
 import type { RateLimitConfig } from '@middlewares/rateLimit/types'
 import type { RouteSchema } from '@middlewares/manageRequest/types'
-import type { ZodRequestBody } from '@asteasolutions/zod-to-openapi'
 import type { RequestHandler } from 'express'
 
 export type ResponseConfig = {

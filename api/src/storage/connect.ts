@@ -7,13 +7,13 @@ import type { StorageInstance, StorageModule, Bucket } from '@storage/types'
 
 const logger = createLocalLogger('storage')
 
-const requiredEnvVariables = ['FIREBASE_STORAGE_BUCKET', 'FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL']
+const RequiredEnvVariables = ['FIREBASE_STORAGE_BUCKET', 'FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL']
 
 const storage: StorageModule = {
   bucket: null,
   initializeStorage: async (): Promise<StorageInstance> => {
     try {
-      requiredEnvVariables.forEach((envVar) => {
+      RequiredEnvVariables.forEach((envVar) => {
         if (!process.env[envVar]) {
           logger.error(`[initializeStorage] Missing environment variable: "${envVar}"`)
           process.exit(1)

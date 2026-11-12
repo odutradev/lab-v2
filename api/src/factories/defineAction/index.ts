@@ -12,18 +12,11 @@ const defineAction = <T extends ManageRequestSchema = ManageRequestSchema>(
   registerOpenApiAction(metadata)
 
   const handler = manageRequest(service, metadata.schema)
-  let actionMiddlewares = metadata.middlewares ? [...metadata.middlewares] : []
+  const actionMiddlewares = metadata.middlewares ? [...metadata.middlewares] : []
+  const rateLimitOptions = typeof metadata.rateLimit === 'object' ? metadata.rateLimit : {}
+  const rateLimiters = metadata.rateLimit ? [createRateLimiter({ endpointPath: metadata.path, ...rateLimitOptions })] : []
 
-  if (metadata.rateLimit) {
-    const rateLimitOptions = typeof metadata.rateLimit === 'object' ? metadata.rateLimit : {}
-    const endpointRateLimiter = createRateLimiter({
-      endpointPath: metadata.path,
-      ...rateLimitOptions
-    })
-    actionMiddlewares = [endpointRateLimiter, ...actionMiddlewares]
-  }
-
-  const handlers = [...actionMiddlewares, handler]
+  const handlers = [...rateLimiters, ...actionMiddlewares, handler]
 
   return {
     method: metadata.method,

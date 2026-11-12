@@ -1,199 +1,105 @@
 import jwt from 'jsonwebtoken'
 
-import {
-  getCalendarAuthUrlResponseSchema,
-  getCalendarAuthUrlQuerySchema,
-  calendarCallbackQuerySchema,
-  calendarStatusResponseSchema,
-  disconnectCalendarBodySchema,
-  disconnectCalendarResponseSchema,
-  updateCalendarNameBodySchema,
-  updateCalendarNameResponseSchema,
-  recreateCalendarResponseSchema,
-  listCalendarsResponseSchema,
-  updateSelectedCalendarsBodySchema,
-  updateSelectedCalendarsResponseSchema
-} from '@domains/google/actions/calendar/schemas'
-import {
-  generateGoogleAuthUrl,
-  exchangeCodeForTokens,
-  fetchGoogleUserEmail,
-  createAuthenticatedClient,
-  revokeGoogleToken,
-  getOrCreateLabCalendar,
-  updateGoogleCalendarSummary,
-  deleteGoogleCalendar,
-  checkGoogleCalendarStatus,
-  listUserGoogleCalendars
-} from '@google/utils'
-import {
-  getCachedUserGoogleCalendars,
-  invalidateAllUserGoogleCache,
-  invalidateUserGoogleEvents
-} from '@google/cache'
-import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
+import { getCalendarAuthUrlResponseSchema, getCalendarAuthUrlQuerySchema, calendarCallbackQuerySchema, calendarStatusResponseSchema, disconnectCalendarBodySchema, disconnectCalendarResponseSchema, updateCalendarNameBodySchema, updateCalendarNameResponseSchema, recreateCalendarResponseSchema, listCalendarsResponseSchema, updateSelectedCalendarsBodySchema, updateSelectedCalendarsResponseSchema } from './schemas'
+import { generateGoogleAuthUrl, exchangeCodeForTokens, fetchGoogleUserEmail, createAuthenticatedClient, revokeGoogleToken, getOrCreateLabCalendar, updateGoogleCalendarSummary, deleteGoogleCalendar, checkGoogleCalendarStatus } from '@google/utils'
+import { getCachedUserGoogleCalendars, invalidateAllUserGoogleCache, invalidateUserGoogleEvents } from '@google/cache'
 import { syncAllUserHabitsToGoogle } from '@domains/habits/utils/googleSync'
+import createAuditLog from '@domains/system/utils/createAuditLog'
+import { errorResponseSchema } from '@factories/errors/schemas'
 import userRepository from '@domains/users/repositories/user'
 import authMiddleware from '@domains/users/middlewares/auth'
 import createLocalLogger from '@utils/localLogger'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
 
-import type {
-  GetCalendarAuthUrlResponse,
-  GetCalendarAuthUrlQuery,
-  CalendarCallbackQuery,
-  CalendarStatusResponse,
-  DisconnectCalendarBody,
-  DisconnectCalendarResponse,
-  UpdateCalendarNameBody,
-  UpdateCalendarNameResponse,
-  RecreateCalendarResponse,
-  ListCalendarsResponse,
-  UpdateSelectedCalendarsBody,
-  UpdateSelectedCalendarsResponse,
-  GoogleOAuthStatePayload
-} from '@domains/google/actions/calendar/types'
+import type { GetCalendarAuthUrlQuery, CalendarCallbackQuery, DisconnectCalendarBody, UpdateCalendarNameBody, UpdateSelectedCalendarsBody, GoogleOAuthStatePayload } from './types'
+import type { DefaultExpressContext } from '@middlewares/manageRequest/types'
 
 const logger = createLocalLogger('google-calendar-actions')
 
+const DefaultCalendarName = 'Lab V2'
+
+const removeTrailingSlash = (url: string): string => url.trim().replace(/\/$/, '')
+
+const buildCalendarUrl = (calendarId: string): string => `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(calendarId)}`
+
 const getFrontendBaseUrl = (): string => {
-  if (process.env.FRONTEND_URL) {
-    return process.env.FRONTEND_URL.replace(/\/$/, '')
-  }
+  if (process.env.FRONTEND_URL) return process.env.FRONTEND_URL.replace(/\/$/, '')
 
   const corsOrigins = (process.env.CORS_ORIGIN || '')
     .split(',')
-    .map((o) => o.trim().replace(/\/$/, ''))
-    .filter((o) => o && o !== '*')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter((origin) => origin && origin !== '*')
 
-  const isProduction =
-    process.env.NODE_ENV === 'production' ||
-    process.env.PRODUCTION === 'true'
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.PRODUCTION === 'true'
+  const productionOrigin = isProduction ? corsOrigins.find((origin) => !origin.includes('localhost') && !origin.includes('127.0.0.1')) : undefined
 
-  if (isProduction) {
-    const prodOrigin = corsOrigins.find((o) => !o.includes('localhost') && !o.includes('127.0.0.1'))
-    if (prodOrigin) return prodOrigin
-  }
-
-  return corsOrigins[0] || 'http://localhost:8080'
+  return productionOrigin || corsOrigins[0] || 'http://localhost:8080'
 }
 
-export const getCalendarAuthUrlAction = defineAction<
-  { body: unknown; params: unknown; query: GetCalendarAuthUrlQuery; response: GetCalendarAuthUrlResponse },
-  any,
-  any,
-  { userId: string }
->(
-  {
-    method: 'get',
-    path: '/google/calendar/auth-url',
-    summary: 'Gera a URL de autorização OAuth para o Google Calendar',
-    tags: ['Google'],
-    middlewares: [authMiddleware],
-    schema: {
-      query: getCalendarAuthUrlQuerySchema
-    },
-    responses: {
-      200: {
-        description: 'URL de autorização gerada com sucesso',
-        schema: getCalendarAuthUrlResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
-    }
-  },
-  async ({ ids, query, defaultExpress, manageError }) => {
-    if (!ids.userId) return manageError({ code: 'unauthorized' })
-
-    const originHeader = defaultExpress?.req?.headers?.origin as string | undefined
-    const refererHeader = defaultExpress?.req?.headers?.referer as string | undefined
-
-    let clientOrigin: string | undefined
-
-    if (query?.origin) {
-      clientOrigin = query.origin.trim().replace(/\/$/, '')
-    } else if (originHeader) {
-      clientOrigin = originHeader.trim().replace(/\/$/, '')
-    } else if (refererHeader) {
-      try {
-        const parsed = new URL(refererHeader)
-        clientOrigin = parsed.origin
-      } catch {}
-    }
-
-    const secret = process.env.JWT_SECRET as string
-    const statePayload: GoogleOAuthStatePayload = {
-      userId: ids.userId,
-      action: 'calendar_sync',
-      frontendUrl: clientOrigin
-    }
-
-    const state = jwt.sign(statePayload, secret, { expiresIn: '15m' })
-    const url = generateGoogleAuthUrl({ state })
-
-    return { url }
+const parseRefererOrigin = (referer: string): string | undefined => {
+  try {
+    return new URL(referer).origin
+  } catch {
+    return undefined
   }
-)
+}
 
-const handleOAuthCallback = async ({
-  query,
-  defaultExpress
-}: {
-  query: CalendarCallbackQuery
-  defaultExpress: { req: unknown; res: import('express').Response }
-}) => {
+const resolveClientOrigin = (query: GetCalendarAuthUrlQuery | undefined, originHeader?: string, refererHeader?: string): string | undefined => {
+  if (query?.origin) return removeTrailingSlash(query.origin)
+  if (originHeader) return removeTrailingSlash(originHeader)
+  if (refererHeader) return parseRefererOrigin(refererHeader)
+  return undefined
+}
+
+const verifyOAuthState = (state: string): GoogleOAuthStatePayload | null => {
+  try {
+    return jwt.verify(state, process.env.JWT_SECRET as string) as GoogleOAuthStatePayload
+  } catch (error) {
+    logger.error('Google OAuth callback invalid state:', error)
+    return null
+  }
+}
+
+const resolveRefreshToken = async (userId: string, receivedRefreshToken?: string | null): Promise<string | undefined> => {
+  if (receivedRefreshToken) return receivedRefreshToken
+  const existingUser = await userRepository.findWithGoogleCalendarRefreshToken(userId)
+  return existingUser?.integrations?.googleCalendar?.refreshToken
+}
+
+const fetchCalendarConnectionDetails = async (refreshToken?: string) => {
+  if (!refreshToken) return { googleEmail: undefined, labCalendarId: undefined, labCalendarName: undefined }
+
+  const [googleEmail, calendarDetails] = await Promise.all([
+    fetchGoogleUserEmail(createAuthenticatedClient(refreshToken)),
+    getOrCreateLabCalendar(refreshToken)
+  ])
+
+  return { googleEmail, labCalendarId: calendarDetails.id, labCalendarName: calendarDetails.summary }
+}
+
+const handleOAuthCallback = async (query: CalendarCallbackQuery, defaultExpress: DefaultExpressContext): Promise<void> => {
   const fallbackFrontendUrl = getFrontendBaseUrl()
   const { code, state, error } = query
+  const statePayload = state ? verifyOAuthState(state) : undefined
 
-  let statePayload: GoogleOAuthStatePayload | undefined
-  if (state) {
-    try {
-      const secret = process.env.JWT_SECRET as string
-      statePayload = jwt.verify(state, secret) as GoogleOAuthStatePayload
-    } catch (err) {
-      logger.error('Google OAuth callback invalid state:', err)
-      defaultExpress.res.redirect(`${fallbackFrontendUrl}/profile?google=invalid_state`)
-      return
-    }
-  }
+  if (statePayload === null) return defaultExpress.res.redirect(`${fallbackFrontendUrl}/profile?google=invalid_state`)
 
   const frontendUrl = statePayload?.frontendUrl || fallbackFrontendUrl
 
   if (error) {
     logger.error('Google OAuth callback returned error:', error)
-    defaultExpress.res.redirect(`${frontendUrl}/profile?google=error&message=${encodeURIComponent(String(error))}`)
-    return
+    return defaultExpress.res.redirect(`${frontendUrl}/profile?google=error&message=${encodeURIComponent(String(error))}`)
   }
 
   if (!code || !statePayload) {
     logger.error('Google OAuth callback missing code or state')
-    defaultExpress.res.redirect(`${frontendUrl}/profile?google=missing_params`)
-    return
+    return defaultExpress.res.redirect(`${frontendUrl}/profile?google=missing_params`)
   }
 
   try {
     const tokens = await exchangeCodeForTokens(code)
-
-    let refreshToken = tokens.refresh_token
-    if (!refreshToken) {
-      const existingUser = await userRepository.findWithGoogleCalendarRefreshToken(statePayload.userId)
-      refreshToken = existingUser?.integrations?.googleCalendar?.refreshToken
-    }
-
-    let googleEmail: string | undefined
-    let labCalendarId: string | undefined
-    let labCalendarName: string | undefined
-
-    if (refreshToken) {
-      const authClient = createAuthenticatedClient(refreshToken)
-      googleEmail = await fetchGoogleUserEmail(authClient)
-      const calendarDetails = await getOrCreateLabCalendar(refreshToken)
-      labCalendarId = calendarDetails.id
-      labCalendarName = calendarDetails.summary
-    }
+    const refreshToken = await resolveRefreshToken(statePayload.userId, tokens.refresh_token)
+    const { googleEmail, labCalendarId, labCalendarName } = await fetchCalendarConnectionDetails(refreshToken)
 
     await userRepository.updateGoogleCalendarIntegration(statePayload.userId, {
       connected: true,
@@ -209,23 +115,81 @@ const handleOAuthCallback = async ({
       action: 'google_calendar_connected',
       entity: 'integrations',
       entityId: statePayload.userId,
-      summary: `Google Calendar conectado (${googleEmail || 'email não identificado'}) com agenda "${labCalendarName || 'Lab V2'}" (${labCalendarId || 'id não gerado'})`
+      summary: `Google Calendar conectado (${googleEmail || 'email não identificado'}) com agenda "${labCalendarName || DefaultCalendarName}" (${labCalendarId || 'id não gerado'})`
     })
 
-    if (statePayload.userId) {
-      await syncAllUserHabitsToGoogle(statePayload.userId)
-    }
+    if (statePayload.userId) await syncAllUserHabitsToGoogle(statePayload.userId)
 
     defaultExpress.res.redirect(`${frontendUrl}/profile?google=connected`)
-  } catch (err) {
-    logger.error('Error exchanging code for tokens in Google callback:', err)
+  } catch (exchangeError) {
+    logger.error('Error exchanging code for tokens in Google callback:', exchangeError)
     defaultExpress.res.redirect(`${frontendUrl}/profile?google=token_exchange_failed`)
   }
 }
 
-export const calendarCallbackAction = defineAction<
-  { body: unknown; params: unknown; query: CalendarCallbackQuery; response: void }
->(
+const isPrimaryCalendar = (calendarId: string, userEmail?: string, googleEmail?: string): boolean => {
+  return calendarId === 'primary' || calendarId === userEmail || calendarId === googleEmail
+}
+
+const resolveCalendarSync = async (userId: string, calendarId: string, currentName?: string) => {
+  const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(userId)
+  const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
+
+  if (!refreshToken) return { calendarName: currentName, calendarDeleted: false }
+
+  const syncStatus = await checkGoogleCalendarStatus(refreshToken, calendarId)
+
+  if (!syncStatus.exists) return { calendarName: currentName, calendarDeleted: true }
+  if (!syncStatus.summary || syncStatus.summary === currentName) return { calendarName: currentName, calendarDeleted: false }
+
+  await userRepository.updateGoogleCalendarName(userId, syncStatus.summary)
+
+  return { calendarName: syncStatus.summary, calendarDeleted: false }
+}
+
+const renameGoogleCalendar = async (refreshToken: string | undefined, calendarId: string, newName: string): Promise<string | null> => {
+  if (!refreshToken) return newName
+
+  try {
+    return await updateGoogleCalendarSummary(refreshToken, calendarId, newName)
+  } catch (error) {
+    logger.error('Error updating Google Calendar name on Google API:', error)
+    return null
+  }
+}
+
+export const getCalendarAuthUrlAction = defineAction<{ query: GetCalendarAuthUrlQuery }>(
+  {
+    method: 'get',
+    path: '/google/calendar/auth-url',
+    summary: 'Gera a URL de autorização OAuth para o Google Calendar',
+    tags: ['Google'],
+    middlewares: [authMiddleware],
+    schema: { query: getCalendarAuthUrlQuerySchema },
+    responses: {
+      200: { description: 'URL de autorização gerada com sucesso', schema: getCalendarAuthUrlResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
+    }
+  },
+  async ({ ids, query, defaultExpress, manageError }) => {
+    if (!ids.userId) return manageError({ code: 'unauthorized' })
+
+    const originHeader = defaultExpress?.req?.headers?.origin as string | undefined
+    const refererHeader = defaultExpress?.req?.headers?.referer as string | undefined
+
+    const statePayload: GoogleOAuthStatePayload = {
+      userId: ids.userId,
+      action: 'calendar_sync',
+      frontendUrl: resolveClientOrigin(query, originHeader, refererHeader)
+    }
+
+    const state = jwt.sign(statePayload, process.env.JWT_SECRET as string, { expiresIn: '15m' })
+
+    return { url: generateGoogleAuthUrl({ state }) }
+  }
+)
+
+export const calendarCallbackAction = defineAction<{ query: CalendarCallbackQuery }>(
   {
     method: 'get',
     path: '/google/calendar/callback',
@@ -233,19 +197,13 @@ export const calendarCallbackAction = defineAction<
     tags: ['Google'],
     schema: { query: calendarCallbackQuerySchema },
     responses: {
-      302: {
-        description: 'Redirecionamento para o frontend com status da operação'
-      }
+      302: { description: 'Redirecionamento para o frontend com status da operação' }
     }
   },
-  async ({ query, defaultExpress }) => {
-    await handleOAuthCallback({ query, defaultExpress })
-  }
+  async ({ query, defaultExpress }) => handleOAuthCallback(query, defaultExpress)
 )
 
-export const authGoogleCallbackAction = defineAction<
-  { body: unknown; params: unknown; query: CalendarCallbackQuery; response: void }
->(
+export const authGoogleCallbackAction = defineAction<{ query: CalendarCallbackQuery }>(
   {
     method: 'get',
     path: '/api/v1/auth/google/callback',
@@ -253,19 +211,13 @@ export const authGoogleCallbackAction = defineAction<
     tags: ['Google'],
     schema: { query: calendarCallbackQuerySchema },
     responses: {
-      302: {
-        description: 'Redirecionamento para o frontend com status da operação'
-      }
+      302: { description: 'Redirecionamento para o frontend com status da operação' }
     }
   },
-  async ({ query, defaultExpress }) => {
-    await handleOAuthCallback({ query, defaultExpress })
-  }
+  async ({ query, defaultExpress }) => handleOAuthCallback(query, defaultExpress)
 )
 
-export const getCalendarStatusAction = defineAction<
-  { body: unknown; params: unknown; query: unknown; response: CalendarStatusResponse }
->(
+export const getCalendarStatusAction = defineAction(
   {
     method: 'get',
     path: '/google/calendar/status',
@@ -273,14 +225,8 @@ export const getCalendarStatusAction = defineAction<
     tags: ['Google'],
     middlewares: [authMiddleware],
     responses: {
-      200: {
-        description: 'Status da integração retornado com sucesso',
-        schema: calendarStatusResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Status da integração retornado com sucesso', schema: calendarStatusResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, manageError }) => {
@@ -292,43 +238,25 @@ export const getCalendarStatusAction = defineAction<
     const calendarIntegration = user.integrations?.googleCalendar
     const isConnected = !!calendarIntegration?.connected
     const calendarId = calendarIntegration?.calendarId
-    let calendarName = calendarIntegration?.calendarName || (isConnected ? 'Lab V2' : undefined)
-    let calendarDeleted = false
+    const storedCalendarName = calendarIntegration?.calendarName || (isConnected ? DefaultCalendarName : undefined)
 
-    if (isConnected && calendarId) {
-      const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
-      const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
-
-      if (refreshToken) {
-        const syncStatus = await checkGoogleCalendarStatus(refreshToken, calendarId)
-        if (!syncStatus.exists) {
-          calendarDeleted = true
-        } else if (syncStatus.summary && syncStatus.summary !== calendarName) {
-          calendarName = syncStatus.summary
-          await userRepository.updateGoogleCalendarName(ids.userId, calendarName)
-        }
-      }
-    }
-
-    const calendarUrl = isConnected && calendarId && !calendarDeleted
-      ? `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(calendarId)}`
-      : undefined
+    const { calendarName, calendarDeleted } = isConnected && calendarId
+      ? await resolveCalendarSync(ids.userId, calendarId, storedCalendarName)
+      : { calendarName: storedCalendarName, calendarDeleted: false }
 
     return {
       connected: isConnected,
       email: calendarIntegration?.email,
       calendarId,
       calendarName,
-      calendarUrl,
+      calendarUrl: isConnected && calendarId && !calendarDeleted ? buildCalendarUrl(calendarId) : undefined,
       calendarDeleted,
       connectedAt: calendarIntegration?.connectedAt
     }
   }
 )
 
-export const disconnectCalendarAction = defineAction<
-  { body?: DisconnectCalendarBody; params: unknown; query: unknown; response: DisconnectCalendarResponse }
->(
+export const disconnectCalendarAction = defineAction<{ body?: DisconnectCalendarBody }>(
   {
     method: 'post',
     path: '/google/calendar/disconnect',
@@ -337,39 +265,22 @@ export const disconnectCalendarAction = defineAction<
     middlewares: [authMiddleware],
     schema: { body: disconnectCalendarBodySchema.optional() },
     responses: {
-      200: {
-        description: 'Integração removida com sucesso',
-        schema: disconnectCalendarResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Integração removida com sucesso', schema: disconnectCalendarResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const payload = data as DisconnectCalendarBody | undefined
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
-    const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
-    const calendarId = userWithToken?.integrations?.googleCalendar?.calendarId
-    const shouldDelete = !!payload?.deleteCalendar
-    let calendarDeleted = false
+    const googleCalendar = userWithToken?.integrations?.googleCalendar
+    const refreshToken = googleCalendar?.refreshToken
+    const calendarId = googleCalendar?.calendarId
+    const shouldDeleteCalendar = !!data?.deleteCalendar && !!refreshToken && !!calendarId && !isPrimaryCalendar(calendarId, userWithToken?.email, googleCalendar?.email)
 
-    if (shouldDelete && refreshToken && calendarId) {
-      const isPrimary = calendarId === 'primary' ||
-        calendarId === userWithToken.email ||
-        calendarId === userWithToken.integrations?.googleCalendar?.email
+    const calendarDeleted = shouldDeleteCalendar ? await deleteGoogleCalendar(refreshToken as string, calendarId as string) : false
 
-      if (!isPrimary) {
-        calendarDeleted = await deleteGoogleCalendar(refreshToken, calendarId)
-      }
-    }
-
-    if (refreshToken) {
-      await revokeGoogleToken(refreshToken)
-    }
+    if (refreshToken) await revokeGoogleToken(refreshToken)
 
     await userRepository.updateGoogleCalendarIntegration(ids.userId, {
       connected: false,
@@ -390,18 +301,11 @@ export const disconnectCalendarAction = defineAction<
       summary: `Google Calendar desconectado${calendarDeleted ? ' e agenda excluída do Google Calendar' : ''}`
     })
 
-    return {
-      success: true,
-      message: calendarDeleted
-        ? 'Google Agenda desvinculada e excluída com sucesso do Google Calendar'
-        : 'Google Agenda desvinculada com sucesso'
-    }
+    return { calendarDeleted }
   }
 )
 
-export const updateCalendarNameAction = defineAction<
-  { body: UpdateCalendarNameBody; params: unknown; query: unknown; response: UpdateCalendarNameResponse }
->(
+export const updateCalendarNameAction = defineAction<{ body: UpdateCalendarNameBody }>(
   {
     method: 'patch',
     path: '/google/calendar/name',
@@ -410,48 +314,23 @@ export const updateCalendarNameAction = defineAction<
     middlewares: [authMiddleware],
     schema: { body: updateCalendarNameBodySchema },
     responses: {
-      200: {
-        description: 'Nome da agenda atualizado com sucesso',
-        schema: updateCalendarNameResponseSchema
-      },
-      400: {
-        description: 'Requisição inválida ou agenda não conectada',
-        schema: errorResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Nome da agenda atualizado com sucesso', schema: updateCalendarNameResponseSchema },
+      400: { description: 'Requisição inválida ou agenda não conectada', schema: errorResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
-
-    const payload = data as UpdateCalendarNameBody | undefined
-    if (!payload?.name?.trim()) {
-      return manageError({ code: 'bad_request', message: 'O nome da agenda é obrigatório' })
-    }
+    if (!data?.name?.trim()) return manageError({ code: 'bad_request' })
 
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
-    if (!userWithToken?.integrations?.googleCalendar?.connected || !userWithToken.integrations.googleCalendar.calendarId) {
-      return manageError({ code: 'bad_request', message: 'Nenhuma agenda do Google vinculada para renomear' })
-    }
+    const googleCalendar = userWithToken?.integrations?.googleCalendar
 
-    const { refreshToken, calendarId } = userWithToken.integrations.googleCalendar
-    const newName = payload.name.trim()
+    if (!googleCalendar?.connected || !googleCalendar.calendarId) return manageError({ code: 'bad_request' })
 
-    let updatedSummary = newName
-    if (refreshToken) {
-      try {
-        updatedSummary = await updateGoogleCalendarSummary(refreshToken, calendarId, newName)
-      } catch (error) {
-        logger.error('Error updating Google Calendar name on Google API:', error)
-        return manageError({
-          code: 'bad_request',
-          message: 'Não foi possível alterar o nome da agenda no Google Calendar'
-        })
-      }
-    }
+    const updatedSummary = await renameGoogleCalendar(googleCalendar.refreshToken, googleCalendar.calendarId, data.name.trim())
+
+    if (updatedSummary === null) return manageError({ code: 'bad_request' })
 
     await userRepository.updateGoogleCalendarName(ids.userId, updatedSummary)
     await invalidateAllUserGoogleCache(ids.userId)
@@ -464,17 +343,11 @@ export const updateCalendarNameAction = defineAction<
       summary: `Nome da agenda do Google Calendar alterado para "${updatedSummary}"`
     })
 
-    return {
-      success: true,
-      calendarName: updatedSummary,
-      message: 'Nome da agenda atualizado com sucesso'
-    }
+    return { calendarName: updatedSummary }
   }
 )
 
-export const recreateCalendarAction = defineAction<
-  { body: unknown; params: unknown; query: unknown; response: RecreateCalendarResponse }
->(
+export const recreateCalendarAction = defineAction(
   {
     method: 'post',
     path: '/google/calendar/recreate',
@@ -482,36 +355,25 @@ export const recreateCalendarAction = defineAction<
     tags: ['Google'],
     middlewares: [authMiddleware],
     responses: {
-      200: {
-        description: 'Agenda recriada com sucesso',
-        schema: recreateCalendarResponseSchema
-      },
-      400: {
-        description: 'Requisição inválida ou token ausente',
-        schema: errorResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Agenda recriada com sucesso', schema: recreateCalendarResponseSchema },
+      400: { description: 'Requisição inválida ou token ausente', schema: errorResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
-    const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
+    const googleCalendar = userWithToken?.integrations?.googleCalendar
+    const refreshToken = googleCalendar?.refreshToken
 
-    if (!userWithToken?.integrations?.googleCalendar?.connected || !refreshToken) {
-      return manageError({ code: 'bad_request', message: 'Google Agenda não está conectada ou sem autorização' })
-    }
+    if (!googleCalendar?.connected || !refreshToken) return manageError({ code: 'bad_request' })
 
-    const desiredName = userWithToken.integrations.googleCalendar.calendarName || 'Lab V2'
-    const newCalendar = await getOrCreateLabCalendar(refreshToken, desiredName)
+    const newCalendar = await getOrCreateLabCalendar(refreshToken, googleCalendar.calendarName || DefaultCalendarName)
 
     await userRepository.updateGoogleCalendarIntegration(ids.userId, {
       connected: true,
-      email: userWithToken.integrations.googleCalendar.email,
+      email: googleCalendar.email,
       refreshToken,
       calendarId: newCalendar.id,
       calendarName: newCalendar.summary,
@@ -529,21 +391,15 @@ export const recreateCalendarAction = defineAction<
     await syncAllUserHabitsToGoogle(ids.userId)
     await invalidateAllUserGoogleCache(ids.userId)
 
-    const calendarUrl = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(newCalendar.id)}`
-
     return {
-      success: true,
       calendarId: newCalendar.id,
       calendarName: newCalendar.summary,
-      calendarUrl,
-      message: 'Agenda recriada com sucesso no Google Calendar'
+      calendarUrl: buildCalendarUrl(newCalendar.id)
     }
   }
 )
 
-export const listCalendarsAction = defineAction<
-  { body: unknown; params: unknown; query: unknown; response: ListCalendarsResponse }
->(
+export const listCalendarsAction = defineAction(
   {
     method: 'get',
     path: '/google/calendar/list',
@@ -551,44 +407,28 @@ export const listCalendarsAction = defineAction<
     tags: ['Google'],
     middlewares: [authMiddleware],
     responses: {
-      200: {
-        description: 'Lista de agendas retornada com sucesso',
-        schema: listCalendarsResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Lista de agendas retornada com sucesso', schema: listCalendarsResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
     const userWithToken = await userRepository.findWithGoogleCalendarRefreshToken(ids.userId)
-    const isConnected = !!userWithToken?.integrations?.googleCalendar?.connected
-    const refreshToken = userWithToken?.integrations?.googleCalendar?.refreshToken
-    const labCalendarId = userWithToken?.integrations?.googleCalendar?.calendarId
-    const labCalendarName = userWithToken?.integrations?.googleCalendar?.calendarName || 'Lab V2'
-    const storedSelectedIds = userWithToken?.integrations?.googleCalendar?.selectedCalendarIds || []
+    const googleCalendar = userWithToken?.integrations?.googleCalendar
+    const refreshToken = googleCalendar?.refreshToken
+    const labCalendarId = googleCalendar?.calendarId
+    const labCalendarName = googleCalendar?.calendarName || DefaultCalendarName
+    const storedSelectedIds = googleCalendar?.selectedCalendarIds || []
 
-    if (!isConnected || !refreshToken) {
-      return {
-        connected: false,
-        items: [],
-        selectedCalendarIds: storedSelectedIds
-      }
-    }
+    if (!googleCalendar?.connected || !refreshToken) return { connected: false, items: [], selectedCalendarIds: storedSelectedIds }
 
     try {
-      const gcalItems = await getCachedUserGoogleCalendars(ids.userId, refreshToken)
+      const googleCalendarItems = await getCachedUserGoogleCalendars(ids.userId, refreshToken)
       const normalizedLabName = labCalendarName.trim().toLowerCase()
 
-      const items = gcalItems.map((item) => {
-        const isLabV2 = Boolean(
-          (labCalendarId && item.id === labCalendarId) ||
-          item.summary.trim().toLowerCase() === normalizedLabName
-        )
-        const selected = isLabV2 || storedSelectedIds.includes(item.id)
+      const items = googleCalendarItems.map((item) => {
+        const isLabV2 = Boolean((labCalendarId && item.id === labCalendarId) || item.summary.trim().toLowerCase() === normalizedLabName)
 
         return {
           id: item.id,
@@ -599,61 +439,47 @@ export const listCalendarsAction = defineAction<
           foregroundColor: item.foregroundColor,
           accessRole: item.accessRole,
           isLabV2,
-          selected
+          selected: isLabV2 || storedSelectedIds.includes(item.id)
         }
       })
 
-      return {
-        connected: true,
-        items,
-        selectedCalendarIds: storedSelectedIds
-      }
-    } catch (err) {
-      logger.error('Failed to list user google calendars:', err)
-      return {
-        connected: true,
-        items: [],
-        selectedCalendarIds: storedSelectedIds
-      }
+      return { connected: true, items, selectedCalendarIds: storedSelectedIds }
+    } catch (error) {
+      logger.error('Failed to list user google calendars:', error)
+      return { connected: true, items: [], selectedCalendarIds: storedSelectedIds }
     }
   }
 )
 
-export const updateSelectedCalendarsAction = defineAction<
-  { body: UpdateSelectedCalendarsBody; params: unknown; query: unknown; response: UpdateSelectedCalendarsResponse }
->(
+export const updateSelectedCalendarsAction = defineAction<{ body: UpdateSelectedCalendarsBody }>(
   {
     method: 'put',
     path: '/google/calendar/selected',
     summary: 'Atualiza quais agendas devem ser exibidas no calendário',
     tags: ['Google'],
     middlewares: [authMiddleware],
-    schema: {
-      body: updateSelectedCalendarsBodySchema
-    },
+    schema: { body: updateSelectedCalendarsBodySchema },
     responses: {
-      200: {
-        description: 'Preferências de agendas atualizadas com sucesso',
-        schema: updateSelectedCalendarsResponseSchema
-      },
-      401: {
-        description: 'Não autorizado',
-        schema: errorResponseSchema
-      }
+      200: { description: 'Preferências de agendas atualizadas com sucesso', schema: updateSelectedCalendarsResponseSchema },
+      401: { description: 'Não autorizado', schema: errorResponseSchema }
     }
   },
   async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
     const calendarIds = Array.isArray(data?.calendarIds) ? data.calendarIds : []
+
     await userRepository.updateGoogleCalendarSelectedIds(ids.userId, calendarIds)
     await invalidateUserGoogleEvents(ids.userId)
 
-    return {
-      success: true,
-      selectedCalendarIds: calendarIds,
-      message: 'Agendas visíveis atualizadas com sucesso'
-    }
+    await createAuditLog({
+      actorId: ids.userId,
+      action: 'google_calendar_selection_updated',
+      entity: 'integrations',
+      entityId: ids.userId,
+      summary: `Agendas visíveis atualizadas (${calendarIds.length})`
+    })
+
+    return { selectedCalendarIds: calendarIds }
   }
 )
-

@@ -1,18 +1,5 @@
+import type { createChallengeBodySchema, updateChallengeParamsSchema, updateChallengeBodySchema, removeChallengeParamsSchema, checkinChallengeParamsSchema, checkinChallengeBodySchema, slipChallengeParamsSchema, slipChallengeBodySchema, listChallengesQuerySchema, freezeChallengeParamsSchema, freezeChallengeBodySchema, freezeChallengeResponseSchema } from './schemas'
 import type { z } from 'zod'
-import type {
-  createChallengeBodySchema,
-  updateChallengeParamsSchema,
-  updateChallengeBodySchema,
-  removeChallengeParamsSchema,
-  checkinChallengeParamsSchema,
-  checkinChallengeBodySchema,
-  slipChallengeParamsSchema,
-  slipChallengeBodySchema,
-  listChallengesQuerySchema,
-  freezeChallengeParamsSchema,
-  freezeChallengeBodySchema,
-  freezeChallengeResponseSchema
-} from './schemas'
 
 export type CreateChallengeBody = z.infer<typeof createChallengeBodySchema>
 export type UpdateChallengeParams = z.infer<typeof updateChallengeParamsSchema>

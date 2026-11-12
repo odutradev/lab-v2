@@ -74,5 +74,5 @@ export const resetPasswordBodySchema = registry.register('ResetPasswordBody', z.
 }))
 
 export const resetPasswordResponseSchema = registry.register('ResetPasswordResponse', z.object({
-  success: z.boolean()
+  id: z.string()
 }))

@@ -1,11 +1,13 @@
-import { removeHabitQuerySchema, habitActionSuccessResponseSchema, listHabitsResponseSchema, scheduleHabitBodySchema, removeHabitParamsSchema, updateHabitParamsSchema, updateHabitBodySchema, createHabitBodySchema, habitResponseSchema } from '@domains/habits/actions/habit/schemas'
+import { removeHabitQuerySchema, habitActionSuccessResponseSchema, listHabitsResponseSchema, listHabitsQuerySchema, scheduleHabitBodySchema, removeHabitParamsSchema, updateHabitParamsSchema, updateHabitBodySchema, createHabitBodySchema, habitResponseSchema } from '@domains/habits/actions/habit/schemas'
 import { syncHabitToGoogle, removeHabitFromGoogle } from '@domains/habits/utils/googleSync'
 import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
+import { formatDateKey, parseDateKey, addDays } from '@utils/date'
+import createAuditLog from '@domains/system/utils/createAuditLog'
 import habitRepository from '@domains/habits/repositories/habit'
-import { isValidObjectId } from '@database/utils'
+import { paginateList } from '@factories/pagination'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
+import { isValidObjectId } from '@database/utils'
 
 import type { RemoveHabitQuery, ScheduleHabitBody, RemoveHabitParams, UpdateHabitParams, UpdateHabitBody, CreateHabitBody, ListHabitsQuery } from '@domains/habits/actions/habit/types'
 
@@ -77,6 +79,7 @@ export const listHabitsAction = defineAction(
     summary: 'Lista os hábitos e metas do usuário autenticado',
     tags: ['Habits'],
     authenticate: true,
+    schema: { query: listHabitsQuerySchema },
     responses: {
       200: {
         description: 'Lista de hábitos cadastrados',
@@ -88,10 +91,10 @@ export const listHabitsAction = defineAction(
   async ({ ids, query, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const parsedQuery = query as ListHabitsQuery
-    const habits = await habitRepository.findAllByUser(ids.userId, parsedQuery)
+    const { page, limit, ...filters } = query as ListHabitsQuery
+    const habits = await habitRepository.findAllByUser(ids.userId, filters)
 
-    return habits
+    return paginateList(habits, { page, limit })
   }
 )
 
@@ -181,66 +184,57 @@ export const updateHabitAction = defineAction(
     }
 
     if (targetMode === 'following' && date) {
-      const [y, m, d] = date.split('-').map(Number)
-      const prev = new Date(y, m - 1, d - 1)
-      const py = prev.getFullYear()
-      const pm = String(prev.getMonth() + 1).padStart(2, '0')
-      const pd = String(prev.getDate()).padStart(2, '0')
-      const previousDate = `${py}-${pm}-${pd}`
+      const previousDate = formatDateKey(addDays(parseDateKey(date), -1))
 
       if (habit.startDate && habit.startDate >= date) {
         const updated = await habitRepository.update(id, ids.userId, updatePayload)
         if (updated) await syncHabitToGoogle(ids.userId, updated)
         return updated
-      } else {
-        await habitRepository.update(id, ids.userId, {
-          recurrence: {
-            ...(habit.recurrence || { type: habit.frequency || 'daily' }),
-            endType: 'on_date',
-            endDate: previousDate
-          }
-        })
-
-        const createdNewSeries = await habitRepository.create({
-          userId: ids.userId,
-          title: updatePayload.title ?? habit.title,
-          description: updatePayload.description !== undefined ? updatePayload.description : habit.description,
-          category: updatePayload.category ?? habit.category,
-          frequency: updatePayload.frequency ?? habit.frequency,
-          startDate: date,
-          allDay: updatePayload.allDay !== undefined ? updatePayload.allDay : habit.allDay,
-          startTime: updatePayload.startTime !== undefined ? updatePayload.startTime : habit.startTime,
-          endTime: updatePayload.endTime !== undefined ? updatePayload.endTime : habit.endTime,
-          recurrence: updatePayload.recurrence ?? habit.recurrence
-        })
-
-        const checkinsToMigrate = await habitCheckinRepository.findByUserAndDateRange(ids.userId, date, '2099-12-31')
-        const habitCheckins = checkinsToMigrate.filter((c) => c.habitId.toString() === id)
-        for (const c of habitCheckins) {
-          await habitCheckinRepository.deleteByUserHabitAndDate(ids.userId, id, c.date)
-          await habitCheckinRepository.upsertCheckin({
-            userId: ids.userId,
-            habitId: createdNewSeries.id,
-            date: c.date,
-            completed: c.completed
-          })
-        }
-
-        await createAuditLog({
-          actorId: ids.userId,
-          action: 'update_habit_following_instances',
-          entity: 'Habit',
-          entityId: createdNewSeries.id,
-          summary: 'Nova série de eventos recorrentes criada a partir de data.',
-          details: { parentHabitId: id, splitDate: date }
-        })
-
-        const oldUpdated = await habitRepository.findByIdAndUser(id, ids.userId)
-        if (oldUpdated) await syncHabitToGoogle(ids.userId, oldUpdated)
-        await syncHabitToGoogle(ids.userId, createdNewSeries)
-
-        return createdNewSeries
       }
+
+      await habitRepository.update(id, ids.userId, {
+        recurrence: {
+          ...(habit.recurrence || { type: habit.frequency || 'daily' }),
+          endType: 'on_date',
+          endDate: previousDate
+        }
+      })
+
+      const createdNewSeries = await habitRepository.create({
+        userId: ids.userId,
+        title: updatePayload.title ?? habit.title,
+        description: updatePayload.description !== undefined ? updatePayload.description : habit.description,
+        category: updatePayload.category ?? habit.category,
+        frequency: updatePayload.frequency ?? habit.frequency,
+        startDate: date,
+        allDay: updatePayload.allDay !== undefined ? updatePayload.allDay : habit.allDay,
+        startTime: updatePayload.startTime !== undefined ? updatePayload.startTime : habit.startTime,
+        endTime: updatePayload.endTime !== undefined ? updatePayload.endTime : habit.endTime,
+        recurrence: updatePayload.recurrence ?? habit.recurrence
+      })
+
+      const checkinsToMigrate = await habitCheckinRepository.findByUserAndDateRange(ids.userId, date, '2099-12-31')
+      const habitCheckins = checkinsToMigrate.filter((checkin) => checkin.habitId.toString() === id)
+      await habitCheckins.reduce<Promise<void>>(async (previousMigration, checkin) => {
+        await previousMigration
+        await habitCheckinRepository.deleteByUserHabitAndDate(ids.userId as string, id, checkin.date)
+        await habitCheckinRepository.upsertCheckin({ userId: ids.userId as string, habitId: createdNewSeries.id, date: checkin.date, completed: checkin.completed })
+      }, Promise.resolve())
+
+      await createAuditLog({
+        actorId: ids.userId,
+        action: 'update_habit_following_instances',
+        entity: 'Habit',
+        entityId: createdNewSeries.id,
+        summary: 'Nova série de eventos recorrentes criada a partir de data.',
+        details: { parentHabitId: id, splitDate: date }
+      })
+
+      const oldUpdated = await habitRepository.findByIdAndUser(id, ids.userId)
+      if (oldUpdated) await syncHabitToGoogle(ids.userId, oldUpdated)
+      await syncHabitToGoogle(ids.userId, createdNewSeries)
+
+      return createdNewSeries
     }
 
     const updated = await habitRepository.update(id, ids.userId, updatePayload)
@@ -317,33 +311,34 @@ export const removeHabitAction = defineAction(
         details: { date }
       })
 
-      return { success: true }
+      return { id }
     }
 
     if (targetMode === 'following' && date) {
-      const [y, m, d] = date.split('-').map(Number)
-      const prev = new Date(y, m - 1, d - 1)
-      const py = prev.getFullYear()
-      const pm = String(prev.getMonth() + 1).padStart(2, '0')
-      const pd = String(prev.getDate()).padStart(2, '0')
-      const previousDate = `${py}-${pm}-${pd}`
+      const previousDate = formatDateKey(addDays(parseDateKey(date), -1))
 
-      if (habit.startDate && habit.startDate >= date) {
-        await habitRepository.delete(id, ids.userId)
+      const shouldDeleteWholeSeries = Boolean(habit.startDate && habit.startDate >= date)
+
+      const deleteWholeSeries = async (userId: string): Promise<void> => {
+        await habitRepository.delete(id, userId)
         await habitCheckinRepository.deleteByHabitId(id)
-        await removeHabitFromGoogle(ids.userId, habit.googleEventId)
-      } else {
-        await habitRepository.update(id, ids.userId, {
+        await removeHabitFromGoogle(userId, habit.googleEventId)
+      }
+
+      const endSeriesBeforeDate = async (userId: string): Promise<void> => {
+        await habitRepository.update(id, userId, {
           recurrence: {
             ...(habit.recurrence || { type: 'daily' }),
             endType: 'on_date',
             endDate: previousDate
           }
         })
-        await habitCheckinRepository.deleteByUserHabitAndDateFrom(ids.userId, id, date)
-        const updated = await habitRepository.findByIdAndUser(id, ids.userId)
-        if (updated) await syncHabitToGoogle(ids.userId, updated)
+        await habitCheckinRepository.deleteByUserHabitAndDateFrom(userId, id, date)
+        const updated = await habitRepository.findByIdAndUser(id, userId)
+        if (updated) await syncHabitToGoogle(userId, updated)
       }
+
+      await (shouldDeleteWholeSeries ? deleteWholeSeries(ids.userId) : endSeriesBeforeDate(ids.userId))
 
       await createAuditLog({
         actorId: ids.userId,
@@ -354,7 +349,7 @@ export const removeHabitAction = defineAction(
         details: { cutoffDate: date }
       })
 
-      return { success: true }
+      return { id }
     }
 
     const removed = await habitRepository.delete(id, ids.userId)
@@ -371,7 +366,7 @@ export const removeHabitAction = defineAction(
       summary: 'Hábito e checkins removidos pelo usuário.'
     })
 
-    return { success: true }
+    return { id }
   }
 )
 
@@ -406,15 +401,24 @@ export const scheduleHabitAction = defineAction(
     if (!habit) return manageError({ code: 'not_found' })
 
     const existingCheckin = await habitCheckinRepository.findByUserHabitAndDate(ids.userId, habitId, date)
-    if (!existingCheckin) {
-      await habitCheckinRepository.upsertCheckin({
-        userId: ids.userId,
-        habitId,
-        date,
-        completed: false
-      })
-    }
+    if (existingCheckin) return { id: habitId }
 
-    return { success: true }
+    await habitCheckinRepository.upsertCheckin({
+      userId: ids.userId,
+      habitId,
+      date,
+      completed: false
+    })
+
+    await createAuditLog({
+      actorId: ids.userId,
+      action: 'schedule_habit_day',
+      entity: 'HabitCheckin',
+      entityId: habitId,
+      summary: 'Hábito agendado para a data.',
+      details: { habitId, date }
+    })
+
+    return { id: habitId }
   }
 )

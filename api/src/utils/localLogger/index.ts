@@ -9,7 +9,7 @@ export type LocalLogger = {
   clean: (message: unknown, ...args: unknown[]) => void
 }
 
-const COLORS = {
+const Colors = {
   magenta: '\x1b[35m',
   yellow: '\x1b[33m',
   green: '\x1b[32m',
@@ -21,24 +21,24 @@ const COLORS = {
 } as const
 
 const buildLogPrefix = (prefix: string, level: string, color: string): string => {
-  return `${COLORS.gray}[${formatTimestamp()}]${COLORS.reset} ${color}[${prefix}] [${level}]${COLORS.reset}`
+  return `${Colors.gray}[${formatTimestamp()}]${Colors.reset} ${color}[${prefix}] [${level}]${Colors.reset}`
 }
 
 const createLocalLogger = (prefix: string): LocalLogger => ({
   success: (message: unknown, ...args: unknown[]) => {
-    console.log(`${buildLogPrefix(prefix, 'SUCCESS', COLORS.green)}`, message, ...args)
+    console.log(`${buildLogPrefix(prefix, 'SUCCESS', Colors.green)}`, message, ...args)
   },
   error: (message: unknown, ...args: unknown[]) => {
-    console.error(`${buildLogPrefix(prefix, 'ERROR', COLORS.red)}`, message, ...args)
+    console.error(`${buildLogPrefix(prefix, 'ERROR', Colors.red)}`, message, ...args)
   },
   debug: (message: unknown, ...args: unknown[]) => {
-    console.debug(`${buildLogPrefix(prefix, 'DEBUG', COLORS.magenta)}`, message, ...args)
+    console.debug(`${buildLogPrefix(prefix, 'DEBUG', Colors.magenta)}`, message, ...args)
   },
   info: (message: unknown, ...args: unknown[]) => {
-    console.info(`${buildLogPrefix(prefix, 'INFO', COLORS.blue)}`, message, ...args)
+    console.info(`${buildLogPrefix(prefix, 'INFO', Colors.blue)}`, message, ...args)
   },
   warn: (message: unknown, ...args: unknown[]) => {
-    console.warn(`${buildLogPrefix(prefix, 'WARN', COLORS.yellow)}`, message, ...args)
+    console.warn(`${buildLogPrefix(prefix, 'WARN', Colors.yellow)}`, message, ...args)
   },
   clean: (message: unknown, ...args: unknown[]) => {
     console.log(message, ...args)

@@ -51,8 +51,7 @@ export const disconnectCalendarBodySchema = registry.register(
 export const disconnectCalendarResponseSchema = registry.register(
   'DisconnectCalendarResponse',
   z.object({
-    success: z.boolean(),
-    message: z.string()
+    calendarDeleted: z.boolean()
   })
 )
 
@@ -66,20 +65,16 @@ export const updateCalendarNameBodySchema = registry.register(
 export const updateCalendarNameResponseSchema = registry.register(
   'UpdateCalendarNameResponse',
   z.object({
-    success: z.boolean(),
-    calendarName: z.string(),
-    message: z.string()
+    calendarName: z.string()
   })
 )
 
 export const recreateCalendarResponseSchema = registry.register(
   'RecreateCalendarResponse',
   z.object({
-    success: z.boolean(),
     calendarId: z.string(),
     calendarName: z.string(),
-    calendarUrl: z.string(),
-    message: z.string()
+    calendarUrl: z.string()
   })
 )
 
@@ -117,9 +112,7 @@ export const updateSelectedCalendarsBodySchema = registry.register(
 export const updateSelectedCalendarsResponseSchema = registry.register(
   'UpdateSelectedCalendarsResponse',
   z.object({
-    success: z.boolean(),
-    selectedCalendarIds: z.array(z.string()),
-    message: z.string()
+    selectedCalendarIds: z.array(z.string())
   })
 )
 

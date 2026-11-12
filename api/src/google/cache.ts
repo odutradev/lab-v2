@@ -6,8 +6,8 @@ import type { GoogleCalendarListItem, NormalizedGoogleEvent } from '@google/type
 
 const logger = createLocalLogger('google-cache')
 
-export const GCAL_CALENDARS_TTL = 900
-export const GCAL_EVENTS_TTL = 300
+export const GoogleCalendarsTtl = 900
+export const GoogleEventsTtl = 300
 
 const getCalendarsKey = (userId: string): string => `gcal:calendars:${userId}`
 
@@ -23,7 +23,7 @@ export const getCachedUserGoogleCalendars = async (
   refreshToken: string
 ): Promise<GoogleCalendarListItem[]> => {
   const key = getCalendarsKey(userId)
-  return cacheService.getOrSet(key, GCAL_CALENDARS_TTL, async () => {
+  return cacheService.getOrSet(key, GoogleCalendarsTtl, async () => {
     logger.info(`Fetching fresh Google Calendar list for user "${userId}"`)
     return listUserGoogleCalendars(refreshToken)
   })
@@ -42,7 +42,7 @@ export const getCachedGoogleCalendarEvents = async (options: {
 
   const key = getEventsKey(userId, calendarIds, timeMin, timeMax)
 
-  return cacheService.getOrSet(key, GCAL_EVENTS_TTL, async () => {
+  return cacheService.getOrSet(key, GoogleEventsTtl, async () => {
     logger.info(`Fetching fresh Google Calendar events for user "${userId}" (${calendarIds.length} calendars)`)
     return fetchGoogleCalendarEvents(
       refreshToken,

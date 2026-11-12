@@ -26,6 +26,6 @@ export const verifyCodeBodySchema = registry.register('VerifyCodeBody', z.object
 }))
 
 export const verificationResponseSchema = registry.register('VerificationResponse', z.object({
-  success: z.boolean(),
+  id: z.string().optional(),
   resetToken: z.string().optional()
 }))

@@ -12,16 +12,12 @@ const userRepository = {
     })
   },
   update: async (id: string, payload: UpdateUserPayload): Promise<UserModelType | null> => {
-    const updateQuery: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(payload)) {
-      if (key === 'health' && value && typeof value === 'object' && !Array.isArray(value)) {
-        for (const [healthKey, healthVal] of Object.entries(value)) {
-          updateQuery[`health.${healthKey}`] = healthVal
-        }
-      } else {
-        updateQuery[key] = value
-      }
-    }
+    const updateQuery = Object.entries(payload).reduce<Record<string, unknown>>((query, [key, value]) => {
+      const isHealthObject = key === 'health' && value && typeof value === 'object' && !Array.isArray(value)
+      if (!isHealthObject) return { ...query, [key]: value }
+      const healthEntries = Object.entries(value).map(([healthKey, healthValue]) => [`health.${healthKey}`, healthValue])
+      return { ...query, ...Object.fromEntries(healthEntries) }
+    }, {})
     return UserModel.findByIdAndUpdate(id, { $set: updateQuery }, { new: true })
   },
   updatePassword: async (id: string, password: string): Promise<UserModelType | null> => {
@@ -99,6 +95,13 @@ const userRepository = {
       blocked,
       superAdmins
     }
+  },
+  promoteSuperAdminByEmail: async (email: string): Promise<UserModelType | null> => {
+    return UserModel.findOneAndUpdate(
+      { email: { $regex: new RegExp(`^${email}$`, 'i') } },
+      { superAdmin: true },
+      { new: true }
+    )
   },
   updateSuperAdmin: async (id: string, superAdmin: boolean): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { superAdmin }, { new: true })

@@ -1,32 +1,20 @@
 import jwt from 'jsonwebtoken'
 import fs from 'fs/promises'
 
-import {
-  profileResponseSchema,
-  updateProfileBodySchema,
-  updateAvatarResponseSchema,
-  resetPasswordBodySchema,
-  resetPasswordResponseSchema,
-  updateHealthBodySchema,
-  userHealthSchema
-} from '@domains/users/actions/profile/schemas'
+import { profileResponseSchema, updateProfileBodySchema, updateAvatarResponseSchema, resetPasswordBodySchema, resetPasswordResponseSchema, updateHealthBodySchema, userHealthSchema } from '@domains/users/actions/profile/schemas'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
+import createAuditLog from '@domains/system/utils/createAuditLog'
 import userRepository from '@domains/users/repositories/user'
 import authMiddleware from '@domains/users/middlewares/auth'
 import { createUploadMiddleware } from '@middlewares/upload'
 import { deleteFile, uploadFile } from '@storage/utils'
 import createLocalLogger from '@utils/localLogger'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
 import { optimizeImage } from '@utils/image'
 import { hashData } from '@utils/crypto'
 
-import type {
-  UpdateProfileBody,
-  ResetPasswordBody,
-  UpdateHealthBody
-} from '@domains/users/actions/profile/types'
+import type { UpdateProfileBody, ResetPasswordBody, UpdateHealthBody } from '@domains/users/actions/profile/types'
 
 const logger = createLocalLogger('profile-actions')
 
@@ -230,7 +218,7 @@ export const resetPasswordAction = defineAction(
         summary: `Senha do usuário "${user.name}" redefinida com sucesso.`
       })
 
-      return { success: true }
+      return { id: user.id }
     } catch {
       return manageError({ code: 'invalid_token' })
     }
@@ -267,6 +255,14 @@ export const updateHealthAction = defineAction(
     const updatedUser = await userRepository.update(ids.userId, { health: payload })
 
     if (!updatedUser) return manageError({ code: 'user_not_found' })
+
+    await createAuditLog({
+      actorId: ids.userId,
+      action: 'update_health',
+      entity: 'User',
+      entityId: ids.userId,
+      summary: 'Dados de saúde atualizados pelo usuário.'
+    })
 
     return updatedUser.health || {}
   }

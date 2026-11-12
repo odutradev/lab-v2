@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken'
 
 import { requestCodeParamsSchema, requestCodeBodySchema, verifyCodeParamsSchema, verifyCodeBodySchema, verificationResponseSchema, errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import verificationCodeRepository from '@domains/users/repositories/verificationCode'
-import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
 import verificationCodeTemplate from '@email/templates/verificationCode'
+import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
+import createAuditLog from '@domains/system/utils/createAuditLog'
 import userRepository from '@domains/users/repositories/user'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
 import createLocalLogger from '@utils/localLogger'
 
 import type { RequestCodeParams, RequestCodeBody, VerifyCodeParams, VerifyCodeBody } from '@domains/users/actions/validation/types'
@@ -88,9 +88,7 @@ export const requestCodeAction = defineAction(
         }
       })
 
-      return {
-        success: true
-      }
+      return { id: user.id }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Falha no envio do e-mail'
       logger.error(`[requestCodeAction] Falha ao enviar código de verificação para "${email}": ${errorMessage}`)
@@ -177,18 +175,9 @@ export const verifyCodeAction = defineAction(
       }
     }
 
-    let resetToken: string | undefined
-
-    if (purpose === 'password_reset') {
-      resetToken = jwt.sign(
-        {
-          email,
-          purpose: 'password_reset'
-        },
-        process.env.JWT_SECRET as string,
-        { expiresIn: '15m' }
-      )
-    }
+    const resetToken = purpose === 'password_reset'
+      ? jwt.sign({ email, purpose: 'password_reset' }, process.env.JWT_SECRET as string, { expiresIn: '15m' })
+      : undefined
 
     await Promise.all([
       verificationCodeRepository.deleteCode(validCode.id),
@@ -207,9 +196,6 @@ export const verifyCodeAction = defineAction(
 
     logger.success(`[verifyCodeAction] Código validado com sucesso para "${email}" (${purpose})`)
 
-    return {
-      success: true,
-      resetToken
-    }
+    return { resetToken }
   }
 )

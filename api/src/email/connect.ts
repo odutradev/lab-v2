@@ -7,13 +7,13 @@ import type { EmailTransporter, EmailInstance, EmailModule, EmailConfig } from '
 
 const logger = createLocalLogger('email')
 
-const requiredEnvVariables = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS']
+const RequiredEnvVariables = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS']
 
 const email: EmailModule = {
   transporter: null,
   initializeEmail: async (): Promise<EmailInstance> => {
     try {
-      requiredEnvVariables.forEach((envVar) => {
+      RequiredEnvVariables.forEach((envVar) => {
         if (!process.env[envVar]) {
           logger.error(`[initializeEmail] Missing environment variable: "${envVar}"`)
           process.exit(1)

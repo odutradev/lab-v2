@@ -1,20 +1,32 @@
-export const formatTimestamp = (date: Date = new Date()): string => {
-  const yyyy = date.getFullYear()
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-  const hh = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  const ss = String(date.getSeconds()).padStart(2, '0')
+const MillisecondsPerDay = 1000 * 60 * 60 * 24
 
-  return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`
+const DayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
+const padTwoDigits = (value: number): string => String(value).padStart(2, '0')
+
+export const formatDateKey = (date: Date): string => {
+  return `${date.getFullYear()}-${padTwoDigits(date.getMonth() + 1)}-${padTwoDigits(date.getDate())}`
+}
+
+export const formatTimeKey = (date: Date): string => {
+  return `${padTwoDigits(date.getHours())}:${padTwoDigits(date.getMinutes())}`
+}
+
+export const parseDateKey = (dateKey: string): Date => {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+export const countDaysBetween = (startDate: Date, endDate: Date): number => {
+  return Math.round((endDate.getTime() - startDate.getTime()) / MillisecondsPerDay)
+}
+
+export const formatTimestamp = (date: Date = new Date()): string => {
+  return `${formatDateKey(date)} ${formatTimeKey(date)}:${padTwoDigits(date.getSeconds())}`
 }
 
 export const formatDateBR = (date: Date): string => {
-  const yyyy = date.getFullYear()
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-
-  return `${dd}/${mm}/${yyyy}`
+  return `${padTwoDigits(date.getDate())}/${padTwoDigits(date.getMonth() + 1)}/${date.getFullYear()}`
 }
 
 export const addDays = (date: Date, days: number): Date => {
@@ -29,28 +41,22 @@ export const isPast = (date: Date): boolean => {
   return date.getTime() < new Date().getTime()
 }
 
-export const isDateValid = (dateStr: string): boolean => {
-  const [year, month, day] = dateStr.split('-').map(Number)
-  const target = new Date(year, month - 1, day)
+export const isDateValid = (dateKey: string): boolean => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const diffDays = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  return diffDays >= 0 && diffDays <= 30
+  const differenceInDays = countDaysBetween(today, parseDateKey(dateKey))
+  return differenceInDays >= 0 && differenceInDays <= 30
 }
 
-export const getDayName = (dateStr: string): string => {
-  const [year, month, day] = dateStr.split('-').map(Number)
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-  return days[new Date(year, month - 1, day).getDay()]
+export const getDayName = (dateKey: string): string => {
+  return DayNames[parseDateKey(dateKey).getDay()]
 }
 
-export const timeToMins = (timeStr: string): number => {
-  const [h, m] = timeStr.split(':').map(Number)
-  return h * 60 + m
+export const timeToMins = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number)
+  return hours * 60 + minutes
 }
 
-export const minsToTime = (totalMins: number): string => {
-  const h = String(Math.floor(totalMins / 60)).padStart(2, '0')
-  const m = String(totalMins % 60).padStart(2, '0')
-  return `${h}:${m}`
+export const minsToTime = (totalMinutes: number): string => {
+  return `${padTwoDigits(Math.floor(totalMinutes / 60))}:${padTwoDigits(totalMinutes % 60)}`
 }

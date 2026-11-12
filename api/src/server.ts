@@ -5,8 +5,8 @@ import mongoose from 'mongoose'
 
 import { connectRedis, disconnectRedis } from '@cache'
 import createLocalLogger from '@utils/localLogger'
-import { connectEmail } from '@email/connect'
 import connectMongoose from '@database/connect'
+import { connectEmail } from '@email/connect'
 import buildApp from './app'
 
 import type { Server } from 'http'

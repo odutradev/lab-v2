@@ -1,18 +1,6 @@
 import storage from '@storage/connect'
 
-import type {
-  GetSignedUrlResult,
-  GetSignedUrlParams,
-  DeleteFileResult,
-  DeleteFileParams,
-  UploadFileResult,
-  UploadFileParams,
-  SignedUrlOptions,
-  MoveFileResult,
-  MoveFileParams,
-  GetFileResult,
-  GetFileParams
-} from '@storage/types'
+import type { GetSignedUrlResult, GetSignedUrlParams, DeleteFileResult, DeleteFileParams, UploadFileResult, UploadFileParams, SignedUrlOptions, MoveFileResult, MoveFileParams, GetFileResult, GetFileParams } from '@storage/types'
 
 export const uploadFile = async ({ path, buffer, mimeType, isPublic = false }: UploadFileParams): Promise<UploadFileResult> => {
   const bucket = await storage.getInstance()

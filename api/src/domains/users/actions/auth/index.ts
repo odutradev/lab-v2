@@ -3,12 +3,12 @@ import jwt from 'jsonwebtoken'
 import { signUpBodySchema, signInBodySchema, refreshTokenBodySchema, authResponseSchema } from '@domains/users/actions/auth/schemas'
 import { errorResponseSchema } from '@domains/users/actions/validation/schemas'
 import { sensitiveEndpointRateLimitConfig } from '@config/rateLimit'
+import createAuditLog from '@domains/system/utils/createAuditLog'
 import userRepository from '@domains/users/repositories/user'
 import welcomeTemplate from '@email/templates/welcome'
 import { hashData, compareHash } from '@utils/crypto'
 import createLocalLogger from '@utils/localLogger'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
 
 import type { SignUpBody, SignInBody, RefreshTokenBody } from '@domains/users/actions/auth/types'
 

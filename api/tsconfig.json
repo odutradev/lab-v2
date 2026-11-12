@@ -11,7 +11,6 @@
     "rootDir": "./",
     "typeRoots": ["./node_modules/@types", "./src/types/*"],
     "paths": {
-      "@createAuditLog": ["./src/domains/system/utils/createAuditLog.ts"],
       "@domains/*": ["./src/domains/*"],
       "@middlewares/*": ["./src/middlewares/*"],
       "@projectTypes/*": ["./src/types/*"],

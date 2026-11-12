@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
 
+import { paginationQuerySchema, createPaginatedSchema } from '@factories/pagination/schemas'
 import registry from '@factories/docs/registry'
 
 extendZodWithOpenApi(z)
@@ -41,7 +42,7 @@ export const challengeResponseSchema = registry.register(
 
 export const listChallengesResponseSchema = registry.register(
   'ListChallengesResponse',
-  z.array(challengeResponseSchema)
+  createPaginatedSchema(challengeResponseSchema, 'PaginatedChallenges')
 )
 
 export const createChallengeBodySchema = registry.register(
@@ -132,7 +133,7 @@ export const slipChallengeBodySchema = registry.register(
 
 export const listChallengesQuerySchema = registry.register(
   'ListChallengesQuery',
-  z.object({
+  paginationQuerySchema.extend({
     status: z.enum(['active', 'completed', 'paused']).optional()
   })
 )
@@ -140,7 +141,7 @@ export const listChallengesQuerySchema = registry.register(
 export const challengeActionSuccessResponseSchema = registry.register(
   'ChallengeActionSuccessResponse',
   z.object({
-    success: z.boolean()
+    id: z.string()
   })
 )
 

@@ -1,5 +1,5 @@
-import email from '@email/connect'
 import createLocalLogger from '@utils/localLogger'
+import email from '@email/connect'
 
 import type { ProcessTemplateResult, ProcessTemplateParams, SendEmailResult, SendEmailParams, LocalEmailTemplate, EnrichedEmailTemplate, SendEnrichedEmailParams } from '@email/types'
 

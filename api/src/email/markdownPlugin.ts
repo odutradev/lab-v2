@@ -1,16 +1,26 @@
 import { marked } from 'marked'
 
+type MarkdownMailData = {
+  markdown?: unknown
+  html?: unknown
+  text?: unknown
+}
+
+type MarkdownMail = {
+  data: MarkdownMailData
+  resolveContent: (data: MarkdownMailData, key: string, callback: (error: Error | null, content: string | Buffer) => void) => void
+}
+
 export const markdownPlugin = () => {
-  return (mail: any, callback: (err?: Error | null) => void): void => {
+  return (mail: MarkdownMail, callback: (error?: Error | null) => void): void => {
     if (!mail?.data?.markdown || mail.data.html) return callback()
 
-    mail.resolveContent(mail.data, 'markdown', async (err: Error | null, markdownContent: string | Buffer) => {
-      if (err) return callback(err)
+    mail.resolveContent(mail.data, 'markdown', async (resolveError, markdownContent) => {
+      if (resolveError) return callback(resolveError)
 
       try {
         const text = (markdownContent || '').toString()
-        const html = await marked.parse(text)
-        mail.data.html = html
+        mail.data.html = await marked.parse(text)
         if (!mail.data.text) mail.data.text = text
         callback(null)
       } catch (parseError) {

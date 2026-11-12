@@ -1,12 +1,4 @@
-import type {
-  profileResponseSchema,
-  updateProfileBodySchema,
-  updateAvatarResponseSchema,
-  resetPasswordBodySchema,
-  resetPasswordResponseSchema,
-  updateHealthBodySchema,
-  userHealthSchema
-} from '@domains/users/actions/profile/schemas'
+import type { profileResponseSchema, updateProfileBodySchema, updateAvatarResponseSchema, resetPasswordBodySchema, resetPasswordResponseSchema, updateHealthBodySchema, userHealthSchema } from '@domains/users/actions/profile/schemas'
 import type { z } from 'zod'
 
 export type UpdateAvatarResponse = z.infer<typeof updateAvatarResponseSchema>

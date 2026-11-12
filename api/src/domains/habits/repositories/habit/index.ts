@@ -43,22 +43,19 @@ const habitRepository = {
     return habits.map((habit) => ({ ...habit, id: habit._id.toString() })) as unknown as HabitModelType[]
   },
   update: async (id: string, userId: string, payload: UpdateHabitPayload): Promise<HabitModelType | null> => {
-    const updateData: Record<string, unknown> = { ...payload }
+    const trimmedStartTime = payload.startTime?.trim()
 
-    if (payload.startTime !== undefined) {
-      if (payload.startTime && payload.startTime.trim()) {
-        updateData.startTime = payload.startTime.trim()
-        updateData.allDay = payload.allDay !== undefined ? payload.allDay : false
-      } else {
-        updateData.startTime = null
-        updateData.endTime = null
-        updateData.allDay = true
-      }
-    }
+    const startTimeData = payload.startTime === undefined
+      ? {}
+      : trimmedStartTime
+        ? { startTime: trimmedStartTime, allDay: payload.allDay !== undefined ? payload.allDay : false }
+        : { startTime: null, endTime: null, allDay: true }
 
-    if (payload.endTime !== undefined) {
-      updateData.endTime = payload.endTime && payload.endTime.trim() ? payload.endTime.trim() : null
-    }
+    const endTimeData = payload.endTime === undefined
+      ? {}
+      : { endTime: payload.endTime && payload.endTime.trim() ? payload.endTime.trim() : null }
+
+    const updateData: Record<string, unknown> = { ...payload, ...startTimeData, ...endTimeData }
 
     const habit = await HabitModel.findOneAndUpdate(
       { _id: toObjectId(id), userId: toObjectId(userId) },

@@ -1,21 +1,18 @@
 import { monthlyMetricsResponseSchema, monthlyMetricsBodySchema } from './schemas'
 import habitCheckinRepository from '@domains/habits/repositories/habitCheckin'
+import { isHabitScheduledForDate } from '@domains/habits/utils/recurrence'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import habitRepository from '@domains/habits/repositories/habit'
-import { isHabitScheduledForDate } from '@domains/habits/utils/recurrence'
-import { formatTimestamp } from '@utils/date'
 import defineAction from '@factories/defineAction'
+import { formatDateKey } from '@utils/date'
 
 import type { MonthlyMetricsResponse, MonthlyMetricsBody, MonthlyMetricsDayItem } from './types'
 
-const monthNamesPT = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-]
+const MonthLabels = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
-const weekDaysPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+const WeekDayLabels = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-export const getMonthlyMetricsAction = defineAction(
+export const getMonthlyMetricsAction = defineAction<{ body: MonthlyMetricsBody }>(
   {
     method: 'post',
     path: '/habits/metrics/monthly',
@@ -36,25 +33,22 @@ export const getMonthlyMetricsAction = defineAction(
   async ({ ids, data, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const body = (data || {}) as MonthlyMetricsBody
-    const todayFull = formatTimestamp().split(' ')[0]
-    const targetMonth = body.month || todayFull.slice(0, 7)
+    const body = data || {}
+    const todayKey = formatDateKey(new Date())
+    const targetMonth = body.month || todayKey.slice(0, 7)
 
-    const [yearStr, monthStr] = targetMonth.split('-')
-    const year = Number(yearStr)
-    const month = Number(monthStr)
+    const [year, month] = targetMonth.split('-').map(Number)
 
     const daysInMonth = new Date(year, month, 0).getDate()
     const startDate = `${targetMonth}-01`
     const endDate = `${targetMonth}-${String(daysInMonth).padStart(2, '0')}`
 
-    const activeHabits = await habitRepository.findAllByUser(ids.userId, { active: true })
-    const checkins = await habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate)
+    const [activeHabits, checkins] = await Promise.all([
+      habitRepository.findAllByUser(ids.userId, { active: true }),
+      habitCheckinRepository.findByUserAndDateRange(ids.userId, startDate, endDate)
+    ])
 
-    const checkinMap = new Map<string, boolean>()
-    checkins.forEach((item) => {
-      checkinMap.set(`${item.date}_${item.habitId.toString()}`, item.completed)
-    })
+    const checkinMap = new Map(checkins.map((checkin) => [`${checkin.date}_${checkin.habitId.toString()}`, checkin.completed]))
 
     const waterDailyMap = body.waterDailyMap || {}
     const defaultWaterGoal = body.waterGoalBottles || 4
@@ -64,59 +58,48 @@ export const getMonthlyMetricsAction = defineAction(
 
     const userWeights = body.performanceWeights || { habits: 50, water: 25, sleep: 25 }
     const rawSum = (userWeights.habits ?? 50) + (userWeights.water ?? 25) + (userWeights.sleep ?? 25)
-    const normFactor = rawSum > 0 ? 100 / rawSum : 1
-    const weightHabits = Math.round((userWeights.habits ?? 50) * normFactor)
-    const weightWater = Math.round((userWeights.water ?? 25) * normFactor)
+    const normalizationFactor = rawSum > 0 ? 100 / rawSum : 1
+    const weightHabits = Math.round((userWeights.habits ?? 50) * normalizationFactor)
+    const weightWater = Math.round((userWeights.water ?? 25) * normalizationFactor)
     const weightSleep = Math.max(0, 100 - weightHabits - weightWater)
 
-    const days: MonthlyMetricsDayItem[] = []
+    const days: MonthlyMetricsDayItem[] = Array.from({ length: daysInMonth }, (_, dayIndex) => {
+      const day = dayIndex + 1
+      const dateKey = `${targetMonth}-${String(day).padStart(2, '0')}`
+      const dayOfWeek = WeekDayLabels[new Date(year, month - 1, day).getDay()]
+      const isToday = dateKey === todayKey
+      const isFuture = dateKey > todayKey
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${targetMonth}-${String(day).padStart(2, '0')}`
-      const dateObj = new Date(year, month - 1, day)
-      const dayOfWeek = weekDaysPT[dateObj.getDay()]
-      const isToday = dateStr === todayFull
-      const isFuture = dateStr > todayFull
-
-      const scheduledHabits = activeHabits.filter((habit) => {
-        if (checkinMap.has(`${dateStr}_${habit.id.toString()}`)) return true
-        return isHabitScheduledForDate(habit, dateStr)
-      })
+      const scheduledHabits = activeHabits.filter((habit) => checkinMap.has(`${dateKey}_${habit.id.toString()}`) || isHabitScheduledForDate(habit, dateKey))
 
       const totalHabits = scheduledHabits.length
-      const completedHabits = scheduledHabits.filter((h) => checkinMap.get(`${dateStr}_${h.id.toString()}`)).length
+      const completedHabits = scheduledHabits.filter((habit) => checkinMap.get(`${dateKey}_${habit.id.toString()}`)).length
       const habitRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 100
 
-      const waterConsumedBottles = waterDailyMap[dateStr] || 0
-      const waterGoalBottles = defaultWaterGoal + (waterExtraTargetMap[dateStr] || 0)
+      const waterConsumedBottles = waterDailyMap[dateKey] || 0
+      const waterGoalBottles = defaultWaterGoal + (waterExtraTargetMap[dateKey] || 0)
       const waterGoalReached = waterGoalBottles > 0 ? waterConsumedBottles >= waterGoalBottles : false
       const waterRate = waterGoalBottles > 0
         ? Math.min(100, Math.round((waterConsumedBottles / waterGoalBottles) * 100))
         : 100
 
-      const sleepHours = sleepDailyMap[dateStr] || 0
+      const sleepHours = sleepDailyMap[dateKey] || 0
       const sleepGoalHours = defaultSleepGoal
       const sleepGoalReached = sleepGoalHours > 0 ? sleepHours >= sleepGoalHours : false
       const sleepRate = sleepGoalHours > 0
         ? Math.min(100, Math.round((sleepHours / sleepGoalHours) * 100))
         : 100
 
-      let overallRate = 0
+      const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
+      const sleepFraction = sleepGoalHours > 0 ? Math.min(1, sleepHours / sleepGoalHours) : 1
+      const habitFraction = totalHabits > 0 ? completedHabits / totalHabits : 1
 
-      if (!isFuture) {
-        const waterFraction = waterGoalBottles > 0 ? Math.min(1, waterConsumedBottles / waterGoalBottles) : 1
-        const sleepFraction = sleepGoalHours > 0 ? Math.min(1, sleepHours / sleepGoalHours) : 1
-        const habitFraction = totalHabits > 0 ? completedHabits / totalHabits : 1
+      const overallRate = isFuture
+        ? 0
+        : Math.min(100, Math.round((habitFraction * weightHabits) + (waterFraction * weightWater) + (sleepFraction * weightSleep)))
 
-        overallRate = Math.min(100, Math.round(
-          (habitFraction * weightHabits) +
-          (waterFraction * weightWater) +
-          (sleepFraction * weightSleep)
-        ))
-      }
-
-      days.push({
-        date: dateStr,
+      return {
+        date: dateKey,
         day,
         dayOfWeek,
         isToday,
@@ -133,24 +116,24 @@ export const getMonthlyMetricsAction = defineAction(
         sleepGoalReached,
         sleepRate: isFuture ? 0 : sleepRate,
         overallRate
-      })
-    }
+      }
+    })
 
-    const trackedDays = days.filter((d) => !d.isFuture)
+    const trackedDays = days.filter((dayItem) => !dayItem.isFuture)
     const trackedDaysCount = trackedDays.length
 
-    const sumOverall = trackedDays.reduce((acc, d) => acc + d.overallRate, 0)
-    const sumHabits = trackedDays.reduce((acc, d) => acc + d.habitRate, 0)
-    const sumWater = trackedDays.reduce((acc, d) => acc + d.waterRate, 0)
-    const sumSleep = trackedDays.reduce((acc, d) => acc + d.sleepRate, 0)
-    const perfectDaysCount = trackedDays.filter((d) => d.overallRate >= 100).length
+    const sumOverall = trackedDays.reduce((total, dayItem) => total + dayItem.overallRate, 0)
+    const sumHabits = trackedDays.reduce((total, dayItem) => total + dayItem.habitRate, 0)
+    const sumWater = trackedDays.reduce((total, dayItem) => total + dayItem.waterRate, 0)
+    const sumSleep = trackedDays.reduce((total, dayItem) => total + dayItem.sleepRate, 0)
+    const perfectDaysCount = trackedDays.filter((dayItem) => dayItem.overallRate >= 100).length
 
     const averageOverallRate = trackedDaysCount > 0 ? Math.round(sumOverall / trackedDaysCount) : 0
     const averageHabitRate = trackedDaysCount > 0 ? Math.round(sumHabits / trackedDaysCount) : 0
     const averageWaterRate = trackedDaysCount > 0 ? Math.round(sumWater / trackedDaysCount) : 0
     const averageSleepRate = trackedDaysCount > 0 ? Math.round(sumSleep / trackedDaysCount) : 0
 
-    const monthLabel = `${monthNamesPT[month - 1]} de ${year}`
+    const monthLabel = `${MonthLabels[month - 1]} de ${year}`
     const formulaExplanation =
       `O índice de constância diária pondera os três pilares com base nas suas metas e pesos configurados: Hábitos (${weightHabits}%), Água (${weightWater}%) e Sono (${weightSleep}%). A contagem começa em 100% no dia e desconta o que não for cumprido (dias sem hábitos programados mantêm 100% desse pilar).`
 

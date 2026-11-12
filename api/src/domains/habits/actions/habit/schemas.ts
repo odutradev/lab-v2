@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
 
+import { paginationQuerySchema, createPaginatedSchema } from '@factories/pagination/schemas'
 import registry from '@factories/docs/registry'
 
 extendZodWithOpenApi(z)
@@ -34,7 +35,7 @@ export const habitResponseSchema = registry.register('HabitResponse', z.object({
   updatedAt: z.date().optional()
 }))
 
-export const listHabitsResponseSchema = registry.register('ListHabitsResponse', z.array(habitResponseSchema))
+export const listHabitsResponseSchema = registry.register('ListHabitsResponse', createPaginatedSchema(habitResponseSchema, 'PaginatedHabits'))
 
 const optionalTimeSchema = z.preprocess((val) => {
   if (val === '' || val === null || val === undefined) return undefined
@@ -90,7 +91,7 @@ export const removeHabitQuerySchema = registry.register('RemoveHabitQuery', z.ob
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be formatted as YYYY-MM-DD').optional()
 }))
 
-export const listHabitsQuerySchema = registry.register('ListHabitsQuery', z.object({
+export const listHabitsQuerySchema = registry.register('ListHabitsQuery', paginationQuerySchema.extend({
   frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly', 'custom', 'none']).optional(),
   category: z.enum(['event', 'habit', 'task', 'schedule']).optional(),
   active: z.preprocess((val) => {
@@ -106,6 +107,6 @@ export const scheduleHabitBodySchema = registry.register('ScheduleHabitBody', z.
 }))
 
 export const habitActionSuccessResponseSchema = registry.register('HabitActionSuccessResponse', z.object({
-  success: z.boolean()
+  id: z.string()
 }))
 

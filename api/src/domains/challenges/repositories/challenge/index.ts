@@ -1,24 +1,12 @@
 import { ChallengeModel } from '@domains/challenges/repositories/challenge/model'
 import { toObjectId } from '@database/utils'
+import { formatDateKey } from '@utils/date'
 
-import type {
-  ChallengeModelType,
-  CreateChallengePayload,
-  UpdateChallengePayload,
-  ListChallengesFilters
-} from '@domains/challenges/repositories/challenge/types'
-
-const getTodayDateString = (): string => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
+import type { ChallengeModelType, CreateChallengePayload, UpdateChallengePayload, ListChallengesFilters } from '@domains/challenges/repositories/challenge/types'
 
 const challengeRepository = {
   create: async (payload: CreateChallengePayload): Promise<ChallengeModelType> => {
-    const startDate = payload.startDate || getTodayDateString()
+    const startDate = payload.startDate || formatDateKey(new Date())
 
     const created = await ChallengeModel.create({
       userId: toObjectId(payload.userId),
@@ -127,18 +115,13 @@ const challengeRepository = {
       return { challenge: null, completedToday: false }
     }
 
-    const exists = challenge.checkins.includes(date)
-    let newCheckins: string[]
-
-    if (exists) {
-      newCheckins = challenge.checkins.filter((d) => d !== date)
-    } else {
-      newCheckins = [...challenge.checkins, date].sort()
-    }
+    const isAlreadyChecked = challenge.checkins.includes(date)
+    const newCheckins = isAlreadyChecked
+      ? challenge.checkins.filter((checkinDate) => checkinDate !== date)
+      : [...challenge.checkins, date].sort()
 
     challenge.checkins = newCheckins
 
-    // Check completion condition
     if (newCheckins.length >= challenge.targetDays) {
       challenge.status = 'completed'
     } else if (challenge.status === 'completed' && newCheckins.length < challenge.targetDays) {
@@ -150,7 +133,7 @@ const challengeRepository = {
     const result = challenge.toObject()
     return {
       challenge: { ...result, id: result._id.toString() } as unknown as ChallengeModelType,
-      completedToday: !exists
+      completedToday: !isAlreadyChecked
     }
   },
 
@@ -172,10 +155,7 @@ const challengeRepository = {
       challenge.slipDates = [...slips, date].sort()
     }
 
-    if (resetCheckins) {
-      // Se optou por resetar a contagem contínua para recomeçar o streak:
-      challenge.checkins = []
-    }
+    if (resetCheckins) challenge.checkins = []
 
     await challenge.save()
     const result = challenge.toObject()
@@ -197,10 +177,10 @@ const challengeRepository = {
     }
 
     const freezes = challenge.freezeDates || []
-    const exists = freezes.includes(date)
+    const isAlreadyFrozen = freezes.includes(date)
 
-    if (exists) {
-      challenge.freezeDates = freezes.filter((d) => d !== date)
+    if (isAlreadyFrozen) {
+      challenge.freezeDates = freezes.filter((freezeDate) => freezeDate !== date)
       await challenge.save()
       const result = challenge.toObject()
       return {
@@ -210,7 +190,7 @@ const challengeRepository = {
     }
 
     const targetMonth = date.slice(0, 7)
-    const usedInMonth = freezes.filter((d) => d.startsWith(targetMonth)).length
+    const usedInMonth = freezes.filter((freezeDate) => freezeDate.startsWith(targetMonth)).length
     const maxAllowed = typeof challenge.freezeDaysPerMonth === 'number' ? challenge.freezeDaysPerMonth : 2
 
     if (usedInMonth >= maxAllowed) {

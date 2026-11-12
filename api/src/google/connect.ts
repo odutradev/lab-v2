@@ -7,13 +7,13 @@ import type { Auth } from 'googleapis'
 
 const logger = createLocalLogger('google')
 
-const requiredEnvVariables = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI']
+const RequiredEnvVariables = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI']
 
 const googleService: GoogleModule = {
   oauth2Client: null,
   initializeGoogle: (): Auth.OAuth2Client => {
     try {
-      requiredEnvVariables.forEach((envVar) => {
+      RequiredEnvVariables.forEach((envVar) => {
         if (!process.env[envVar]) {
           logger.error(`[initializeGoogle] Missing environment variable: "${envVar}"`)
           process.exit(1)

@@ -1,49 +1,13 @@
+import { createChallengeBodySchema, updateChallengeParamsSchema, updateChallengeBodySchema, removeChallengeParamsSchema, checkinChallengeParamsSchema, checkinChallengeBodySchema, checkinChallengeResponseSchema, slipChallengeParamsSchema, slipChallengeBodySchema, listChallengesQuerySchema, challengeResponseSchema, listChallengesResponseSchema, challengeActionSuccessResponseSchema, freezeChallengeParamsSchema, freezeChallengeBodySchema, freezeChallengeResponseSchema } from './schemas'
 import challengeRepository from '@domains/challenges/repositories/challenge'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
-import { isValidObjectId } from '@database/utils'
+import createAuditLog from '@domains/system/utils/createAuditLog'
+import { paginateList } from '@factories/pagination'
 import defineAction from '@factories/defineAction'
-import createAuditLog from '@createAuditLog'
+import { isValidObjectId } from '@database/utils'
+import { formatDateKey } from '@utils/date'
 
-import {
-  createChallengeBodySchema,
-  updateChallengeParamsSchema,
-  updateChallengeBodySchema,
-  removeChallengeParamsSchema,
-  checkinChallengeParamsSchema,
-  checkinChallengeBodySchema,
-  checkinChallengeResponseSchema,
-  slipChallengeParamsSchema,
-  slipChallengeBodySchema,
-  listChallengesQuerySchema,
-  challengeResponseSchema,
-  listChallengesResponseSchema,
-  challengeActionSuccessResponseSchema,
-  freezeChallengeParamsSchema,
-  freezeChallengeBodySchema,
-  freezeChallengeResponseSchema
-} from './schemas'
-
-import type {
-  CreateChallengeBody,
-  UpdateChallengeParams,
-  UpdateChallengeBody,
-  RemoveChallengeParams,
-  CheckinChallengeParams,
-  CheckinChallengeBody,
-  SlipChallengeParams,
-  SlipChallengeBody,
-  ListChallengesQuery,
-  FreezeChallengeParams,
-  FreezeChallengeBody
-} from './types'
-
-const getTodayDateString = (): string => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
+import type { CreateChallengeBody, UpdateChallengeParams, UpdateChallengeBody, RemoveChallengeParams, CheckinChallengeParams, CheckinChallengeBody, SlipChallengeParams, SlipChallengeBody, ListChallengesQuery, FreezeChallengeParams, FreezeChallengeBody } from './types'
 
 export const createChallengeAction = defineAction(
   {
@@ -117,10 +81,10 @@ export const listChallengesAction = defineAction(
   async ({ ids, query, manageError }) => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
 
-    const parsedQuery = (query || {}) as ListChallengesQuery
-    const challenges = await challengeRepository.findAllByUser(ids.userId, parsedQuery)
+    const { page, limit, ...filters } = (query || {}) as ListChallengesQuery
+    const challenges = await challengeRepository.findAllByUser(ids.userId, filters)
 
-    return challenges
+    return paginateList(challenges, { page, limit })
   }
 )
 
@@ -207,7 +171,7 @@ export const removeChallengeAction = defineAction(
       summary: 'Desafio removido pelo usuário.'
     })
 
-    return { success: true }
+    return { id }
   }
 )
 
@@ -240,7 +204,7 @@ export const checkinChallengeAction = defineAction(
     if (!isValidObjectId(id)) return manageError({ code: 'bad_request' })
 
     const body = (data || {}) as CheckinChallengeBody
-    const targetDate = body.date || getTodayDateString()
+    const targetDate = body.date || formatDateKey(new Date())
 
     const { challenge, completedToday } = await challengeRepository.toggleCheckin(id, ids.userId, targetDate)
     if (!challenge) return manageError({ code: 'not_found' })
@@ -290,7 +254,7 @@ export const slipChallengeAction = defineAction(
     if (!isValidObjectId(id)) return manageError({ code: 'bad_request' })
 
     const body = (data || {}) as SlipChallengeBody
-    const targetDate = body.date || getTodayDateString()
+    const targetDate = body.date || formatDateKey(new Date())
 
     const updated = await challengeRepository.recordSlip(
       id,
@@ -342,7 +306,7 @@ export const freezeChallengeAction = defineAction(
     if (!isValidObjectId(id)) return manageError({ code: 'bad_request' })
 
     const body = (data || {}) as FreezeChallengeBody
-    const targetDate = body.date || getTodayDateString()
+    const targetDate = body.date || formatDateKey(new Date())
 
     const { challenge, frozen, error } = await challengeRepository.toggleFreeze(id, ids.userId, targetDate)
     if (!challenge) return manageError({ code: 'not_found' })

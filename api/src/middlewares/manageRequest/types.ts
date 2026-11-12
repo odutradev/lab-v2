@@ -1,6 +1,6 @@
 import type { ResponseErrorsParams } from '@factories/errors/types'
+import type { ZodObject, ZodRawShape, ZodType } from 'zod'
 import type { Request, Response } from 'express'
-import type { ZodObject, ZodRawShape } from 'zod'
 
 export type FileData = {
   fieldname: string
@@ -40,7 +40,7 @@ export type RequestIdentifiers = {
 export type RouteSchema = {
   params?: ZodObject<ZodRawShape>
   query?: ZodObject<ZodRawShape>
-  body?: ZodObject<ZodRawShape>
+  body?: ZodType
 }
 
 export type ManageRequestBody<T extends ManageRequestSchema = ManageRequestSchema> = {

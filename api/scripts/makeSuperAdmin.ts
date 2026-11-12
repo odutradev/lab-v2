@@ -2,15 +2,18 @@ import '@config/environment'
 
 import mongoose from 'mongoose'
 
+import userRepository from '@domains/users/repositories/user'
+import createLocalLogger from '@utils/localLogger'
 import connectMongoose from '@database/connect'
-import { UserModel } from '@domains/users/repositories/user/model'
+
+const logger = createLocalLogger('make-super-admin')
 
 const makeSuperAdmin = async (): Promise<void> => {
   const rawEmail = process.argv[2]
 
   if (!rawEmail) {
-    console.error('Error: Please provide the user email as a parameter.')
-    console.info('Usage: npm run make:superadmin <email> or npx tsx scripts/makeSuperAdmin.ts <email>')
+    logger.error('Please provide the user email as a parameter.')
+    logger.info('Usage: npm run make:superadmin <email> or npx tsx scripts/makeSuperAdmin.ts <email>')
     process.exit(1)
   }
 
@@ -19,20 +22,16 @@ const makeSuperAdmin = async (): Promise<void> => {
   try {
     await connectMongoose()
 
-    const user = await UserModel.findOneAndUpdate(
-      { email: { $regex: new RegExp(`^${email}$`, 'i') } },
-      { superAdmin: true },
-      { new: true }
-    )
+    const user = await userRepository.promoteSuperAdminByEmail(email)
 
     if (!user) {
-      console.error(`Error: User with email "${email}" not found.`)
+      logger.error(`User with email "${email}" not found.`)
       process.exit(1)
     }
 
-    console.info(`Success: User ${user.name} (${user.email}) is now a Super Admin.`)
+    logger.success(`User ${user.name} (${user.email}) is now a Super Admin.`)
   } catch (error) {
-    console.error('Error: Failed to execute script', error)
+    logger.error('Failed to execute script', error)
     process.exit(1)
   } finally {
     await mongoose.disconnect()
