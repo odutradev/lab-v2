@@ -4,7 +4,8 @@ import { TbPlus } from "react-icons/tb";
 
 import Modal from "@components/modal";
 import Button from "@components/button";
-import { muscleGroupLabels, weekDayShortLabels, toOptionalNumber } from "@utils/functions/workouts";
+import { muscleGroupLabels, weekDayShortLabels } from "@utils/functions/workouts";
+import { toOptionalNumber } from "@utils/functions/number";
 import { getFormErrors } from "@utils/validations";
 import { routineFormSchema } from "@utils/validations/workouts";
 

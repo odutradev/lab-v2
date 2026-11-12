@@ -1,7 +1,7 @@
 import { ActionIcon, Autocomplete, Box, Group, NumberInput, SimpleGrid, TextInput } from "@mantine/core";
 import { TbTrash } from "react-icons/tb";
 
-import { toOptionalNumber } from "@utils/functions/workouts";
+import { toOptionalNumber } from "@utils/functions/number";
 
 import { exerciseRowStyle } from "./styles";
 import type { ExerciseRowProps } from "./types";

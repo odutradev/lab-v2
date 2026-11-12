@@ -4,7 +4,7 @@ import { Box, Group, NumberInput, Select, SimpleGrid, Slider, Stack, Text, TextI
 import Modal from "@components/modal";
 import Button from "@components/button";
 import SegmentedControl from "@components/segmentedControl";
-import { toOptionalNumber } from "@utils/functions/workouts";
+import { toOptionalNumber } from "@utils/functions/number";
 import { getFormErrors } from "@utils/validations";
 import { sessionFormSchema } from "@utils/validations/workouts";
 

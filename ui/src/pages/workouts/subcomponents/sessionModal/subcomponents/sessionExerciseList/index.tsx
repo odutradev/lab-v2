@@ -1,6 +1,6 @@
 import { Box, Group, NumberInput, Stack, Text, TextInput } from "@mantine/core";
 
-import { toOptionalNumber } from "@utils/functions/workouts";
+import { toOptionalNumber } from "@utils/functions/number";
 
 import { exerciseLineStyle } from "./styles";
 import type { SessionExerciseListProps } from "./types";
