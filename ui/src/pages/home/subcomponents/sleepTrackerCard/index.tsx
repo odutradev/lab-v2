@@ -110,7 +110,7 @@ export const SleepTrackerCard = ({
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center">
               <TbMoonStars size={18} color={colors.purple400} />
-              <CardTitle style={{ fontSize: "14px", fontWeight: 700 }}>Sono & Recuperação</CardTitle>
+              <CardTitle style={{ fontSize: "14px", fontWeight: 700 }}>Sono e recuperação</CardTitle>
             </Group>
 
             <Group gap={8} align="center">
@@ -195,7 +195,7 @@ export const SleepTrackerCard = ({
                 <Group gap={6} align="center">
                   <TbClock size={16} color={colors.purple400} />
                   <Text size="sm" fw={600} c={colors.white}>
-                    Horas de Sono
+                    Horas de sono
                   </Text>
                 </Group>
 

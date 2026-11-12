@@ -37,11 +37,10 @@ export const HabitsCalendarToolbar = ({
         borderBottom: `1px solid ${tokens.border}`,
         width: "100%",
         minWidth: 0,
-        overflowX: "auto",
-        scrollbarWidth: "none"
+        rowGap: 8
       }}
     >
-      <Group justify="space-between" align="center" wrap="nowrap" gap="xs" style={{ width: "100%", minWidth: 0 }}>
+      <Group justify="space-between" align="center" wrap="wrap" gap="xs" style={{ width: "100%", minWidth: 0 }}>
         <Group gap="xs" align="center" wrap="nowrap" style={{ minWidth: 0, flexShrink: 1, overflow: "hidden" }}>
           <Button
             variant={isToday ? "outline" : "secondary"}
@@ -95,7 +94,7 @@ export const HabitsCalendarToolbar = ({
           </Text>
         </Group>
 
-        <Group gap="xs" align="center" wrap="nowrap" style={{ flexShrink: 0 }}>
+        <Group gap="xs" align="center" wrap="wrap" style={{ flexShrink: 1, minWidth: 0 }}>
           <Box style={{ flexShrink: 0 }}>
             <SegmentedControl
               value={viewMode}

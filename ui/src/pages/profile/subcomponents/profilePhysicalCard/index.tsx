@@ -90,7 +90,7 @@ export const ProfilePhysicalCard = () => {
       <CardHeader>
         <Group justify="space-between" align="center" wrap="nowrap">
           <Box>
-            <CardTitle>Dados Biofísicos & Saúde</CardTitle>
+            <CardTitle>Dados biofísicos & Saúde</CardTitle>
             <CardDescription>
               Sua altura, peso e idade são utilizados para calibrar suas métricas e rotina de hidratação
             </CardDescription>

@@ -167,7 +167,7 @@ export const EditWaterModal = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Configurar Garrafa"
+      title="Configurar garrafa"
       description="Informe o tamanho da sua garrafa. A meta de garrafas diárias é calculada automaticamente para o seu corpo."
       variant="indigo"
       size="sm"

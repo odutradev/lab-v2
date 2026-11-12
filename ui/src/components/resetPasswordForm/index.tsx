@@ -161,7 +161,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           </Paper>
 
           <Input
-            label="Código de Verificação"
+            label="Código de verificação"
             name="code"
             type="text"
             placeholder="Digite o código de 6 dígitos"
@@ -185,7 +185,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               isLoading={isLoading}
               leftIcon={<TbCheck size={18} />}
             >
-              Validar Código
+              Validar código
             </Button>
           </Box>
 
@@ -224,7 +224,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
       <form onSubmit={handleResetPassword} noValidate style={{ width: "100%" }}>
         <Stack gap="md">
           <Input
-            label="Nova Senha"
+            label="Nova senha"
             name="password"
             type="password"
             placeholder="No mínimo 8 caracteres"
@@ -239,7 +239,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           />
 
           <Input
-            label="Confirmar Nova Senha"
+            label="Confirmar nova senha"
             name="confirmPassword"
             type="password"
             placeholder="Confirme sua nova senha"

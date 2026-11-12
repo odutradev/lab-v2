@@ -164,7 +164,7 @@ export const ChallengeDetailModal = ({
           </Box>
         )}
 
-        {/* Checklist do Desafio */}
+        {/* Checklist do desafio */}
         {challenge.checklist && challenge.checklist.length > 0 && (
           <Box
             style={{
@@ -180,7 +180,7 @@ export const ChallengeDetailModal = ({
                   <TbListCheck size={14} />
                 </ThemeIcon>
                 <Text size="11px" fw={600} c="teal.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
-                  Checklist do Desafio
+                  Checklist do desafio
                 </Text>
               </Group>
               <Badge color="teal" variant="light" size="xs">
@@ -263,7 +263,7 @@ export const ChallengeDetailModal = ({
           >
             <Group justify="space-between" align="center">
               <Text size="10px" c="dimmed" fw={600} tt="uppercase">
-                Ofensiva Atual
+                Ofensiva atual
               </Text>
               <TbFlame size={14} color={colors.orange500} />
             </Group>
@@ -304,7 +304,7 @@ export const ChallengeDetailModal = ({
           >
             <Group justify="space-between" align="center">
               <Text size="10px" c="dimmed" fw={600} tt="uppercase">
-                Previsão Final
+                Previsão final
               </Text>
               <TbCalendar size={14} color={colors.indigo400} />
             </Group>

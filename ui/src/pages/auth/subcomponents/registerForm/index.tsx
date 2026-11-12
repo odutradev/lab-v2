@@ -43,7 +43,7 @@ export const RegisterForm = () => {
     <form onSubmit={handleSubmit} noValidate style={{ width: "100%" }}>
       <Stack gap="md">
         <Input
-          label="Nome Completo"
+          label="Nome completo"
           name="name"
           placeholder="João da Silva"
           value={values.name}

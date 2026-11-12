@@ -61,7 +61,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
       <CardHeader>
         <Group justify="space-between" align="center" wrap="nowrap">
           <Box>
-            <CardTitle>Pesos do Desempenho Geral</CardTitle>
+            <CardTitle>Pesos do Desempenho geral</CardTitle>
             <CardDescription>
               Configure o quanto cada pilar vale no cálculo da sua constância diária (a soma deve ser 100%)
             </CardDescription>

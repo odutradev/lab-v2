@@ -21,7 +21,7 @@ export const ChallengeSlipModal = ({
   isLoading = false
 }: ChallengeSlipModalProps) => {
   return (
-    <Modal opened={isOpen} onClose={onClose} title="Registrar Deslize" variant="warning" size="md">
+    <Modal opened={isOpen} onClose={onClose} title="Registrar deslize" variant="warning" size="md">
       <Stack gap="md">
         <Group align="flex-start" gap="md">
           <ThemeIcon size="xl" radius="md" color="yellow" variant="light">

@@ -34,7 +34,7 @@ export const GeneralPerformanceCard = ({
         <Group justify="space-between" align="center" wrap="wrap" gap="xs">
           <Group gap={6} align="center">
             <TbActivity size={18} color={colors.purple500} />
-            <CardTitle style={{ fontSize: "14px", fontWeight: 700 }}>Desempenho Geral</CardTitle>
+            <CardTitle style={{ fontSize: "14px", fontWeight: 700 }}>Desempenho geral</CardTitle>
             <Tooltip
               label={
                 metrics?.formulaExplanation ||

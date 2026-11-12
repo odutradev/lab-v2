@@ -45,11 +45,11 @@ export const PrivacyPolicyPage = ({ onBack }: PrivacyPolicyPageProps) => {
                   você cria uma conta diretamente.
                 </Text>
                 <Text style={textStyle}>
-                  • <strong>Dados de Hábitos e Produtividade:</strong> Informações sobre rotinas, hábitos, sono,
+                  • <strong>Dados de hábitos e Produtividade:</strong> Informações sobre rotinas, hábitos, sono,
                   ingestão de água e metas cadastradas por você.
                 </Text>
                 <Text style={textStyle}>
-                  • <strong>Dados de Autenticação de Terceiros:</strong> Quando você opta por autenticar-se utilizando
+                  • <strong>Dados de autenticação de Terceiros:</strong> Quando você opta por autenticar-se utilizando
                   serviços como o Google OAuth, recebemos seu identificador único do Google, nome e endereço de e-mail
                   verificado.
                 </Text>

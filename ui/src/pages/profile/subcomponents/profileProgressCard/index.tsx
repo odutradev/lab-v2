@@ -71,7 +71,7 @@ export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: Profi
         <Group justify="space-between" align="center" wrap="wrap" gap="sm">
           <Box>
             <Group gap="xs" align="center">
-              <CardTitle>Complete seu Perfil</CardTitle>
+              <CardTitle>Complete seu perfil</CardTitle>
               <Badge variant={percentage >= 66 ? "info" : "warning"}>{percentage}% concluído</Badge>
             </Group>
             <CardDescription>

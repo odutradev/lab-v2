@@ -181,7 +181,7 @@ export const ChallengeFormModal = ({
 
         {/* Título */}
         <TextInput
-          label="Título do Desafio"
+          label="Título do desafio"
           placeholder="Ex: 90 dias sem refrigerante, 30 dias de corrida..."
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
@@ -232,7 +232,7 @@ export const ChallengeFormModal = ({
           }}
         />
 
-        {/* Checklist do Desafio */}
+        {/* Checklist do desafio */}
         <Box>
           <Group justify="space-between" align="center" mb={6}>
             <Group gap={6}>
@@ -306,10 +306,10 @@ export const ChallengeFormModal = ({
           )}
         </Box>
 
-        {/* Meta de Dias com Presets */}
+        {/* Meta de dias com Presets */}
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={6}>
-            Meta de Dias
+            Meta de dias
           </Text>
           <Group gap="xs" mb="xs">
             {targetDaysPresets.map((d) => (
@@ -341,7 +341,7 @@ export const ChallengeFormModal = ({
         {/* Tipo de Desafio */}
         <Box>
           <Text size="xs" fw={600} c="dimmed" mb={6}>
-            Modo do Desafio
+            Modo do desafio
           </Text>
           <SegmentedControl
             value={type}
@@ -353,7 +353,7 @@ export const ChallengeFormModal = ({
                 label: (
                   <Group gap={6} justify="center">
                     <TbFlame size={16} />
-                    <span>Ofensiva Contínua (Streak)</span>
+                    <span>Ofensiva contínua (Streak)</span>
                   </Group>
                 )
               },
@@ -414,7 +414,7 @@ export const ChallengeFormModal = ({
 
         {/* Data de início */}
         <TextInput
-          label="Data de Início"
+          label="Data de início"
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.currentTarget.value)}

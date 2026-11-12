@@ -170,7 +170,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
           <Group gap="xs" align="center">
             <TbCalendar size={20} color={colors.indigo400} />
             <Text fw={600} size="md" c={tokens.textPrimary}>
-              Configurar Agendas
+              Configurar agendas
             </Text>
           </Group>
           <Text size="xs" c="dimmed" mt={4}>

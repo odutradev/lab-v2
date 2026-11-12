@@ -7,7 +7,7 @@ import type { SectionHeaderProps } from "./types";
 
 export const SectionHeader = ({ title, description, actions }: SectionHeaderProps) => {
   return (
-    <Group justify="space-between" align="center" gap="sm" wrap="wrap">
+    <Group justify="space-between" align="center" gap="sm" wrap="nowrap">
       <Stack gap={2} miw={0}>
         <Title order={4} c={tokens.textPrimary} style={sectionTitleStyle}>
           {title}

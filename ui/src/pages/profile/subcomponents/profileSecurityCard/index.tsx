@@ -76,7 +76,7 @@ export const ProfileSecurityCard = ({
     <>
       <Card id="profile-security-card">
         <CardHeader>
-          <CardTitle>Integrações e Segurança</CardTitle>
+          <CardTitle>Integrações e segurança</CardTitle>
           <CardDescription>
             Gerencie integrações com serviços externos e configurações de segurança da conta
           </CardDescription>
@@ -218,7 +218,7 @@ export const ProfileSecurityCard = ({
                 </ThemeIcon>
                 <Box>
                   <Text size="sm" fw={600} c={tokens.textPrimary}>
-                    Senha de Acesso
+                    Senha de acesso
                   </Text>
                   <Text size="xs" c="dimmed">
                     Recomendamos alterar sua senha periodicamente para manter sua conta protegida
@@ -240,7 +240,7 @@ export const ProfileSecurityCard = ({
                 </ThemeIcon>
                 <Box>
                   <Text size="sm" fw={600} c={tokens.textPrimary}>
-                    Cache Local
+                    Cache local
                   </Text>
                   <Text size="xs" c="dimmed">
                     Limpe arquivos temporários e dados em cache armazenados no navegador
@@ -261,7 +261,7 @@ export const ProfileSecurityCard = ({
         onClose={onCloseClearCacheModal}
         type="confirm"
         variant="warning"
-        title="Limpar Cache Local"
+        title="Limpar Cache local"
         description="Tem certeza que deseja limpar o cache local? Arquivos em cache e dados temporários serão removidos e a página será recarregada. Sua sessão permanecerá ativa."
         confirmText="Limpar Cache"
         cancelText="Cancelar"
@@ -285,7 +285,7 @@ export const ProfileSecurityCard = ({
         onClose={onCloseEditCalendarNameModal}
         type="default"
         variant="indigo"
-        title="Editar Nome da Agenda"
+        title="Editar nome da agenda"
         description="Altere o nome da agenda sincronizada no seu Google Agenda"
         footer={
           <>
@@ -300,7 +300,7 @@ export const ProfileSecurityCard = ({
       >
         <Stack gap="md" pt="xs">
           <Input
-            label="Nome da Agenda"
+            label="Nome da agenda"
             placeholder="Ex: Minha Agenda Lab"
             value={calendarNameInput}
             onChange={(e) => onCalendarNameInputChange(e.target.value)}

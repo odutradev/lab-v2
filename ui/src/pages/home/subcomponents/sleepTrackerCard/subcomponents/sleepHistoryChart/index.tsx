@@ -172,7 +172,7 @@ export const SleepHistoryChart = ({
               }}
             />
             <Text size="10px" c="dimmed">
-              Horas de Sono
+              Horas de sono
             </Text>
           </Group>
 

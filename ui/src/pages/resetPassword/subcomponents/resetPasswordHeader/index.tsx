@@ -11,7 +11,7 @@ export const ResetPasswordHeader = ({ subtitle }: ResetPasswordHeaderProps) => {
         <TbKey size={28} />
       </ThemeIcon>
       <Title order={1} size="h2" fw={600} c={tokens.textPrimary}>
-        Redefinição de Senha
+        Redefinição de senha
       </Title>
       <Text size="sm" c="dimmed">
         {subtitle}

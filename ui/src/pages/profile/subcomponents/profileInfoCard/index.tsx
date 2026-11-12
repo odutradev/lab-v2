@@ -12,7 +12,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Informações Pessoais e da Conta</CardTitle>
+        <CardTitle>Informações pessoais e da Conta</CardTitle>
         <CardDescription>Dados cadastrais associados ao seu acesso no LAB Portal</CardDescription>
       </CardHeader>
 
@@ -24,7 +24,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                 <TbUser size={14} />
               </ThemeIcon>
               <Text size="xs" fw={500} c="dimmed">
-                Nome Completo
+                Nome completo
               </Text>
             </Group>
             <Text size="sm" fw={600} c={tokens.textPrimary}>
@@ -59,7 +59,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                 <TbShieldCheck size={14} />
               </ThemeIcon>
               <Text size="xs" fw={500} c="dimmed">
-                Tipo de Acesso
+                Tipo de acesso
               </Text>
             </Group>
             <Text size="sm" fw={600} c={tokens.textPrimary}>
