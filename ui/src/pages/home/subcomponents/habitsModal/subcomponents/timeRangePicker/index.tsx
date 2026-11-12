@@ -1,8 +1,9 @@
 import { useState, useMemo, useRef } from 'react'
-import { Group, Text, Box, Checkbox, Popover, ScrollArea } from '@mantine/core'
+import { Group, Text, Box, Checkbox, Popover, ScrollArea, alpha } from '@mantine/core'
 import { TbClock } from 'react-icons/tb'
 
 import type { TimeRangePickerProps } from './types'
+import { colors } from '@styles/theme'
 
 const formatDurationLabel = (diffMinutes: number): string => {
   if (diffMinutes < 60) {
@@ -103,7 +104,7 @@ export const TimeRangePicker = ({
   return (
     <Box>
       <Group justify="space-between" align="center" mb={6}>
-        <Text size="xs" fw={500} c="#d1d5db">
+        <Text size="xs" fw={500} c={colors.gray300}>
           Horário
         </Text>
         <Checkbox
@@ -112,7 +113,7 @@ export const TimeRangePicker = ({
           checked={allDay}
           onChange={(e) => onAllDayChange(e.currentTarget.checked)}
           styles={{
-            label: { color: '#9ca3af', fontSize: 12, cursor: 'pointer' },
+            label: { color: colors.gray400, fontSize: 12, cursor: 'pointer' },
             input: { cursor: 'pointer' }
           }}
         />
@@ -134,8 +135,8 @@ export const TimeRangePicker = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: isStartMenuOpen ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.1)',
+                  backgroundColor: alpha(colors.white, 0.04),
+                  border: isStartMenuOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
                   borderRadius: 10,
                   padding: '8px 12px',
                   cursor: 'pointer',
@@ -144,8 +145,8 @@ export const TimeRangePicker = ({
                 }}
               >
                 <Group gap={8} wrap="nowrap">
-                  <TbClock size={16} color="#9ca3af" />
-                  <Text size="sm" fw={500} c={startTime ? '#ffffff' : '#9ca3af'}>
+                  <TbClock size={16} color={colors.gray400} />
+                  <Text size="sm" fw={500} c={startTime ? colors.white : colors.gray400}>
                     {startTime || '00:00'}
                   </Text>
                 </Group>
@@ -157,10 +158,10 @@ export const TimeRangePicker = ({
             <Popover.Dropdown
               p={4}
               style={{
-                backgroundColor: '#1c1f26',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                backgroundColor: colors.night700,
+                border: `1px solid ${alpha(colors.white, 0.12)}`,
                 borderRadius: 8,
-                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)'
+                boxShadow: `0 12px 28px ${alpha(colors.black, 0.6)}`
               }}
             >
               <ScrollArea.Autosize mah={220} type="auto">
@@ -175,13 +176,13 @@ export const TimeRangePicker = ({
                       style={{
                         borderRadius: 6,
                         cursor: 'pointer',
-                        backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                        color: isSelected ? '#ffffff' : '#d1d5db',
+                        backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                        color: isSelected ? colors.white : colors.gray300,
                         fontWeight: isSelected ? 600 : 400,
                         fontSize: 13,
                         transition: 'background-color 0.1s ease',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                          backgroundColor: alpha(colors.white, 0.08)
                         }
                       }}
                     >
@@ -208,8 +209,8 @@ export const TimeRangePicker = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  border: isEndMenuOpen ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.1)',
+                  backgroundColor: alpha(colors.white, 0.04),
+                  border: isEndMenuOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
                   borderRadius: 10,
                   padding: '8px 12px',
                   cursor: 'pointer',
@@ -218,15 +219,15 @@ export const TimeRangePicker = ({
                 }}
               >
                 <Group gap={8} wrap="nowrap">
-                  <Text size="sm" fw={500} c={endTime ? '#ffffff' : '#9ca3af'}>
+                  <Text size="sm" fw={500} c={endTime ? colors.white : colors.gray400}>
                     {endTime || (startTime ? minutesToTimeString(parseTimeToMinutes(startTime) + 60) : '01:00')}
                   </Text>
                   {currentDuration && (
                     <Text
                       size="xs"
-                      c="#9ca3af"
+                      c={colors.gray400}
                       style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                        backgroundColor: alpha(colors.white, 0.06),
                         padding: '1px 6px',
                         borderRadius: 4,
                         fontSize: 11
@@ -244,10 +245,10 @@ export const TimeRangePicker = ({
             <Popover.Dropdown
               p={4}
               style={{
-                backgroundColor: '#1c1f26',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                backgroundColor: colors.night700,
+                border: `1px solid ${alpha(colors.white, 0.12)}`,
                 borderRadius: 8,
-                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)',
+                boxShadow: `0 12px 28px ${alpha(colors.black, 0.6)}`,
                 minWidth: 200
               }}
             >
@@ -262,8 +263,8 @@ export const TimeRangePicker = ({
                       style={{
                         borderRadius: 6,
                         cursor: 'pointer',
-                        backgroundColor: opt.isSelected ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                        color: opt.isSelected ? '#ffffff' : '#d1d5db',
+                        backgroundColor: opt.isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                        color: opt.isSelected ? colors.white : colors.gray300,
                         fontSize: 13,
                         display: 'flex',
                         alignItems: 'center',
@@ -271,7 +272,7 @@ export const TimeRangePicker = ({
                         gap: 12,
                         transition: 'background-color 0.1s ease',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                          backgroundColor: alpha(colors.white, 0.08)
                         }
                       }}
                     >
@@ -296,12 +297,12 @@ export const TimeRangePicker = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            backgroundColor: alpha(colors.white, 0.02),
             borderRadius: 10,
-            border: '1px dashed rgba(255, 255, 255, 0.08)'
+            border: `1px dashed ${alpha(colors.white, 0.08)}`
           }}
         >
-          <TbClock size={15} color="#6b7280" />
+          <TbClock size={15} color={colors.gray500} />
           <Text size="xs" c="dimmed">
             Dia inteiro (sem horário fixo definido)
           </Text>

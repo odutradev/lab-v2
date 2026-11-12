@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
-import { Group, Text, Box, Tooltip, Badge } from '@mantine/core'
+import { Group, Text, Box, Tooltip, Badge, alpha } from '@mantine/core'
 import { TbActivity, TbInfoCircle } from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardContent } from '@components/card'
 
 import type { GeneralPerformanceCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const GeneralPerformanceCard = ({
   metrics,
@@ -36,7 +37,7 @@ export const GeneralPerformanceCard = ({
           right: -24,
           width: 120,
           height: 120,
-          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, transparent 70%)',
+          background: `radial-gradient(circle, ${alpha(colors.purple500, 0.16)} 0%, transparent 70%)`,
           pointerEvents: 'none'
         }}
       />
@@ -44,7 +45,7 @@ export const GeneralPerformanceCard = ({
       <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
         <Group justify="space-between" align="center" wrap="wrap" gap="xs">
           <Group gap={6} align="center">
-            <TbActivity size={18} color="#a855f7" />
+            <TbActivity size={18} color={colors.purple500} />
             <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Desempenho Geral</CardTitle>
             <Tooltip
               label={
@@ -57,7 +58,7 @@ export const GeneralPerformanceCard = ({
               position="bottom-start"
             >
               <Box style={{ display: 'inline-flex', cursor: 'pointer', opacity: 0.8, verticalAlign: 'middle' }}>
-                <TbInfoCircle size={14} color="#94a3b8" />
+                <TbInfoCircle size={14} color={colors.slate400} />
               </Box>
             </Tooltip>
           </Group>
@@ -104,15 +105,15 @@ export const GeneralPerformanceCard = ({
             </Text>
             <Group gap={8} wrap="wrap">
               <Group gap={3} align="center">
-                <Box w={6} h={6} style={{ borderRadius: '50%', background: '#10b981' }} />
+                <Box w={6} h={6} style={{ borderRadius: '50%', background: colors.emerald500 }} />
                 <Text size="10px" c="dimmed">100%</Text>
               </Group>
               <Group gap={3} align="center">
-                <Box w={6} h={6} style={{ borderRadius: '50%', background: '#6366f1' }} />
+                <Box w={6} h={6} style={{ borderRadius: '50%', background: colors.indigo500 }} />
                 <Text size="10px" c="dimmed">Parcial</Text>
               </Group>
               <Group gap={3} align="center">
-                <Box w={6} h={6} style={{ borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                <Box w={6} h={6} style={{ borderRadius: '50%', background: alpha(colors.white, 0.1) }} />
                 <Text size="10px" c="dimmed">0%</Text>
               </Group>
             </Group>
@@ -127,8 +128,8 @@ export const GeneralPerformanceCard = ({
               height: 48,
               padding: '6px 8px',
               borderRadius: 8,
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: alpha(colors.white, 0.02),
+              border: `1px solid ${alpha(colors.white, 0.05)}`,
               overflow: 'hidden'
             }}
           >
@@ -142,14 +143,14 @@ export const GeneralPerformanceCard = ({
                   : Math.max(8, Math.round((item.overallRate / 100) * 36))
 
               const barColor = item.isFuture
-                ? 'rgba(255, 255, 255, 0.04)'
+                ? alpha(colors.white, 0.04)
                 : item.overallRate >= 100
-                  ? '#10b981'
+                  ? colors.emerald500
                   : item.overallRate >= 60
-                    ? '#6366f1'
+                    ? colors.indigo500
                     : item.overallRate > 0
-                      ? '#38bdf8'
-                      : 'rgba(255, 255, 255, 0.12)'
+                      ? colors.sky400
+                      : alpha(colors.white, 0.12)
 
               const sleepInfo = item.sleepHours > 0
                 ? `${item.sleepHours}h/${item.sleepGoalHours}h (${item.sleepRate}%)`
@@ -184,18 +185,18 @@ export const GeneralPerformanceCard = ({
                       position: 'relative',
                       opacity: item.isFuture ? 0.35 : 1,
                       border: isSelected
-                        ? '1.5px solid #ffffff'
+                        ? `1.5px solid ${colors.white}`
                         : isHovered
-                          ? '1.5px solid #38bdf8'
+                          ? `1.5px solid ${colors.sky400}`
                           : item.isToday
-                            ? '1.5px solid #c084fc'
+                            ? `1.5px solid ${colors.purple400}`
                             : 'none',
                       boxShadow: isSelected
-                        ? '0 0 8px rgba(255, 255, 255, 0.5)'
+                        ? `0 0 8px ${alpha(colors.white, 0.5)}`
                         : isHovered
-                          ? '0 0 8px rgba(56, 189, 248, 0.6)'
+                          ? `0 0 8px ${alpha(colors.sky400, 0.6)}`
                           : item.overallRate >= 100
-                            ? '0 0 6px rgba(16, 185, 129, 0.4)'
+                            ? `0 0 6px ${alpha(colors.emerald500, 0.4)}`
                             : 'none',
                       transition: 'all 0.15s ease'
                     }}

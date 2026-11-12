@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  Modal,
-  Stack,
-  Group,
-  Text,
-  Box,
-  Checkbox,
-  Loader,
-  Badge,
-  UnstyledButton
-} from '@mantine/core'
+import { Modal, Stack, Group, Text, Box, Checkbox, Loader, Badge, UnstyledButton, alpha } from '@mantine/core'
 import {
   TbCalendar,
   TbChevronDown,
@@ -26,6 +16,7 @@ import useCalendarStore from '@stores/calendar'
 
 import type { GoogleCalendarItem } from '@actions/google/calendar/types'
 import type { CalendarSettingsModalProps } from './types'
+import { colors } from '@styles/theme'
 
 export const CalendarSettingsModal = ({
   isOpen,
@@ -88,7 +79,7 @@ export const CalendarSettingsModal = ({
 
   const renderCalendarRow = (item: GoogleCalendarItem) => {
     const isChecked = selectedCalendarIds.includes(item.id)
-    const color = item.backgroundColor || '#6366f1'
+    const color = item.backgroundColor || colors.indigo500
 
     return (
       <Box
@@ -97,9 +88,9 @@ export const CalendarSettingsModal = ({
         onClick={() => toggleCalendar(item.id)}
         style={{
           borderRadius: 8,
-          backgroundColor: isChecked ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+          backgroundColor: isChecked ? alpha(colors.white, 0.05) : 'transparent',
           border: '1px solid',
-          borderColor: isChecked ? 'rgba(99, 102, 241, 0.35)' : 'transparent',
+          borderColor: isChecked ? alpha(colors.indigo500, 0.35) : 'transparent',
           transition: 'all 0.15s ease',
           cursor: 'pointer'
         }}
@@ -114,7 +105,7 @@ export const CalendarSettingsModal = ({
               styles={{
                 input: {
                   cursor: 'pointer',
-                  borderColor: isChecked ? color : 'rgba(255, 255, 255, 0.2)'
+                  borderColor: isChecked ? color : alpha(colors.white, 0.2)
                 }
               }}
             />
@@ -188,7 +179,7 @@ export const CalendarSettingsModal = ({
       title={
         <Box>
           <Group gap="xs" align="center">
-            <TbCalendar size={20} color="#818cf8" />
+            <TbCalendar size={20} color={colors.indigo400} />
             <Text fw={700} size="md" c="white">
               Configurar Agendas
             </Text>
@@ -203,15 +194,15 @@ export const CalendarSettingsModal = ({
       size="md"
       styles={{
         content: {
-          backgroundColor: '#161922',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.7)',
-          color: '#e5e7eb',
+          backgroundColor: colors.night800,
+          border: `1px solid ${alpha(colors.white, 0.08)}`,
+          boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
+          color: colors.gray200,
           padding: '20px 24px'
         },
         header: {
-          backgroundColor: '#161922',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          backgroundColor: colors.night800,
+          borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
           paddingBottom: 14,
           marginBottom: 16
         }
@@ -231,13 +222,13 @@ export const CalendarSettingsModal = ({
             p="xs"
             style={{
               borderRadius: 8,
-              backgroundColor: 'rgba(99, 102, 241, 0.08)',
-              border: '1px solid rgba(99, 102, 241, 0.2)'
+              backgroundColor: alpha(colors.indigo500, 0.08),
+              border: `1px solid ${alpha(colors.indigo500, 0.2)}`
             }}
           >
             <Group gap="xs" align="flex-start" wrap="nowrap">
-              <TbInfoCircle size={18} color="#818cf8" style={{ flexShrink: 0, marginTop: 2 }} />
-              <Text size="xs" c="#c7d2fe" lh={1.4}>
+              <TbInfoCircle size={18} color={colors.indigo400} style={{ flexShrink: 0, marginTop: 2 }} />
+              <Text size="xs" c={colors.indigo200} lh={1.4}>
                 Apenas as metas e eventos do <strong>Lab V2</strong> são editáveis e marcáveis. As demais agendas aparecem somente para visualização de compromissos.
               </Text>
             </Group>
@@ -249,8 +240,8 @@ export const CalendarSettingsModal = ({
                 p="md"
                 style={{
                   borderRadius: 10,
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)'
+                  backgroundColor: alpha(colors.white, 0.02),
+                  border: `1px solid ${alpha(colors.white, 0.06)}`
                 }}
               >
                 <Group justify="space-between" align="center">
@@ -260,7 +251,7 @@ export const CalendarSettingsModal = ({
                       h={10}
                       style={{
                         borderRadius: '50%',
-                        backgroundColor: '#2dd4bf'
+                        backgroundColor: colors.teal400
                       }}
                     />
                     <Text size="sm" fw={600} c="white">
@@ -277,8 +268,8 @@ export const CalendarSettingsModal = ({
                 p="md"
                 style={{
                   borderRadius: 10,
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px dashed rgba(255, 255, 255, 0.12)',
+                  backgroundColor: alpha(colors.white, 0.03),
+                  border: `1px dashed ${alpha(colors.white, 0.12)}`,
                   textAlign: 'center'
                 }}
               >
@@ -306,13 +297,13 @@ export const CalendarSettingsModal = ({
                     style={{ width: '100%', padding: '4px 0', cursor: 'pointer' }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c="#9ca3af" tt="uppercase" style={{ letterSpacing: '0.5px' }}>
+                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: '0.5px' }}>
                         Minhas agendas
                       </Text>
                       {isMyCalendarsOpen ? (
-                        <TbChevronUp size={16} color="#9ca3af" />
+                        <TbChevronUp size={16} color={colors.gray400} />
                       ) : (
-                        <TbChevronDown size={16} color="#9ca3af" />
+                        <TbChevronDown size={16} color={colors.gray400} />
                       )}
                     </Group>
                   </UnstyledButton>
@@ -333,13 +324,13 @@ export const CalendarSettingsModal = ({
                     style={{ width: '100%', padding: '4px 0', cursor: 'pointer' }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c="#9ca3af" tt="uppercase" style={{ letterSpacing: '0.5px' }}>
+                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: '0.5px' }}>
                         Outras agendas
                       </Text>
                       {isOtherCalendarsOpen ? (
-                        <TbChevronUp size={16} color="#9ca3af" />
+                        <TbChevronUp size={16} color={colors.gray400} />
                       ) : (
-                        <TbChevronDown size={16} color="#9ca3af" />
+                        <TbChevronDown size={16} color={colors.gray400} />
                       )}
                     </Group>
                   </UnstyledButton>
@@ -355,7 +346,7 @@ export const CalendarSettingsModal = ({
           )}
 
           {/* Botões do Rodapé */}
-          <Group justify="flex-end" gap="sm" mt="md" pt="sm" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Group justify="flex-end" gap="sm" mt="md" pt="sm" style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}>
             <Button variant="secondary" size="sm" onClick={onClose} disabled={isSaving}>
               Cancelar
             </Button>

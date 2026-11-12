@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Group, Stack, Text, NumberInput, SimpleGrid, Box } from '@mantine/core'
+import { Group, Stack, Text, NumberInput, SimpleGrid, Box, alpha } from '@mantine/core'
 import { TbRuler, TbCalendarTime, TbHeartRateMonitor, TbScale } from 'react-icons/tb'
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
@@ -10,6 +10,7 @@ import useToastStore from '@stores/toast'
 import useAction from '@hooks/useAction'
 import { parseDecimalNumber, roundToOneDecimal } from '@utils/functions/health'
 import { infoCardItemStyle } from '../../styles'
+import { colors } from '@styles/theme'
 
 export const ProfilePhysicalCard = () => {
   const { profile, updateProfile, weightHistory, saveWeightRecord } = useHealthStore()
@@ -108,7 +109,7 @@ export const ProfilePhysicalCard = () => {
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
             <Box style={infoCardItemStyle}>
               <Group gap="sm" mb="xs">
-                <TbRuler size={18} color="#38bdf8" />
+                <TbRuler size={18} color={colors.sky400} />
                 <Text size="xs" fw={600} c="dimmed">
                   Altura (em metros)
                 </Text>
@@ -132,9 +133,9 @@ export const ProfilePhysicalCard = () => {
                 }
                 styles={{
                   input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
+                    backgroundColor: alpha(colors.white, 0.04),
+                    borderColor: alpha(colors.white, 0.1),
+                    color: colors.white,
                     fontWeight: 600
                   }
                 }}
@@ -143,7 +144,7 @@ export const ProfilePhysicalCard = () => {
 
             <Box style={infoCardItemStyle}>
               <Group gap="sm" mb="xs">
-                <TbScale size={18} color="#a3e635" />
+                <TbScale size={18} color={colors.lime400} />
                 <Text size="xs" fw={600} c="dimmed">
                   Peso atual (em kg)
                 </Text>
@@ -167,9 +168,9 @@ export const ProfilePhysicalCard = () => {
                 }
                 styles={{
                   input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
+                    backgroundColor: alpha(colors.white, 0.04),
+                    borderColor: alpha(colors.white, 0.1),
+                    color: colors.white,
                     fontWeight: 600
                   }
                 }}
@@ -178,7 +179,7 @@ export const ProfilePhysicalCard = () => {
 
             <Box style={infoCardItemStyle}>
               <Group gap="sm" mb="xs">
-                <TbCalendarTime size={18} color="#a855f7" />
+                <TbCalendarTime size={18} color={colors.purple500} />
                 <Text size="xs" fw={600} c="dimmed">
                   Idade (em anos)
                 </Text>
@@ -195,9 +196,9 @@ export const ProfilePhysicalCard = () => {
                 description="Necessário para ajustar taxa de hidratação"
                 styles={{
                   input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#fff',
+                    backgroundColor: alpha(colors.white, 0.04),
+                    borderColor: alpha(colors.white, 0.1),
+                    color: colors.white,
                     fontWeight: 600
                   }
                 }}

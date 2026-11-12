@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
-import { Group, Text, Box, Popover, UnstyledButton } from '@mantine/core'
+import { Group, Text, Box, Popover, UnstyledButton, alpha } from '@mantine/core'
 import { TbChevronDown, TbChevronUp } from 'react-icons/tb'
 
 import CustomRecurrenceModal from '../customRecurrenceModal'
 import type { HabitRecurrence } from '@actions/habits/types'
 
 import type { RecurrenceSelectProps } from './types'
+import { colors } from '@styles/theme'
 
 const weekdayNames = [
   'domingo',
@@ -166,7 +167,7 @@ export const RecurrenceSelect = ({
 
   return (
     <Box>
-      <Text size="xs" fw={500} c="#d1d5db" mb={6}>
+      <Text size="xs" fw={500} c={colors.gray300} mb={6}>
         Repetição
       </Text>
 
@@ -185,8 +186,8 @@ export const RecurrenceSelect = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: isOpen ? '1px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.1)',
+              backgroundColor: alpha(colors.white, 0.04),
+              border: isOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
               borderRadius: 10,
               padding: '8px 12px',
               cursor: 'pointer',
@@ -194,20 +195,20 @@ export const RecurrenceSelect = ({
               transition: 'all 0.15s ease'
             }}
           >
-            <Text size="sm" fw={500} c="#ffffff" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <Text size="sm" fw={500} c={colors.white} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentLabel}
             </Text>
-            {isOpen ? <TbChevronUp size={16} color="#9ca3af" /> : <TbChevronDown size={16} color="#9ca3af" />}
+            {isOpen ? <TbChevronUp size={16} color={colors.gray400} /> : <TbChevronDown size={16} color={colors.gray400} />}
           </UnstyledButton>
         </Popover.Target>
 
         <Popover.Dropdown
           p={6}
           style={{
-            backgroundColor: '#1c1f26',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backgroundColor: colors.night700,
+            border: `1px solid ${alpha(colors.white, 0.12)}`,
             borderRadius: 8,
-            boxShadow: '0 16px 36px rgba(0, 0, 0, 0.7)',
+            boxShadow: `0 16px 36px ${alpha(colors.black, 0.7)}`,
             minWidth: 280
           }}
         >
@@ -223,13 +224,13 @@ export const RecurrenceSelect = ({
                   style={{
                     borderRadius: 6,
                     cursor: 'pointer',
-                    backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                    color: isSelected ? '#ffffff' : '#d1d5db',
+                    backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                    color: isSelected ? colors.white : colors.gray300,
                     fontSize: 13,
                     fontWeight: isSelected ? 600 : 400,
                     transition: 'background-color 0.1s ease',
                     '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                      backgroundColor: alpha(colors.white, 0.08)
                     }
                   }}
                 >
@@ -244,7 +245,7 @@ export const RecurrenceSelect = ({
               my={4}
               style={{
                 height: 1,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                backgroundColor: alpha(colors.white, 0.08)
               }}
             />
 
@@ -255,13 +256,13 @@ export const RecurrenceSelect = ({
               style={{
                 borderRadius: 6,
                 cursor: 'pointer',
-                backgroundColor: recurrence?.type === 'custom' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
-                color: recurrence?.type === 'custom' ? '#818cf8' : '#d1d5db',
+                backgroundColor: recurrence?.type === 'custom' ? alpha(colors.indigo500, 0.25) : 'transparent',
+                color: recurrence?.type === 'custom' ? colors.indigo400 : colors.gray300,
                 fontSize: 13,
                 fontWeight: 500,
                 transition: 'background-color 0.1s ease',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                  backgroundColor: alpha(colors.white, 0.08)
                 }
               }}
             >

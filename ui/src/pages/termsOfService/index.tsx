@@ -11,6 +11,7 @@ import {
 import useTermsOfServicePage from './hook'
 
 import type { TermsOfServicePageProps } from './types'
+import { colors } from '@styles/theme'
 
 export const TermsOfServicePage = ({ onBack }: TermsOfServicePageProps) => {
   const { lastUpdated, handleBack } = useTermsOfServicePage({ onBack })
@@ -58,7 +59,7 @@ export const TermsOfServicePage = ({ onBack }: TermsOfServicePageProps) => {
               </Text>
 
               <Box style={highlightBoxStyle}>
-                <Text style={{ ...textStyle, color: '#cffafe', fontWeight: 500 }}>
+                <Text style={{ ...textStyle, color: colors.cyan100, fontWeight: 500 }}>
                   Uso Autorizado e Transparência:
                 </Text>
                 <Text style={{ ...textStyle, fontSize: '0.9rem', marginTop: 4 }}>
@@ -125,7 +126,7 @@ export const TermsOfServicePage = ({ onBack }: TermsOfServicePageProps) => {
                 Em caso de dúvidas a respeito destes Termos de Serviço, entre em contato através do e-mail:{' '}
                 <a
                   href="mailto:contato@odutra.com"
-                  style={{ color: '#06b6d4', textDecoration: 'underline' }}
+                  style={{ color: colors.cyan500, textDecoration: 'underline' }}
                 >
                   contato@odutra.com
                 </a>

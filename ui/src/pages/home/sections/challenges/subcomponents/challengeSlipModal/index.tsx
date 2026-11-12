@@ -1,8 +1,9 @@
-import { Stack, Text, Group, Box, ThemeIcon } from '@mantine/core'
+import { Stack, Text, Group, Box, ThemeIcon, alpha } from '@mantine/core'
 import { TbAlertTriangle, TbRotateClockwise, TbCheck } from 'react-icons/tb'
 
 import Modal from '@components/modal'
 import Button from '@components/button'
+import { colors } from '@styles/theme'
 
 interface ChallengeSlipModalProps {
   isOpen: boolean
@@ -48,8 +49,8 @@ export const ChallengeSlipModal = ({
             style={{
               padding: '14px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.08)}`,
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
@@ -76,8 +77,8 @@ export const ChallengeSlipModal = ({
             style={{
               padding: '14px',
               borderRadius: 12,
-              backgroundColor: 'rgba(239, 68, 68, 0.05)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+              backgroundColor: alpha(colors.red500, 0.05),
+              border: `1px solid ${alpha(colors.red500, 0.2)}`,
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}

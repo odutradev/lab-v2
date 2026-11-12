@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip } from '@mantine/core'
+import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip, alpha } from '@mantine/core'
 import { TbTrophy, TbPlus, TbChevronDown, TbChevronUp, TbFlame } from 'react-icons/tb'
 
 import Button from '@components/button'
@@ -10,6 +10,7 @@ import ChallengeSlipModal from './subcomponents/challengeSlipModal'
 import useChallengesStore from '@stores/challenges'
 
 import type { Challenge, CreateChallengePayload } from '@actions/challenges/types'
+import { colors } from '@styles/theme'
 
 export const ChallengesSection = () => {
   const {
@@ -114,9 +115,9 @@ export const ChallengesSection = () => {
   return (
     <Box
       style={{
-        backgroundColor: 'rgba(15, 23, 42, 0.45)',
+        backgroundColor: alpha(colors.slate900, 0.45),
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        border: `1px solid ${alpha(colors.white, 0.08)}`,
         borderRadius: 16,
         padding: '16px 20px',
         width: '100%'
@@ -148,11 +149,11 @@ export const ChallengesSection = () => {
                   size="xs"
                   fw={700}
                   style={{
-                    backgroundColor: 'rgba(249, 115, 22, 0.2)',
-                    color: '#fb923c',
+                    backgroundColor: alpha(colors.orange500, 0.2),
+                    color: colors.orange400,
                     padding: '2px 8px',
                     borderRadius: 10,
-                    border: '1px solid rgba(249, 115, 22, 0.4)'
+                    border: `1px solid ${alpha(colors.orange500, 0.4)}`
                   }}
                 >
                   {activeChallenges.length} {activeChallenges.length === 1 ? 'ativo' : 'ativos'}
@@ -195,9 +196,9 @@ export const ChallengesSection = () => {
               style={{
                 padding: '24px 20px',
                 textAlign: 'center',
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                backgroundColor: alpha(colors.white, 0.02),
                 borderRadius: 14,
-                border: '1px dashed rgba(255, 255, 255, 0.1)'
+                border: `1px dashed ${alpha(colors.white, 0.1)}`
               }}
             >
               <Stack align="center" gap="xs">
@@ -206,12 +207,12 @@ export const ChallengesSection = () => {
                     width: 44,
                     height: 44,
                     borderRadius: '50%',
-                    backgroundColor: 'rgba(249, 115, 22, 0.12)',
-                    border: '1px solid rgba(249, 115, 22, 0.3)',
+                    backgroundColor: alpha(colors.orange500, 0.12),
+                    border: `1px solid ${alpha(colors.orange500, 0.3)}`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#fb923c'
+                    color: colors.orange400
                   }}
                 >
                   <TbTrophy size={22} />

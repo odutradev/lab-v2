@@ -1,4 +1,4 @@
-import { Group, Box, Title, Text, Avatar, Stack, Tooltip } from '@mantine/core'
+import { Group, Box, Title, Text, Avatar, Stack, Tooltip, alpha } from '@mantine/core'
 import { TbArrowLeft } from 'react-icons/tb'
 
 import Button from '@components/button'
@@ -6,10 +6,11 @@ import Badge from '@components/badge'
 import Card from '@components/card'
 
 import type { ProfileHeaderProps } from './types'
+import { colors } from '@styles/theme'
 
 export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) => {
   const isAdmin = Boolean(user.superAdmin)
-  const avatarBorderColor = isAdmin ? '#f59e0b' : '#ffffff'
+  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white
   const roleTooltipLabel = isAdmin ? 'Administrador' : 'Usuário'
 
   return (
@@ -24,7 +25,7 @@ export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) =>
               variant="filled"
               style={{
                 border: `3px solid ${avatarBorderColor}`,
-                boxShadow: isAdmin ? '0 0 14px rgba(245, 158, 11, 0.45)' : undefined
+                boxShadow: isAdmin ? `0 0 14px ${alpha(colors.amber500, 0.45)}` : undefined
               }}
             >
               <Text fw={700} size="xl">

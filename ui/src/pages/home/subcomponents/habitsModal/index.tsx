@@ -1,4 +1,4 @@
-import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton } from '@mantine/core'
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton, alpha } from '@mantine/core'
 import { useState, useEffect } from 'react'
 import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from 'react-icons/tb'
 
@@ -8,6 +8,7 @@ import RecurrenceSelect from './subcomponents/recurrenceSelect'
 
 import type { HabitsModalProps } from './types'
 import type { HabitCategory, HabitFrequency, HabitRecurrence } from '@actions/habits/types'
+import { colors } from '@styles/theme'
 
 const getTodayString = (): string => {
   const now = new Date()
@@ -206,15 +207,15 @@ export const HabitsModal = ({
       size="lg"
       styles={{
         content: {
-          backgroundColor: '#161922',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.7)',
-          color: '#e5e7eb',
+          backgroundColor: colors.night800,
+          border: `1px solid ${alpha(colors.white, 0.08)}`,
+          boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
+          color: colors.gray200,
           padding: '22px 26px'
         },
         header: {
-          backgroundColor: '#161922',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          backgroundColor: colors.night800,
+          borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
           paddingBottom: 16,
           marginBottom: 18
         }
@@ -223,7 +224,7 @@ export const HabitsModal = ({
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           <Box>
-            <Text size="xs" fw={500} c="#d1d5db" mb={6}>
+            <Text size="xs" fw={500} c={colors.gray300} mb={6}>
               Tipo de item
             </Text>
             <Box
@@ -231,8 +232,8 @@ export const HabitsModal = ({
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap: 4,
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.07)',
+                backgroundColor: alpha(colors.white, 0.03),
+                border: `1px solid ${alpha(colors.white, 0.07)}`,
                 borderRadius: 10,
                 padding: 3
               }}
@@ -253,17 +254,17 @@ export const HabitsModal = ({
                       gap: 8,
                       height: 38,
                       borderRadius: 8,
-                      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
-                      border: isSelected ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid transparent',
-                      color: isSelected ? '#ffffff' : '#9ca3af',
-                      boxShadow: isSelected ? '0 2px 6px rgba(0, 0, 0, 0.25)' : 'none',
+                      backgroundColor: isSelected ? alpha(colors.white, 0.10) : 'transparent',
+                      border: isSelected ? `1px solid ${alpha(colors.white, 0.12)}` : '1px solid transparent',
+                      color: isSelected ? colors.white : colors.gray400,
+                      boxShadow: isSelected ? `0 2px 6px ${alpha(colors.black, 0.25)}` : 'none',
                       fontWeight: isSelected ? 600 : 500,
                       fontSize: 13,
                       transition: 'all 0.15s ease',
                       cursor: 'pointer'
                     }}
                   >
-                    <IconComponent size={16} color={isSelected ? '#a5b4fc' : '#6b7280'} />
+                    <IconComponent size={16} color={isSelected ? colors.indigo300 : colors.gray500} />
                     <span>{item.label}</span>
                   </UnstyledButton>
                 )
@@ -285,18 +286,18 @@ export const HabitsModal = ({
               required
               styles={{
                 input: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: error ? '#ef4444' : 'rgba(255, 255, 255, 0.08)',
-                  color: '#ffffff',
+                  backgroundColor: alpha(colors.white, 0.04),
+                  borderColor: error ? colors.red500 : alpha(colors.white, 0.08),
+                  color: colors.white,
                   fontSize: 14,
                   height: 42,
                   borderRadius: 10,
                   '&:focus': {
-                    borderColor: '#6366f1'
+                    borderColor: colors.indigo500
                   }
                 },
                 label: {
-                  color: '#d1d5db',
+                  color: colors.gray300,
                   fontSize: 13,
                   fontWeight: 500,
                   marginBottom: 6
@@ -313,19 +314,19 @@ export const HabitsModal = ({
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 size="sm"
-                leftSection={<TbCalendar size={16} color="#9ca3af" />}
+                leftSection={<TbCalendar size={16} color={colors.gray400} />}
                 styles={{
                   input: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    borderColor: 'rgba(255, 255, 255, 0.08)',
-                    color: '#ffffff',
+                    backgroundColor: alpha(colors.white, 0.04),
+                    borderColor: alpha(colors.white, 0.08),
+                    color: colors.white,
                     fontSize: 14,
                     height: 42,
                     borderRadius: 10,
                     colorScheme: 'dark'
                   },
                   label: {
-                    color: '#d1d5db',
+                    color: colors.gray300,
                     fontSize: 13,
                     fontWeight: 500,
                     marginBottom: 6
@@ -363,14 +364,14 @@ export const HabitsModal = ({
               autosize
               styles={{
                 input: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  color: '#e5e7eb',
+                  backgroundColor: alpha(colors.white, 0.04),
+                  borderColor: alpha(colors.white, 0.08),
+                  color: colors.gray200,
                   fontSize: 14,
                   borderRadius: 10
                 },
                 label: {
-                  color: '#d1d5db',
+                  color: colors.gray300,
                   fontSize: 13,
                   fontWeight: 500,
                   marginBottom: 6
@@ -384,7 +385,7 @@ export const HabitsModal = ({
             align="center"
             mt="xs"
             pt="md"
-            style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}
+            style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}
           >
             {initialHabit && onDelete ? (
               <Button

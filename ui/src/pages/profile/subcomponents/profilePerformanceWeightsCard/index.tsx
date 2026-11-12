@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Group, Stack, Text, Box, SimpleGrid, Slider, UnstyledButton } from '@mantine/core'
+import { Group, Stack, Text, Box, SimpleGrid, Slider, UnstyledButton, alpha } from '@mantine/core'
 import {
   TbAdjustmentsHorizontal,
   TbCheckbox,
@@ -17,6 +17,7 @@ import useToastStore from '@stores/toast'
 import useAction from '@hooks/useAction'
 import { infoCardItemStyle } from '../../styles'
 import type { ProfilePerformanceWeightsCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceWeightsCardProps) => {
   const { performanceWeights, updatePerformanceWeights } = useHealthStore()
@@ -91,22 +92,22 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Group gap={6} align="center">
                 {isValid ? (
                   <Group gap={4} align="center">
-                    <TbCheck size={14} color="#10b981" />
-                    <Text size="xs" fw={600} c="#10b981">
+                    <TbCheck size={14} color={colors.emerald500} />
+                    <Text size="xs" fw={600} c={colors.emerald500}>
                       100% alocado perfeitamente
                     </Text>
                   </Group>
                 ) : total < 100 ? (
                   <Group gap={4} align="center">
-                    <TbAlertCircle size={14} color="#f59e0b" />
-                    <Text size="xs" fw={600} c="#f59e0b">
+                    <TbAlertCircle size={14} color={colors.amber500} />
+                    <Text size="xs" fw={600} c={colors.amber500}>
                       Faltam {100 - total}% para completar 100%
                     </Text>
                   </Group>
                 ) : (
                   <Group gap={4} align="center">
-                    <TbAlertCircle size={14} color="#ef4444" />
-                    <Text size="xs" fw={600} c="#ef4444">
+                    <TbAlertCircle size={14} color={colors.red500} />
+                    <Text size="xs" fw={600} c={colors.red500}>
                       Excede o total em {total - 100}%
                     </Text>
                   </Group>
@@ -120,15 +121,15 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                 borderRadius: 999,
                 overflow: 'hidden',
                 display: 'flex',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
+                backgroundColor: alpha(colors.white, 0.05),
+                border: `1px solid ${alpha(colors.white, 0.08)}`
               }}
             >
               {habits > 0 && (
                 <Box
                   style={{
                     width: `${habits}%`,
-                    backgroundColor: '#a855f7',
+                    backgroundColor: colors.purple500,
                     transition: 'width 0.2s ease'
                   }}
                 />
@@ -137,7 +138,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                 <Box
                   style={{
                     width: `${water}%`,
-                    backgroundColor: '#06b6d4',
+                    backgroundColor: colors.cyan500,
                     transition: 'width 0.2s ease'
                   }}
                 />
@@ -146,7 +147,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                 <Box
                   style={{
                     width: `${sleep}%`,
-                    backgroundColor: '#6366f1',
+                    backgroundColor: colors.indigo500,
                     transition: 'width 0.2s ease'
                   }}
                 />
@@ -155,21 +156,21 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
 
             <Group justify="space-between" align="center" mt={6} wrap="wrap" gap="xs">
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: '#a855f7' }} />
+                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.purple500 }} />
                 <Text size="xs" c="dimmed">
-                  Hábitos: <strong style={{ color: '#fff' }}>{habits}%</strong>
+                  Hábitos: <strong style={{ color: colors.white }}>{habits}%</strong>
                 </Text>
               </Group>
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: '#06b6d4' }} />
+                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.cyan500 }} />
                 <Text size="xs" c="dimmed">
-                  Água: <strong style={{ color: '#fff' }}>{water}%</strong>
+                  Água: <strong style={{ color: colors.white }}>{water}%</strong>
                 </Text>
               </Group>
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: '#6366f1' }} />
+                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.indigo500 }} />
                 <Text size="xs" c="dimmed">
-                  Sono: <strong style={{ color: '#fff' }}>{sleep}%</strong>
+                  Sono: <strong style={{ color: colors.white }}>{sleep}%</strong>
                 </Text>
               </Group>
             </Group>
@@ -190,13 +191,13 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   fontWeight: 600,
                   backgroundColor:
                     habits === 50 && water === 25 && sleep === 25
-                      ? 'rgba(168, 85, 247, 0.25)'
-                      : 'rgba(255, 255, 255, 0.04)',
-                  color: habits === 50 && water === 25 && sleep === 25 ? '#d8b4fe' : '#94a3b8',
+                      ? alpha(colors.purple500, 0.25)
+                      : alpha(colors.white, 0.04),
+                  color: habits === 50 && water === 25 && sleep === 25 ? colors.purple300 : colors.slate400,
                   border:
                     habits === 50 && water === 25 && sleep === 25
-                      ? '1px solid rgba(168, 85, 247, 0.4)'
-                      : '1px solid rgba(255, 255, 255, 0.08)',
+                      ? `1px solid ${alpha(colors.purple500, 0.4)}`
+                      : `1px solid ${alpha(colors.white, 0.08)}`,
                   transition: 'all 0.15s ease'
                 }}
               >
@@ -212,13 +213,13 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   fontWeight: 600,
                   backgroundColor:
                     habits === 34 && water === 33 && sleep === 33
-                      ? 'rgba(99, 102, 241, 0.25)'
-                      : 'rgba(255, 255, 255, 0.04)',
-                  color: habits === 34 && water === 33 && sleep === 33 ? '#a5b4fc' : '#94a3b8',
+                      ? alpha(colors.indigo500, 0.25)
+                      : alpha(colors.white, 0.04),
+                  color: habits === 34 && water === 33 && sleep === 33 ? colors.indigo300 : colors.slate400,
                   border:
                     habits === 34 && water === 33 && sleep === 33
-                      ? '1px solid rgba(99, 102, 241, 0.4)'
-                      : '1px solid rgba(255, 255, 255, 0.08)',
+                      ? `1px solid ${alpha(colors.indigo500, 0.4)}`
+                      : `1px solid ${alpha(colors.white, 0.08)}`,
                   transition: 'all 0.15s ease'
                 }}
               >
@@ -234,13 +235,13 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   fontWeight: 600,
                   backgroundColor:
                     habits === 30 && water === 35 && sleep === 35
-                      ? 'rgba(6, 182, 212, 0.25)'
-                      : 'rgba(255, 255, 255, 0.04)',
-                  color: habits === 30 && water === 35 && sleep === 35 ? '#67e8f9' : '#94a3b8',
+                      ? alpha(colors.cyan500, 0.25)
+                      : alpha(colors.white, 0.04),
+                  color: habits === 30 && water === 35 && sleep === 35 ? colors.cyan300 : colors.slate400,
                   border:
                     habits === 30 && water === 35 && sleep === 35
-                      ? '1px solid rgba(6, 182, 212, 0.4)'
-                      : '1px solid rgba(255, 255, 255, 0.08)',
+                      ? `1px solid ${alpha(colors.cyan500, 0.4)}`
+                      : `1px solid ${alpha(colors.white, 0.08)}`,
                   transition: 'all 0.15s ease'
                 }}
               >
@@ -255,12 +256,12 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
             <Box style={infoCardItemStyle}>
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
-                  <TbCheckbox size={18} color="#a855f7" />
+                  <TbCheckbox size={18} color={colors.purple500} />
                   <Text size="xs" fw={700} c="white">
                     Hábitos
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c="#c084fc">
+                <Text size="sm" fw={700} c={colors.purple400}>
                   {habits}%
                 </Text>
               </Group>
@@ -282,12 +283,12 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
             <Box style={infoCardItemStyle}>
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
-                  <TbDroplet size={18} color="#06b6d4" />
+                  <TbDroplet size={18} color={colors.cyan500} />
                   <Text size="xs" fw={700} c="white">
                     Hidratação
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c="#38bdf8">
+                <Text size="sm" fw={700} c={colors.sky400}>
                   {water}%
                 </Text>
               </Group>
@@ -309,12 +310,12 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
             <Box style={infoCardItemStyle}>
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
-                  <TbMoonStars size={18} color="#6366f1" />
+                  <TbMoonStars size={18} color={colors.indigo500} />
                   <Text size="xs" fw={700} c="white">
                     Sono
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c="#818cf8">
+                <Text size="sm" fw={700} c={colors.indigo400}>
                   {sleep}%
                 </Text>
               </Group>

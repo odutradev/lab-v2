@@ -1,5 +1,6 @@
-import { Box, Group, Tooltip, Text } from '@mantine/core'
+import { Box, Group, Tooltip, Text, alpha } from '@mantine/core'
 import { addDaysToDateString, formatDisplayDate, getTodayDateString } from '@utils/functions/challenges'
+import { colors } from '@styles/theme'
 
 interface ChallengeGridProps {
   startDate: string
@@ -34,36 +35,36 @@ export const ChallengeGrid = ({
     const isFuture = dateStr > todayStr
 
     let statusLabel = 'Pendente'
-    let bgColor = 'rgba(255, 255, 255, 0.05)'
-    let borderColor = 'rgba(255, 255, 255, 0.1)'
+    let bgColor = alpha(colors.white, 0.05)
+    let borderColor = alpha(colors.white, 0.1)
     let boxShadow = 'none'
 
     if (isCompleted) {
       statusLabel = 'Concluído ✓'
-      bgColor = '#10b981'
-      borderColor = '#34d399'
-      boxShadow = '0 0 8px rgba(16, 185, 129, 0.4)'
+      bgColor = colors.emerald500
+      borderColor = colors.emerald400
+      boxShadow = `0 0 8px ${alpha(colors.emerald500, 0.4)}`
     } else if (isFreeze) {
       statusLabel = 'Dia Livre (Freeze ❄️)'
-      bgColor = 'rgba(6, 182, 212, 0.25)'
-      borderColor = '#22d3ee'
-      boxShadow = '0 0 8px rgba(6, 182, 212, 0.4)'
+      bgColor = alpha(colors.cyan500, 0.25)
+      borderColor = colors.cyan400
+      boxShadow = `0 0 8px ${alpha(colors.cyan500, 0.4)}`
     } else if (isSlip) {
       statusLabel = 'Deslize registrado'
-      bgColor = '#f59e0b'
-      borderColor = '#fbbf24'
+      bgColor = colors.amber500
+      borderColor = colors.amber400
     } else if (isToday) {
       statusLabel = 'Hoje (Aguardando)'
-      bgColor = 'rgba(99, 102, 241, 0.2)'
-      borderColor = '#818cf8'
+      bgColor = alpha(colors.indigo500, 0.2)
+      borderColor = colors.indigo400
     } else if (isPast) {
       statusLabel = 'Não preenchido'
-      bgColor = 'rgba(239, 68, 68, 0.12)'
-      borderColor = 'rgba(239, 68, 68, 0.3)'
+      bgColor = alpha(colors.red500, 0.12)
+      borderColor = alpha(colors.red500, 0.3)
     } else if (isFuture) {
       statusLabel = 'Futuro'
-      bgColor = 'rgba(255, 255, 255, 0.03)'
-      borderColor = 'rgba(255, 255, 255, 0.06)'
+      bgColor = alpha(colors.white, 0.03)
+      borderColor = alpha(colors.white, 0.06)
     }
 
     return {
@@ -89,9 +90,9 @@ export const ChallengeGrid = ({
           gridTemplateColumns: 'repeat(auto-fill, minmax(20px, 1fr))',
           gap: 6,
           padding: '12px',
-          backgroundColor: 'rgba(0, 0, 0, 0.25)',
+          backgroundColor: alpha(colors.black, 0.25),
           borderRadius: 12,
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: `1px solid ${alpha(colors.white, 0.06)}`,
           maxHeight: 240,
           overflowY: 'auto'
         }}
@@ -125,23 +126,23 @@ export const ChallengeGrid = ({
       {/* Legenda */}
       <Group gap="md" mt="xs" justify="center" wrap="wrap">
         <Group gap={6}>
-          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: '#10b981' }} />
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: colors.emerald500 }} />
           <Text size="xs" c="dimmed">Concluído</Text>
         </Group>
         <Group gap={6}>
-          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: 'rgba(99, 102, 241, 0.2)', border: '1px solid #818cf8' }} />
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: alpha(colors.indigo500, 0.2), border: `1px solid ${colors.indigo400}` }} />
           <Text size="xs" c="dimmed">Hoje</Text>
         </Group>
         <Group gap={6}>
-          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: 'rgba(6, 182, 212, 0.4)', border: '1px solid #22d3ee' }} />
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: alpha(colors.cyan500, 0.4), border: `1px solid ${colors.cyan400}` }} />
           <Text size="xs" c="dimmed">Dia Livre (Freeze ❄️)</Text>
         </Group>
         <Group gap={6}>
-          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: '#f59e0b' }} />
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: colors.amber500 }} />
           <Text size="xs" c="dimmed">Deslize</Text>
         </Group>
         <Group gap={6}>
-          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px dashed rgba(255, 255, 255, 0.15)' }} />
+          <Box w={12} h={12} style={{ borderRadius: 3, backgroundColor: alpha(colors.white, 0.03), border: `1px dashed ${alpha(colors.white, 0.15)}` }} />
           <Text size="xs" c="dimmed">Futuro</Text>
         </Group>
       </Group>

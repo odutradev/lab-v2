@@ -1,16 +1,17 @@
-import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton, Tooltip } from '@mantine/core'
+import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton, Tooltip, alpha } from '@mantine/core'
 import { TbLogout, TbStack2, TbUser, TbChevronDown } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
 import useAuthStore from '@stores/auth'
 import { formatDisplayName, getInitials } from '@utils/functions/string'
+import { colors } from '@styles/theme'
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
 
   const isAdmin = Boolean(user?.superAdmin)
-  const avatarBorderColor = isAdmin ? '#f59e0b' : '#ffffff'
+  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white
   const roleTooltipLabel = isAdmin ? 'Administrador' : 'Usuário'
 
   return (
@@ -21,8 +22,8 @@ export const Navbar = () => {
       style={{
         zIndex: 100,
         backdropFilter: 'blur(16px)',
-        backgroundColor: 'rgba(9, 13, 22, 0.75)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        backgroundColor: alpha(colors.night950, 0.75),
+        borderBottom: `1px solid ${alpha(colors.white, 0.08)}`
       }}
     >
       <Container
@@ -67,7 +68,7 @@ export const Navbar = () => {
                       color="indigo"
                       style={{
                         border: `2px solid ${avatarBorderColor}`,
-                        boxShadow: isAdmin ? '0 0 8px rgba(245, 158, 11, 0.4)' : undefined
+                        boxShadow: isAdmin ? `0 0 8px ${alpha(colors.amber500, 0.4)}` : undefined
                       }}
                     >
                       {getInitials(user.name)}
@@ -76,15 +77,15 @@ export const Navbar = () => {
                   <Text size="sm" fw={600} c="white">
                     {formatDisplayName(user.name)}
                   </Text>
-                  <TbChevronDown size={14} color="rgba(255, 255, 255, 0.5)" />
+                  <TbChevronDown size={14} color={alpha(colors.white, 0.5)} />
                 </Group>
               </UnstyledButton>
             </Menu.Target>
 
             <Menu.Dropdown
               style={{
-                backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: alpha(colors.gray900, 0.95),
+                borderColor: alpha(colors.white, 0.1),
                 backdropFilter: 'blur(16px)'
               }}
             >
@@ -94,7 +95,7 @@ export const Navbar = () => {
               >
                 Perfil
               </Menu.Item>
-              <Menu.Divider style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
+              <Menu.Divider style={{ borderColor: alpha(colors.white, 0.08) }} />
               <Menu.Item
                 color="red"
                 leftSection={<TbLogout size={16} />}

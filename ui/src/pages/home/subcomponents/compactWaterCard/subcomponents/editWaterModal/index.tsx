@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Group, Stack, Text, UnstyledButton } from '@mantine/core'
+import { Box, Group, Stack, Text, UnstyledButton, alpha } from '@mantine/core'
 import { TbBottle, TbSparkles } from 'react-icons/tb'
 
 import Modal from '@components/modal'
@@ -8,6 +8,7 @@ import Button from '@components/button'
 import { calculateIdealWaterMl } from '@utils/functions/health'
 
 import type { EditWaterModalProps } from './types'
+import { colors } from '@styles/theme'
 
 const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000]
 
@@ -52,14 +53,14 @@ const EditWaterForm = ({
         style={{
           padding: '10px 12px',
           borderRadius: 8,
-          background: 'rgba(56, 189, 248, 0.08)',
-          border: '1px solid rgba(56, 189, 248, 0.2)'
+          background: alpha(colors.sky400, 0.08),
+          border: `1px solid ${alpha(colors.sky400, 0.2)}`
         }}
       >
         <Group justify="space-between" align="center" wrap="nowrap">
           <Group gap={6} align="center">
-            <TbSparkles size={14} color="#38bdf8" />
-            <Text size="11px" fw={600} c="#38bdf8">
+            <TbSparkles size={14} color={colors.sky400} />
+            <Text size="11px" fw={600} c={colors.sky400}>
               Cálculo Automático por Perfil
             </Text>
           </Group>
@@ -107,9 +108,9 @@ const EditWaterForm = ({
                   borderRadius: 6,
                   fontSize: 11,
                   fontWeight: 600,
-                  background: isSelected ? 'rgba(168, 85, 247, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                  color: isSelected ? '#c084fc' : '#9ca3af',
-                  border: isSelected ? '1px solid rgba(168, 85, 247, 0.6)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: isSelected ? alpha(colors.purple500, 0.25) : alpha(colors.white, 0.05),
+                  color: isSelected ? colors.purple400 : colors.gray400,
+                  border: isSelected ? `1px solid ${alpha(colors.purple500, 0.6)}` : `1px solid ${alpha(colors.white, 0.08)}`,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
@@ -125,8 +126,8 @@ const EditWaterForm = ({
         style={{
           padding: '10px 12px',
           borderRadius: 8,
-          background: 'rgba(168, 85, 247, 0.08)',
-          border: '1px solid rgba(168, 85, 247, 0.2)',
+          background: alpha(colors.purple500, 0.08),
+          border: `1px solid ${alpha(colors.purple500, 0.2)}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
@@ -135,7 +136,7 @@ const EditWaterForm = ({
         <Text size="xs" c="dimmed">
           Meta calculada:
         </Text>
-        <Text size="xs" fw={700} c="#c084fc">
+        <Text size="xs" fw={700} c={colors.purple400}>
           {automaticBottles} garrafas × {bottleMl}ml = {totalDailyMl.toLocaleString()}ml ({totalLiters}L)
         </Text>
       </Box>

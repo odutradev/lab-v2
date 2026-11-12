@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Text, Group, Box, TextInput, Textarea, NumberInput, SegmentedControl, Switch, UnstyledButton, ActionIcon } from '@mantine/core'
+import { Stack, Text, Group, Box, TextInput, Textarea, NumberInput, SegmentedControl, Switch, UnstyledButton, ActionIcon, alpha } from '@mantine/core'
 import { TbTarget, TbFlame, TbTrophy, TbPlus, TbTrash, TbListCheck, TbNotes } from 'react-icons/tb'
 
 import Modal from '@components/modal'
@@ -7,6 +7,7 @@ import Button from '@components/button'
 import { getTodayDateString } from '@utils/functions/challenges'
 
 import type { Challenge, ChallengeType, CreateChallengePayload, ChallengeChecklistItem } from '@actions/challenges/types'
+import { colors } from '@styles/theme'
 
 interface ChallengeFormModalProps {
   isOpen: boolean
@@ -147,8 +148,8 @@ export const ChallengeFormModal = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: emoji === item ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                  border: emoji === item ? '2px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.08)',
+                  backgroundColor: emoji === item ? alpha(colors.indigo500, 0.25) : alpha(colors.white, 0.04),
+                  border: emoji === item ? `2px solid ${colors.indigo400}` : `1px solid ${alpha(colors.white, 0.08)}`,
                   transition: 'all 0.15s ease'
                 }}
               >
@@ -167,8 +168,8 @@ export const ChallengeFormModal = ({
           required
           styles={{
             input: {
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: alpha(colors.white, 0.04),
+              borderColor: alpha(colors.white, 0.1),
               color: 'white'
             }
           }}
@@ -183,8 +184,8 @@ export const ChallengeFormModal = ({
           minRows={2}
           styles={{
             input: {
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: alpha(colors.white, 0.04),
+              borderColor: alpha(colors.white, 0.1),
               color: 'white'
             }
           }}
@@ -194,7 +195,7 @@ export const ChallengeFormModal = ({
         <Textarea
           label={
             <Group gap={6}>
-              <TbNotes size={15} color="#818cf8" />
+              <TbNotes size={15} color={colors.indigo400} />
               <span>Anotações / Regras do Desafio (Opcional)</span>
             </Group>
           }
@@ -204,8 +205,8 @@ export const ChallengeFormModal = ({
           minRows={2}
           styles={{
             input: {
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: alpha(colors.white, 0.04),
+              borderColor: alpha(colors.white, 0.1),
               color: 'white'
             }
           }}
@@ -215,7 +216,7 @@ export const ChallengeFormModal = ({
         <Box>
           <Group justify="space-between" align="center" mb={6}>
             <Group gap={6}>
-              <TbListCheck size={16} color="#34d399" />
+              <TbListCheck size={16} color={colors.emerald400} />
               <Text size="xs" fw={600} c="dimmed">
                 Checklist / Metas do Desafio ({checklist.length})
               </Text>
@@ -241,8 +242,8 @@ export const ChallengeFormModal = ({
               style={{ flex: 1 }}
               styles={{
                 input: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  backgroundColor: alpha(colors.white, 0.04),
+                  borderColor: alpha(colors.white, 0.1),
                   color: 'white'
                 }
               }}
@@ -267,8 +268,8 @@ export const ChallengeFormModal = ({
                   style={{
                     padding: '8px 12px',
                     borderRadius: 8,
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.06)'
+                    backgroundColor: alpha(colors.white, 0.03),
+                    border: `1px solid ${alpha(colors.white, 0.06)}`
                   }}
                 >
                   <Text size="sm" c="gray.2" style={{ wordBreak: 'break-word', flex: 1 }}>
@@ -313,8 +314,8 @@ export const ChallengeFormModal = ({
             max={3650}
             styles={{
               input: {
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: alpha(colors.white, 0.04),
+                borderColor: alpha(colors.white, 0.1),
                 color: 'white'
               }
             }}
@@ -403,8 +404,8 @@ export const ChallengeFormModal = ({
           onChange={(e) => setStartDate(e.currentTarget.value)}
           styles={{
             input: {
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: alpha(colors.white, 0.04),
+              borderColor: alpha(colors.white, 0.1),
               color: 'white'
             }
           }}

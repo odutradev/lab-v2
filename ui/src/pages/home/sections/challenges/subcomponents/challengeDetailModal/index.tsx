@@ -1,4 +1,4 @@
-import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid, Checkbox } from '@mantine/core'
+import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid, Checkbox, alpha } from '@mantine/core'
 import { TbFlame, TbTrophy, TbCalendar, TbTrash, TbEdit, TbAlertTriangle, TbCheck, TbQuote, TbNotes, TbListCheck } from 'react-icons/tb'
 
 import Modal from '@components/modal'
@@ -7,6 +7,7 @@ import ChallengeGrid from '../challengeGrid'
 import { calculateChallengeStats, formatDisplayDate } from '@utils/functions/challenges'
 
 import type { Challenge } from '@actions/challenges/types'
+import { colors } from '@styles/theme'
 
 interface ChallengeDetailModalProps {
   isOpen: boolean
@@ -66,8 +67,8 @@ export const ChallengeDetailModal = ({
                 width: 48,
                 height: 48,
                 borderRadius: 14,
-                backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                border: '1px solid rgba(129, 140, 248, 0.3)',
+                backgroundColor: alpha(colors.indigo500, 0.15),
+                border: `1px solid ${alpha(colors.indigo400, 0.3)}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -123,8 +124,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px 16px',
               borderRadius: 12,
-              backgroundColor: 'rgba(99, 102, 241, 0.08)',
-              border: '1px solid rgba(129, 140, 248, 0.2)'
+              backgroundColor: alpha(colors.indigo500, 0.08),
+              border: `1px solid ${alpha(colors.indigo400, 0.2)}`
             }}
           >
             <Group gap="xs" align="flex-start" wrap="nowrap">
@@ -149,8 +150,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px 16px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.08)}`
             }}
           >
             <Group gap="xs" align="center" mb={6}>
@@ -173,8 +174,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '14px 16px',
               borderRadius: 12,
-              backgroundColor: 'rgba(16, 185, 129, 0.04)',
-              border: '1px solid rgba(16, 185, 129, 0.2)'
+              backgroundColor: alpha(colors.emerald500, 0.04),
+              border: `1px solid ${alpha(colors.emerald500, 0.2)}`
             }}
           >
             <Group justify="space-between" align="center" mb="xs">
@@ -201,8 +202,8 @@ export const ChallengeDetailModal = ({
                   style={{
                     padding: '8px 12px',
                     borderRadius: 8,
-                    backgroundColor: item.completed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                    border: item.completed ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.06)',
+                    backgroundColor: item.completed ? alpha(colors.emerald500, 0.1) : alpha(colors.white, 0.02),
+                    border: item.completed ? `1px solid ${alpha(colors.emerald500, 0.3)}` : `1px solid ${alpha(colors.white, 0.06)}`,
                     cursor: onToggleChecklistItem ? 'pointer' : 'default',
                     transition: 'all 0.15s ease'
                   }}
@@ -239,8 +240,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.06)}`
             }}
           >
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
@@ -258,15 +259,15 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.06)}`
             }}
           >
             <Group justify="space-between" align="center">
               <Text size="10px" c="dimmed" fw={600} tt="uppercase">
                 Ofensiva Atual
               </Text>
-              <TbFlame size={14} color="#f97316" />
+              <TbFlame size={14} color={colors.orange500} />
             </Group>
             <Text size="md" fw={700} c="orange.4" mt={2}>
               {stats.streak} dias
@@ -280,8 +281,8 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.06)}`
             }}
           >
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
@@ -299,15 +300,15 @@ export const ChallengeDetailModal = ({
             style={{
               padding: '12px',
               borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)'
+              backgroundColor: alpha(colors.white, 0.03),
+              border: `1px solid ${alpha(colors.white, 0.06)}`
             }}
           >
             <Group justify="space-between" align="center">
               <Text size="10px" c="dimmed" fw={600} tt="uppercase">
                 Previsão Final
               </Text>
-              <TbCalendar size={14} color="#818cf8" />
+              <TbCalendar size={14} color={colors.indigo400} />
             </Group>
             <Text size="sm" fw={700} c="indigo.3" mt={2}>
               {formatDisplayDate(stats.estimatedEndDate)}
@@ -328,8 +329,8 @@ export const ChallengeDetailModal = ({
             leftIcon={stats.isCompletedToday ? <TbCheck size={18} /> : <TbTrophy size={18} />}
             style={{
               flex: 1,
-              backgroundColor: stats.isCompletedToday ? '#059669' : undefined,
-              borderColor: stats.isCompletedToday ? '#10b981' : undefined
+              backgroundColor: stats.isCompletedToday ? colors.emerald600 : undefined,
+              borderColor: stats.isCompletedToday ? colors.emerald500 : undefined
             }}
           >
             {stats.isCompletedToday ? '✓ Concluído Hoje (Clique para desmarcar)' : 'Concluir Hoje / Resisti Hoje ✓'}
@@ -340,7 +341,7 @@ export const ChallengeDetailModal = ({
               size="md"
               variant="secondary"
               onClick={() => onOpenSlip(challenge)}
-              leftIcon={<TbAlertTriangle size={18} color="#f59e0b" />}
+              leftIcon={<TbAlertTriangle size={18} color={colors.amber500} />}
             >
               Tive um Deslize
             </Button>
@@ -353,8 +354,8 @@ export const ChallengeDetailModal = ({
               onClick={() => onToggleFreeze(challenge.id)}
               isLoading={isLoading}
               style={{
-                backgroundColor: stats.isFrozenToday ? '#0891b2' : undefined,
-                borderColor: stats.isFrozenToday ? '#22d3ee' : undefined
+                backgroundColor: stats.isFrozenToday ? colors.cyan600 : undefined,
+                borderColor: stats.isFrozenToday ? colors.cyan400 : undefined
               }}
             >
               {stats.isFrozenToday

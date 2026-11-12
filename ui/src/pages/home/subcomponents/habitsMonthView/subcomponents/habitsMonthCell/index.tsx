@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Group, Stack, Text, Box, Popover, ScrollArea } from '@mantine/core'
+import { Group, Stack, Text, Box, Popover, ScrollArea, alpha } from '@mantine/core'
 import { TbCheck, TbCircle } from 'react-icons/tb'
 
 import Badge from '@components/badge'
 
 import type { DaySummaryItem } from '@actions/habits/types'
 import type { HabitsMonthCellProps } from './types'
+import { colors } from '@styles/theme'
 
 const ITEM_GAP = 2
 const DEFAULT_ITEM_HEIGHT = 22
@@ -123,17 +124,17 @@ export const HabitsMonthCell = ({
         maxWidth: '100%',
         overflow: 'hidden',
         background: isSelected
-          ? 'rgba(99, 102, 241, 0.14)'
+          ? alpha(colors.indigo500, 0.14)
           : cell.isToday
-            ? 'rgba(99, 102, 241, 0.06)'
+            ? alpha(colors.indigo500, 0.06)
             : cell.isCurrentMonth
-              ? 'rgba(255, 255, 255, 0.02)'
-              : 'rgba(0, 0, 0, 0.25)',
+              ? alpha(colors.white, 0.02)
+              : alpha(colors.black, 0.25),
         border: isSelected
-          ? '1px solid rgba(129, 140, 248, 0.6)'
+          ? `1px solid ${alpha(colors.indigo400, 0.6)}`
           : cell.isToday
-            ? '1px solid rgba(129, 140, 248, 0.35)'
-            : '1px solid rgba(255, 255, 255, 0.05)',
+            ? `1px solid ${alpha(colors.indigo400, 0.35)}`
+            : `1px solid ${alpha(colors.white, 0.05)}`,
         borderRadius: 8,
         opacity: cell.isCurrentMonth ? 1 : 0.45,
         display: 'flex',
@@ -153,8 +154,8 @@ export const HabitsMonthCell = ({
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '50%',
-            backgroundColor: cell.isToday ? '#6366f1' : 'transparent',
-            color: cell.isToday ? '#ffffff' : cell.isCurrentMonth ? '#f3f4f6' : '#9ca3af',
+            backgroundColor: cell.isToday ? colors.indigo500 : 'transparent',
+            color: cell.isToday ? colors.white : cell.isCurrentMonth ? colors.gray100 : colors.gray400,
             fontWeight: cell.isToday ? 700 : 600,
             fontSize: 10
           }}
@@ -183,7 +184,7 @@ export const HabitsMonthCell = ({
       <Stack ref={containerRef} gap={ITEM_GAP} style={{ flex: 1, overflow: 'hidden', minWidth: 0, width: '100%' }}>
         {visibleItems.map((item) => {
           const isReadOnly = !!item.readOnly
-          const itemColor = item.calendarColor || '#6366f1'
+          const itemColor = item.calendarColor || colors.indigo500
 
           return (
             <Box
@@ -193,16 +194,16 @@ export const HabitsMonthCell = ({
               title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
               style={{
                 background: item.completed
-                  ? 'rgba(45, 212, 191, 0.14)'
+                  ? alpha(colors.teal400, 0.14)
                   : isReadOnly
                     ? `${itemColor}22`
-                    : 'rgba(99, 102, 241, 0.14)',
+                    : alpha(colors.indigo500, 0.14),
                 borderRadius: 4,
                 border: item.completed
-                  ? '1px solid rgba(45, 212, 191, 0.25)'
+                  ? `1px solid ${alpha(colors.teal400, 0.25)}`
                   : isReadOnly
                     ? `1px solid ${itemColor}44`
-                    : '1px solid rgba(99, 102, 241, 0.2)',
+                    : `1px solid ${alpha(colors.indigo500, 0.2)}`,
                 fontSize: 10,
                 lineHeight: 1.2,
                 minWidth: 0,
@@ -238,9 +239,9 @@ export const HabitsMonthCell = ({
                     style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
                   >
                     {item.completed ? (
-                      <TbCheck size={11} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                      <TbCheck size={11} color={colors.teal400} style={{ flexShrink: 0 }} />
                     ) : (
-                      <TbCircle size={11} color="#818cf8" style={{ flexShrink: 0 }} />
+                      <TbCircle size={11} color={colors.indigo400} style={{ flexShrink: 0 }} />
                     )}
                   </Box>
                 )}
@@ -249,7 +250,7 @@ export const HabitsMonthCell = ({
                     <Text
                       size="9px"
                       fw={700}
-                      c={item.completed ? 'dimmed' : '#93c5fd'}
+                      c={item.completed ? 'dimmed' : colors.blue300}
                       style={{ fontVariantNumeric: 'tabular-nums' }}
                     >
                       {item.startTime}
@@ -300,15 +301,15 @@ export const HabitsMonthCell = ({
                   maxWidth: '100%',
                   cursor: 'pointer',
                   borderRadius: 4,
-                  backgroundColor: isPopoverOpen ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                  border: isPopoverOpen ? '1px solid rgba(129, 140, 248, 0.4)' : '1px solid transparent',
+                  backgroundColor: isPopoverOpen ? alpha(colors.indigo500, 0.25) : alpha(colors.white, 0.04),
+                  border: isPopoverOpen ? `1px solid ${alpha(colors.indigo400, 0.4)}` : '1px solid transparent',
                   transition: 'all 0.15s ease',
                   flexShrink: 0
                 }}
               >
                 <Text
                   size="9px"
-                  c={isPopoverOpen ? '#c7d2fe' : 'dimmed'}
+                  c={isPopoverOpen ? colors.indigo200 : 'dimmed'}
                   fw={600}
                   style={{
                     whiteSpace: 'nowrap',
@@ -328,16 +329,16 @@ export const HabitsMonthCell = ({
               onMouseLeave={handleMouseLeave}
               onClick={(e) => e.stopPropagation()}
               style={{
-                backgroundColor: '#161922',
-                border: '1px solid rgba(255, 255, 255, 0.14)',
+                backgroundColor: colors.night800,
+                border: `1px solid ${alpha(colors.white, 0.14)}`,
                 borderRadius: 8,
-                boxShadow: '0 12px 28px rgba(0, 0, 0, 0.65)',
+                boxShadow: `0 12px 28px ${alpha(colors.black, 0.65)}`,
                 minWidth: 210,
                 maxWidth: 280
               }}
             >
-              <Group justify="space-between" align="center" mb={6} pb={4} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <Text size="xs" fw={700} c="#e0e7ff">
+              <Group justify="space-between" align="center" mb={6} pb={4} style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}>
+                <Text size="xs" fw={700} c={colors.indigo100}>
                   Hábitos ({hiddenItems.length})
                 </Text>
                 <Text size="10px" c="dimmed">
@@ -349,7 +350,7 @@ export const HabitsMonthCell = ({
                 <Stack gap={4}>
                   {hiddenItems.map((item) => {
                     const isReadOnly = !!item.readOnly
-                    const itemColor = item.calendarColor || '#6366f1'
+                    const itemColor = item.calendarColor || colors.indigo500
 
                     return (
                       <Box
@@ -359,16 +360,16 @@ export const HabitsMonthCell = ({
                         title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}${item.startTime ? ` (${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''})` : ''}`}
                         style={{
                           background: item.completed
-                            ? 'rgba(45, 212, 191, 0.14)'
+                            ? alpha(colors.teal400, 0.14)
                             : isReadOnly
                               ? `${itemColor}22`
-                              : 'rgba(99, 102, 241, 0.14)',
+                              : alpha(colors.indigo500, 0.14),
                           borderRadius: 6,
                           border: item.completed
-                            ? '1px solid rgba(45, 212, 191, 0.3)'
+                            ? `1px solid ${alpha(colors.teal400, 0.3)}`
                             : isReadOnly
                               ? `1px solid ${itemColor}44`
-                              : '1px solid rgba(99, 102, 241, 0.25)',
+                              : `1px solid ${alpha(colors.indigo500, 0.25)}`,
                           cursor: isReadOnly ? 'default' : 'pointer',
                           transition: 'background-color 0.15s ease'
                         }}
@@ -404,9 +405,9 @@ export const HabitsMonthCell = ({
                               }}
                             >
                               {item.completed ? (
-                                <TbCheck size={13} color="#2dd4bf" style={{ flexShrink: 0 }} />
+                                <TbCheck size={13} color={colors.teal400} style={{ flexShrink: 0 }} />
                               ) : (
-                                <TbCircle size={13} color="#818cf8" style={{ flexShrink: 0 }} />
+                                <TbCircle size={13} color={colors.indigo400} style={{ flexShrink: 0 }} />
                               )}
                             </Box>
                           )}
@@ -415,7 +416,7 @@ export const HabitsMonthCell = ({
                             <Text
                               size="10px"
                               fw={700}
-                              c={item.completed ? 'dimmed' : '#93c5fd'}
+                              c={item.completed ? 'dimmed' : colors.blue300}
                               style={{ fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
                             >
                               {item.startTime}

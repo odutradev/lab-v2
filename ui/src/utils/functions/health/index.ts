@@ -6,6 +6,7 @@ import type {
   SleepRecord,
   SleepQualityOption
 } from '@stores/health/types'
+import { colors } from '@styles/theme'
 
 export const CHARACTERS: CharacterInfo[] = [
   {
@@ -54,7 +55,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'underweight',
     label: 'Abaixo do peso',
     rangeLabel: '< 18.5',
-    color: '#38bdf8',
+    color: colors.sky400,
     badgeVariant: 'primary',
     description: 'Abaixo da faixa saudável de referência da OMS.'
   },
@@ -62,7 +63,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'normal',
     label: 'Peso saudável',
     rangeLabel: '18.5 - 24.9',
-    color: '#10b981',
+    color: colors.emerald500,
     badgeVariant: 'success',
     description: 'Peso ideal e saudável para sua altura.'
   },
@@ -70,7 +71,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'overweight',
     label: 'Sobrepeso',
     rangeLabel: '25.0 - 29.9',
-    color: '#f59e0b',
+    color: colors.amber500,
     badgeVariant: 'warning',
     description: 'Levemente acima da faixa ideal de referência.'
   },
@@ -78,7 +79,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'obesity1',
     label: 'Obesidade Grau I',
     rangeLabel: '30.0 - 34.9',
-    color: '#f97316',
+    color: colors.orange500,
     badgeVariant: 'danger',
     description: 'Classificação de obesidade moderada pela OMS.'
   },
@@ -86,7 +87,7 @@ export const IMC_TABLE: Record<string, ImcClassification> = {
     key: 'obesity2',
     label: 'Obesidade Grau II / III',
     rangeLabel: '≥ 35.0',
-    color: '#ef4444',
+    color: colors.red500,
     badgeVariant: 'danger',
     description: 'Classificação de obesidade severa pela OMS.'
   }
@@ -199,11 +200,11 @@ export const sortWeightRecords = (records: WeightRecord[]): WeightRecord[] => {
 }
 
 export const SLEEP_QUALITY_OPTIONS: SleepQualityOption[] = [
-  { value: 1, emoji: '😫', label: 'Muito ruim', color: '#f87171' },
-  { value: 2, emoji: '🙁', label: 'Ruim', color: '#fb923c' },
-  { value: 3, emoji: '😐', label: 'Regular', color: '#facc15' },
-  { value: 4, emoji: '🙂', label: 'Bom', color: '#38bdf8' },
-  { value: 5, emoji: '😴', label: 'Muito bom', color: '#c084fc' }
+  { value: 1, emoji: '😫', label: 'Muito ruim', color: colors.red400 },
+  { value: 2, emoji: '🙁', label: 'Ruim', color: colors.orange400 },
+  { value: 3, emoji: '😐', label: 'Regular', color: colors.yellow400 },
+  { value: 4, emoji: '🙂', label: 'Bom', color: colors.sky400 },
+  { value: 5, emoji: '😴', label: 'Muito bom', color: colors.purple400 }
 ]
 
 export const getSleepQualityOption = (quality?: number): SleepQualityOption => {
@@ -226,27 +227,27 @@ export const getSleepStatus = (hours: number): {
   if (hours < 6) {
     return {
       label: 'Pouco sono',
-      color: '#f87171',
+      color: colors.red400,
       description: 'Abaixo da faixa recomendada de descanso (7h a 9h).'
     }
   }
   if (hours < 7) {
     return {
       label: 'Sono moderado',
-      color: '#fb923c',
+      color: colors.orange400,
       description: 'Próximo da meta recomendada (7h a 9h).'
     }
   }
   if (hours <= 9) {
     return {
       label: 'Sono ideal',
-      color: '#4ade80',
+      color: colors.green400,
       description: 'Dentro da faixa recomendada pela OMS (7h a 9h).'
     }
   }
   return {
     label: 'Sono prolongado',
-    color: '#38bdf8',
+    color: colors.sky400,
     description: 'Descanso acima de 9 horas.'
   }
 }

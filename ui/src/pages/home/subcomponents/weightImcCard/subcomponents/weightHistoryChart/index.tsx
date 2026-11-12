@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { Box, Text, Group, Tooltip } from '@mantine/core'
+import { Box, Text, Group, Tooltip, alpha } from '@mantine/core'
 import { getTodayDateString, calculateImc } from '@utils/functions/health'
 import type { WeightHistoryChartProps } from './types'
+import { colors } from '@styles/theme'
 
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return ''
@@ -166,14 +167,14 @@ export const WeightHistoryChart = ({
       <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
         <Group gap={8} align="center" wrap="wrap">
           <Group gap={4} align="center">
-            <Box w={6} h={6} style={{ borderRadius: '50%', backgroundColor: '#38bdf8' }} />
+            <Box w={6} h={6} style={{ borderRadius: '50%', backgroundColor: colors.sky400 }} />
             <Text size="10px" c="dimmed">
               Peso (kg)
             </Text>
           </Group>
 
           <Group gap={4} align="center">
-            <Box w={6} h={6} style={{ borderRadius: '50%', backgroundColor: '#c084fc' }} />
+            <Box w={6} h={6} style={{ borderRadius: '50%', backgroundColor: colors.purple400 }} />
             <Text size="10px" c="dimmed">
               IMC (kg/m²)
             </Text>
@@ -183,11 +184,11 @@ export const WeightHistoryChart = ({
         {hasData ? (
           <Group gap={6} align="center">
             <Text size="10px" c="dimmed">
-              Mín <span style={{ color: '#818cf8', fontWeight: 600 }}>{minWeight.toFixed(1)}</span>
+              Mín <span style={{ color: colors.indigo400, fontWeight: 600 }}>{minWeight.toFixed(1)}</span>
             </Text>
             <Text size="10px" c="dimmed">•</Text>
             <Text size="10px" c="dimmed">
-              Máx <span style={{ color: '#38bdf8', fontWeight: 600 }}>{maxWeight.toFixed(1)} kg</span>
+              Máx <span style={{ color: colors.sky400, fontWeight: 600 }}>{maxWeight.toFixed(1)} kg</span>
             </Text>
           </Group>
         ) : (
@@ -199,8 +200,8 @@ export const WeightHistoryChart = ({
         style={{
           height: 48,
           borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          background: alpha(colors.white, 0.02),
+          border: `1px solid ${alpha(colors.white, 0.05)}`,
           overflow: 'hidden',
           position: 'relative'
         }}
@@ -212,21 +213,21 @@ export const WeightHistoryChart = ({
         >
           <defs>
             <linearGradient id="monthWeightAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
+              <stop offset="0%" stopColor={colors.sky400} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={colors.sky400} stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="monthWeightLineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#818cf8" />
-              <stop offset="100%" stopColor="#38bdf8" />
+              <stop offset="0%" stopColor={colors.indigo400} />
+              <stop offset="100%" stopColor={colors.sky400} />
             </linearGradient>
 
             <linearGradient id="monthImcAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#c084fc" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#c084fc" stopOpacity="0.0" />
+              <stop offset="0%" stopColor={colors.purple400} stopOpacity="0.18" />
+              <stop offset="100%" stopColor={colors.purple400} stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="monthImcLineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#a855f7" />
-              <stop offset="100%" stopColor="#c084fc" />
+              <stop offset="0%" stopColor={colors.purple500} />
+              <stop offset="100%" stopColor={colors.purple400} />
             </linearGradient>
           </defs>
 
@@ -236,7 +237,7 @@ export const WeightHistoryChart = ({
               y1={0}
               x2={hoveredX}
               y2={height}
-              stroke="rgba(56, 189, 248, 0.45)"
+              stroke={alpha(colors.sky400, 0.45)}
               strokeDasharray="2 2"
               strokeWidth="1.2"
               pointerEvents="none"
@@ -248,7 +249,7 @@ export const WeightHistoryChart = ({
             y1={21}
             x2={width - 14}
             y2={21}
-            stroke="rgba(255, 255, 255, 0.03)"
+            stroke={alpha(colors.white, 0.03)}
             strokeDasharray="1 3"
           />
 
@@ -298,7 +299,7 @@ export const WeightHistoryChart = ({
                     y1={p.weightY}
                     x2={p.x}
                     y2={p.imcY}
-                    stroke={isHighlighted ? 'rgba(56, 189, 248, 0.5)' : 'rgba(255, 255, 255, 0.08)'}
+                    stroke={isHighlighted ? alpha(colors.sky400, 0.5) : alpha(colors.white, 0.08)}
                     strokeDasharray="1 2"
                   />
 
@@ -307,8 +308,8 @@ export const WeightHistoryChart = ({
                     cx={p.x}
                     cy={p.weightY}
                     r={isHighlighted ? 4.4 : 2.5}
-                    fill={isHighlighted ? '#38bdf8' : '#0b1329'}
-                    stroke={isHighlighted ? '#ffffff' : '#38bdf8'}
+                    fill={isHighlighted ? colors.sky400 : colors.navy950}
+                    stroke={isHighlighted ? colors.white : colors.sky400}
                     strokeWidth={isHighlighted ? 1.6 : 1.2}
                   />
 
@@ -317,8 +318,8 @@ export const WeightHistoryChart = ({
                     cx={p.x}
                     cy={p.imcY}
                     r={isHighlighted ? 4.2 : 2.2}
-                    fill={isHighlighted ? '#c084fc' : '#0b1329'}
-                    stroke={isHighlighted ? '#ffffff' : '#c084fc'}
+                    fill={isHighlighted ? colors.purple400 : colors.navy950}
+                    stroke={isHighlighted ? colors.white : colors.purple400}
                     strokeWidth={isHighlighted ? 1.5 : 1.2}
                   />
                 </g>
@@ -331,7 +332,7 @@ export const WeightHistoryChart = ({
               x={width / 2}
               y={28}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.3)"
+              fill={alpha(colors.white, 0.3)}
               fontSize="10"
             >
               Sem check-ins neste mês

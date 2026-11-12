@@ -1,7 +1,8 @@
-import { SimpleGrid, Box, Text, Group, ThemeIcon, Progress } from '@mantine/core'
+import { SimpleGrid, Box, Text, Group, ThemeIcon, Progress, alpha } from '@mantine/core'
 import { TbCheck } from 'react-icons/tb'
 
 import type { ChallengeMilestone } from '@utils/functions/challenges'
+import { colors } from '@styles/theme'
 
 interface ChallengeMilestonesProps {
   milestones: ChallengeMilestone[]
@@ -21,8 +22,8 @@ export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMile
             style={{
               padding: '12px',
               borderRadius: 12,
-              backgroundColor: isAchieved ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-              border: isAchieved ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: isAchieved ? alpha(colors.emerald500, 0.08) : alpha(colors.white, 0.03),
+              border: isAchieved ? `1px solid ${alpha(colors.emerald500, 0.3)}` : `1px solid ${alpha(colors.white, 0.08)}`,
               transition: 'all 0.2s ease',
               display: 'flex',
               flexDirection: 'column',

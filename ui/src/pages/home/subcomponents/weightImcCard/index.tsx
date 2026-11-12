@@ -1,10 +1,5 @@
 import { useState, useMemo } from 'react'
-import {
-  Group,
-  Text,
-  NumberInput,
-  Box
-} from '@mantine/core'
+import { Group, Text, NumberInput, Box, alpha } from '@mantine/core'
 import {
   TbScale,
   TbCalendarCheck,
@@ -28,6 +23,7 @@ import {
 import { WeightHistoryChart } from './subcomponents/weightHistoryChart'
 import { ImcGaugeChart } from './subcomponents/imcGaugeChart'
 import type { WeightImcCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const WeightImcCard = ({
   heightCm,
@@ -140,7 +136,7 @@ export const WeightImcCard = ({
             right: -24,
             width: 120,
             height: 120,
-            background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%)',
+            background: `radial-gradient(circle, ${alpha(colors.sky400, 0.15)} 0%, transparent 70%)`,
             pointerEvents: 'none'
           }}
         />
@@ -148,7 +144,7 @@ export const WeightImcCard = ({
         <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center">
-              <TbScale size={18} color="#38bdf8" />
+              <TbScale size={18} color={colors.sky400} />
               <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>Peso & IMC</CardTitle>
             </Group>
 
@@ -178,9 +174,9 @@ export const WeightImcCard = ({
                         : `Fazer Check-in de Peso (${formatDateDisplay(activeDate)})`)
                 }
                 style={{
-                  backgroundColor: isTargetRecorded ? 'rgba(56, 189, 248, 0.18)' : 'rgba(56, 189, 248, 0.1)',
-                  borderColor: isTargetRecorded ? 'rgba(56, 189, 248, 0.45)' : 'rgba(56, 189, 248, 0.25)',
-                  color: '#38bdf8'
+                  backgroundColor: isTargetRecorded ? alpha(colors.sky400, 0.18) : alpha(colors.sky400, 0.1),
+                  borderColor: isTargetRecorded ? alpha(colors.sky400, 0.45) : alpha(colors.sky400, 0.25),
+                  color: colors.sky400
                 }}
               >
                 {isTargetRecorded ? <TbCalendarCheck size={15} /> : <TbCalendarPlus size={15} />}
@@ -248,9 +244,9 @@ export const WeightImcCard = ({
               }}
               styles={{
                 input: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  color: '#fff',
+                  backgroundColor: alpha(colors.white, 0.06),
+                  borderColor: alpha(colors.white, 0.15),
+                  color: colors.white,
                   fontWeight: 700,
                   fontSize: '16px',
                   height: 42
@@ -259,11 +255,11 @@ export const WeightImcCard = ({
             />
 
             {previewImc && (
-              <Group justify="space-between" align="center" mt="sm" p="xs" style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: 8 }}>
+              <Group justify="space-between" align="center" mt="sm" p="xs" style={{ background: alpha(colors.white, 0.03), borderRadius: 8 }}>
                 <Text size="xs" c="dimmed">
                   IMC correspondente:
                 </Text>
-                <Text size="xs" fw={700} c="#c084fc">
+                <Text size="xs" fw={700} c={colors.purple400}>
                   {previewImc.imc.toFixed(1)} kg/m² • {previewImc.classification.label}
                 </Text>
               </Group>

@@ -1,7 +1,8 @@
-import { Stack, ThemeIcon, Title, Text, Group, Button } from '@mantine/core'
+import { Stack, ThemeIcon, Title, Text, Group, Button, alpha } from '@mantine/core'
 import { TbFileText, TbArrowLeft } from 'react-icons/tb'
 
 import type { TermsHeaderProps } from './types'
+import { colors } from '@styles/theme'
 
 export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
   return (
@@ -14,10 +15,10 @@ export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
           onClick={onBack}
           styles={{
             root: {
-              color: '#94a3b8',
+              color: colors.slate400,
               '&:hover': {
-                color: '#ffffff',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                color: colors.white,
+                backgroundColor: alpha(colors.white, 0.05)
               }
             }
           }}

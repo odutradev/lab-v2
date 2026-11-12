@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Group, Stack, Progress, Box, Badge as MantineBadge, Text } from '@mantine/core'
+import { Group, Stack, Progress, Box, Badge as MantineBadge, Text, alpha } from '@mantine/core'
 import { TbDropletFilled, TbPencil, TbTrophy } from 'react-icons/tb'
 
 import Card from '@components/card'
@@ -10,6 +10,7 @@ import { CompactBottleItem, AddBottleButton } from './subcomponents/compactBottl
 import EditWaterModal from './subcomponents/editWaterModal'
 
 import type { CompactWaterCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const CompactWaterCard = ({
   currentWeight,
@@ -83,7 +84,7 @@ export const CompactWaterCard = ({
         <Stack gap={8}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center" wrap="wrap">
-              <TbDropletFilled size={15} color="#c084fc" />
+              <TbDropletFilled size={15} color={colors.purple400} />
               <Text size="xs" fw={700} c="white">
                 Água
               </Text>
@@ -118,7 +119,7 @@ export const CompactWaterCard = ({
               )}
 
               {extraBottlesTarget > 0 && (
-                <Text size="11px" c="#c084fc" fw={700}>
+                <Text size="11px" c={colors.purple400} fw={700}>
                   (+{extraTargetMl}ml extra)
                 </Text>
               )}
@@ -145,11 +146,11 @@ export const CompactWaterCard = ({
             animated={false}
             styles={{
               root: {
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                backgroundColor: alpha(colors.white, 0.06),
                 height: 4
               },
               section: {
-                background: 'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
+                background: `linear-gradient(90deg, ${colors.purple600} 0%, ${colors.purple400} 100%)`,
                 transition: 'none'
               }
             }}

@@ -1,10 +1,11 @@
-import { Modal, Stack, Group, Radio } from '@mantine/core'
+import { Modal, Stack, Group, Radio, alpha } from '@mantine/core'
 import { useState } from 'react'
 
 import Button from '@components/button'
 
 import type { RecurringScopeModalProps } from './types'
 import type { RecurrenceScopeMode } from '@actions/habits/types'
+import { colors } from '@styles/theme'
 
 export const RecurringScopeModal = ({
   isOpen,
@@ -37,18 +38,18 @@ export const RecurringScopeModal = ({
       size="xs"
       styles={{
         content: {
-          backgroundColor: '#1f1f1f',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.65)',
-          color: '#e3e3e3'
+          backgroundColor: colors.graphite900,
+          border: `1px solid ${alpha(colors.white, 0.1)}`,
+          boxShadow: `0 20px 40px ${alpha(colors.black, 0.65)}`,
+          color: colors.mist200
         },
         header: {
-          backgroundColor: '#1f1f1f',
+          backgroundColor: colors.graphite900,
           borderBottom: 'none',
           paddingBottom: 4
         },
         title: {
-          color: '#ffffff',
+          color: colors.white,
           fontWeight: 600,
           fontSize: '1.15rem'
         }
@@ -64,7 +65,7 @@ export const RecurringScopeModal = ({
               value="this"
               label="Esta ocorrência"
               styles={{
-                label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
+                label: { color: colors.mist200, fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }
               }}
             />
@@ -72,7 +73,7 @@ export const RecurringScopeModal = ({
               value="following"
               label="Esta e as ocorrências seguintes"
               styles={{
-                label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
+                label: { color: colors.mist200, fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }
               }}
             />
@@ -80,7 +81,7 @@ export const RecurringScopeModal = ({
               value="all"
               label="Todas as ocorrências"
               styles={{
-                label: { color: '#e3e3e3', fontSize: 14, cursor: 'pointer' },
+                label: { color: colors.mist200, fontSize: 14, cursor: 'pointer' },
                 radio: { cursor: 'pointer' }
               }}
             />
@@ -96,8 +97,8 @@ export const RecurringScopeModal = ({
             onClick={handleConfirm}
             isLoading={isLoading}
             style={{
-              backgroundColor: '#a8c7fa',
-              color: '#041e49',
+              backgroundColor: colors.periwinkle200,
+              color: colors.navy900,
               borderRadius: 20,
               fontWeight: 600,
               paddingLeft: 22,

@@ -1,8 +1,9 @@
 import React from 'react'
-import { Box, Text, UnstyledButton } from '@mantine/core'
+import { Box, Text, UnstyledButton, alpha } from '@mantine/core'
 import { TbCheck, TbPlus, TbX } from 'react-icons/tb'
 
 import type { CompactBottleItemProps } from './types'
+import { colors } from '@styles/theme'
 
 export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
   index,
@@ -28,13 +29,13 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
           padding: '4px 2px',
           borderRadius: 8,
           background: isFilled
-            ? 'rgba(56, 189, 248, 0.12)'
-            : 'rgba(255, 255, 255, 0.02)',
+            ? alpha(colors.sky400, 0.12)
+            : alpha(colors.white, 0.02),
           border: isFilled
-            ? '1px solid rgba(56, 189, 248, 0.5)'
+            ? `1px solid ${alpha(colors.sky400, 0.5)}`
             : isExtra
-            ? '1px dashed rgba(168, 85, 247, 0.35)'
-            : '1px solid rgba(255, 255, 255, 0.08)',
+            ? `1px dashed ${alpha(colors.purple500, 0.35)}`
+            : `1px solid ${alpha(colors.white, 0.08)}`,
           cursor: 'pointer',
           transition: 'all 0.15s ease'
         }}
@@ -49,8 +50,8 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
           >
             <defs>
               <linearGradient id={`compactWater-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38bdf8" />
-                <stop offset="100%" stopColor="#0284c7" />
+                <stop offset="0%" stopColor={colors.sky400} />
+                <stop offset="100%" stopColor={colors.sky600} />
               </linearGradient>
             </defs>
 
@@ -60,7 +61,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               width="6"
               height="3"
               rx="1"
-              fill={isFilled ? '#38bdf8' : 'rgba(255, 255, 255, 0.25)'}
+              fill={isFilled ? colors.sky400 : alpha(colors.white, 0.25)}
             />
 
             <rect
@@ -69,13 +70,13 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
               width="8"
               height="3"
               rx="1"
-              fill={isFilled ? '#0284c7' : 'rgba(255, 255, 255, 0.15)'}
+              fill={isFilled ? colors.sky600 : alpha(colors.white, 0.15)}
             />
 
             <path
               d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
-              fill={isFilled ? `url(#compactWater-${index})` : 'rgba(255, 255, 255, 0.03)'}
-              stroke={isFilled ? '#38bdf8' : 'rgba(255, 255, 255, 0.2)'}
+              fill={isFilled ? `url(#compactWater-${index})` : alpha(colors.white, 0.03)}
+              stroke={isFilled ? colors.sky400 : alpha(colors.white, 0.2)}
               strokeWidth="1.2"
             />
           </svg>
@@ -87,17 +88,17 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
                 top: '52%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                background: 'rgba(15, 23, 42, 0.9)',
+                background: alpha(colors.slate900, 0.9),
                 borderRadius: '50%',
                 width: 13,
                 height: 13,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.5)'
+                boxShadow: `0 1px 3px ${alpha(colors.black, 0.5)}`
               }}
             >
-              <TbCheck size={9} color="#38bdf8" />
+              <TbCheck size={9} color={colors.sky400} />
             </Box>
           )}
         </Box>
@@ -105,7 +106,7 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
         <Text
           size="9px"
           fw={600}
-          c={isFilled ? '#38bdf8' : 'dimmed'}
+          c={isFilled ? colors.sky400 : 'dimmed'}
           style={{ lineHeight: 1, marginTop: 3 }}
         >
           #{index + 1}
@@ -127,13 +128,13 @@ export const CompactBottleItem: React.FC<CompactBottleItemProps> = ({
             width: 15,
             height: 15,
             borderRadius: '50%',
-            background: 'rgba(239, 68, 68, 0.85)',
-            color: '#ffffff',
+            background: alpha(colors.red500, 0.85),
+            color: colors.white,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+            boxShadow: `0 1px 4px ${alpha(colors.black, 0.4)}`,
             zIndex: 2,
             transition: 'transform 0.15s ease'
           }}
@@ -165,18 +166,18 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
         height: 54,
         padding: '4px 2px',
         borderRadius: 8,
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px dashed rgba(255, 255, 255, 0.2)',
+        background: alpha(colors.white, 0.02),
+        border: `1px dashed ${alpha(colors.white, 0.2)}`,
         cursor: 'pointer',
         transition: 'all 0.15s ease'
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.7)'
-        e.currentTarget.style.background = 'rgba(168, 85, 247, 0.08)'
+        e.currentTarget.style.borderColor = alpha(colors.purple500, 0.7)
+        e.currentTarget.style.background = alpha(colors.purple500, 0.08)
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'
+        e.currentTarget.style.borderColor = alpha(colors.white, 0.2)
+        e.currentTarget.style.background = alpha(colors.white, 0.02)
       }}
     >
       <Box style={{ width: 18, height: 32, position: 'relative' }}>
@@ -193,7 +194,7 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             width="6"
             height="3"
             rx="1"
-            stroke="rgba(255, 255, 255, 0.3)"
+            stroke={alpha(colors.white, 0.3)}
             strokeDasharray="2 2"
             strokeWidth="1"
           />
@@ -203,13 +204,13 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             width="8"
             height="3"
             rx="1"
-            stroke="rgba(255, 255, 255, 0.2)"
+            stroke={alpha(colors.white, 0.2)}
             strokeDasharray="2 2"
             strokeWidth="1"
           />
           <path
             d="M4 8 C4 7 6 7 6 7 H14 C14 7 16 7 16 8 L16.5 20 C16.5 22 15.5 23 15 24 L15.5 32 C15.5 34 14 35 12.5 35 H7.5 C6 35 4.5 34 4.5 32 L5 24 C4.5 23 3.5 22 3.5 20 L4 8 Z"
-            stroke="rgba(255, 255, 255, 0.3)"
+            stroke={alpha(colors.white, 0.3)}
             strokeDasharray="3 2"
             strokeWidth="1.2"
           />
@@ -221,14 +222,14 @@ export const AddBottleButton: React.FC<AddBottleButtonProps> = ({ bottleMl = 500
             top: '52%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: 'rgba(168, 85, 247, 0.25)',
+            background: alpha(colors.purple500, 0.25),
             borderRadius: '50%',
             width: 15,
             height: 15,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#c084fc'
+            color: colors.purple400
           }}
         >
           <TbPlus size={10} strokeWidth={2.5} />

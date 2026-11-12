@@ -11,6 +11,7 @@ import {
 import usePrivacyPolicyPage from './hook'
 
 import type { PrivacyPolicyPageProps } from './types'
+import { colors } from '@styles/theme'
 
 export const PrivacyPolicyPage = ({ onBack }: PrivacyPolicyPageProps) => {
   const { lastUpdated, handleBack } = usePrivacyPolicyPage({ onBack })
@@ -60,7 +61,7 @@ export const PrivacyPolicyPage = ({ onBack }: PrivacyPolicyPageProps) => {
               </Text>
 
               <Box style={highlightBoxStyle}>
-                <Text style={{ ...textStyle, color: '#e0e7ff', fontWeight: 500 }}>
+                <Text style={{ ...textStyle, color: colors.indigo100, fontWeight: 500 }}>
                   Declaração de Conformidade com o Google User Data Policy:
                 </Text>
                 <Text style={{ ...textStyle, fontSize: '0.9rem', marginTop: 4 }}>
@@ -69,7 +70,7 @@ export const PrivacyPolicyPage = ({ onBack }: PrivacyPolicyPageProps) => {
                     href="https://developers.google.com/terms/api-services-user-data-policy"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#818cf8', textDecoration: 'underline' }}
+                    style={{ color: colors.indigo400, textDecoration: 'underline' }}
                   >
                     Google API Services User Data Policy
                   </a>
@@ -131,7 +132,7 @@ export const PrivacyPolicyPage = ({ onBack }: PrivacyPolicyPageProps) => {
                 Se você tiver dúvidas, solicitações ou preocupações sobre esta Política de Privacidade ou sobre o tratamento dos seus dados, entre em contato através do e-mail oficial:{' '}
                 <a
                   href="mailto:contato@odutra.com"
-                  style={{ color: '#818cf8', textDecoration: 'underline' }}
+                  style={{ color: colors.indigo400, textDecoration: 'underline' }}
                 >
                   contato@odutra.com
                 </a>

@@ -1,9 +1,10 @@
-import { ActionIcon, Stack, Group, Text, Box, Loader } from '@mantine/core'
+import { ActionIcon, Stack, Group, Text, Box, Loader, alpha } from '@mantine/core'
 import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent, TbLock } from 'react-icons/tb'
 
 import Badge from '@components/badge'
 
 import type { HabitsDayViewProps } from './types'
+import { colors } from '@styles/theme'
 
 export const HabitsDayView = ({
   selectedDate,
@@ -48,9 +49,9 @@ export const HabitsDayView = ({
 
   return (
     <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <Group justify="space-between" align="center" pb="sm" wrap="wrap" gap="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+      <Group justify="space-between" align="center" pb="sm" wrap="wrap" gap="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}>
         <Group gap="xs" wrap="wrap">
-          <TbCalendarEvent size={20} color="#818cf8" />
+          <TbCalendarEvent size={20} color={colors.indigo400} />
           <Text fw={700} size="md" c="white">
             Programação do Dia
           </Text>
@@ -82,7 +83,7 @@ export const HabitsDayView = ({
             {items.map((item) => {
               const isToggling = togglingId === item.habitId
               const isReadOnly = !!item.readOnly
-              const itemColor = item.calendarColor || '#6366f1'
+              const itemColor = item.calendarColor || colors.indigo500
 
               return (
                 <Box
@@ -92,13 +93,13 @@ export const HabitsDayView = ({
                     background: isReadOnly
                       ? `${itemColor}15`
                       : item.completed
-                        ? 'rgba(45, 212, 191, 0.08)'
-                        : 'rgba(255, 255, 255, 0.02)',
+                        ? alpha(colors.teal400, 0.08)
+                        : alpha(colors.white, 0.02),
                     border: isReadOnly
                       ? `1px solid ${itemColor}35`
                       : item.completed
-                        ? '1px solid rgba(45, 212, 191, 0.25)'
-                        : '1px solid rgba(255, 255, 255, 0.06)',
+                        ? `1px solid ${alpha(colors.teal400, 0.25)}`
+                        : `1px solid ${alpha(colors.white, 0.06)}`,
                     borderRadius: 10,
                     transition: 'all 0.15s ease'
                   }}
@@ -125,7 +126,7 @@ export const HabitsDayView = ({
                           onClick={() => onToggleCheckin(item.habitId, selectedDate)}
                           aria-label={item.completed ? 'Desmarcar conclusão' : 'Marcar conclusão'}
                         >
-                          {item.completed ? <TbCheck size={18} color="#2dd4bf" /> : <TbCircle size={18} />}
+                          {item.completed ? <TbCheck size={18} color={colors.teal400} /> : <TbCircle size={18} />}
                         </ActionIcon>
                       )}
 
@@ -145,8 +146,8 @@ export const HabitsDayView = ({
                         </Text>
                         {item.startTime ? (
                           <Group gap={4} mt={2}>
-                            <TbClock size={12} color="#93c5fd" />
-                            <Text size="xs" fw={600} c="#93c5fd">
+                            <TbClock size={12} color={colors.blue300} />
+                            <Text size="xs" fw={600} c={colors.blue300}>
                               {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
                             </Text>
                           </Group>

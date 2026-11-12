@@ -1,6 +1,7 @@
-import { Paper, Title, Text, Box } from '@mantine/core'
+import { Paper, Title, Text, Box, alpha } from '@mantine/core'
 
 import type { CardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const CardHeader = ({ children, className, ...props }: CardProps) => {
   return (
@@ -8,7 +9,7 @@ export const CardHeader = ({ children, className, ...props }: CardProps) => {
       mb="md"
       pb="xs"
       className={className}
-      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}
+      style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}
       {...props}
     >
       {children}
@@ -46,7 +47,7 @@ export const CardFooter = ({ children, className, ...props }: CardProps) => {
       mt="md"
       pt="xs"
       className={className}
-      style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
+      style={{ borderTop: `1px solid ${alpha(colors.white, 0.08)}` }}
       {...props}
     >
       {children}
@@ -61,7 +62,7 @@ export const Card = ({ children, className, p = 'xl', ...props }: CardProps) => 
       radius="lg"
       withBorder
       shadow="md"
-      bg="rgba(17, 24, 39, 0.7)"
+      bg={alpha(colors.gray900, 0.7)}
       className={className}
       style={{ backdropFilter: 'blur(16px)' }}
       {...props}

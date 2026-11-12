@@ -10,6 +10,7 @@ import Input from '@components/input'
 import useForm from '@hooks/useForm'
 
 import type { LoginFormValues, LoginFormProps } from './types'
+import { colors } from '@styles/theme'
 
 export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
   const { login } = useAuthStore()
@@ -79,7 +80,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
             variant="ghost"
             size="sm"
             onClick={handleForgotPassword}
-            style={{ padding: 0, height: 'auto', fontSize: '13px', color: '#818cf8' }}
+            style={{ padding: 0, height: 'auto', fontSize: '13px', color: colors.indigo400 }}
           >
             Esqueceu sua senha?
           </Button>

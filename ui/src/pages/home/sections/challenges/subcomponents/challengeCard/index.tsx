@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Box, Group, Stack, Text, Progress, Badge, Tooltip } from '@mantine/core'
+import { Box, Group, Stack, Text, Progress, Badge, Tooltip, alpha } from '@mantine/core'
 import { TbFlame, TbTrophy, TbCalendar, TbCheck, TbChevronRight, TbNotes } from 'react-icons/tb'
 
 import Button from '@components/button'
 import { calculateChallengeStats, formatDisplayDate } from '@utils/functions/challenges'
 
 import type { Challenge } from '@actions/challenges/types'
+import { colors } from '@styles/theme'
 
 interface ChallengeCardProps {
   challenge: Challenge
@@ -41,13 +42,13 @@ export const ChallengeCard = ({
       style={{
         padding: '16px 18px',
         borderRadius: 16,
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backgroundColor: alpha(colors.white, 0.03),
         border: stats.isCompletedToday
-          ? '1px solid rgba(16, 185, 129, 0.35)'
-          : '1px solid rgba(255, 255, 255, 0.08)',
+          ? `1px solid ${alpha(colors.emerald500, 0.35)}`
+          : `1px solid ${alpha(colors.white, 0.08)}`,
         boxShadow: stats.isCompletedToday
-          ? '0 4px 20px rgba(16, 185, 129, 0.08)'
-          : '0 4px 16px rgba(0, 0, 0, 0.2)',
+          ? `0 4px 20px ${alpha(colors.emerald500, 0.08)}`
+          : `0 4px 16px ${alpha(colors.black, 0.2)}`,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
         display: 'flex',
@@ -67,8 +68,8 @@ export const ChallengeCard = ({
           height: 100,
           borderRadius: '50%',
           background: stats.isCompletedToday
-            ? 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)',
+            ? `radial-gradient(circle, ${alpha(colors.emerald500, 0.15)} 0%, transparent 70%)`
+            : `radial-gradient(circle, ${alpha(colors.indigo500, 0.12)} 0%, transparent 70%)`,
           pointerEvents: 'none'
         }}
       />
@@ -82,8 +83,8 @@ export const ChallengeCard = ({
                 width: 40,
                 height: 40,
                 borderRadius: 12,
-                backgroundColor: 'rgba(99, 102, 241, 0.12)',
-                border: '1px solid rgba(129, 140, 248, 0.25)',
+                backgroundColor: alpha(colors.indigo500, 0.12),
+                border: `1px solid ${alpha(colors.indigo400, 0.25)}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -113,7 +114,7 @@ export const ChallengeCard = ({
                 {challenge.notes && (
                   <Tooltip label="Possui anotações e regras" withArrow>
                     <Box style={{ display: 'inline-flex', alignItems: 'center' }}>
-                      <TbNotes size={13} color="#94a3b8" />
+                      <TbNotes size={13} color={colors.slate400} />
                     </Box>
                   </Tooltip>
                 )}
@@ -159,7 +160,7 @@ export const ChallengeCard = ({
         {/* Estatísticas Chave */}
         <Group justify="space-between" align="center" mt={4} wrap="wrap">
           <Group gap={4}>
-            <TbFlame size={15} color={stats.streak > 0 ? '#f97316' : 'rgba(255, 255, 255, 0.4)'} />
+            <TbFlame size={15} color={stats.streak > 0 ? colors.orange500 : alpha(colors.white, 0.4)} />
             <Text size="xs" fw={600} c={stats.streak > 0 ? 'orange.4' : 'dimmed'}>
               {stats.streak} {stats.streak === 1 ? 'dia' : 'dias'} de ofensiva
             </Text>
@@ -179,7 +180,7 @@ export const ChallengeCard = ({
                 fw={600}
                 c={stats.isFrozenToday ? 'cyan.3' : stats.freezesRemainingThisMonth > 0 ? 'dimmed' : 'red.4'}
                 style={{
-                  backgroundColor: stats.isFrozenToday ? 'rgba(6, 182, 212, 0.15)' : undefined,
+                  backgroundColor: stats.isFrozenToday ? alpha(colors.cyan500, 0.15) : undefined,
                   padding: stats.isFrozenToday ? '1px 6px' : undefined,
                   borderRadius: 6
                 }}
@@ -191,7 +192,7 @@ export const ChallengeCard = ({
 
           <Tooltip label={`Previsão de conclusão da meta: ${formatDisplayDate(stats.estimatedEndDate)}`} withArrow>
             <Group gap={4}>
-              <TbCalendar size={14} color="rgba(255, 255, 255, 0.4)" />
+              <TbCalendar size={14} color={alpha(colors.white, 0.4)} />
               <Text size="xs" c="dimmed">
                 Meta: {formatDisplayDate(stats.estimatedEndDate)}
               </Text>
@@ -210,8 +211,8 @@ export const ChallengeCard = ({
           leftIcon={stats.isCompletedToday ? <TbCheck size={14} /> : <TbTrophy size={14} />}
           style={{
             flex: 1,
-            backgroundColor: stats.isCompletedToday ? '#059669' : undefined,
-            borderColor: stats.isCompletedToday ? '#10b981' : undefined
+            backgroundColor: stats.isCompletedToday ? colors.emerald600 : undefined,
+            borderColor: stats.isCompletedToday ? colors.emerald500 : undefined
           }}
         >
           {stats.isCompletedToday ? 'Concluído Hoje ✓' : 'Resisti Hoje ✓'}

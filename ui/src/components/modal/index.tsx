@@ -1,9 +1,10 @@
-import { Modal as MantineModal, Box, Title, Text, Group, Stack, ThemeIcon, UnstyledButton } from '@mantine/core'
+import { Modal as MantineModal, Box, Title, Text, Group, Stack, ThemeIcon, UnstyledButton, alpha } from '@mantine/core'
 import { TbAlertTriangle, TbAlertCircle, TbCheck, TbInfoCircle, TbChevronRight } from 'react-icons/tb'
 
 import Button from '@components/button'
 
 import type { ModalProps, ModalHeaderProps, ModalBodyProps, ModalFooterProps, ModalVariant } from './types'
+import { colors } from '@styles/theme'
 
 const variantColors: Record<ModalVariant, string> = {
   indigo: 'indigo',
@@ -32,7 +33,7 @@ export const ModalHeader = ({ title, description, icon, variant = 'indigo' }: Mo
   const color = variantColors[variant]
 
   return (
-    <Box mb="md" pb="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+    <Box mb="md" pb="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}>
       <Group gap="sm" align="flex-start" wrap="nowrap">
         {icon || (
           <ThemeIcon size="lg" radius="md" variant="light" color={color}>
@@ -64,7 +65,7 @@ export const ModalBody = ({ children }: ModalBodyProps) => {
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
   return (
-    <Box mt="lg" pt="md" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+    <Box mt="lg" pt="md" style={{ borderTop: `1px solid ${alpha(colors.white, 0.08)}` }}>
       <Group justify="flex-end" gap="sm">
         {children}
       </Group>
@@ -107,10 +108,10 @@ export const Modal = ({
       zIndex={zIndex}
       styles={{
         content: {
-          background: 'linear-gradient(180deg, rgba(26, 28, 43, 0.98) 0%, rgba(16, 17, 26, 0.99) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: `linear-gradient(180deg, ${alpha(colors.night600, 0.98)} 0%, ${alpha(colors.night850, 0.99)} 100%)`,
+          border: `1px solid ${alpha(colors.white, 0.08)}`,
           borderRadius: 16,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.45)',
+          boxShadow: `0 20px 40px ${alpha(colors.black, 0.45)}`,
           backdropFilter: 'blur(16px)',
           padding: '24px'
         },
@@ -123,11 +124,11 @@ export const Modal = ({
           padding: 0
         },
         close: {
-          color: 'rgba(255, 255, 255, 0.5)',
+          color: alpha(colors.white, 0.5),
           transition: 'all 0.2s ease',
           '&:hover': {
-            color: '#fff',
-            backgroundColor: 'rgba(255, 255, 255, 0.08)'
+            color: colors.white,
+            backgroundColor: alpha(colors.white, 0.08)
           }
         }
       }}
@@ -176,11 +177,11 @@ export const Modal = ({
                     padding: '14px 16px',
                     borderRadius: 12,
                     background: action.variant === 'danger'
-                      ? 'rgba(239, 68, 68, 0.08)'
-                      : 'rgba(255, 255, 255, 0.03)',
+                      ? alpha(colors.red500, 0.08)
+                      : alpha(colors.white, 0.03),
                     border: action.variant === 'danger'
-                      ? '1px solid rgba(239, 68, 68, 0.25)'
-                      : '1px solid rgba(255, 255, 255, 0.08)',
+                      ? `1px solid ${alpha(colors.red500, 0.25)}`
+                      : `1px solid ${alpha(colors.white, 0.08)}`,
                     transition: 'all 0.2s ease',
                     cursor: action.disabled ? 'not-allowed' : 'pointer',
                     opacity: action.disabled ? 0.6 : 1
@@ -213,7 +214,7 @@ export const Modal = ({
                         )}
                       </Box>
                     </Group>
-                    <TbChevronRight size={18} color="rgba(255, 255, 255, 0.4)" />
+                    <TbChevronRight size={18} color={alpha(colors.white, 0.4)} />
                   </Group>
                 </UnstyledButton>
               ))}

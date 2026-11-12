@@ -1,4 +1,4 @@
-import { Group, Box, Text, Progress, SimpleGrid, ThemeIcon } from '@mantine/core'
+import { Group, Box, Text, Progress, SimpleGrid, ThemeIcon, alpha } from '@mantine/core'
 import {
   TbRuler,
   TbCalendarTime,
@@ -14,6 +14,7 @@ import Button from '@components/button'
 import useHealthStore from '@stores/health'
 
 import type { ProfileProgressCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const ProfileProgressCard = ({
   calendarStatus,
@@ -33,7 +34,7 @@ export const ProfileProgressCard = ({
       valueText: profile.height ? `${(profile.height / 100).toFixed(2)} m` : undefined,
       description: 'Necessária para cálculo do IMC e metas metabólicas',
       icon: TbRuler,
-      iconColor: '#38bdf8',
+      iconColor: colors.sky400,
       targetId: 'profile-physical-card'
     },
     {
@@ -43,7 +44,7 @@ export const ProfileProgressCard = ({
       valueText: hasAge ? `${profile.age} anos` : undefined,
       description: 'Necessária para calibrar taxa metabólica e hidratação',
       icon: TbCalendarTime,
-      iconColor: '#a855f7',
+      iconColor: colors.purple500,
       targetId: 'profile-physical-card'
     },
     {
@@ -53,7 +54,7 @@ export const ProfileProgressCard = ({
       valueText: hasCalendar ? 'Sincronizado' : undefined,
       description: 'Sincronize seus hábitos diretamente na sua agenda',
       icon: TbBrandGoogle,
-      iconColor: '#818cf8',
+      iconColor: colors.indigo400,
       targetId: 'profile-security-card',
       action: onConnectCalendar
     }
@@ -117,12 +118,12 @@ export const ProfileProgressCard = ({
                 style={{
                   borderRadius: '8px',
                   backgroundColor: step.completed
-                    ? 'rgba(34, 197, 94, 0.05)'
-                    : 'rgba(255, 255, 255, 0.03)',
+                    ? alpha(colors.green500, 0.05)
+                    : alpha(colors.white, 0.03),
                   border: `1px solid ${
                     step.completed
-                      ? 'rgba(34, 197, 94, 0.2)'
-                      : 'rgba(255, 255, 255, 0.08)'
+                      ? alpha(colors.green500, 0.2)
+                      : alpha(colors.white, 0.08)
                   }`,
                   display: 'flex',
                   flexDirection: 'column',
@@ -140,11 +141,11 @@ export const ProfileProgressCard = ({
                         color={step.completed ? 'teal' : 'gray'}
                         style={{
                           backgroundColor: step.completed
-                            ? 'rgba(34, 197, 94, 0.15)'
-                            : 'rgba(255, 255, 255, 0.06)'
+                            ? alpha(colors.green500, 0.15)
+                            : alpha(colors.white, 0.06)
                         }}
                       >
-                        <Icon size={18} color={step.completed ? '#4ade80' : step.iconColor} />
+                        <Icon size={18} color={step.completed ? colors.green400 : step.iconColor} />
                       </ThemeIcon>
                       <Text size="sm" fw={600} c="white">
                         {step.title}

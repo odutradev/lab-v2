@@ -1,13 +1,5 @@
 import { useState, useMemo } from 'react'
-import {
-  Stack,
-  Group,
-  Text,
-  Box,
-  Badge as MantineBadge,
-  Slider,
-  UnstyledButton
-} from '@mantine/core'
+import { Stack, Group, Text, Box, Badge as MantineBadge, Slider, UnstyledButton, alpha } from '@mantine/core'
 import {
   TbMoonStars,
   TbCalendarCheck,
@@ -31,6 +23,7 @@ import {
 } from '@utils/functions/health'
 import { SleepHistoryChart } from './subcomponents/sleepHistoryChart'
 import type { SleepTrackerCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const SleepTrackerCard = ({
   sleepHistory,
@@ -127,7 +120,7 @@ export const SleepTrackerCard = ({
             right: -24,
             width: 120,
             height: 120,
-            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
+            background: `radial-gradient(circle, ${alpha(colors.purple500, 0.15)} 0%, transparent 70%)`,
             pointerEvents: 'none'
           }}
         />
@@ -135,7 +128,7 @@ export const SleepTrackerCard = ({
         <CardHeader style={{ paddingBottom: 6, borderBottom: 'none' }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center">
-              <TbMoonStars size={18} color="#c084fc" />
+              <TbMoonStars size={18} color={colors.purple400} />
               <CardTitle style={{ fontSize: '14px', fontWeight: 700 }}>
                 Sono & Recuperação
               </CardTitle>
@@ -171,9 +164,9 @@ export const SleepTrackerCard = ({
                         : `Fazer Check-in de Sono (${formatDateDisplay(activeDate)})`)
                 }
                 style={{
-                  backgroundColor: isTargetRecorded ? 'rgba(168, 85, 247, 0.18)' : 'rgba(168, 85, 247, 0.1)',
-                  borderColor: isTargetRecorded ? 'rgba(168, 85, 247, 0.45)' : 'rgba(168, 85, 247, 0.25)',
-                  color: '#c084fc'
+                  backgroundColor: isTargetRecorded ? alpha(colors.purple500, 0.18) : alpha(colors.purple500, 0.1),
+                  borderColor: isTargetRecorded ? alpha(colors.purple500, 0.45) : alpha(colors.purple500, 0.25),
+                  color: colors.purple400
                 }}
               >
                 {isTargetRecorded ? <TbCalendarCheck size={15} /> : <TbCalendarPlus size={15} />}
@@ -220,14 +213,14 @@ export const SleepTrackerCard = ({
             <Box>
               <Group justify="space-between" align="baseline" mb="xs">
                 <Group gap={6} align="center">
-                  <TbClock size={16} color="#c084fc" />
-                  <Text size="sm" fw={600} c="#fff">
+                  <TbClock size={16} color={colors.purple400} />
+                  <Text size="sm" fw={600} c={colors.white}>
                     Horas de Sono
                   </Text>
                 </Group>
 
                 <Group gap="xs" align="baseline">
-                  <Text size="20px" fw={800} c="#c084fc">
+                  <Text size="20px" fw={800} c={colors.purple400}>
                     {inputHours.toFixed(1)}h
                   </Text>
                   <MantineBadge
@@ -260,16 +253,16 @@ export const SleepTrackerCard = ({
                 color="violet"
                 styles={{
                   track: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                    backgroundColor: alpha(colors.white, 0.1)
                   },
                   bar: {
-                    background: 'linear-gradient(90deg, #7c3aed 0%, #c084fc 100%)'
+                    background: `linear-gradient(90deg, ${colors.violet600} 0%, ${colors.purple400} 100%)`
                   },
                   thumb: {
-                    borderColor: '#c084fc'
+                    borderColor: colors.purple400
                   },
                   markLabel: {
-                    color: 'rgba(255, 255, 255, 0.45)',
+                    color: alpha(colors.white, 0.45),
                     fontSize: '11px',
                     marginTop: 6
                   }
@@ -282,7 +275,7 @@ export const SleepTrackerCard = ({
             </Box>
 
             <Box>
-              <Text size="sm" fw={600} c="#fff" mb="xs">
+              <Text size="sm" fw={600} c={colors.white} mb="xs">
                 Qualidade da Noite (1 a 5)
               </Text>
 
@@ -306,10 +299,10 @@ export const SleepTrackerCard = ({
                         gap: 4,
                         backgroundColor: isSelected
                           ? `${opt.color}25`
-                          : 'rgba(255, 255, 255, 0.04)',
+                          : alpha(colors.white, 0.04),
                         border: isSelected
                           ? `2px solid ${opt.color}`
-                          : '1px solid rgba(255, 255, 255, 0.1)',
+                          : `1px solid ${alpha(colors.white, 0.1)}`,
                         transition: 'all 0.15s ease',
                         cursor: 'pointer'
                       }}
@@ -321,7 +314,7 @@ export const SleepTrackerCard = ({
                         size="11px"
                         fw={isSelected ? 700 : 500}
                         style={{
-                          color: isSelected ? opt.color : 'rgba(255, 255, 255, 0.7)',
+                          color: isSelected ? opt.color : alpha(colors.white, 0.7),
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',

@@ -1,9 +1,10 @@
-import { SimpleGrid, ActionIcon, Stack, Group, Text, Box } from '@mantine/core'
+import { SimpleGrid, ActionIcon, Stack, Group, Text, Box, alpha } from '@mantine/core'
 import { TbCheck, TbCircle } from 'react-icons/tb'
 
 import Badge from '@components/badge'
 
 import type { HabitsWeekViewProps } from './types'
+import { colors } from '@styles/theme'
 
 const dayNames = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
@@ -36,15 +37,15 @@ export const HabitsWeekView = ({
               p="sm"
               style={{
                 background: isSelected
-                  ? 'rgba(99, 102, 241, 0.1)'
+                  ? alpha(colors.indigo500, 0.1)
                   : isToday
-                    ? 'rgba(99, 102, 241, 0.05)'
-                    : 'rgba(255, 255, 255, 0.02)',
+                    ? alpha(colors.indigo500, 0.05)
+                    : alpha(colors.white, 0.02),
                 border: isSelected
-                  ? '1px solid rgba(129, 140, 248, 0.5)'
+                  ? `1px solid ${alpha(colors.indigo400, 0.5)}`
                   : isToday
-                    ? '1px solid rgba(129, 140, 248, 0.35)'
-                    : '1px solid rgba(255, 255, 255, 0.06)',
+                    ? `1px solid ${alpha(colors.indigo400, 0.35)}`
+                    : `1px solid ${alpha(colors.white, 0.06)}`,
                 borderRadius: 10,
                 height: '100%',
                 minHeight: 0,
@@ -54,8 +55,8 @@ export const HabitsWeekView = ({
               }}
               onClick={() => onSelectDate(dateStr)}
             >
-              <Stack gap={6} align="center" pb="xs" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <Text size="xs" fw={700} c={isToday ? '#a5b4fc' : 'dimmed'}>
+              <Stack gap={6} align="center" pb="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}>
+                <Text size="xs" fw={700} c={isToday ? colors.indigo300 : 'dimmed'}>
                   {dayNames[index]}
                 </Text>
 
@@ -67,8 +68,8 @@ export const HabitsWeekView = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: '50%',
-                    backgroundColor: isToday ? '#6366f1' : 'transparent',
-                    color: isToday ? '#ffffff' : '#f3f4f6',
+                    backgroundColor: isToday ? colors.indigo500 : 'transparent',
+                    color: isToday ? colors.white : colors.gray100,
                     fontWeight: isToday ? 700 : 600,
                     fontSize: 12
                   }}
@@ -97,24 +98,24 @@ export const HabitsWeekView = ({
                 ) : (
                   items.map((item) => {
                     const isReadOnly = !!item.readOnly
-                    const itemColor = item.calendarColor || '#6366f1'
+                    const itemColor = item.calendarColor || colors.indigo500
                     const isItemToggling = togglingId === item.habitId
                     const isTask = item.category === 'task'
                     const isSchedule = item.category === 'schedule'
                     const baseBorder = isReadOnly
                       ? `${itemColor}44`
                       : isSchedule
-                        ? 'rgba(245, 158, 11, 0.3)'
+                        ? alpha(colors.amber500, 0.3)
                         : isTask
-                          ? 'rgba(6, 182, 212, 0.3)'
-                          : 'rgba(99, 102, 241, 0.25)'
+                          ? alpha(colors.cyan500, 0.3)
+                          : alpha(colors.indigo500, 0.25)
                     const baseBg = isReadOnly
                       ? `${itemColor}1f`
                       : isSchedule
-                        ? 'rgba(245, 158, 11, 0.1)'
+                        ? alpha(colors.amber500, 0.1)
                         : isTask
-                          ? 'rgba(6, 182, 212, 0.1)'
-                          : 'rgba(99, 102, 241, 0.12)'
+                          ? alpha(colors.cyan500, 0.1)
+                          : alpha(colors.indigo500, 0.12)
 
                     return (
                       <Box
@@ -122,8 +123,8 @@ export const HabitsWeekView = ({
                         p={6}
                         title={`${item.title}${item.calendarName ? ` • ${item.calendarName}` : ''}${isReadOnly ? ' (Somente visualização)' : ''}`}
                         style={{
-                          background: item.completed ? 'rgba(45, 212, 191, 0.12)' : baseBg,
-                          border: item.completed ? '1px solid rgba(45, 212, 191, 0.3)' : `1px solid ${baseBorder}`,
+                          background: item.completed ? alpha(colors.teal400, 0.12) : baseBg,
+                          border: item.completed ? `1px solid ${alpha(colors.teal400, 0.3)}` : `1px solid ${baseBorder}`,
                           borderRadius: 6,
                           transition: 'all 0.15s ease',
                           cursor: isReadOnly ? 'default' : 'pointer'
@@ -151,7 +152,7 @@ export const HabitsWeekView = ({
                               {item.title}
                             </Text>
                             {item.startTime ? (
-                              <Text size="10px" fw={700} c={item.completed ? 'dimmed' : '#93c5fd'}>
+                              <Text size="10px" fw={700} c={item.completed ? 'dimmed' : colors.blue300}>
                                 {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
                               </Text>
                             ) : null}

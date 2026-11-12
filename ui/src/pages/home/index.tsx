@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Box, Grid, Text } from '@mantine/core'
+import { Stack, Box, Grid, Text, alpha } from '@mantine/core'
 import { TbRulerMeasure, TbUser } from 'react-icons/tb'
 
 import Card from '@components/card'
@@ -25,6 +25,7 @@ import useMonthlyMetrics from './hook/useMonthlyMetrics'
 
 import type { CreateHabitFormData } from './subcomponents/habitsModal/types'
 import type { RecurrenceScopeMode } from '@actions/habits/types'
+import { colors } from '@styles/theme'
 
 export const HomePage = () => {
   const navigate = useNavigate()
@@ -202,9 +203,9 @@ export const HomePage = () => {
                     flexDirection: 'column',
                     minHeight: 0,
                     minWidth: 0,
-                    backgroundColor: '#0c101c',
+                    backgroundColor: colors.night900,
                     backgroundImage:
-                      'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, rgba(6, 182, 212, 0.1), transparent 60%)',
+                      `radial-gradient(ellipse 80% 50% at 50% -20%, ${alpha(colors.indigo500, 0.18)}, transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, ${alpha(colors.cyan500, 0.1)}, transparent 60%)`,
                     border: 'none',
                     boxShadow: 'none',
                     overflow: 'hidden'
@@ -330,7 +331,7 @@ export const HomePage = () => {
                     right: -24,
                     width: 110,
                     height: 110,
-                    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                    background: `radial-gradient(circle, ${alpha(colors.indigo500, 0.15)} 0%, transparent 70%)`,
                     pointerEvents: 'none'
                   }}
                 />
@@ -340,12 +341,12 @@ export const HomePage = () => {
                       width: 48,
                       height: 48,
                       borderRadius: '50%',
-                      background: 'rgba(99, 102, 241, 0.12)',
-                      border: '1px solid rgba(129, 140, 248, 0.3)',
+                      background: alpha(colors.indigo500, 0.12),
+                      border: `1px solid ${alpha(colors.indigo400, 0.3)}`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#818cf8'
+                      color: colors.indigo400
                     }}
                   >
                     <TbRulerMeasure size={24} />

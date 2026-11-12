@@ -1,5 +1,6 @@
-import { Box, Group, Text, Badge } from '@mantine/core'
+import { Box, Group, Text, Badge, alpha } from '@mantine/core'
 import type { ImcGaugeChartProps } from './types'
+import { colors } from '@styles/theme'
 
 interface ClassificationBand {
   label: string
@@ -11,27 +12,27 @@ const BANDS: ClassificationBand[] = [
   {
     label: 'Abaixo',
     range: '< 18.5',
-    color: '#38bdf8'
+    color: colors.sky400
   },
   {
     label: 'Normal',
     range: '18.5 – 24.9',
-    color: '#10b981'
+    color: colors.emerald500
   },
   {
     label: 'Sobrepeso',
     range: '25.0 – 29.9',
-    color: '#f59e0b'
+    color: colors.amber500
   },
   {
     label: 'Obesidade',
     range: '30.0 – 39.9',
-    color: '#f97316'
+    color: colors.orange500
   },
   {
     label: 'Severa',
     range: '≥ 40.0',
-    color: '#ef4444'
+    color: colors.red500
   }
 ]
 
@@ -55,8 +56,8 @@ export const ImcGaugeChart = ({
         style={{
           height: 89,
           borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.08)',
+          background: alpha(colors.white, 0.02),
+          border: `1px dashed ${alpha(colors.white, 0.08)}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -78,8 +79,8 @@ export const ImcGaugeChart = ({
         style={{
           height: 89,
           borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px dashed rgba(255, 255, 255, 0.08)',
+          background: alpha(colors.white, 0.02),
+          border: `1px dashed ${alpha(colors.white, 0.08)}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -96,15 +97,15 @@ export const ImcGaugeChart = ({
 
   const { imc, classification, minIdealWeight, maxIdealWeight } = imcResult
   const activeIndex = getActiveBandIndex(imc)
-  const activeColor = BANDS[activeIndex]?.color || '#10b981'
+  const activeColor = BANDS[activeIndex]?.color || colors.emerald500
 
   return (
     <Box className="chart-fade-transition">
       <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
         <Group gap={6} align="center">
-          <Text size="12px" fw={800} c="#ffffff" style={{ lineHeight: 1 }}>
+          <Text size="12px" fw={800} c={colors.white} style={{ lineHeight: 1 }}>
             {imc.toFixed(1)}{' '}
-            <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(255, 255, 255, 0.5)' }}>
+            <span style={{ fontSize: '10px', fontWeight: 600, color: alpha(colors.white, 0.5) }}>
               kg/m²
             </span>
           </Text>
@@ -127,11 +128,11 @@ export const ImcGaugeChart = ({
 
         <Group gap={6} align="center">
           <Text size="10px" c="dimmed">
-            Peso <span style={{ color: '#fff', fontWeight: 600 }}>{currentWeight.toFixed(1)} kg</span>
+            Peso <span style={{ color: colors.white, fontWeight: 600 }}>{currentWeight.toFixed(1)} kg</span>
           </Text>
           <Text size="10px" c="dimmed">•</Text>
           <Text size="10px" c="dimmed">
-            Ideal <span style={{ color: '#10b981', fontWeight: 600 }}>{minIdealWeight} – {maxIdealWeight} kg</span>
+            Ideal <span style={{ color: colors.emerald500, fontWeight: 600 }}>{minIdealWeight} – {maxIdealWeight} kg</span>
           </Text>
         </Group>
       </Group>
@@ -140,8 +141,8 @@ export const ImcGaugeChart = ({
         style={{
           height: 48,
           borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          background: alpha(colors.white, 0.02),
+          border: `1px solid ${alpha(colors.white, 0.05)}`,
           overflow: 'hidden',
           display: 'flex',
           padding: 3,
@@ -158,10 +159,10 @@ export const ImcGaugeChart = ({
                 minWidth: 0,
                 height: '100%',
                 borderRadius: 6,
-                backgroundColor: isCurrent ? `${b.color}22` : 'rgba(255, 255, 255, 0.02)',
+                backgroundColor: isCurrent ? `${b.color}22` : alpha(colors.white, 0.02),
                 border: isCurrent
                   ? `1px solid ${b.color}99`
-                  : '1px solid rgba(255, 255, 255, 0.03)',
+                  : `1px solid ${alpha(colors.white, 0.03)}`,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -188,7 +189,7 @@ export const ImcGaugeChart = ({
                 size="10px"
                 fw={isCurrent ? 700 : 500}
                 style={{
-                  color: isCurrent ? b.color : 'rgba(255, 255, 255, 0.65)',
+                  color: isCurrent ? b.color : alpha(colors.white, 0.65),
                   lineHeight: 1.1,
                   marginTop: 2,
                   whiteSpace: 'nowrap',
@@ -203,7 +204,7 @@ export const ImcGaugeChart = ({
                 size="9px"
                 fw={isCurrent ? 600 : 400}
                 style={{
-                  color: isCurrent ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
+                  color: isCurrent ? colors.white : alpha(colors.white, 0.4),
                   lineHeight: 1.1,
                   marginTop: 2,
                   whiteSpace: 'nowrap',

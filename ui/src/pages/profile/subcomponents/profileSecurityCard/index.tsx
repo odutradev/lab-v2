@@ -1,4 +1,4 @@
-import { Group, Box, Text, ThemeIcon, Stack, Divider, ActionIcon, Tooltip, Anchor } from '@mantine/core'
+import { Group, Box, Text, ThemeIcon, Stack, Divider, ActionIcon, Tooltip, Anchor, alpha } from '@mantine/core'
 import {
   TbKey,
   TbCalendarEvent,
@@ -19,6 +19,7 @@ import Input from '@components/input'
 
 
 import type { ProfileSecurityCardProps } from './types'
+import { colors } from '@styles/theme'
 
 export const ProfileSecurityCard = ({
   onNavigateResetPassword,
@@ -209,7 +210,7 @@ export const ProfileSecurityCard = ({
               )}
             </Group>
 
-            <Divider color="rgba(255, 255, 255, 0.08)" />
+            <Divider color={alpha(colors.white, 0.08)} />
 
             <Group justify="space-between" align="center" wrap="wrap" gap="md">
               <Group gap="md">
@@ -236,7 +237,7 @@ export const ProfileSecurityCard = ({
               </Button>
             </Group>
 
-            <Divider color="rgba(255, 255, 255, 0.08)" />
+            <Divider color={alpha(colors.white, 0.08)} />
 
             <Group justify="space-between" align="center" wrap="wrap" gap="md">
               <Group gap="md">

@@ -1,5 +1,5 @@
 import { TbMail, TbLock, TbKey, TbCheck, TbArrowLeft, TbSend, TbRefresh } from 'react-icons/tb'
-import { Stack, Box, Group, Text, ThemeIcon, Paper } from '@mantine/core'
+import { Stack, Box, Group, Text, ThemeIcon, Paper, alpha } from '@mantine/core'
 import { useState, type FormEvent } from 'react'
 
 import { requestCodeAction, verifyCodeAction } from '@actions/users/validation'
@@ -11,6 +11,7 @@ import Button from '@components/button'
 import Input from '@components/input'
 
 import type { ResetPasswordFormProps, ResetPasswordStep } from './types'
+import { colors } from '@styles/theme'
 
 export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPasswordFormProps) => {
   const runAction = useAction()
@@ -147,7 +148,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
     return (
       <form onSubmit={handleVerifyCode} noValidate style={{ width: '100%' }}>
         <Stack gap="md">
-          <Paper p="sm" radius="md" bg="rgba(99, 102, 241, 0.08)" withBorder style={{ borderColor: 'rgba(99, 102, 241, 0.2)' }}>
+          <Paper p="sm" radius="md" bg={alpha(colors.indigo500, 0.08)} withBorder style={{ borderColor: alpha(colors.indigo500, 0.2) }}>
             <Text size="xs" c="indigo.2">
               Código de verificação enviado para <b>{email}</b>. Verifique sua caixa de entrada.
             </Text>
@@ -270,9 +271,9 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           <Paper
             p="md"
             radius="md"
-            bg="rgba(99, 102, 241, 0.08)"
+            bg={alpha(colors.indigo500, 0.08)}
             withBorder
-            style={{ borderColor: 'rgba(99, 102, 241, 0.25)' }}
+            style={{ borderColor: alpha(colors.indigo500, 0.25) }}
           >
             <Stack gap="xs">
               <Text size="xs" c="dimmed">

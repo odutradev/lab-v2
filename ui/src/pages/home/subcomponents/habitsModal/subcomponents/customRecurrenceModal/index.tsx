@@ -1,4 +1,4 @@
-import { Modal, Stack, Group, Text, Radio, ActionIcon, NumberInput, TextInput, Box } from '@mantine/core'
+import { Modal, Stack, Group, Text, Radio, ActionIcon, NumberInput, TextInput, Box, alpha } from '@mantine/core'
 import { useState } from 'react'
 
 import Button from '@components/button'
@@ -7,6 +7,7 @@ import Select from '@components/select'
 import type { HabitRecurrence } from '@actions/habits/types'
 
 import type { CustomRecurrenceModalProps } from './types'
+import { colors } from '@styles/theme'
 
 const dayLetters = [
   { dayIndex: 0, label: 'D', full: 'Domingo' },
@@ -88,18 +89,18 @@ export const CustomRecurrenceModal = ({
       size="sm"
       styles={{
         content: {
-          backgroundColor: '#1e1f20',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-          color: '#e3e3e3'
+          backgroundColor: colors.graphite800,
+          border: `1px solid ${alpha(colors.white, 0.12)}`,
+          boxShadow: `0 20px 40px ${alpha(colors.black, 0.6)}`,
+          color: colors.mist200
         },
         header: {
-          backgroundColor: '#1e1f20',
+          backgroundColor: colors.graphite800,
           borderBottom: 'none',
           paddingBottom: 4
         },
         title: {
-          color: '#ffffff',
+          color: colors.white,
           fontWeight: 600,
           fontSize: '1.15rem'
         }
@@ -107,7 +108,7 @@ export const CustomRecurrenceModal = ({
     >
       <Stack gap="lg" mt="xs">
         <Group align="center" gap="xs">
-          <Text size="sm" c="#c4c7c5">
+          <Text size="sm" c={colors.mist300}>
             Repetir a cada:
           </Text>
           <NumberInput
@@ -118,9 +119,9 @@ export const CustomRecurrenceModal = ({
             w={70}
             styles={{
               input: {
-                backgroundColor: '#2b2c2f',
-                borderColor: 'rgba(255, 255, 255, 0.15)',
-                color: '#ffffff',
+                backgroundColor: colors.graphite700,
+                borderColor: alpha(colors.white, 0.15),
+                color: colors.white,
                 textAlign: 'center'
               }
             }}
@@ -136,7 +137,7 @@ export const CustomRecurrenceModal = ({
 
         {unit === 'week' && (
           <Stack gap={8}>
-            <Text size="sm" c="#c4c7c5">
+            <Text size="sm" c={colors.mist300}>
               Repetir:
             </Text>
             <Group gap={6} justify="space-between">
@@ -151,11 +152,11 @@ export const CustomRecurrenceModal = ({
                     onClick={() => toggleDay(dayIndex)}
                     title={full}
                     style={{
-                      backgroundColor: isSelected ? '#a8c7fa' : 'rgba(255, 255, 255, 0.05)',
-                      color: isSelected ? '#041e49' : '#c4c7c5',
+                      backgroundColor: isSelected ? colors.periwinkle200 : alpha(colors.white, 0.05),
+                      color: isSelected ? colors.navy900 : colors.mist300,
                       fontWeight: 700,
                       fontSize: 13,
-                      border: isSelected ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'
+                      border: isSelected ? 'none' : `1px solid ${alpha(colors.white, 0.1)}`
                     }}
                   >
                     {label}
@@ -167,7 +168,7 @@ export const CustomRecurrenceModal = ({
         )}
 
         <Stack gap="xs">
-          <Text size="sm" c="#c4c7c5">
+          <Text size="sm" c={colors.mist300}>
             Termina em
           </Text>
 
@@ -177,7 +178,7 @@ export const CustomRecurrenceModal = ({
                 value="never"
                 label="Nunca"
                 styles={{
-                  label: { color: '#e3e3e3', fontSize: 14 }
+                  label: { color: colors.mist200, fontSize: 14 }
                 }}
               />
 
@@ -186,7 +187,7 @@ export const CustomRecurrenceModal = ({
                   value="on_date"
                   label="Em"
                   styles={{
-                    label: { color: '#e3e3e3', fontSize: 14 }
+                    label: { color: colors.mist200, fontSize: 14 }
                   }}
                 />
                 <TextInput
@@ -197,9 +198,9 @@ export const CustomRecurrenceModal = ({
                   size="xs"
                   styles={{
                     input: {
-                      backgroundColor: endType === 'on_date' ? '#2b2c2f' : 'rgba(255, 255, 255, 0.04)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      color: endType === 'on_date' ? '#ffffff' : '#75777a',
+                      backgroundColor: endType === 'on_date' ? colors.graphite700 : alpha(colors.white, 0.04),
+                      borderColor: alpha(colors.white, 0.15),
+                      color: endType === 'on_date' ? colors.white : colors.mist500,
                       maxWidth: 150
                     }
                   }}
@@ -211,7 +212,7 @@ export const CustomRecurrenceModal = ({
                   value="after_occurrences"
                   label="Após"
                   styles={{
-                    label: { color: '#e3e3e3', fontSize: 14 }
+                    label: { color: colors.mist200, fontSize: 14 }
                   }}
                 />
                 <NumberInput
@@ -224,14 +225,14 @@ export const CustomRecurrenceModal = ({
                   size="xs"
                   styles={{
                     input: {
-                      backgroundColor: endType === 'after_occurrences' ? '#2b2c2f' : 'rgba(255, 255, 255, 0.04)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      color: endType === 'after_occurrences' ? '#ffffff' : '#75777a',
+                      backgroundColor: endType === 'after_occurrences' ? colors.graphite700 : alpha(colors.white, 0.04),
+                      borderColor: alpha(colors.white, 0.15),
+                      color: endType === 'after_occurrences' ? colors.white : colors.mist500,
                       textAlign: 'center'
                     }
                   }}
                 />
-                <Text size="sm" c={endType === 'after_occurrences' ? '#e3e3e3' : '#75777a'}>
+                <Text size="sm" c={endType === 'after_occurrences' ? colors.mist200 : colors.mist500}>
                   ocorrências
                 </Text>
               </Group>
@@ -247,8 +248,8 @@ export const CustomRecurrenceModal = ({
             variant="primary"
             onClick={handleSave}
             style={{
-              backgroundColor: '#a8c7fa',
-              color: '#041e49',
+              backgroundColor: colors.periwinkle200,
+              color: colors.navy900,
               borderRadius: 20,
               fontWeight: 600,
               paddingLeft: 20,

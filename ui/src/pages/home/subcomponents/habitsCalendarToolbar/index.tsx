@@ -1,4 +1,4 @@
-import { Group, Text, Box, Tooltip } from '@mantine/core'
+import { Group, Text, Box, Tooltip, alpha } from '@mantine/core'
 import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings, TbMaximize, TbMinimize } from 'react-icons/tb'
 
 import Button from '@components/button'
@@ -7,6 +7,7 @@ import SegmentedControl from '@components/segmentedControl'
 
 import type { HabitsCalendarToolbarProps } from './types'
 import type { CalendarViewMode } from '../../types'
+import { colors } from '@styles/theme'
 
 const TOOLBAR_CONTROL_HEIGHT = 34
 
@@ -33,7 +34,7 @@ export const HabitsCalendarToolbar = ({
     <Box
       pb="md"
       style={{
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
         width: '100%',
         minWidth: 0,
         overflowX: 'auto',

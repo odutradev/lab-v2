@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
-import { Box, Text, Group, Tooltip } from '@mantine/core'
+import { Box, Text, Group, Tooltip, alpha } from '@mantine/core'
 import {
   getTodayDateString,
   getSleepQualityOption
 } from '@utils/functions/health'
 import type { SleepHistoryChartProps } from './types'
+import { colors } from '@styles/theme'
 
 function createSmoothPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return ''
@@ -175,7 +176,7 @@ export const SleepHistoryChart = ({
               h={6}
               style={{
                 borderRadius: '50%',
-                backgroundColor: '#c084fc'
+                backgroundColor: colors.purple400
               }}
             />
             <Text size="10px" c="dimmed">
@@ -189,8 +190,8 @@ export const SleepHistoryChart = ({
               h={5}
               style={{
                 borderRadius: 2,
-                backgroundColor: 'rgba(74, 222, 128, 0.35)',
-                border: '1px dashed #4ade80'
+                backgroundColor: alpha(colors.green400, 0.35),
+                border: `1px dashed ${colors.green400}`
               }}
             />
             <Text size="10px" c="dimmed">
@@ -202,15 +203,15 @@ export const SleepHistoryChart = ({
         {hasData ? (
           <Group gap={6} align="center">
             <Text size="10px" c="dimmed">
-              Mín <span style={{ color: '#818cf8', fontWeight: 600 }}>{minHours.toFixed(1)}h</span>
+              Mín <span style={{ color: colors.indigo400, fontWeight: 600 }}>{minHours.toFixed(1)}h</span>
             </Text>
             <Text size="10px" c="dimmed">•</Text>
             <Text size="10px" c="dimmed">
-              Máx <span style={{ color: '#e879f9', fontWeight: 600 }}>{maxHours.toFixed(1)}h</span>
+              Máx <span style={{ color: colors.fuchsia400, fontWeight: 600 }}>{maxHours.toFixed(1)}h</span>
             </Text>
             <Text size="10px" c="dimmed">•</Text>
             <Text size="10px" c="dimmed">
-              Média <span style={{ color: '#c084fc', fontWeight: 700 }}>{avgHours.toFixed(1)}h</span>
+              Média <span style={{ color: colors.purple400, fontWeight: 700 }}>{avgHours.toFixed(1)}h</span>
             </Text>
             <Text size="10px" c="dimmed">
               {topQualityOpt.emoji}
@@ -225,8 +226,8 @@ export const SleepHistoryChart = ({
         style={{
           height: 48,
           borderRadius: 8,
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          background: alpha(colors.white, 0.02),
+          border: `1px solid ${alpha(colors.white, 0.05)}`,
           overflow: 'hidden',
           position: 'relative'
         }}
@@ -238,14 +239,14 @@ export const SleepHistoryChart = ({
         >
           <defs>
             <linearGradient id="sleepAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#a855f7" stopOpacity="0.0" />
+              <stop offset="0%" stopColor={colors.purple500} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={colors.purple500} stopOpacity="0.0" />
             </linearGradient>
 
             <linearGradient id="sleepLineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#818cf8" />
-              <stop offset="50%" stopColor="#c084fc" />
-              <stop offset="100%" stopColor="#e879f9" />
+              <stop offset="0%" stopColor={colors.indigo400} />
+              <stop offset="50%" stopColor={colors.purple400} />
+              <stop offset="100%" stopColor={colors.fuchsia400} />
             </linearGradient>
           </defs>
 
@@ -255,7 +256,7 @@ export const SleepHistoryChart = ({
               y1={0}
               x2={hoveredX}
               y2={height}
-              stroke="rgba(192, 132, 252, 0.45)"
+              stroke={alpha(colors.purple400, 0.45)}
               strokeDasharray="2 2"
               strokeWidth="1.2"
               pointerEvents="none"
@@ -268,14 +269,14 @@ export const SleepHistoryChart = ({
             y={targetZoneY1}
             width={width - 28}
             height={Math.max(2, targetZoneY2 - targetZoneY1)}
-            fill="rgba(74, 222, 128, 0.07)"
+            fill={alpha(colors.green400, 0.07)}
           />
           <line
             x1={14}
             y1={targetZoneY1}
             x2={width - 14}
             y2={targetZoneY1}
-            stroke="rgba(74, 222, 128, 0.3)"
+            stroke={alpha(colors.green400, 0.3)}
             strokeDasharray="2 3"
           />
           <line
@@ -283,7 +284,7 @@ export const SleepHistoryChart = ({
             y1={targetZoneY2}
             x2={width - 14}
             y2={targetZoneY2}
-            stroke="rgba(74, 222, 128, 0.3)"
+            stroke={alpha(colors.green400, 0.3)}
             strokeDasharray="2 3"
           />
 
@@ -320,8 +321,8 @@ export const SleepHistoryChart = ({
                     cx={point.x}
                     cy={point.y}
                     r={isHighlighted ? 4.4 : 2.5}
-                    fill={isHighlighted ? '#c084fc' : qualityOpt.color}
-                    stroke={isHighlighted ? '#ffffff' : '#0f172a'}
+                    fill={isHighlighted ? colors.purple400 : qualityOpt.color}
+                    stroke={isHighlighted ? colors.white : colors.slate900}
                     strokeWidth={isHighlighted ? 1.6 : 1.2}
                   />
                 </g>
@@ -334,7 +335,7 @@ export const SleepHistoryChart = ({
               x={width / 2}
               y={28}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.3)"
+              fill={alpha(colors.white, 0.3)}
               fontSize="10"
             >
               Sem check-ins de sono neste mês
