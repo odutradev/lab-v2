@@ -1,9 +1,9 @@
-import type { ComponentType } from 'react'
+import type { ComponentType, LazyExoticComponent } from 'react'
+
+import type { PageMetadata } from '@utils/types/layout'
 
 export interface RouteItem {
   path: string
-  component: ComponentType
-  protected?: boolean
-  publicOnly?: boolean
-  center?: boolean
+  component: LazyExoticComponent<ComponentType>
+  metadata: PageMetadata
 }

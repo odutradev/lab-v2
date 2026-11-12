@@ -1,61 +1,54 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Center, Loader } from '@mantine/core'
+import { lazy, Suspense } from 'react'
 
-import { ProtectedRoute, PublicRoute, AppLayout } from '@routes/components'
+import { ProtectedRoute, PublicRoute, AppLayout } from './components'
 import PageContainer from '@components/pageContainer'
-import TermsOfServicePage from '@pages/termsOfService'
-import PrivacyPolicyPage from '@pages/privacyPolicy'
-import ResetPasswordPage from '@pages/resetPassword'
-import ProfilePage from '@pages/profile'
-import HomePage from '@pages/home'
-import AuthPage from '@pages/auth'
+import termsOfServiceMetadata from '@pages/termsOfService/metadata'
+import privacyPolicyMetadata from '@pages/privacyPolicy/metadata'
+import resetPasswordMetadata from '@pages/resetPassword/metadata'
+import profileMetadata from '@pages/profile/metadata'
+import homeMetadata from '@pages/home/metadata'
+import authMetadata from '@pages/auth/metadata'
 
-import type { RouteItem } from '@routes/types'
+import type { RouteItem } from './types'
+
+const HomePage = lazy(() => import('@pages/home'))
+const ProfilePage = lazy(() => import('@pages/profile'))
+const AuthPage = lazy(() => import('@pages/auth'))
+const ResetPasswordPage = lazy(() => import('@pages/resetPassword'))
+const PrivacyPolicyPage = lazy(() => import('@pages/privacyPolicy'))
+const TermsOfServicePage = lazy(() => import('@pages/termsOfService'))
 
 const routes: RouteItem[] = [
-  {
-    path: '/',
-    component: HomePage,
-    protected: true
-  },
-  {
-    path: '/profile',
-    component: ProfilePage,
-    protected: true
-  },
-  {
-    path: '/auth',
-    component: AuthPage,
-    publicOnly: true,
-    center: true
-  },
-  {
-    path: '/reset-password',
-    component: ResetPasswordPage,
-    center: true
-  },
-  {
-    path: '/privacy',
-    component: PrivacyPolicyPage
-  },
-  {
-    path: '/terms',
-    component: TermsOfServicePage
-  }
+  { path: '/', component: HomePage, metadata: homeMetadata },
+  { path: '/profile', component: ProfilePage, metadata: profileMetadata },
+  { path: '/auth', component: AuthPage, metadata: authMetadata },
+  { path: '/reset-password', component: ResetPasswordPage, metadata: resetPasswordMetadata },
+  { path: '/privacy', component: PrivacyPolicyPage, metadata: privacyPolicyMetadata },
+  { path: '/terms', component: TermsOfServicePage, metadata: termsOfServiceMetadata }
 ]
 
-const renderRouteElement = (route: RouteItem) => {
-  const Component = route.component
+const pageFallback = (
+  <Center h="60vh">
+    <Loader color="indigo" size="lg" />
+  </Center>
+)
+
+const renderRouteElement = ({ component: Component, metadata }: RouteItem) => {
   const content = (
-    <PageContainer center={route.center}>
-      <Component />
+    <PageContainer center={metadata.isCentered}>
+      <Suspense fallback={pageFallback}>
+        <Component />
+      </Suspense>
     </PageContainer>
   )
 
-  if (route.protected) {
-    return <ProtectedRoute>{content}</ProtectedRoute>
+  if (metadata.isPrivate) {
+    return <ProtectedRoute requiredPermissions={metadata.requiredPermissions}>{content}</ProtectedRoute>
   }
 
-  if (route.publicOnly) {
+  if (metadata.isPublicOnly) {
     return <PublicRoute>{content}</PublicRoute>
   }
 
@@ -68,11 +61,7 @@ export const Router = () => {
       <AppLayout>
         <Routes>
           {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={renderRouteElement(route)}
-            />
+            <Route key={route.path} path={route.path} element={renderRouteElement(route)} />
           ))}
           <Route path="/politica-de-privacidade" element={<Navigate to="/privacy" replace />} />
           <Route path="/termos-de-servico" element={<Navigate to="/terms" replace />} />
