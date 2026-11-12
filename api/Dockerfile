@@ -13,4 +13,4 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 EXPOSE 80
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server.js"]

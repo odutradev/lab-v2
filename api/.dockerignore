@@ -6,6 +6,6 @@ dist
 .env.*
 *.local
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-CODEGUIDE.md
+CLAUDE.md
+README.md
+**/README.md

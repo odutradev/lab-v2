@@ -1,39 +1,4 @@
 services:
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "${PORT:-5000}:80"
-    environment:
-      - PORT=80
-      - NODE_ENV=production
-      - CORS_ORIGIN=${CORS_ORIGIN:-*}
-      - MONGO_URI=${MONGO_URI:-${MONGOURI}}
-      - MONGOURI=${MONGOURI:-${MONGO_URI}}
-      - MONGOURI_TEST=${MONGOURI_TEST}
-      - JWT_SECRET=${JWT_SECRET:-${JWT}}
-      - PRODUCTION=${PRODUCTION:-true}
-      - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_PORT=${EMAIL_PORT:-465}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS:-${EMAIL_PASSWORD}}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD:-${EMAIL_PASS}}
-      - EMAIL_FROM=${EMAIL_FROM:-${EMAIL_USER}}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
-    depends_on:
-      - redis
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
-    networks:
-      - lab-network
-
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -42,12 +7,51 @@ services:
     volumes:
       - redis-data:/data
     networks:
-      - lab-network
+      - app-network
 
-  frontend:
+  api:
     build:
-      context: .
-      dockerfile: ui/Dockerfile
+      context: ./api
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-5000}:80"
+    environment:
+      - PORT=80
+      - NODE_ENV=production
+      - PRODUCTION=${PRODUCTION:-true}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - TIMEZONE=${TIMEZONE:-America/Sao_Paulo}
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT:-465}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - app-network
+
+  ui:
+    build:
+      context: ./ui
+      additional_contexts:
+        - root=.
       args:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
     restart: unless-stopped
@@ -56,12 +60,12 @@ services:
     depends_on:
       - api
     networks:
-      - lab-network
+      - app-network
 
 volumes:
   redis-data:
     driver: local
 
 networks:
-  lab-network:
+  app-network:
     driver: bridge
