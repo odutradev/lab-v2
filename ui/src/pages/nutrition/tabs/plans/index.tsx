@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ActionIcon, Badge, Box, Group, Menu, SimpleGrid, Stack, Text, Title } from "@mantine/core";
-import { TbDots, TbPencil, TbPlus, TbStar, TbTrash } from "react-icons/tb";
+import { tokens } from "@styles/theme";
+import { ActionIcon, Badge, Box, Group, Menu, SimpleGrid, Stack, Text } from "@mantine/core";
+import { TbDots, TbPencil, TbPlus, TbStar, TbTrash, TbToolsKitchen2 } from "react-icons/tb";
 
-import Card from "@components/card";
+import SectionHeader from "@components/sectionHeader";
+import EmptyState from "@components/emptyState";
 import Modal from "@components/modal";
 import Button from "@components/button";
 import { formatMacros } from "@utils/functions/nutrition";
@@ -28,30 +30,24 @@ export const PlansTab = () => {
 
   return (
     <Stack gap="md">
-      <Group justify="space-between">
-        <Box>
-          <Title order={4} c="white">
-            Planos alimentares
-          </Title>
-          <Text size="sm" c="dimmed">
-            O plano ativo aparece no diário para você marcar as refeições com um toque.
-          </Text>
-        </Box>
-        <Button leftIcon={<TbPlus size={16} />} onClick={() => openPlanEditor("new")}>
-          Novo plano
-        </Button>
-      </Group>
+      <SectionHeader
+        title="Planos alimentares"
+        description="O plano ativo aparece no diário para você marcar as refeições com um toque."
+        actions={
+          <Button size="sm" leftIcon={<TbPlus size={16} />} onClick={() => openPlanEditor("new")}>
+            Novo plano
+          </Button>
+        }
+      />
 
       {mealPlans.length === 0 && (
-        <Card p={{ base: "md", sm: "lg" }}>
-          <Text c="white" fw={600}>
-            Você ainda não montou um plano.
-          </Text>
-          <Text size="sm" c="dimmed" mt={4}>
-            Monte as refeições do seu dia com os alimentos e quantidades. O app soma calorias e macros e compara com a
-            sua meta{targetCalories ? ` de ${targetCalories} kcal` : ""}.
-          </Text>
-        </Card>
+        <EmptyState
+          icon={<TbToolsKitchen2 size={20} />}
+          title="Você ainda não montou um plano"
+          description={`Monte as refeições do dia com alimentos e quantidades. O app soma calorias e macros e compara com a sua meta${
+            targetCalories ? ` de ${targetCalories} kcal` : ""
+          }.`}
+        />
       )}
 
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
@@ -62,7 +58,7 @@ export const PlansTab = () => {
               <Group justify="space-between" wrap="nowrap" align="flex-start">
                 <Box miw={0}>
                   <Group gap="xs">
-                    <Text fw={600} c="white" truncate>
+                    <Text fw={600} c={tokens.textPrimary} truncate>
                       {plan.name}
                     </Text>
                     {plan.isActive && (
@@ -106,7 +102,7 @@ export const PlansTab = () => {
               <Stack gap={4} mt="sm">
                 {plan.meals.map((meal) => (
                   <Group key={meal.id} justify="space-between" wrap="nowrap" gap="xs">
-                    <Text size="sm" c="white" truncate>
+                    <Text size="sm" c={tokens.textPrimary} truncate>
                       {meal.time ? `${meal.time} · ` : ""}
                       {meal.name}
                     </Text>

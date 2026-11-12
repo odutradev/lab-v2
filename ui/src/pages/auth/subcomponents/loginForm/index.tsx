@@ -94,7 +94,7 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
             isLoading={isSubmitting}
             leftIcon={<TbLogin size={18} />}
           >
-            Entrar na Plataforma
+            Entrar
           </Button>
         </Box>
       </Stack>

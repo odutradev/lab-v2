@@ -1,4 +1,5 @@
 import { Box, Group, Progress, Text } from "@mantine/core";
+import { tokens } from "@styles/theme";
 
 import { getProgressPercent } from "@utils/functions/nutrition";
 
@@ -11,7 +12,7 @@ export const MacroProgress = ({ label, value, target, unit, color }: MacroProgre
   return (
     <Box>
       <Group justify="space-between" mb={4} gap="xs" wrap="nowrap">
-        <Text size="sm" c="white" fw={500}>
+        <Text size="sm" c={tokens.textPrimary} fw={500}>
           {label}
         </Text>
         <Text size="xs" c={isOver ? "orange.4" : "dimmed"} style={valueStyle}>

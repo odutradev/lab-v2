@@ -1,66 +1,45 @@
-import { Group, Box, Title, Text, Avatar, Stack, Tooltip } from "@mantine/core";
-import { TbArrowLeft } from "react-icons/tb";
+import { Group, Avatar, Stack, Text } from "@mantine/core";
 
-import Button from "@components/button";
 import Badge from "@components/badge";
 import Card from "@components/card";
+import PageHeader from "@components/pageHeader";
+import { tokens } from "@styles/theme";
 
+import { avatarStyle } from "./styles";
 import type { ProfileHeaderProps } from "./types";
-import { colors } from "@styles/theme";
 
-export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) => {
+export const ProfileHeader = ({ user, initials }: ProfileHeaderProps) => {
   const isAdmin = Boolean(user.superAdmin);
-  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white;
-  const roleTooltipLabel = isAdmin ? "Administrador" : "Usuário";
 
   return (
-    <Card>
-      <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
-        <Group gap="lg" align="center">
-          <Tooltip label={roleTooltipLabel} withArrow position="bottom">
-            <Avatar
-              size={72}
-              radius="xl"
-              color="indigo"
-              variant="filled"
-              style={{
-                border: `3px solid ${avatarBorderColor}`,
-                boxShadow: isAdmin ? "none" : undefined
-              }}
-            >
-              <Text fw={700} size="xl">
-                {initials}
-              </Text>
-            </Avatar>
-          </Tooltip>
-
-          <Stack gap={4}>
-            <Title order={3} fw={700} c="white">
+    <Stack gap="md">
+      <PageHeader title="Perfil" description="Sua conta, dados físicos e integrações." />
+      <Card>
+        <Group gap="md" wrap="nowrap">
+          <Avatar size={56} radius="xl" color="indigo" style={avatarStyle(isAdmin)}>
+            <Text fw={600} size="lg">
+              {initials}
+            </Text>
+          </Avatar>
+          <Stack gap={2} miw={0}>
+            <Text fw={600} size="lg" c={tokens.textPrimary} truncate>
               {user.name}
-            </Title>
-            <Text size="sm" c="dimmed">
+            </Text>
+            <Text size="sm" c={tokens.textSecondary} truncate>
               {user.email}
             </Text>
-            <Group gap="xs" mt={4}>
-              <Badge variant={user.superAdmin ? "primary" : "info"}>
-                {user.superAdmin ? "Administrador" : "Usuário"}
-              </Badge>
+            <Group gap={6} mt={4}>
+              <Badge variant={isAdmin ? "primary" : "info"}>{isAdmin ? "Administrador" : "Usuário"}</Badge>
               {user.accountStatus && (
                 <Badge variant={user.accountStatus === "active" ? "success" : "warning"}>
-                  {user.accountStatus === "active" ? "Conta Ativa" : "Bloqueada"}
+                  {user.accountStatus === "active" ? "Conta ativa" : "Bloqueada"}
                 </Badge>
               )}
             </Group>
           </Stack>
         </Group>
-
-        <Box>
-          <Button variant="ghost" size="sm" onClick={onBack} leftIcon={<TbArrowLeft size={16} />}>
-            Voltar
-          </Button>
-        </Box>
-      </Group>
-    </Card>
+      </Card>
+    </Stack>
   );
 };
 

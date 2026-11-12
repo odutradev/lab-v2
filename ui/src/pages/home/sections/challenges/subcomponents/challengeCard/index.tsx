@@ -38,12 +38,8 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
         padding: "16px 18px",
         borderRadius: 16,
         backgroundColor: tokens.surfaceSubtle,
-        border: stats.isCompletedToday
-          ? `1px solid ${alpha(colors.emerald500, 0.35)}`
-          : `1px solid ${tokens.border}`,
-        boxShadow: stats.isCompletedToday
-          ? `0 4px 20px ${alpha(colors.emerald500, 0.08)}`
-          : tokens.shadow,
+        border: stats.isCompletedToday ? `1px solid ${alpha(colors.emerald500, 0.35)}` : `1px solid ${tokens.border}`,
+        boxShadow: stats.isCompletedToday ? `0 4px 20px ${alpha(colors.emerald500, 0.08)}` : tokens.shadow,
         transition: "all 0.2s ease",
         cursor: "pointer",
         display: "flex",
@@ -76,7 +72,7 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
               {challenge.emoji}
             </Box>
             <Box style={{ minWidth: 0, flex: 1 }}>
-              <Text fw={700} size="sm" c="white" truncate>
+              <Text fw={600} size="sm" c={tokens.textPrimary} truncate>
                 {challenge.title}
               </Text>
               <Group gap={6} mt={2} wrap="wrap">
@@ -102,11 +98,7 @@ export const ChallengeCard = ({ challenge, onOpenDetails, onToggleCheckin, isLoa
             </Box>
           </Group>
 
-          <Badge
-            size="md"
-            variant="light"
-            color={isCompleted ? "teal" : "indigo"}
-          >
+          <Badge size="md" variant="light" color={isCompleted ? "teal" : "indigo"}>
             {stats.percentage}%
           </Badge>
         </Group>

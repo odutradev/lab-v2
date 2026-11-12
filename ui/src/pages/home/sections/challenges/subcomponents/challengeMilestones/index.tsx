@@ -23,9 +23,7 @@ export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMile
               padding: "12px",
               borderRadius: 12,
               backgroundColor: isAchieved ? alpha(colors.emerald500, 0.08) : tokens.surfaceSubtle,
-              border: isAchieved
-                ? `1px solid ${alpha(colors.emerald500, 0.3)}`
-                : `1px solid ${tokens.border}`,
+              border: isAchieved ? `1px solid ${alpha(colors.emerald500, 0.3)}` : `1px solid ${tokens.border}`,
               transition: "all 0.2s ease",
               display: "flex",
               flexDirection: "column",
@@ -46,7 +44,7 @@ export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMile
             </Group>
 
             <Box>
-              <Text size="xs" fw={700} c={isAchieved ? "teal.3" : "white"} lineClamp={1}>
+              <Text size="xs" fw={600} c={isAchieved ? "teal.3" : "white"} lineClamp={1}>
                 {m.title}
               </Text>
               <Text size="10px" c="dimmed" mt={2}>

@@ -1,12 +1,22 @@
-import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton, Tooltip, alpha } from "@mantine/core";
+import { Group, Box, Text, Avatar, ThemeIcon, Container, Menu, UnstyledButton } from "@mantine/core";
 import { TbLogout, TbStack2, TbUser, TbChevronDown, TbChecklist, TbBarbell, TbSalad } from "react-icons/tb";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useAuthStore from "@stores/auth";
 import { formatDisplayName, getInitials } from "@utils/functions/string";
-import { colors, tokens } from "@styles/theme";
+import { tokens } from "@styles/theme";
 
-import { navLinkStyle } from "./styles";
+import {
+  headerStyle,
+  containerStyle,
+  navStyle,
+  accountStyle,
+  logoStyle,
+  navLinkStyle,
+  bottomNavStyle,
+  bottomNavItemStyle,
+  avatarStyle
+} from "./styles";
 
 const navItems = [
   { path: "/", label: "Hábitos", icon: TbChecklist },
@@ -19,111 +29,95 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const isAdmin = Boolean(user?.superAdmin);
-  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white;
-  const roleTooltipLabel = isAdmin ? "Administrador" : "Usuário";
+  if (!isAuthenticated || !user) return null;
+
+  const isAdmin = Boolean(user.superAdmin);
 
   return (
-    <Box
-      component="header"
-      pos="sticky"
-      top={0}
-      style={{
-        zIndex: 100,
-        backgroundColor: alpha(colors.night950, 0.75),
-        borderBottom: `1px solid ${tokens.border}`
-      }}
-    >
-      <Container size="lg" h={64} display="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
-        <Group gap="xs" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-          <ThemeIcon size="md" radius="md" variant="light" color="indigo">
-            <TbStack2 size={18} />
-          </ThemeIcon>
-          <Text fw={700} size="md" c="white" style={{ letterSpacing: "-0.02em" }}>
-            LAB Portal
-          </Text>
-        </Group>
+    <>
+      <Box component="header" pos="sticky" top={0} style={headerStyle}>
+        <Container size="xl" h={56} px="md" display="flex" style={containerStyle}>
+          <UnstyledButton aria-label="Ir para o início" onClick={() => navigate("/")}>
+            <Group gap={8} wrap="nowrap">
+              <ThemeIcon size={28} color="indigo">
+                <TbStack2 size={16} />
+              </ThemeIcon>
+              <Text fw={600} size="sm" c={tokens.textPrimary} style={logoStyle}>
+                LAB
+              </Text>
+            </Group>
+          </UnstyledButton>
 
-        {isAuthenticated && user && (
-          <Group component="nav" gap={4} visibleFrom="sm" aria-label="Navegação principal">
-            {navItems.map((item) => (
-              <UnstyledButton
-                key={item.path}
-                px="sm"
-                py={6}
-                style={navLinkStyle(pathname === item.path)}
-                aria-current={pathname === item.path ? "page" : undefined}
-                onClick={() => navigate(item.path)}
-              >
-                <Group gap={6} wrap="nowrap">
-                  <item.icon size={16} aria-hidden="true" />
-                  <Text size="sm" fw={600}>
+          <Group component="nav" gap={2} visibleFrom="sm" aria-label="Navegação principal" style={navStyle}>
+            {navItems.map((item) => {
+              const isActive = pathname === item.path;
+              return (
+                <UnstyledButton
+                  key={item.path}
+                  px="sm"
+                  py={6}
+                  style={navLinkStyle(isActive)}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => navigate(item.path)}
+                >
+                  <Text size="sm" fw={500}>
                     {item.label}
                   </Text>
-                </Group>
-              </UnstyledButton>
-            ))}
+                </UnstyledButton>
+              );
+            })}
           </Group>
-        )}
 
-        {isAuthenticated && user && (
-          <Menu shadow="md" width={180} position="bottom-end">
-            <Menu.Target>
-              <UnstyledButton
-                p="xs"
-                style={{
-                  borderRadius: 8,
-                  transition: "background-color 0.15s ease"
-                }}
-              >
-                <Group gap="sm" align="center">
-                  <Tooltip label={roleTooltipLabel} withArrow position="bottom">
-                    <Avatar
-                      radius="xl"
-                      size="sm"
-                      color="indigo"
-                      style={{
-                        border: `2px solid ${avatarBorderColor}`,
-                        boxShadow: isAdmin ? "none" : undefined
-                      }}
-                    >
+          <Box style={accountStyle}>
+            <Menu width={200} position="bottom-end">
+              <Menu.Target>
+                <UnstyledButton px={6} py={4} aria-label="Abrir menu da conta" style={navLinkStyle(false)}>
+                  <Group gap={8} wrap="nowrap">
+                    <Avatar radius="xl" size={28} color="indigo" style={avatarStyle(isAdmin)}>
                       {getInitials(user.name)}
                     </Avatar>
-                  </Tooltip>
-                  <Text size="sm" fw={600} c="white">
-                    {formatDisplayName(user.name)}
-                  </Text>
-                  <TbChevronDown size={14} color={tokens.textMuted} />
-                </Group>
-              </UnstyledButton>
-            </Menu.Target>
+                    <Text size="sm" fw={500} c={tokens.textPrimary} visibleFrom="xs">
+                      {formatDisplayName(user.name)}
+                    </Text>
+                    <TbChevronDown size={14} color={tokens.textMuted} aria-hidden="true" />
+                  </Group>
+                </UnstyledButton>
+              </Menu.Target>
 
-            <Menu.Dropdown
-              style={{
-                backgroundColor: tokens.surface,
-                borderColor: tokens.border,
-              }}
+              <Menu.Dropdown>
+                <Menu.Label>{isAdmin ? "Administrador" : "Minha conta"}</Menu.Label>
+                <Menu.Item leftSection={<TbUser size={16} />} onClick={() => navigate("/profile")}>
+                  Perfil
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item color="red" leftSection={<TbLogout size={16} />} onClick={logout}>
+                  Sair
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Box>
+        </Container>
+      </Box>
+
+      <Box component="nav" hiddenFrom="sm" aria-label="Navegação principal" style={bottomNavStyle}>
+        {[...navItems, { path: "/profile", label: "Perfil", icon: TbUser }].map((item) => {
+          const isActive = pathname === item.path;
+          return (
+            <UnstyledButton
+              key={item.path}
+              style={bottomNavItemStyle(isActive)}
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => navigate(item.path)}
             >
-              <Box hiddenFrom="sm">
-                {navItems.map((item) => (
-                  <Menu.Item key={item.path} leftSection={<item.icon size={16} />} onClick={() => navigate(item.path)}>
-                    {item.label}
-                  </Menu.Item>
-                ))}
-                <Menu.Divider style={{ borderColor: tokens.border }} />
-              </Box>
-              <Menu.Item leftSection={<TbUser size={16} />} onClick={() => navigate("/profile")}>
-                Perfil
-              </Menu.Item>
-              <Menu.Divider style={{ borderColor: tokens.border }} />
-              <Menu.Item color="red" leftSection={<TbLogout size={16} />} onClick={logout}>
-                Sair
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        )}
-      </Container>
-    </Box>
+              <item.icon size={20} aria-hidden="true" />
+              <Text size="10px" fw={500}>
+                {item.label}
+              </Text>
+            </UnstyledButton>
+          );
+        })}
+      </Box>
+    </>
   );
 };
 

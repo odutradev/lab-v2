@@ -102,7 +102,7 @@ export const ProfileSecurityCard = ({
                 </ThemeIcon>
                 <Box>
                   <Group gap="xs" align="center">
-                    <Text size="sm" fw={600} c="white">
+                    <Text size="sm" fw={600} c={tokens.textPrimary}>
                       Google Agenda
                     </Text>
                     {isConnected && (
@@ -126,7 +126,7 @@ export const ProfileSecurityCard = ({
                         <Text size="xs" c="gray.4" fw={500}>
                           Nome da Agenda:
                         </Text>
-                        <Text size="xs" fw={600} c="white">
+                        <Text size="xs" fw={600} c={tokens.textPrimary}>
                           {calendarName}
                         </Text>
                         <Tooltip label="Editar nome da agenda">
@@ -181,7 +181,7 @@ export const ProfileSecurityCard = ({
                       disabled={isCalendarLoading}
                       leftIcon={<TbPlus size={16} />}
                     >
-                      Criar Novamente
+                      Criar novamente
                     </Button>
                   )}
                   <Button
@@ -217,7 +217,7 @@ export const ProfileSecurityCard = ({
                   <TbKey size={20} />
                 </ThemeIcon>
                 <Box>
-                  <Text size="sm" fw={600} c="white">
+                  <Text size="sm" fw={600} c={tokens.textPrimary}>
                     Senha de Acesso
                   </Text>
                   <Text size="xs" c="dimmed">
@@ -227,7 +227,7 @@ export const ProfileSecurityCard = ({
               </Group>
 
               <Button variant="outline" size="sm" onClick={onNavigateResetPassword} leftIcon={<TbKey size={16} />}>
-                Redefinir Senha
+                Redefinir senha
               </Button>
             </Group>
 
@@ -239,7 +239,7 @@ export const ProfileSecurityCard = ({
                   <TbTrash size={20} />
                 </ThemeIcon>
                 <Box>
-                  <Text size="sm" fw={600} c="white">
+                  <Text size="sm" fw={600} c={tokens.textPrimary}>
                     Cache Local
                   </Text>
                   <Text size="xs" c="dimmed">
@@ -249,7 +249,7 @@ export const ProfileSecurityCard = ({
               </Group>
 
               <Button variant="outline" size="sm" onClick={onOpenClearCacheModal} leftIcon={<TbTrash size={16} />}>
-                Limpar Cache
+                Limpar cache
               </Button>
             </Group>
           </Stack>

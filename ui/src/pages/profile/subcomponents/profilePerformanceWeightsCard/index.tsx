@@ -246,11 +246,11 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
                   <TbCheckbox size={18} color={colors.purple500} />
-                  <Text size="xs" fw={700} c="white">
+                  <Text size="xs" fw={600} c={tokens.textPrimary}>
                     Hábitos
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c={colors.purple400}>
+                <Text size="sm" fw={600} c={colors.purple400}>
                   {habits}%
                 </Text>
               </Group>
@@ -265,11 +265,11 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
                   <TbDroplet size={18} color={colors.cyan500} />
-                  <Text size="xs" fw={700} c="white">
+                  <Text size="xs" fw={600} c={tokens.textPrimary}>
                     Hidratação
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c={colors.sky400}>
+                <Text size="sm" fw={600} c={colors.sky400}>
                   {water}%
                 </Text>
               </Group>
@@ -284,11 +284,11 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Group justify="space-between" align="center" mb="xs">
                 <Group gap="xs" align="center">
                   <TbMoonStars size={18} color={colors.indigo500} />
-                  <Text size="xs" fw={700} c="white">
+                  <Text size="xs" fw={600} c={tokens.textPrimary}>
                     Sono
                   </Text>
                 </Group>
-                <Text size="sm" fw={700} c={colors.indigo400}>
+                <Text size="sm" fw={600} c={colors.indigo400}>
                   {sleep}%
                 </Text>
               </Group>
@@ -309,7 +309,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               onClick={handleSave}
               leftIcon={<TbAdjustmentsHorizontal size={16} />}
             >
-              Salvar Pesos do Desempenho
+              Salvar pesos do desempenho
             </Button>
           </Group>
         </Stack>

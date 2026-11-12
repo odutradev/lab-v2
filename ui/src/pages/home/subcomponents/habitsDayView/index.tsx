@@ -59,7 +59,7 @@ export const HabitsDayView = ({
       >
         <Group gap="xs" wrap="wrap">
           <TbCalendarEvent size={20} color={colors.indigo400} />
-          <Text fw={700} size="md" c="white">
+          <Text fw={600} size="md" c={tokens.textPrimary}>
             Programação do Dia
           </Text>
           {isToday && <Badge variant="primary">Hoje</Badge>}

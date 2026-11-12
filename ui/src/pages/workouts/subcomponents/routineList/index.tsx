@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ActionIcon, Badge, Box, Group, Menu, SimpleGrid, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { tokens } from "@styles/theme";
+import { ActionIcon, Badge, Box, Group, Menu, SimpleGrid, Stack, Text, UnstyledButton } from "@mantine/core";
 import { TbDots, TbPencil, TbTrash, TbPlayerPause, TbPlayerPlay, TbTemplate } from "react-icons/tb";
 
 import Card from "@components/card";
+import SectionHeader from "@components/sectionHeader";
 import Modal from "@components/modal";
 import { formatWeekDays } from "@utils/functions/workouts";
 
@@ -39,9 +41,7 @@ export const RoutineList = () => {
 
   return (
     <Stack gap="sm" component="section" aria-label="Rotinas de treino">
-      <Title order={4} c="white">
-        Minhas rotinas
-      </Title>
+      <SectionHeader title="Minhas rotinas" description="Pause, edite ou exclua pelo menu de cada rotina." />
 
       {routines.length > 0 && (
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
@@ -51,7 +51,7 @@ export const RoutineList = () => {
                 <Group gap="sm" wrap="nowrap" miw={0}>
                   <ModalityIcon modalityId={routine.modalityId} size={22} />
                   <Box miw={0}>
-                    <Text fw={600} c="white" truncate>
+                    <Text fw={600} c={tokens.textPrimary} truncate>
                       {routine.name}
                     </Text>
                     <Text size="xs" c="dimmed">
@@ -122,7 +122,7 @@ export const RoutineList = () => {
       <Card p={{ base: "md", sm: "lg" }}>
         <Group gap="xs" mb="sm">
           <TbTemplate size={18} aria-hidden="true" />
-          <Text fw={600} c="white">
+          <Text fw={600} c={tokens.textPrimary}>
             {routines.length > 0 ? "Adicionar um modelo pronto" : "Comece com um modelo pronto"}
           </Text>
         </Group>
@@ -139,7 +139,7 @@ export const RoutineList = () => {
               aria-label={`Aplicar modelo ${template.name}`}
               onClick={() => handleTemplateClick(template.id)}
             >
-              <Text size="sm" fw={600} c="white">
+              <Text size="sm" fw={600} c={tokens.textPrimary}>
                 {applyingTemplateId === template.id ? "Aplicando..." : template.name}
               </Text>
               <Text size="xs" c="dimmed">

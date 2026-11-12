@@ -22,7 +22,7 @@ export const HabitsMonthView = ({
           <Box key={header} ta="center" py={4} style={{ minWidth: 0, overflow: "hidden" }}>
             <Text
               fz={{ base: 10, sm: 12 }}
-              fw={700}
+              fw={600}
               c="dimmed"
               style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
             >

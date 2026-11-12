@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { tokens } from "@styles/theme";
 
 export const containerStyle: CSSProperties = {
-  maxWidth: 1180,
+  maxWidth: 1320,
   width: "100%",
   margin: "0 auto"
 };

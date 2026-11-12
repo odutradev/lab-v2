@@ -1,4 +1,5 @@
 import { Box, Group, NumberInput, Stack, Text, TextInput } from "@mantine/core";
+import { tokens } from "@styles/theme";
 
 import { toOptionalNumber } from "@utils/functions/number";
 
@@ -23,7 +24,7 @@ export const SessionExerciseList = ({ exercises, onChange }: SessionExerciseList
       {exercises.map((exercise, index) => (
         <Group key={`${exercise.name}-${index}`} gap="xs" py={6} wrap="nowrap" style={exerciseLineStyle}>
           <Box flex={1} miw={0}>
-            <Text size="sm" c="white" truncate>
+            <Text size="sm" c={tokens.textPrimary} truncate>
               {exercise.name}
             </Text>
             <Text size="xs" c="dimmed">

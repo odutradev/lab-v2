@@ -209,7 +209,7 @@ export const ProfilePhysicalCard = () => {
               onClick={handleSave}
               leftIcon={<TbHeartRateMonitor size={16} />}
             >
-              Salvar Dados Físicos
+              Salvar dados físicos
             </Button>
           </Group>
         </Stack>

@@ -169,7 +169,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
         <Box>
           <Group gap="xs" align="center">
             <TbCalendar size={20} color={colors.indigo400} />
-            <Text fw={700} size="md" c="white">
+            <Text fw={600} size="md" c={tokens.textPrimary}>
               Configurar Agendas
             </Text>
           </Group>
@@ -244,7 +244,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                         backgroundColor: colors.teal400
                       }}
                     />
-                    <Text size="sm" fw={600} c="white">
+                    <Text size="sm" fw={600} c={tokens.textPrimary}>
                       Lab V2
                     </Text>
                   </Group>
@@ -273,7 +273,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                   isLoading={isConnecting}
                   onClick={handleConnectGoogle}
                 >
-                  Conectar Google Calendar
+                  Conectar Google Agenda
                 </Button>
               </Box>
             </Stack>
@@ -287,7 +287,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                     style={{ width: "100%", padding: "4px 0", cursor: "pointer" }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
+                      <Text size="xs" fw={600} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
                         Minhas agendas
                       </Text>
                       {isMyCalendarsOpen ? (
@@ -314,7 +314,7 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
                     style={{ width: "100%", padding: "4px 0", cursor: "pointer" }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
+                      <Text size="xs" fw={600} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
                         Outras agendas
                       </Text>
                       {isOtherCalendarsOpen ? (
@@ -336,19 +336,13 @@ export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSett
           )}
 
           {/* Botões do Rodapé */}
-          <Group
-            justify="flex-end"
-            gap="sm"
-            mt="md"
-            pt="sm"
-            style={{ borderTop: `1px solid ${tokens.border}` }}
-          >
+          <Group justify="flex-end" gap="sm" mt="md" pt="sm" style={{ borderTop: `1px solid ${tokens.border}` }}>
             <Button variant="secondary" size="sm" onClick={onClose} disabled={isSaving}>
               Cancelar
             </Button>
             {isConnected && (
               <Button variant="primary" size="sm" isLoading={isSaving} onClick={handleSave}>
-                Salvar Alterações
+                Salvar alterações
               </Button>
             )}
           </Group>

@@ -30,7 +30,6 @@ export const GeneralPerformanceCard = ({
 
   return (
     <Card style={{ position: "relative", overflow: "hidden" }}>
-
       <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
         <Group justify="space-between" align="center" wrap="wrap" gap="xs">
           <Group gap={6} align="center">
@@ -172,13 +171,7 @@ export const GeneralPerformanceCard = ({
                           : item.isToday
                             ? `1.5px solid ${colors.purple400}`
                             : "none",
-                      boxShadow: isSelected
-                        ? "none"
-                        : isHovered
-                          ? "none"
-                          : item.overallRate >= 100
-                            ? "none"
-                            : "none",
+                      boxShadow: isSelected ? "none" : isHovered ? "none" : item.overallRate >= 100 ? "none" : "none",
                       transition: "all 0.15s ease"
                     }}
                   />

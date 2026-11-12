@@ -1,4 +1,5 @@
-import { ActionIcon, Badge, Box, Group, SimpleGrid, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Badge, Box, Group, SimpleGrid, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { tokens } from "@styles/theme";
 import { TbCheck, TbX, TbArrowBackUp, TbChevronLeft, TbChevronRight } from "react-icons/tb";
 
 import {
@@ -10,6 +11,8 @@ import {
   getExtraSessions,
   getWeekStart
 } from "@utils/functions/workouts";
+
+import SectionHeader from "@components/sectionHeader";
 
 import useWorkoutsPage from "../../hook";
 import ModalityIcon from "../modalityIcon";
@@ -34,21 +37,24 @@ export const WeekPlanner = () => {
 
   return (
     <Stack gap="sm" component="section" aria-label="Semana de treinos">
-      <Group justify="space-between">
-        <Title order={4} c="white">
-          {isCurrentWeek
+      <SectionHeader
+        title={
+          isCurrentWeek
             ? "Esta semana"
-            : `Semana de ${formatShortDate(weekDates[0])} a ${formatShortDate(weekDates[6])}`}
-        </Title>
-        <Group gap={4}>
-          <ActionIcon variant="subtle" color="gray" aria-label="Semana anterior" onClick={() => handleChangeWeek(-1)}>
-            <TbChevronLeft size={18} />
-          </ActionIcon>
-          <ActionIcon variant="subtle" color="gray" aria-label="Próxima semana" onClick={() => handleChangeWeek(1)}>
-            <TbChevronRight size={18} />
-          </ActionIcon>
-        </Group>
-      </Group>
+            : `Semana de ${formatShortDate(weekDates[0])} a ${formatShortDate(weekDates[6])}`
+        }
+        description="Toque em ✓ quando treinar ou em ✕ quando faltar."
+        actions={
+          <>
+            <ActionIcon variant="subtle" color="gray" aria-label="Semana anterior" onClick={() => handleChangeWeek(-1)}>
+              <TbChevronLeft size={18} />
+            </ActionIcon>
+            <ActionIcon variant="subtle" color="gray" aria-label="Próxima semana" onClick={() => handleChangeWeek(1)}>
+              <TbChevronRight size={18} />
+            </ActionIcon>
+          </>
+        }
+      />
 
       <SimpleGrid cols={{ base: 1, xs: 2, md: 4, xl: 7 }} spacing="sm">
         {weekDates.map((dateKey) => {
@@ -64,7 +70,7 @@ export const WeekPlanner = () => {
           return (
             <Box key={dateKey} p="sm" style={dayCardStyle(isToday)}>
               <Group justify="space-between" mb="xs" wrap="nowrap">
-                <Text size="sm" fw={700} c="white">
+                <Text size="sm" fw={600} c={tokens.textPrimary}>
                   {weekDayLongLabels[getWeekDay(dateKey)]}
                 </Text>
                 {isToday ? (
@@ -89,7 +95,7 @@ export const WeekPlanner = () => {
                     >
                       <Group gap={6} wrap="nowrap">
                         <ModalityIcon modalityId={routine.modalityId} size={16} />
-                        <Text size="xs" fw={600} c="white" lineClamp={2}>
+                        <Text size="xs" fw={600} c={tokens.textPrimary} lineClamp={2}>
                           {routine.name}
                         </Text>
                       </Group>
@@ -152,7 +158,7 @@ export const WeekPlanner = () => {
                     <Group gap={6} wrap="nowrap">
                       <ModalityIcon modalityId={session.modalityId} size={16} />
                       <Box miw={0}>
-                        <Text size="xs" fw={600} c="white" truncate>
+                        <Text size="xs" fw={600} c={tokens.textPrimary} truncate>
                           {session.name}
                         </Text>
                         <Text size="xs" c="dimmed">

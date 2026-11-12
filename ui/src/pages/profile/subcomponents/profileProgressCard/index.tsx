@@ -127,7 +127,7 @@ export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: Profi
                       >
                         <Icon size={18} color={step.completed ? colors.green400 : step.iconColor} />
                       </ThemeIcon>
-                      <Text size="sm" fw={600} c="white">
+                      <Text size="sm" fw={600} c={tokens.textPrimary}>
                         {step.title}
                       </Text>
                     </Group>

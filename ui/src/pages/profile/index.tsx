@@ -32,7 +32,6 @@ export const ProfilePage = () => {
     handleRecreateCalendar,
     handleConnectGoogleCalendar,
     handleNavigateResetPassword,
-    handleNavigateHome,
     isClearCacheModalOpen,
     isClearingCache,
     openClearCacheModal,
@@ -48,7 +47,7 @@ export const ProfilePage = () => {
   return (
     <Box style={containerStyle}>
       <Stack gap="lg">
-        <ProfileHeader user={user} initials={initials} onBack={handleNavigateHome} />
+        <ProfileHeader user={user} initials={initials} />
 
         <ProfileProgressCard calendarStatus={calendarStatus} onConnectCalendar={handleConnectGoogleCalendar} />
 

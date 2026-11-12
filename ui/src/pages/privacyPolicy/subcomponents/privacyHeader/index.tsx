@@ -35,7 +35,7 @@ export const PrivacyHeader = ({ lastUpdated, onBack }: PrivacyHeaderProps) => {
           <TbShieldLock size={28} />
         </ThemeIcon>
         <div>
-          <Title order={1} size="h2" fw={800} c="white">
+          <Title order={1} size="h2" fw={600} c={tokens.textPrimary}>
             Política de Privacidade
           </Title>
           <Text size="sm" c="dimmed">

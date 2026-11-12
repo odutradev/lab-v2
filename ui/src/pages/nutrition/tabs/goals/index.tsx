@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router-dom";
 
 import Card from "@components/card";
+import StatCard from "@components/statCard";
 import Button from "@components/button";
 import { activityOptions, goalLabels, goalOptions } from "@utils/functions/nutrition";
 import { formatShortDate } from "@utils/functions/workouts";
@@ -24,7 +25,6 @@ import { getFormErrors } from "@utils/validations";
 import { goalsFormSchema } from "@utils/validations/nutrition";
 
 import useNutritionPage from "../../hook";
-import { metricBoxStyle } from "./styles";
 import type { GoalsFormValues } from "@utils/validations/nutrition";
 import type { ActivityLevel, NutritionGoal } from "@actions/nutrition/types";
 
@@ -138,19 +138,12 @@ export const GoalsTab = () => {
                 hint: `${Math.round((macroCalories.fat / totalMacroCalories) * 100)}%`
               }
             ].map((metric) => (
-              <Box key={metric.label} p="sm" style={metricBoxStyle}>
-                <Text size="xs" c="dimmed">
-                  {metric.label}
-                </Text>
-                <Text fw={700} c="white">
-                  {metric.value}
-                </Text>
-                {metric.hint && (
-                  <Text size="xs" c="dimmed">
-                    {metric.hint} das kcal
-                  </Text>
-                )}
-              </Box>
+              <StatCard
+                key={metric.label}
+                label={metric.label}
+                value={metric.value}
+                hint={metric.hint ? `${metric.hint} das kcal` : undefined}
+              />
             ))}
           </SimpleGrid>
         )}

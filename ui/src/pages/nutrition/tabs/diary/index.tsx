@@ -1,4 +1,5 @@
 import { ActionIcon, Button as MantineButton, Group, SimpleGrid, Stack, Text } from "@mantine/core";
+import { tokens } from "@styles/theme";
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb";
 
 import { formatDisplayDate } from "@utils/functions/challenges";
@@ -20,7 +21,7 @@ export const DiaryTab = () => {
           <TbChevronLeft size={18} />
         </ActionIcon>
         <Stack gap={0} align="center">
-          <Text fw={700} c="white" style={dateLabelStyle}>
+          <Text fw={600} c={tokens.textPrimary} style={dateLabelStyle}>
             {isToday ? "Hoje" : formatDisplayDate(selectedDate)}
           </Text>
           {!isToday && (

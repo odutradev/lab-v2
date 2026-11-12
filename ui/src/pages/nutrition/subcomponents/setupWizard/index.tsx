@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { tokens } from "@styles/theme";
 import { Group, NumberInput, SimpleGrid, Stack, Stepper, Text, UnstyledButton } from "@mantine/core";
 
 import Card from "@components/card";
@@ -132,7 +133,7 @@ export const SetupWizard = () => {
                 aria-pressed={values.activityLevel === option.value}
                 onClick={() => updateValue("activityLevel", option.value)}
               >
-                <Text size="sm" fw={600} c="white">
+                <Text size="sm" fw={600} c={tokens.textPrimary}>
                   {option.label}
                 </Text>
                 <Text size="xs" c="dimmed">
@@ -160,7 +161,7 @@ export const SetupWizard = () => {
                   aria-pressed={values.goal === option.value}
                   onClick={() => updateValue("goal", option.value)}
                 >
-                  <Text size="sm" fw={600} c="white">
+                  <Text size="sm" fw={600} c={tokens.textPrimary}>
                     {option.label}
                   </Text>
                   <Text size="xs" c="dimmed">

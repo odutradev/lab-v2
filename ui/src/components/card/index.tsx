@@ -5,13 +5,7 @@ import { tokens } from "@styles/theme";
 
 export const CardHeader = ({ children, className, ...props }: CardProps) => {
   return (
-    <Box
-      mb="md"
-      pb="xs"
-      className={className}
-      style={{ borderBottom: `1px solid ${tokens.border}` }}
-      {...props}
-    >
+    <Box mb="md" pb="xs" className={className} style={{ borderBottom: `1px solid ${tokens.border}` }} {...props}>
       {children}
     </Box>
   );
@@ -43,13 +37,7 @@ export const CardContent = ({ children, className, ...props }: CardProps) => {
 
 export const CardFooter = ({ children, className, ...props }: CardProps) => {
   return (
-    <Box
-      mt="md"
-      pt="xs"
-      className={className}
-      style={{ borderTop: `1px solid ${tokens.border}` }}
-      {...props}
-    >
+    <Box mt="md" pt="xs" className={className} style={{ borderTop: `1px solid ${tokens.border}` }} {...props}>
       {children}
     </Box>
   );

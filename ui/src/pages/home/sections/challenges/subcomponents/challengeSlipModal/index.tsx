@@ -28,7 +28,7 @@ export const ChallengeSlipModal = ({
             <TbAlertTriangle size={24} />
           </ThemeIcon>
           <Box style={{ flex: 1 }}>
-            <Text fw={600} size="sm" c="white">
+            <Text fw={600} size="sm" c={tokens.textPrimary}>
               {challengeTitle}
             </Text>
             <Text size="xs" c="dimmed" mt={4} style={{ lineHeight: 1.5 }}>
@@ -56,7 +56,7 @@ export const ChallengeSlipModal = ({
                   <TbCheck size={18} />
                 </ThemeIcon>
                 <Box>
-                  <Text size="sm" fw={600} c="white">
+                  <Text size="sm" fw={600} c={tokens.textPrimary}>
                     Manter histórico e seguir em frente
                   </Text>
                   <Text size="xs" c="dimmed">

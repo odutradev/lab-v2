@@ -12,6 +12,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <Box
+      pb={isAuthenticated ? { base: 64, sm: 0 } : 0}
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -19,7 +20,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         backgroundColor: tokens.background
       }}
     >
-      {isAuthenticated && <Navbar />}
+      <Navbar />
       {children}
       <ToastContainer />
     </Box>

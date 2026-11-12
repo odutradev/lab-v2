@@ -1,4 +1,5 @@
 import { Box, Group, RingProgress, SimpleGrid, Stack, Text } from "@mantine/core";
+import { tokens } from "@styles/theme";
 import { TbFlame } from "react-icons/tb";
 
 import Card from "@components/card";
@@ -28,7 +29,7 @@ export const DayTotals = () => {
             ]}
             label={
               <Stack gap={0} align="center" style={ringLabelStyle}>
-                <Text fw={700} size="xl" c="white">
+                <Text fw={600} size="xl" c={tokens.textPrimary}>
                   {totals.calories}
                 </Text>
                 <Text size="xs" c="dimmed">
@@ -42,7 +43,7 @@ export const DayTotals = () => {
             <Text size="xs" c="dimmed">
               {isOverGoal ? "Acima da meta" : "Restante"}
             </Text>
-            <Text fw={700} size="lg" c={isOverGoal ? "orange.4" : "white"}>
+            <Text fw={600} size="lg" c={isOverGoal ? "orange.4" : "white"}>
               {remaining === null ? "—" : `${Math.abs(remaining)} kcal`}
             </Text>
             {(diary?.burnedCalories ?? 0) > 0 && (

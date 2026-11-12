@@ -5,6 +5,7 @@ import { TbRulerMeasure, TbUser } from "react-icons/tb";
 
 import Card from "@components/card";
 import Button from "@components/button";
+import PageHeader from "@components/pageHeader";
 import useHealthStore from "@stores/health";
 
 import HabitsCalendarToolbar from "./subcomponents/habitsCalendarToolbar";
@@ -25,7 +26,7 @@ import useMonthlyMetrics from "./hook/useMonthlyMetrics";
 
 import type { CreateHabitFormData } from "./subcomponents/habitsModal/types";
 import type { RecurrenceScopeMode } from "@actions/habits/types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -179,7 +180,8 @@ export const HomePage = () => {
 
   return (
     <Box style={containerStyle}>
-      <Stack gap="md" style={{ flex: 1, minWidth: 0, width: "100%" }}>
+      <Stack gap="lg" style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <PageHeader title="Hábitos" description="Seu dia, semana e mês num só lugar, com saúde e desafios ao lado." />
         <Grid gap="md" align="stretch" style={{ flex: 1 }}>
           <Grid.Col
             span={{ base: 12, lg: 7 }}
@@ -351,7 +353,7 @@ export const HomePage = () => {
                     </Box>
 
                     <Stack gap={4} align="center">
-                      <Text fw={700} size="sm" c="white">
+                      <Text fw={600} size="sm" c={tokens.textPrimary}>
                         Altura e idade não configuradas
                       </Text>
                       <Text size="xs" c="dimmed" maw={340} ta="center" style={{ lineHeight: 1.5 }}>
@@ -367,7 +369,7 @@ export const HomePage = () => {
                       leftIcon={<TbUser size={14} />}
                       style={{ marginTop: 4 }}
                     >
-                      Ir para o Perfil
+                      Ir para o perfil
                     </Button>
                   </Stack>
                 </Card>

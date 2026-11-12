@@ -99,9 +99,8 @@ export const ImcGaugeChart = ({ imcResult, heightCm, currentWeight }: ImcGaugeCh
     <Box className="chart-fade-transition">
       <Group justify="space-between" align="center" mb={6} wrap="wrap" gap="xs">
         <Group gap={6} align="center">
-          <Text size="12px" fw={800} c={colors.white} style={{ lineHeight: 1 }}>
-            {imc.toFixed(1)}{" "}
-            <span style={{ fontSize: "10px", fontWeight: 600, color: tokens.textMuted }}>kg/m²</span>
+          <Text size="12px" fw={600} c={colors.white} style={{ lineHeight: 1 }}>
+            {imc.toFixed(1)} <span style={{ fontSize: "10px", fontWeight: 600, color: tokens.textMuted }}>kg/m²</span>
           </Text>
           <Badge
             variant="light"

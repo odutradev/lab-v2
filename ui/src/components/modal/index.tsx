@@ -33,23 +33,25 @@ export const ModalHeader = ({ title, description, icon, variant = "indigo" }: Mo
   const color = variantColors[variant];
 
   return (
-    <Box mb="md" pb="xs" style={{ borderBottom: `1px solid ${tokens.border}` }}>
+    <Box mb="md">
       <Group gap="sm" align="flex-start" wrap="nowrap">
-        {icon || (
-          <ThemeIcon size="lg" radius="md" variant="light" color={color}>
-            {renderVariantIcon(variant)}
-          </ThemeIcon>
-        )}
+        {/* Ícone só aparece quando comunica algo (alerta, erro, sucesso). */}
+        {icon ||
+          (variant !== "indigo" && (
+            <ThemeIcon size="lg" radius="md" variant="light" color={color}>
+              {renderVariantIcon(variant)}
+            </ThemeIcon>
+          ))}
         <Box style={{ flex: 1 }}>
           {typeof title === "string" ? (
-            <Title order={4} fw={600} c="white">
+            <Title order={4} fw={600} c={tokens.textPrimary}>
               {title}
             </Title>
           ) : (
             title
           )}
           {description && (
-            <Text size="sm" c="dimmed" mt={4}>
+            <Text size="sm" c={tokens.textSecondary} mt={4}>
               {description}
             </Text>
           )}
@@ -65,7 +67,7 @@ export const ModalBody = ({ children }: ModalBodyProps) => {
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
   return (
-    <Box mt="lg" pt="md" style={{ borderTop: `1px solid ${tokens.border}` }}>
+    <Box mt="lg">
       <Group justify="flex-end" gap="sm">
         {children}
       </Group>

@@ -196,7 +196,7 @@ export const HabitsModal = ({
       onClose={handleClose}
       title={
         <Box>
-          <Text fw={600} size="lg" c="white">
+          <Text fw={600} size="lg" c={tokens.textPrimary}>
             {initialHabit ? currentType.titleEdit : currentType.titleNew}
           </Text>
           <Text size="xs" c="dimmed">

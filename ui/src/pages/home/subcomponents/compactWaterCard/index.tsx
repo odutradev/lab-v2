@@ -78,17 +78,13 @@ export const CompactWaterCard = ({
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center" wrap="wrap">
               <TbDropletFilled size={15} color={colors.purple400} />
-              <Text size="xs" fw={700} c="white">
+              <Text size="xs" fw={600} c={tokens.textPrimary}>
                 Água
               </Text>
               <Text size="11px" c="dimmed">
                 ({bottleMl}ml)
               </Text>
-              <MantineBadge
-                size="xs"
-                variant="light"
-                color={isViewingToday ? "cyan" : "gray"}
-              >
+              <MantineBadge size="xs" variant="light" color={isViewingToday ? "cyan" : "gray"}>
                 {isViewingToday ? "Hoje" : formatDateDisplay(activeDate)}
               </MantineBadge>
             </Group>
@@ -96,7 +92,8 @@ export const CompactWaterCard = ({
             <Group gap={6} align="center" wrap="wrap">
               {isGoalReached ? (
                 <MantineBadge
-                  variant="light" color="indigo"
+                  variant="light"
+                  color="indigo"
                   size="xs"
                   leftSection={<TbTrophy size={10} />}
                   styles={{ root: { height: 18, padding: "0 6px", fontSize: 10 } }}
@@ -110,7 +107,7 @@ export const CompactWaterCard = ({
               )}
 
               {extraBottlesTarget > 0 && (
-                <Text size="11px" c={colors.purple400} fw={700}>
+                <Text size="11px" c={colors.purple400} fw={600}>
                   (+{extraTargetMl}ml extra)
                 </Text>
               )}

@@ -85,7 +85,7 @@ export const ChallengeDetailModal = ({
             </Box>
             <Box>
               <Group gap="xs" align="center">
-                <Text fw={700} size="lg" c="white">
+                <Text fw={600} size="lg" c={tokens.textPrimary}>
                   {challenge.title}
                 </Text>
                 {isCompleted ? (
@@ -129,10 +129,10 @@ export const ChallengeDetailModal = ({
                 <TbQuote size={14} />
               </ThemeIcon>
               <Box>
-                <Text size="11px" fw={700} c="indigo.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
+                <Text size="11px" fw={600} c="indigo.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                   Por que comecei?
                 </Text>
-                <Text size="sm" c="white" style={{ fontStyle: "italic", lineHeight: 1.4 }}>
+                <Text size="sm" c={tokens.textPrimary} style={{ fontStyle: "italic", lineHeight: 1.4 }}>
                   "{challenge.motivation}"
                 </Text>
               </Box>
@@ -154,7 +154,7 @@ export const ChallengeDetailModal = ({
               <ThemeIcon size="xs" radius="sm" color="cyan" variant="light">
                 <TbNotes size={13} />
               </ThemeIcon>
-              <Text size="11px" fw={700} c="cyan.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
+              <Text size="11px" fw={600} c="cyan.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                 Anotações & Regras do Desafio
               </Text>
             </Group>
@@ -179,7 +179,7 @@ export const ChallengeDetailModal = ({
                 <ThemeIcon size="xs" radius="sm" color="teal" variant="light">
                   <TbListCheck size={14} />
                 </ThemeIcon>
-                <Text size="11px" fw={700} c="teal.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
+                <Text size="11px" fw={600} c="teal.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                   Checklist do Desafio
                 </Text>
               </Group>
@@ -245,7 +245,7 @@ export const ChallengeDetailModal = ({
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
               Progresso
             </Text>
-            <Text size="md" fw={700} c="white" mt={2}>
+            <Text size="md" fw={600} c={tokens.textPrimary} mt={2}>
               {stats.completedDays} / {stats.targetDays}
             </Text>
             <Text size="xs" c="teal.4" fw={600}>
@@ -267,7 +267,7 @@ export const ChallengeDetailModal = ({
               </Text>
               <TbFlame size={14} color={colors.orange500} />
             </Group>
-            <Text size="md" fw={700} c="orange.4" mt={2}>
+            <Text size="md" fw={600} c="orange.4" mt={2}>
               {stats.streak} dias
             </Text>
             <Text size="xs" c="dimmed">
@@ -286,7 +286,7 @@ export const ChallengeDetailModal = ({
             <Text size="10px" c="dimmed" fw={600} tt="uppercase">
               Faltam
             </Text>
-            <Text size="md" fw={700} c="white" mt={2}>
+            <Text size="md" fw={600} c={tokens.textPrimary} mt={2}>
               {Math.max(0, stats.targetDays - stats.completedDays)} dias
             </Text>
             <Text size="xs" c="dimmed">
@@ -308,7 +308,7 @@ export const ChallengeDetailModal = ({
               </Text>
               <TbCalendar size={14} color={colors.indigo400} />
             </Group>
-            <Text size="sm" fw={700} c="indigo.3" mt={2}>
+            <Text size="sm" fw={600} c="indigo.3" mt={2}>
               {formatDisplayDate(stats.estimatedEndDate)}
             </Text>
             <Text size="xs" c="dimmed">
@@ -366,7 +366,7 @@ export const ChallengeDetailModal = ({
         {/* Histórico Visual de Dias (Grade estilo GitHub) */}
         <Box>
           <Group justify="space-between" align="center" mb={6}>
-            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+            <Text size="xs" fw={600} c="dimmed" tt="uppercase">
               Grade de Constância ({stats.targetDays} Dias)
             </Text>
             <Text size="11px" c="dimmed">

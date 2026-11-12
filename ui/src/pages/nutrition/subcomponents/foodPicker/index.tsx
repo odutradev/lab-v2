@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { tokens } from "@styles/theme";
 import { Anchor, Badge, Box, Group, Loader, NumberInput, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { TbSearch } from "react-icons/tb";
@@ -85,7 +86,7 @@ export const FoodPicker = ({ submitLabel, onSubmit }: FoodPickerProps) => {
           >
             <Group justify="space-between" wrap="nowrap" gap="xs">
               <Box miw={0}>
-                <Text size="sm" c="white" truncate>
+                <Text size="sm" c={tokens.textPrimary} truncate>
                   {food.name}
                 </Text>
                 <Text size="xs" c="dimmed">
@@ -112,7 +113,7 @@ export const FoodPicker = ({ submitLabel, onSubmit }: FoodPickerProps) => {
 
       {selectedFood && (
         <Stack gap="xs" p="sm" style={previewStyle}>
-          <Text size="sm" fw={600} c="white">
+          <Text size="sm" fw={600} c={tokens.textPrimary}>
             {selectedFood.name}
           </Text>
           <Group gap="xs" align="flex-end" wrap="nowrap">

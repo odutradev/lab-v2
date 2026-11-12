@@ -35,7 +35,7 @@ export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
           <TbFileText size={28} />
         </ThemeIcon>
         <div>
-          <Title order={1} size="h2" fw={800} c="white">
+          <Title order={1} size="h2" fw={600} c={tokens.textPrimary}>
             Termos de Serviço
           </Title>
           <Text size="sm" c="dimmed">

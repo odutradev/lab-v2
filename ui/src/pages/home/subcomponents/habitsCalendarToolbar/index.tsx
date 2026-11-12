@@ -80,9 +80,9 @@ export const HabitsCalendarToolbar = ({
           </Group>
 
           <Text
-            fw={700}
+            fw={600}
             size="md"
-            c="white"
+            c={tokens.textPrimary}
             ml={4}
             style={{
               whiteSpace: "nowrap",
@@ -151,7 +151,7 @@ export const HabitsCalendarToolbar = ({
             onClick={onOpenNewHabitModal}
             style={{ flexShrink: 0 }}
           >
-            Novo Item
+            Novo item
           </Button>
         </Group>
       </Group>

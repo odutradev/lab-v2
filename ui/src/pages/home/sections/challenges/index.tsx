@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip, alpha } from "@mantine/core";
+import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip, Badge, alpha } from "@mantine/core";
 import { TbTrophy, TbPlus, TbChevronDown, TbChevronUp, TbFlame } from "react-icons/tb";
 
 import Button from "@components/button";
@@ -115,9 +115,9 @@ export const ChallengesSection = () => {
   return (
     <Box
       style={{
-        backgroundColor: alpha(colors.slate900, 0.45),
+        backgroundColor: tokens.surface,
         border: `1px solid ${tokens.border}`,
-        borderRadius: 16,
+        borderRadius: 12,
         padding: "16px 20px",
         width: "100%"
       }}
@@ -135,23 +135,13 @@ export const ChallengesSection = () => {
           </ThemeIcon>
           <Box>
             <Group gap="xs" align="center">
-              <Text fw={700} size="sm" c="white">
-                Desafios de Constância
+              <Text fw={600} size="sm" c={tokens.textPrimary}>
+                Desafios de constância
               </Text>
               {activeChallenges.length > 0 && (
-                <Text
-                  size="xs"
-                  fw={700}
-                  style={{
-                    backgroundColor: alpha(colors.orange500, 0.2),
-                    color: colors.orange400,
-                    padding: "2px 8px",
-                    borderRadius: 10,
-                    border: `1px solid ${alpha(colors.orange500, 0.4)}`
-                  }}
-                >
+                <Badge size="sm" color="orange">
                   {activeChallenges.length} {activeChallenges.length === 1 ? "ativo" : "ativos"}
-                </Text>
+                </Badge>
               )}
             </Group>
             <Text size="11px" c="dimmed">
@@ -162,7 +152,7 @@ export const ChallengesSection = () => {
 
         <Group gap="xs">
           <Button size="sm" variant="primary" onClick={handleOpenNew} leftIcon={<TbPlus size={14} />}>
-            Novo Desafio
+            Novo desafio
           </Button>
           <Tooltip label={isSectionOpen ? "Recolher seção" : "Expandir seção"} withArrow>
             <ActionIcon
@@ -207,7 +197,7 @@ export const ChallengesSection = () => {
                 >
                   <TbTrophy size={22} />
                 </Box>
-                <Text fw={600} size="sm" c="white">
+                <Text fw={600} size="sm" c={tokens.textPrimary}>
                   Nenhum desafio em andamento
                 </Text>
                 <Text size="xs" c="dimmed" maw={400} ta="center" style={{ lineHeight: 1.5 }}>
@@ -221,7 +211,7 @@ export const ChallengesSection = () => {
                   leftIcon={<TbPlus size={14} />}
                   style={{ marginTop: 6 }}
                 >
-                  Criar Meu Primeiro Desafio
+                  Criar meu primeiro desafio
                 </Button>
               </Stack>
             </Box>

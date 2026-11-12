@@ -2,8 +2,8 @@ import type { CSSProperties } from "react";
 
 import { tokens } from "@styles/theme";
 
-export const statCardStyle: CSSProperties = {
+export const emptyStateStyle: CSSProperties = {
   borderRadius: "var(--mantine-radius-lg)",
-  backgroundColor: tokens.surface,
-  border: `1px solid ${tokens.border}`
+  border: `1px dashed ${tokens.borderStrong}`,
+  textAlign: "center"
 };

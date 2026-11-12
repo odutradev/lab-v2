@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { tokens } from "@styles/theme";
 import { ActionIcon, Box, Group, NumberInput, Stack, Switch, Text, TextInput } from "@mantine/core";
 import { TbPlus, TbTrash, TbX } from "react-icons/tb";
 
@@ -207,7 +208,7 @@ export const PlanEditorModal = () => {
                   return (
                     <Group key={item.key} gap="xs" py={6} wrap="nowrap" style={itemRowStyle}>
                       <Box flex={1} miw={0}>
-                        <Text size="sm" c="white" truncate>
+                        <Text size="sm" c={tokens.textPrimary} truncate>
                           {item.foodName}
                         </Text>
                         <Text size="xs" c="dimmed">
@@ -270,7 +271,7 @@ export const PlanEditorModal = () => {
 
         <Box p="sm" style={totalsBarStyle}>
           <Group justify="space-between" gap="xs">
-            <Text size="sm" fw={600} c="white">
+            <Text size="sm" fw={600} c={tokens.textPrimary}>
               Total: {planTotals.calories} kcal
               {targets ? ` / meta ${targets.calories} kcal` : ""}
             </Text>

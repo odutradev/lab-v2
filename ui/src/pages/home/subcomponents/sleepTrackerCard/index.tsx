@@ -106,7 +106,6 @@ export const SleepTrackerCard = ({
   return (
     <>
       <Card style={{ position: "relative", overflow: "hidden" }}>
-
         <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center">
@@ -201,7 +200,7 @@ export const SleepTrackerCard = ({
                 </Group>
 
                 <Group gap="xs" align="baseline">
-                  <Text size="20px" fw={800} c={colors.purple400}>
+                  <Text size="20px" fw={600} c={colors.purple400}>
                     {inputHours.toFixed(1)}h
                   </Text>
                   <MantineBadge

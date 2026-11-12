@@ -129,7 +129,10 @@ export const theme = createTheme({
   components: {
     Button: { defaultProps: { radius: "md" } },
     ActionIcon: { defaultProps: { radius: "md" } },
-    Badge: { defaultProps: { radius: "sm", variant: "light" }, styles: { root: { textTransform: "none", fontWeight: 600 } } },
+    Badge: {
+      defaultProps: { radius: "sm", variant: "light" },
+      styles: { root: { textTransform: "none", fontWeight: 600 } }
+    },
     Paper: { defaultProps: { radius: "lg" } },
     ThemeIcon: { defaultProps: { radius: "md", variant: "light" } },
     Tooltip: { defaultProps: { withArrow: true, openDelay: 200 } },
@@ -140,7 +143,10 @@ export const theme = createTheme({
     Popover: { styles: { dropdown: { backgroundColor: tokens.surfaceRaised, borderColor: tokens.border } } },
     Modal: {
       defaultProps: { radius: "lg", centered: true, overlayProps: { backgroundOpacity: 0.6, blur: 0 } },
-      styles: { content: { backgroundColor: tokens.surface, border: `1px solid ${tokens.border}` }, header: { backgroundColor: tokens.surface } }
+      styles: {
+        content: { backgroundColor: tokens.surface, border: `1px solid ${tokens.border}` },
+        header: { backgroundColor: tokens.surface }
+      }
     },
     Input: {
       styles: { input: { backgroundColor: tokens.surfaceSubtle, borderColor: tokens.border } }

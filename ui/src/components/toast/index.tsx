@@ -40,10 +40,10 @@ export const ToastContainer = () => {
   return (
     <Stack
       pos="fixed"
-      bottom={24}
-      right={24}
+      bottom={{ base: 80, sm: 24 }}
+      right={{ base: 12, sm: 24 }}
       gap="sm"
-      style={{ zIndex: 1000, maxWidth: 380, width: "calc(100% - 48px)" }}
+      style={{ zIndex: 1000, maxWidth: 380, width: "calc(100% - 24px)" }}
     >
       {toasts.map((toast) => (
         <Notification

@@ -55,7 +55,7 @@ export const HabitsWeekView = ({
             onClick={() => onSelectDate(dateStr)}
           >
             <Stack gap={6} align="center" pb="xs" style={{ borderBottom: `1px solid ${tokens.border}` }}>
-              <Text size="xs" fw={700} c={isToday ? colors.indigo300 : "dimmed"}>
+              <Text size="xs" fw={600} c={isToday ? colors.indigo300 : "dimmed"}>
                 {dayNames[index]}
               </Text>
 
@@ -151,7 +151,7 @@ export const HabitsWeekView = ({
                             {item.title}
                           </Text>
                           {item.startTime ? (
-                            <Text size="10px" fw={700} c={item.completed ? "dimmed" : colors.blue300}>
+                            <Text size="10px" fw={600} c={item.completed ? "dimmed" : colors.blue300}>
                               {item.startTime}
                               {item.endTime ? ` – ${item.endTime}` : ""}
                             </Text>

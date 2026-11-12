@@ -124,7 +124,6 @@ export const WeightImcCard = ({
   return (
     <>
       <Card style={{ position: "relative", overflow: "hidden" }}>
-
         <CardHeader style={{ paddingBottom: 6, borderBottom: "none" }}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center">
@@ -250,7 +249,7 @@ export const WeightImcCard = ({
                 <Text size="xs" c="dimmed">
                   IMC correspondente:
                 </Text>
-                <Text size="xs" fw={700} c={colors.purple400}>
+                <Text size="xs" fw={600} c={colors.purple400}>
                   {previewImc.imc.toFixed(1)} kg/m² • {previewImc.classification.label}
                 </Text>
               </Group>

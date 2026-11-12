@@ -74,7 +74,7 @@ const EditWaterForm = ({
           <Text size="xs" c="dimmed">
             Necessidade ideal:
           </Text>
-          <Text size="xs" fw={700} c="white">
+          <Text size="xs" fw={600} c={tokens.textPrimary}>
             {idealDailyMl.toLocaleString()}ml / dia
           </Text>
         </Group>
@@ -111,9 +111,7 @@ const EditWaterForm = ({
                   fontWeight: 600,
                   background: isSelected ? alpha(colors.purple500, 0.25) : tokens.surfaceHover,
                   color: isSelected ? colors.purple400 : colors.gray400,
-                  border: isSelected
-                    ? `1px solid ${alpha(colors.purple500, 0.6)}`
-                    : `1px solid ${tokens.border}`,
+                  border: isSelected ? `1px solid ${alpha(colors.purple500, 0.6)}` : `1px solid ${tokens.border}`,
                   cursor: "pointer",
                   transition: "all 0.15s ease"
                 }}
@@ -139,7 +137,7 @@ const EditWaterForm = ({
         <Text size="xs" c="dimmed">
           Meta calculada:
         </Text>
-        <Text size="xs" fw={700} c={colors.purple400}>
+        <Text size="xs" fw={600} c={colors.purple400}>
           {automaticBottles} garrafas × {bottleMl}ml = {totalDailyMl.toLocaleString()}ml ({totalLiters}L)
         </Text>
       </Box>

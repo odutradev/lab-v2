@@ -11,7 +11,7 @@ import Button from "@components/button";
 import Input from "@components/input";
 
 import type { ResetPasswordFormProps, ResetPasswordStep } from "./types";
-import { colors } from "@styles/theme";
+import { colors, tokens } from "@styles/theme";
 
 export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPasswordFormProps) => {
   const runAction = useAction();
@@ -125,7 +125,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
         </ThemeIcon>
 
         <Stack align="center" gap="xs" ta="center">
-          <Text size="lg" fw={700} c="white">
+          <Text size="lg" fw={600} c={tokens.textPrimary}>
             Senha redefinida com sucesso!
           </Text>
           <Text size="sm" c="dimmed" maw={360}>
@@ -262,7 +262,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
               isLoading={isLoading}
               leftIcon={<TbCheck size={18} />}
             >
-              Salvar Nova Senha
+              Salvar nova senha
             </Button>
           </Box>
         </Stack>
@@ -289,7 +289,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
                 <ThemeIcon size="sm" variant="light" color="indigo" radius="sm">
                   <TbMail size={14} />
                 </ThemeIcon>
-                <Text size="sm" fw={600} c="white">
+                <Text size="sm" fw={600} c={tokens.textPrimary}>
                   {initialEmail}
                 </Text>
               </Group>

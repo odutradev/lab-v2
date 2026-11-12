@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Alert, Box, SimpleGrid, Stack, Text } from "@mantine/core";
+import { tokens } from "@styles/theme";
+import { Alert, SimpleGrid, Stack, Text } from "@mantine/core";
 import { TbChartLine } from "react-icons/tb";
 
 import Card from "@components/card";
+import StatCard from "@components/statCard";
 import Button from "@components/button";
 import { reviewStatusMessages, goalLabels } from "@utils/functions/nutrition";
 
 import useNutritionPage from "../../hook";
-import { metricBoxStyle } from "./styles";
 
 const formatPercent = (value: number | null): string => {
   if (value === null) return "—";
@@ -86,27 +87,15 @@ export const ReviewTab = () => {
           )} kcal por dia.`}
       </Alert>
 
-      <SimpleGrid cols={{ base: 1, xs: 2, md: 4 }} spacing="md">
+      <SimpleGrid cols={{ base: 1, xs: 2, md: 4 }} spacing="sm">
         {metrics.map((metric) => (
-          <Box key={metric.label} p="md" style={metricBoxStyle}>
-            <Text size="xs" c="dimmed">
-              {metric.label}
-            </Text>
-            <Text fw={700} size="lg" c="white">
-              {metric.value}
-            </Text>
-            {metric.hint && (
-              <Text size="xs" c="dimmed">
-                {metric.hint}
-              </Text>
-            )}
-          </Box>
+          <StatCard key={metric.label} label={metric.label} value={metric.value} hint={metric.hint} />
         ))}
       </SimpleGrid>
 
       {hasSuggestion && (
         <Card p={{ base: "md", sm: "lg" }}>
-          <Text size="sm" c="white" mb="sm">
+          <Text size="sm" c={tokens.textPrimary} mb="sm">
             Aplicar a sugestão muda a sua meta de {review.targetCalories} para{" "}
             {(review.targetCalories ?? 0) + review.suggestedCalorieAdjustment} kcal por dia.
           </Text>

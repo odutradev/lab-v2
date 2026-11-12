@@ -89,7 +89,7 @@ export const RegisterForm = () => {
             isLoading={isSubmitting}
             leftIcon={<TbUserPlus size={18} />}
           >
-            Criar Nova Conta
+            Criar nova conta
           </Button>
         </Box>
       </Stack>

@@ -1,4 +1,5 @@
 import { SimpleGrid, Box, Text, Group, ThemeIcon } from "@mantine/core";
+import { tokens } from "@styles/theme";
 import { TbUser, TbMail, TbShieldCheck, TbCalendar, TbClock, TbFingerprint } from "react-icons/tb";
 
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
@@ -26,7 +27,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                 Nome Completo
               </Text>
             </Group>
-            <Text size="sm" fw={600} c="white">
+            <Text size="sm" fw={600} c={tokens.textPrimary}>
               {user.name}
             </Text>
           </Box>
@@ -41,7 +42,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
               </Text>
             </Group>
             <Group justify="space-between" align="center">
-              <Text size="sm" fw={600} c="white" style={{ wordBreak: "break-all" }}>
+              <Text size="sm" fw={600} c={tokens.textPrimary} style={{ wordBreak: "break-all" }}>
                 {user.email}
               </Text>
               {user.emailVerified !== undefined && (
@@ -61,7 +62,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                 Tipo de Acesso
               </Text>
             </Group>
-            <Text size="sm" fw={600} c="white">
+            <Text size="sm" fw={600} c={tokens.textPrimary}>
               {user.superAdmin ? "Administrador Geral" : "Usuário Padrão"}
             </Text>
           </Box>
@@ -90,7 +91,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                   Cadastrado em
                 </Text>
               </Group>
-              <Text size="sm" fw={600} c="white">
+              <Text size="sm" fw={600} c={tokens.textPrimary}>
                 {formatDate(user.createdAt)}
               </Text>
             </Box>
@@ -106,7 +107,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                   Última Atualização
                 </Text>
               </Group>
-              <Text size="sm" fw={600} c="white">
+              <Text size="sm" fw={600} c={tokens.textPrimary}>
                 {formatDate(user.updatedAt)}
               </Text>
             </Box>

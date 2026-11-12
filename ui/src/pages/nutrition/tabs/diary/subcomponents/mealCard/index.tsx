@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { tokens } from "@styles/theme";
 import { ActionIcon, Badge, Box, Group, Stack, Text } from "@mantine/core";
 import { TbCheck, TbPlus, TbTrash } from "react-icons/tb";
 
@@ -30,7 +31,7 @@ export const MealCard = ({ section }: MealCardProps) => {
       <Group justify="space-between" wrap="nowrap" mb="xs">
         <Box miw={0}>
           <Group gap="xs">
-            <Text fw={600} c="white">
+            <Text fw={600} c={tokens.textPrimary}>
               {section.name}
             </Text>
             {section.time && (
@@ -62,7 +63,7 @@ export const MealCard = ({ section }: MealCardProps) => {
           {section.entries.map((entry) => (
             <Group key={entry.id} justify="space-between" wrap="nowrap" py={6} style={entryRowStyle}>
               <Box miw={0}>
-                <Text size="sm" c="white" truncate>
+                <Text size="sm" c={tokens.textPrimary} truncate>
                   {entry.name}
                 </Text>
                 <Text size="xs" c="dimmed">

@@ -253,7 +253,7 @@ export const HabitsMonthCell = ({
                   <Box visibleFrom="sm" style={{ flexShrink: 0 }}>
                     <Text
                       size="9px"
-                      fw={700}
+                      fw={600}
                       c={item.completed ? "dimmed" : colors.blue300}
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
@@ -348,7 +348,7 @@ export const HabitsMonthCell = ({
                 pb={4}
                 style={{ borderBottom: `1px solid ${tokens.border}` }}
               >
-                <Text size="xs" fw={700} c={colors.indigo100}>
+                <Text size="xs" fw={600} c={colors.indigo100}>
                   Hábitos ({hiddenItems.length})
                 </Text>
                 <Text size="10px" c="dimmed">
@@ -425,7 +425,7 @@ export const HabitsMonthCell = ({
                           {item.startTime && (
                             <Text
                               size="10px"
-                              fw={700}
+                              fw={600}
                               c={item.completed ? "dimmed" : colors.blue300}
                               style={{ fontVariantNumeric: "tabular-nums", flexShrink: 0 }}
                             >
