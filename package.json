@@ -1,9 +1,12 @@
 {
   "name": "lab-v2",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "description": "Lab V2 monorepo workspace",
-  "workspaces": ["api", "ui"],
+  "workspaces": [
+    "api",
+    "ui"
+  ],
   "scripts": {
     "dev": "concurrently -n \"redis,api,web\" -c \"magenta,cyan,green\" \"npm run dev:redis\" \"npm run dev:api\" \"npm run dev:web\"",
     "dev:redis": "npm run dev:redis -w api",
