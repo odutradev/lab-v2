@@ -1,7 +1,7 @@
 import { registerWorkoutSessionBodySchema, workoutSessionResponseSchema, listWorkoutSessionsQuerySchema, listWorkoutSessionsResponseSchema, workoutSessionParamsSchema, workoutSessionIdResponseSchema, workoutSummaryQuerySchema, workoutSummaryResponseSchema } from './schemas'
+import { estimateCaloriesBurned, findModality } from '@domains/workouts/utils/calories'
 import workoutSessionRepository from '@domains/workouts/repositories/workoutSession'
 import workoutRoutineRepository from '@domains/workouts/repositories/workoutRoutine'
-import { estimateCaloriesBurned, findModality } from '@domains/workouts/utils/calories'
 import { calculateWorkoutSummary } from '@domains/workouts/utils/summary'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
 import createAuditLog from '@domains/system/utils/createAuditLog'

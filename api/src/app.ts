@@ -4,6 +4,7 @@ import institutionalHeaders from '@middlewares/institutionalHeaders'
 import registerActions from '@factories/defineAction/register'
 import createLocalLogger from '@utils/localLogger'
 import challengesDomain from '@domains/challenges'
+import nutritionDomain from '@domains/nutrition'
 import workoutsDomain from '@domains/workouts'
 import configureDocs from '@factories/docs'
 import habitsDomain from '@domains/habits'
@@ -16,7 +17,7 @@ import type { Application } from 'express'
 
 const logger = createLocalLogger('app')
 
-const domains = [systemDomain, usersDomain, habitsDomain, challengesDomain, googleDomain, workoutsDomain]
+const domains = [systemDomain, usersDomain, habitsDomain, challengesDomain, googleDomain, workoutsDomain, nutritionDomain]
 
 const buildApp = (): Application => {
   const app = express()

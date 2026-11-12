@@ -1,7 +1,7 @@
 import { WorkoutModalities, ExerciseLibrary, RoutineTemplates } from '@domains/workouts/utils/catalog'
 import authMiddlewareWithDocs from '@domains/users/middlewares/auth'
-import defineAction from '@factories/defineAction'
 import { workoutCatalogResponseSchema } from './schemas'
+import defineAction from '@factories/defineAction'
 
 import type { WorkoutCatalogResponse } from './types'
 
