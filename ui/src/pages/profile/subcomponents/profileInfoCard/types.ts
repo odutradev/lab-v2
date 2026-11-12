@@ -1,6 +1,6 @@
-import type { UserProfile } from '@utils/types/user'
+import type { UserProfile } from "@utils/types/user";
 
 export interface ProfileInfoCardProps {
-  user: UserProfile
-  formatDate: (dateStr?: string) => string
+  user: UserProfile;
+  formatDate: (dateStr?: string) => string;
 }

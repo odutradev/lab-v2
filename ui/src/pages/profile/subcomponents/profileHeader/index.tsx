@@ -1,17 +1,17 @@
-import { Group, Box, Title, Text, Avatar, Stack, Tooltip, alpha } from '@mantine/core'
-import { TbArrowLeft } from 'react-icons/tb'
+import { Group, Box, Title, Text, Avatar, Stack, Tooltip, alpha } from "@mantine/core";
+import { TbArrowLeft } from "react-icons/tb";
 
-import Button from '@components/button'
-import Badge from '@components/badge'
-import Card from '@components/card'
+import Button from "@components/button";
+import Badge from "@components/badge";
+import Card from "@components/card";
 
-import type { ProfileHeaderProps } from './types'
-import { colors } from '@styles/theme'
+import type { ProfileHeaderProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) => {
-  const isAdmin = Boolean(user.superAdmin)
-  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white
-  const roleTooltipLabel = isAdmin ? 'Administrador' : 'Usuário'
+  const isAdmin = Boolean(user.superAdmin);
+  const avatarBorderColor = isAdmin ? colors.amber500 : colors.white;
+  const roleTooltipLabel = isAdmin ? "Administrador" : "Usuário";
 
   return (
     <Card>
@@ -42,12 +42,12 @@ export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) =>
               {user.email}
             </Text>
             <Group gap="xs" mt={4}>
-              <Badge variant={user.superAdmin ? 'primary' : 'info'}>
-                {user.superAdmin ? 'Administrador' : 'Usuário'}
+              <Badge variant={user.superAdmin ? "primary" : "info"}>
+                {user.superAdmin ? "Administrador" : "Usuário"}
               </Badge>
               {user.accountStatus && (
-                <Badge variant={user.accountStatus === 'active' ? 'success' : 'warning'}>
-                  {user.accountStatus === 'active' ? 'Conta Ativa' : 'Bloqueada'}
+                <Badge variant={user.accountStatus === "active" ? "success" : "warning"}>
+                  {user.accountStatus === "active" ? "Conta Ativa" : "Bloqueada"}
                 </Badge>
               )}
             </Group>
@@ -55,18 +55,13 @@ export const ProfileHeader = ({ user, initials, onBack }: ProfileHeaderProps) =>
         </Group>
 
         <Box>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onBack}
-            leftIcon={<TbArrowLeft size={16} />}
-          >
+          <Button variant="ghost" size="sm" onClick={onBack} leftIcon={<TbArrowLeft size={16} />}>
             Voltar
           </Button>
         </Box>
       </Group>
     </Card>
-  )
-}
+  );
+};
 
-export default ProfileHeader
+export default ProfileHeader;

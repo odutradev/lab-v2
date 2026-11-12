@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
-import type { Permission } from '@utils/types/layout'
+import type { Permission } from "@utils/types/layout";
 
 export interface ProtectedRouteProps {
-  children: ReactNode
-  requiredPermissions?: Permission[]
+  children: ReactNode;
+  requiredPermissions?: Permission[];
 }

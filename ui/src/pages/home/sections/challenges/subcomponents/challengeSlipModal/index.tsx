@@ -1,16 +1,16 @@
-import { Stack, Text, Group, Box, ThemeIcon, alpha } from '@mantine/core'
-import { TbAlertTriangle, TbRotateClockwise, TbCheck } from 'react-icons/tb'
+import { Stack, Text, Group, Box, ThemeIcon, alpha } from "@mantine/core";
+import { TbAlertTriangle, TbRotateClockwise, TbCheck } from "react-icons/tb";
 
-import Modal from '@components/modal'
-import Button from '@components/button'
-import { colors } from '@styles/theme'
+import Modal from "@components/modal";
+import Button from "@components/button";
+import { colors } from "@styles/theme";
 
 interface ChallengeSlipModalProps {
-  isOpen: boolean
-  challengeTitle: string
-  onClose: () => void
-  onConfirm: (resetStreak: boolean) => void
-  isLoading?: boolean
+  isOpen: boolean;
+  challengeTitle: string;
+  onClose: () => void;
+  onConfirm: (resetStreak: boolean) => void;
+  isLoading?: boolean;
 }
 
 export const ChallengeSlipModal = ({
@@ -21,13 +21,7 @@ export const ChallengeSlipModal = ({
   isLoading = false
 }: ChallengeSlipModalProps) => {
   return (
-    <Modal
-      opened={isOpen}
-      onClose={onClose}
-      title="Registrar Deslize"
-      variant="warning"
-      size="md"
-    >
+    <Modal opened={isOpen} onClose={onClose} title="Registrar Deslize" variant="warning" size="md">
       <Stack gap="md">
         <Group align="flex-start" gap="md">
           <ThemeIcon size="xl" radius="md" color="yellow" variant="light">
@@ -38,7 +32,8 @@ export const ChallengeSlipModal = ({
               {challengeTitle}
             </Text>
             <Text size="xs" c="dimmed" mt={4} style={{ lineHeight: 1.5 }}>
-              Deslizes fazem parte da jornada. O segredo é a constância a longo prazo, não a perfeição passageira. Escolha como prefere prosseguir:
+              Deslizes fazem parte da jornada. O segredo é a constância a longo prazo, não a perfeição passageira.
+              Escolha como prefere prosseguir:
             </Text>
           </Box>
         </Group>
@@ -47,12 +42,12 @@ export const ChallengeSlipModal = ({
           <Box
             onClick={() => !isLoading && onConfirm(false)}
             style={{
-              padding: '14px',
+              padding: "14px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.08)}`,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              cursor: "pointer",
+              transition: "all 0.2s ease"
             }}
           >
             <Group justify="space-between">
@@ -75,12 +70,12 @@ export const ChallengeSlipModal = ({
           <Box
             onClick={() => !isLoading && onConfirm(true)}
             style={{
-              padding: '14px',
+              padding: "14px",
               borderRadius: 12,
               backgroundColor: alpha(colors.red500, 0.05),
               border: `1px solid ${alpha(colors.red500, 0.2)}`,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              cursor: "pointer",
+              transition: "all 0.2s ease"
             }}
           >
             <Group justify="space-between">
@@ -108,7 +103,7 @@ export const ChallengeSlipModal = ({
         </Group>
       </Stack>
     </Modal>
-  )
-}
+  );
+};
 
-export default ChallengeSlipModal
+export default ChallengeSlipModal;

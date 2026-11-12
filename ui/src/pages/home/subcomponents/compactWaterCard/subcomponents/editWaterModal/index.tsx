@@ -1,24 +1,24 @@
-import { useState } from 'react'
-import { Box, Group, Stack, Text, UnstyledButton, alpha } from '@mantine/core'
-import { TbBottle, TbSparkles } from 'react-icons/tb'
+import { useState } from "react";
+import { Box, Group, Stack, Text, UnstyledButton, alpha } from "@mantine/core";
+import { TbBottle, TbSparkles } from "react-icons/tb";
 
-import Modal from '@components/modal'
-import Input from '@components/input'
-import Button from '@components/button'
-import { calculateIdealWaterMl } from '@utils/functions/health'
+import Modal from "@components/modal";
+import Input from "@components/input";
+import Button from "@components/button";
+import { calculateIdealWaterMl } from "@utils/functions/health";
 
-import type { EditWaterModalProps } from './types'
-import { colors } from '@styles/theme'
+import type { EditWaterModalProps } from "./types";
+import { colors } from "@styles/theme";
 
-const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000]
+const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000];
 
 interface EditWaterFormProps {
-  currentWeight?: number
-  currentAge?: number
-  currentHeight?: number
-  currentBottleMl: number
-  onClose: () => void
-  onSave: (settings: { bottleMl: number }) => void
+  currentWeight?: number;
+  currentAge?: number;
+  currentHeight?: number;
+  currentBottleMl: number;
+  onClose: () => void;
+  onSave: (settings: { bottleMl: number }) => void;
 }
 
 const EditWaterForm = ({
@@ -29,29 +29,29 @@ const EditWaterForm = ({
   onClose,
   onSave
 }: EditWaterFormProps) => {
-  const [bottleMl, setBottleMl] = useState<number>(currentBottleMl || 500)
+  const [bottleMl, setBottleMl] = useState<number>(currentBottleMl || 500);
 
-  const idealDailyMl = calculateIdealWaterMl(currentWeight, currentAge, currentHeight)
-  const automaticBottles = Math.max(1, Math.ceil(idealDailyMl / (bottleMl || 500)))
+  const idealDailyMl = calculateIdealWaterMl(currentWeight, currentAge, currentHeight);
+  const automaticBottles = Math.max(1, Math.ceil(idealDailyMl / (bottleMl || 500)));
 
-  const totalDailyMl = bottleMl * automaticBottles
-  const totalLiters = (totalDailyMl / 1000).toFixed(1)
+  const totalDailyMl = bottleMl * automaticBottles;
+  const totalLiters = (totalDailyMl / 1000).toFixed(1);
 
   const handleSelectSize = (size: number) => {
-    setBottleMl(size)
-  }
+    setBottleMl(size);
+  };
 
   const handleSave = () => {
-    const validMl = Math.max(50, Math.min(3000, Number(bottleMl) || 500))
-    onSave({ bottleMl: validMl })
-    onClose()
-  }
+    const validMl = Math.max(50, Math.min(3000, Number(bottleMl) || 500));
+    onSave({ bottleMl: validMl });
+    onClose();
+  };
 
   return (
     <Stack gap="md">
       <Box
         style={{
-          padding: '10px 12px',
+          padding: "10px 12px",
           borderRadius: 8,
           background: alpha(colors.sky400, 0.08),
           border: `1px solid ${alpha(colors.sky400, 0.2)}`
@@ -65,7 +65,8 @@ const EditWaterForm = ({
             </Text>
           </Group>
           <Text size="10px" c="dimmed">
-            {currentWeight ? `${currentWeight}kg` : '--'} • {currentAge ? `${currentAge} anos` : '--'} • {currentHeight ? `${currentHeight}cm` : '--'}
+            {currentWeight ? `${currentWeight}kg` : "--"} • {currentAge ? `${currentAge} anos` : "--"} •{" "}
+            {currentHeight ? `${currentHeight}cm` : "--"}
           </Text>
         </Group>
 
@@ -87,8 +88,8 @@ const EditWaterForm = ({
           type="number"
           value={bottleMl}
           onChange={(e) => {
-            const val = Math.max(1, Number(e.target.value))
-            setBottleMl(val)
+            const val = Math.max(1, Number(e.target.value));
+            setBottleMl(val);
           }}
           min={50}
           max={3000}
@@ -98,39 +99,41 @@ const EditWaterForm = ({
 
         <Group gap={6} mt={8}>
           {PRESET_BOTTLE_SIZES.map((size) => {
-            const isSelected = bottleMl === size
+            const isSelected = bottleMl === size;
             return (
               <UnstyledButton
                 key={size}
                 onClick={() => handleSelectSize(size)}
                 style={{
-                  padding: '4px 10px',
+                  padding: "4px 10px",
                   borderRadius: 6,
                   fontSize: 11,
                   fontWeight: 600,
                   background: isSelected ? alpha(colors.purple500, 0.25) : alpha(colors.white, 0.05),
                   color: isSelected ? colors.purple400 : colors.gray400,
-                  border: isSelected ? `1px solid ${alpha(colors.purple500, 0.6)}` : `1px solid ${alpha(colors.white, 0.08)}`,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  border: isSelected
+                    ? `1px solid ${alpha(colors.purple500, 0.6)}`
+                    : `1px solid ${alpha(colors.white, 0.08)}`,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease"
                 }}
               >
                 {size}ml
               </UnstyledButton>
-            )
+            );
           })}
         </Group>
       </Box>
 
       <Box
         style={{
-          padding: '10px 12px',
+          padding: "10px 12px",
           borderRadius: 8,
           background: alpha(colors.purple500, 0.08),
           border: `1px solid ${alpha(colors.purple500, 0.2)}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
         }}
       >
         <Text size="xs" c="dimmed">
@@ -150,8 +153,8 @@ const EditWaterForm = ({
         </Button>
       </Group>
     </Stack>
-  )
-}
+  );
+};
 
 export const EditWaterModal = ({
   opened,
@@ -182,7 +185,7 @@ export const EditWaterModal = ({
         />
       )}
     </Modal>
-  )
-}
+  );
+};
 
-export default EditWaterModal
+export default EditWaterModal;

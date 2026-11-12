@@ -1,6 +1,6 @@
-import { SegmentedControl } from '@mantine/core'
+import { SegmentedControl } from "@mantine/core";
 
-import type { AuthTabsProps } from './types'
+import type { AuthTabsProps } from "./types";
 
 export const AuthTabs = ({ value, onChange }: AuthTabsProps) => {
   return (
@@ -9,15 +9,15 @@ export const AuthTabs = ({ value, onChange }: AuthTabsProps) => {
       value={value}
       onChange={onChange}
       data={[
-        { label: 'Entrar', value: 'login' },
-        { label: 'Cadastrar', value: 'register' }
+        { label: "Entrar", value: "login" },
+        { label: "Cadastrar", value: "register" }
       ]}
       color="indigo"
       radius="md"
       size="md"
       mb="lg"
     />
-  )
-}
+  );
+};
 
-export default AuthTabs
+export default AuthTabs;

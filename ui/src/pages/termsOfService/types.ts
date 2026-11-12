@@ -1,3 +1,3 @@
 export interface TermsOfServicePageProps {
-  onBack?: () => void
+  onBack?: () => void;
 }

@@ -1,7 +1,7 @@
-import { NativeSelect } from '@mantine/core'
-import { forwardRef } from 'react'
+import { NativeSelect } from "@mantine/core";
+import { forwardRef } from "react";
 
-import type { SelectProps } from './types'
+import type { SelectProps } from "./types";
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, required, className, id, size: _htmlSize, ...props }, ref) => {
@@ -18,10 +18,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         className={className}
         {...props}
       />
-    )
+    );
   }
-)
+);
 
-Select.displayName = 'Select'
+Select.displayName = "Select";
 
-export default Select
+export default Select;

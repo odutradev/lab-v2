@@ -1,27 +1,18 @@
-import { SimpleGrid, Box, Text, Group, ThemeIcon } from '@mantine/core'
-import {
-  TbUser,
-  TbMail,
-  TbShieldCheck,
-  TbCalendar,
-  TbClock,
-  TbFingerprint
-} from 'react-icons/tb'
+import { SimpleGrid, Box, Text, Group, ThemeIcon } from "@mantine/core";
+import { TbUser, TbMail, TbShieldCheck, TbCalendar, TbClock, TbFingerprint } from "react-icons/tb";
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
-import Badge from '@components/badge'
-import { infoCardItemStyle } from '../../styles'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
+import Badge from "@components/badge";
+import { infoCardItemStyle } from "../../styles";
 
-import type { ProfileInfoCardProps } from './types'
+import type { ProfileInfoCardProps } from "./types";
 
 export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Informações Pessoais e da Conta</CardTitle>
-        <CardDescription>
-          Dados cadastrais associados ao seu acesso no LAB Portal
-        </CardDescription>
+        <CardDescription>Dados cadastrais associados ao seu acesso no LAB Portal</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -50,12 +41,12 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
               </Text>
             </Group>
             <Group justify="space-between" align="center">
-              <Text size="sm" fw={600} c="white" style={{ wordBreak: 'break-all' }}>
+              <Text size="sm" fw={600} c="white" style={{ wordBreak: "break-all" }}>
                 {user.email}
               </Text>
               {user.emailVerified !== undefined && (
-                <Badge variant={user.emailVerified ? 'success' : 'warning'}>
-                  {user.emailVerified ? 'Verificado' : 'Pendente'}
+                <Badge variant={user.emailVerified ? "success" : "warning"}>
+                  {user.emailVerified ? "Verificado" : "Pendente"}
                 </Badge>
               )}
             </Group>
@@ -71,7 +62,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
               </Text>
             </Group>
             <Text size="sm" fw={600} c="white">
-              {user.superAdmin ? 'Administrador Geral' : 'Usuário Padrão'}
+              {user.superAdmin ? "Administrador Geral" : "Usuário Padrão"}
             </Text>
           </Box>
 
@@ -84,12 +75,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
                 ID da Conta
               </Text>
             </Group>
-            <Text
-              size="xs"
-              fw={500}
-              c="gray.4"
-              style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}
-            >
+            <Text size="xs" fw={500} c="gray.4" style={{ fontFamily: "monospace", wordBreak: "break-all" }}>
               {user.id}
             </Text>
           </Box>
@@ -128,7 +114,7 @@ export const ProfileInfoCard = ({ user, formatDate }: ProfileInfoCardProps) => {
         </SimpleGrid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProfileInfoCard
+export default ProfileInfoCard;

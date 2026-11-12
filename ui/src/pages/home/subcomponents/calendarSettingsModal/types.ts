@@ -1,5 +1,5 @@
 export interface CalendarSettingsModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSaved?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSaved?: () => void;
 }

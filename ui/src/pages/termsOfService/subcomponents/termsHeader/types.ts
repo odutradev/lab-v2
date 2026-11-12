@@ -1,4 +1,4 @@
 export interface TermsHeaderProps {
-  lastUpdated: string
-  onBack: () => void
+  lastUpdated: string;
+  onBack: () => void;
 }

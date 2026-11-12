@@ -1,8 +1,8 @@
-import { Stack, ThemeIcon, Title, Text, Group, Button, alpha } from '@mantine/core'
-import { TbFileText, TbArrowLeft } from 'react-icons/tb'
+import { Stack, ThemeIcon, Title, Text, Group, Button, alpha } from "@mantine/core";
+import { TbFileText, TbArrowLeft } from "react-icons/tb";
 
-import type { TermsHeaderProps } from './types'
-import { colors } from '@styles/theme'
+import type { TermsHeaderProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
   return (
@@ -16,7 +16,7 @@ export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
           styles={{
             root: {
               color: colors.slate400,
-              '&:hover': {
+              "&:hover": {
                 color: colors.white,
                 backgroundColor: alpha(colors.white, 0.05)
               }
@@ -31,12 +31,7 @@ export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
       </Group>
 
       <Group gap="md" align="center">
-        <ThemeIcon
-          size={52}
-          radius="xl"
-          variant="gradient"
-          gradient={{ from: 'cyan', to: 'indigo' }}
-        >
+        <ThemeIcon size={52} radius="xl" variant="gradient" gradient={{ from: "cyan", to: "indigo" }}>
           <TbFileText size={28} />
         </ThemeIcon>
         <div>
@@ -49,7 +44,7 @@ export const TermsHeader = ({ lastUpdated, onBack }: TermsHeaderProps) => {
         </div>
       </Group>
     </Stack>
-  )
-}
+  );
+};
 
-export default TermsHeader
+export default TermsHeader;

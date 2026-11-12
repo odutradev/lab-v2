@@ -1,4 +1,4 @@
-import { Group, Box, Text, ThemeIcon, Stack, Divider, ActionIcon, Tooltip, Anchor, alpha } from '@mantine/core'
+import { Group, Box, Text, ThemeIcon, Stack, Divider, ActionIcon, Tooltip, Anchor, alpha } from "@mantine/core";
 import {
   TbKey,
   TbCalendarEvent,
@@ -9,17 +9,16 @@ import {
   TbTrash,
   TbPlus,
   TbAlertTriangle
-} from 'react-icons/tb'
+} from "react-icons/tb";
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
-import Button from '@components/button'
-import Badge from '@components/badge'
-import Modal from '@components/modal'
-import Input from '@components/input'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
+import Button from "@components/button";
+import Badge from "@components/badge";
+import Modal from "@components/modal";
+import Input from "@components/input";
 
-
-import type { ProfileSecurityCardProps } from './types'
-import { colors } from '@styles/theme'
+import type { ProfileSecurityCardProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const ProfileSecurityCard = ({
   onNavigateResetPassword,
@@ -47,31 +46,31 @@ export const ProfileSecurityCard = ({
   onCloseClearCacheModal,
   onConfirmClearCache
 }: ProfileSecurityCardProps) => {
-  const isConnected = !!calendarStatus?.connected
-  const isCalendarDeleted = !!calendarStatus?.calendarDeleted
-  const calendarName = calendarStatus?.calendarName || 'Lab V2'
-  const calendarUrl = calendarStatus?.calendarUrl
+  const isConnected = !!calendarStatus?.connected;
+  const isCalendarDeleted = !!calendarStatus?.calendarDeleted;
+  const calendarName = calendarStatus?.calendarName || "Lab V2";
+  const calendarUrl = calendarStatus?.calendarUrl;
 
   const disconnectActions = [
     {
-      key: 'unlink-only',
-      title: 'Somente desvincular',
-      description: 'Remove a conexão no LAB. A agenda e todos os eventos continuarão salvos no seu Google Agenda.',
+      key: "unlink-only",
+      title: "Somente desvincular",
+      description: "Remove a conexão no LAB. A agenda e todos os eventos continuarão salvos no seu Google Agenda.",
       icon: <TbUnlink size={20} />,
-      variant: 'secondary' as const,
+      variant: "secondary" as const,
       isLoading: isDisconnectingCalendar,
       onClick: () => onConfirmDisconnect(false)
     },
     {
-      key: 'unlink-and-delete',
-      title: 'Desvincular e apagar agenda',
-      description: 'Remove a conexão no LAB e exclui permanentemente a agenda e seus eventos do seu Google Agenda.',
+      key: "unlink-and-delete",
+      title: "Desvincular e apagar agenda",
+      description: "Remove a conexão no LAB e exclui permanentemente a agenda e seus eventos do seu Google Agenda.",
       icon: <TbTrash size={20} />,
-      variant: 'danger' as const,
+      variant: "danger" as const,
       isLoading: isDisconnectingCalendar,
       onClick: () => onConfirmDisconnect(true)
     }
-  ]
+  ];
 
   return (
     <>
@@ -91,7 +90,7 @@ export const ProfileSecurityCard = ({
                   size="lg"
                   radius="md"
                   variant="light"
-                  color={!isConnected ? 'indigo' : isCalendarDeleted ? 'yellow' : 'teal'}
+                  color={!isConnected ? "indigo" : isCalendarDeleted ? "yellow" : "teal"}
                 >
                   {!isConnected ? (
                     <TbCalendarEvent size={20} />
@@ -107,18 +106,18 @@ export const ProfileSecurityCard = ({
                       Google Agenda
                     </Text>
                     {isConnected && (
-                      <Badge variant={isCalendarDeleted ? 'warning' : 'success'}>
-                        {isCalendarDeleted ? 'Agenda Apagada no Google' : 'Conectado'}
+                      <Badge variant={isCalendarDeleted ? "warning" : "success"}>
+                        {isCalendarDeleted ? "Agenda Apagada no Google" : "Conectado"}
                       </Badge>
                     )}
                   </Group>
 
                   <Text size="xs" c="dimmed" mt={2}>
                     {!isConnected
-                      ? 'Vincule sua conta Google para sincronizar seus hábitos com sua agenda'
+                      ? "Vincule sua conta Google para sincronizar seus hábitos com sua agenda"
                       : isCalendarDeleted
-                      ? `A agenda "${calendarName}" foi excluída no Google Calendar. Recrie-a para voltar a sincronizar seus hábitos.`
-                      : `Sincronização ativa com ${calendarStatus?.email || 'sua conta Google'}`}
+                        ? `A agenda "${calendarName}" foi excluída no Google Calendar. Recrie-a para voltar a sincronizar seus hábitos.`
+                        : `Sincronização ativa com ${calendarStatus?.email || "sua conta Google"}`}
                   </Text>
 
                   {isConnected && !isCalendarDeleted && (
@@ -155,10 +154,10 @@ export const ProfileSecurityCard = ({
                             size="xs"
                             c="indigo.3"
                             style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
+                              display: "inline-flex",
+                              alignItems: "center",
                               gap: 4,
-                              textDecoration: 'none'
+                              textDecoration: "none"
                             }}
                           >
                             Abrir no Google Agenda
@@ -186,7 +185,7 @@ export const ProfileSecurityCard = ({
                     </Button>
                   )}
                   <Button
-                    variant={isCalendarDeleted ? 'ghost' : 'danger'}
+                    variant={isCalendarDeleted ? "ghost" : "danger"}
                     size="sm"
                     onClick={onOpenDisconnectModal}
                     isLoading={isDisconnectingCalendar}
@@ -227,12 +226,7 @@ export const ProfileSecurityCard = ({
                 </Box>
               </Group>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onNavigateResetPassword}
-                leftIcon={<TbKey size={16} />}
-              >
+              <Button variant="outline" size="sm" onClick={onNavigateResetPassword} leftIcon={<TbKey size={16} />}>
                 Redefinir Senha
               </Button>
             </Group>
@@ -254,12 +248,7 @@ export const ProfileSecurityCard = ({
                 </Box>
               </Group>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onOpenClearCacheModal}
-                leftIcon={<TbTrash size={16} />}
-              >
+              <Button variant="outline" size="sm" onClick={onOpenClearCacheModal} leftIcon={<TbTrash size={16} />}>
                 Limpar Cache
               </Button>
             </Group>
@@ -300,18 +289,10 @@ export const ProfileSecurityCard = ({
         description="Altere o nome da agenda sincronizada no seu Google Agenda"
         footer={
           <>
-            <Button
-              variant="ghost"
-              onClick={onCloseEditCalendarNameModal}
-              disabled={isSavingCalendarName}
-            >
+            <Button variant="ghost" onClick={onCloseEditCalendarNameModal} disabled={isSavingCalendarName}>
               Cancelar
             </Button>
-            <Button
-              variant="primary"
-              onClick={onSaveCalendarName}
-              isLoading={isSavingCalendarName}
-            >
+            <Button variant="primary" onClick={onSaveCalendarName} isLoading={isSavingCalendarName}>
               Salvar
             </Button>
           </>
@@ -330,7 +311,7 @@ export const ProfileSecurityCard = ({
         </Stack>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default ProfileSecurityCard
+export default ProfileSecurityCard;

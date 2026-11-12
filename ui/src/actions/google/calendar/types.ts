@@ -1,62 +1,61 @@
 export interface GoogleCalendarStatusResponse {
-  connected: boolean
-  email?: string
-  calendarId?: string
-  calendarName?: string
-  calendarUrl?: string
-  calendarDeleted?: boolean
-  connectedAt?: string
+  connected: boolean;
+  email?: string;
+  calendarId?: string;
+  calendarName?: string;
+  calendarUrl?: string;
+  calendarDeleted?: boolean;
+  connectedAt?: string;
 }
 
 export interface RecreateGoogleCalendarResponse {
-  calendarId: string
-  calendarName: string
-  calendarUrl: string
+  calendarId: string;
+  calendarName: string;
+  calendarUrl: string;
 }
 
 export interface GoogleCalendarAuthUrlResponse {
-  url: string
+  url: string;
 }
 
 export interface DisconnectGoogleCalendarPayload {
-  deleteCalendar?: boolean
+  deleteCalendar?: boolean;
 }
 
 export interface DisconnectGoogleCalendarResponse {
-  calendarDeleted: boolean
+  calendarDeleted: boolean;
 }
 
 export interface UpdateGoogleCalendarNamePayload {
-  name: string
+  name: string;
 }
 
 export interface UpdateGoogleCalendarNameResponse {
-  calendarName: string
+  calendarName: string;
 }
 
 export interface GoogleCalendarItem {
-  id: string
-  summary: string
-  description?: string
-  primary?: boolean
-  backgroundColor?: string
-  foregroundColor?: string
-  accessRole?: string
-  isLabV2: boolean
-  selected: boolean
+  id: string;
+  summary: string;
+  description?: string;
+  primary?: boolean;
+  backgroundColor?: string;
+  foregroundColor?: string;
+  accessRole?: string;
+  isLabV2: boolean;
+  selected: boolean;
 }
 
 export interface ListGoogleCalendarsResponse {
-  connected: boolean
-  items: GoogleCalendarItem[]
-  selectedCalendarIds: string[]
+  connected: boolean;
+  items: GoogleCalendarItem[];
+  selectedCalendarIds: string[];
 }
 
 export interface UpdateSelectedGoogleCalendarsPayload {
-  calendarIds: string[]
+  calendarIds: string[];
 }
 
 export interface UpdateSelectedGoogleCalendarsResponse {
-  selectedCalendarIds: string[]
+  selectedCalendarIds: string[];
 }
-

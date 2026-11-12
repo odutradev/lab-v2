@@ -1,30 +1,30 @@
-import { Modal, Stack, Group, Text, Radio, ActionIcon, NumberInput, TextInput, Box, alpha } from '@mantine/core'
-import { useState } from 'react'
+import { Modal, Stack, Group, Text, Radio, ActionIcon, NumberInput, TextInput, Box, alpha } from "@mantine/core";
+import { useState } from "react";
 
-import Button from '@components/button'
-import Select from '@components/select'
+import Button from "@components/button";
+import Select from "@components/select";
 
-import type { HabitRecurrence } from '@actions/habits/types'
+import type { HabitRecurrence } from "@actions/habits/types";
 
-import type { CustomRecurrenceModalProps } from './types'
-import { colors } from '@styles/theme'
+import type { CustomRecurrenceModalProps } from "./types";
+import { colors } from "@styles/theme";
 
 const dayLetters = [
-  { dayIndex: 0, label: 'D', full: 'Domingo' },
-  { dayIndex: 1, label: 'S', full: 'Segunda-feira' },
-  { dayIndex: 2, label: 'T', full: 'Terça-feira' },
-  { dayIndex: 3, label: 'Q', full: 'Quarta-feira' },
-  { dayIndex: 4, label: 'Q', full: 'Quinta-feira' },
-  { dayIndex: 5, label: 'S', full: 'Sexta-feira' },
-  { dayIndex: 6, label: 'S', full: 'Sábado' }
-]
+  { dayIndex: 0, label: "D", full: "Domingo" },
+  { dayIndex: 1, label: "S", full: "Segunda-feira" },
+  { dayIndex: 2, label: "T", full: "Terça-feira" },
+  { dayIndex: 3, label: "Q", full: "Quarta-feira" },
+  { dayIndex: 4, label: "Q", full: "Quinta-feira" },
+  { dayIndex: 5, label: "S", full: "Sexta-feira" },
+  { dayIndex: 6, label: "S", full: "Sábado" }
+];
 
 const unitOptions = [
-  { value: 'day', label: 'dia' },
-  { value: 'week', label: 'semana' },
-  { value: 'month', label: 'mês' },
-  { value: 'year', label: 'ano' }
-]
+  { value: "day", label: "dia" },
+  { value: "week", label: "semana" },
+  { value: "month", label: "mês" },
+  { value: "year", label: "ano" }
+];
 
 export const CustomRecurrenceModal = ({
   isOpen,
@@ -33,51 +33,51 @@ export const CustomRecurrenceModal = ({
   onClose,
   onConfirm
 }: CustomRecurrenceModalProps) => {
-  const [interval, setInterval] = useState<number>(initialRecurrence?.interval ?? 1)
-  const [unit, setUnit] = useState<'day' | 'week' | 'month' | 'year'>(initialRecurrence?.unit ?? 'week')
+  const [interval, setInterval] = useState<number>(initialRecurrence?.interval ?? 1);
+  const [unit, setUnit] = useState<"day" | "week" | "month" | "year">(initialRecurrence?.unit ?? "week");
   const [daysOfWeek, setDaysOfWeek] = useState<number[]>(() => {
     if (initialRecurrence?.daysOfWeek && initialRecurrence.daysOfWeek.length > 0) {
-      return initialRecurrence.daysOfWeek
+      return initialRecurrence.daysOfWeek;
     }
-    const [y, m, d] = baseDate.split('-').map(Number)
-    return [new Date(y, m - 1, d).getDay()]
-  })
-  const [endType, setEndType] = useState<'never' | 'on_date' | 'after_occurrences'>(
-    initialRecurrence?.endType ?? 'never'
-  )
+    const [y, m, d] = baseDate.split("-").map(Number);
+    return [new Date(y, m - 1, d).getDay()];
+  });
+  const [endType, setEndType] = useState<"never" | "on_date" | "after_occurrences">(
+    initialRecurrence?.endType ?? "never"
+  );
   const [endDate, setEndDate] = useState<string>(() => {
-    if (initialRecurrence?.endDate) return initialRecurrence.endDate
-    const [y, m, d] = baseDate.split('-').map(Number)
-    const future = new Date(y, m - 1 + 3, d)
-    const fY = future.getFullYear()
-    const fM = String(future.getMonth() + 1).padStart(2, '0')
-    const fD = String(future.getDate()).padStart(2, '0')
-    return `${fY}-${fM}-${fD}`
-  })
-  const [occurrences, setOccurrences] = useState<number>(initialRecurrence?.occurrences ?? 13)
+    if (initialRecurrence?.endDate) return initialRecurrence.endDate;
+    const [y, m, d] = baseDate.split("-").map(Number);
+    const future = new Date(y, m - 1 + 3, d);
+    const fY = future.getFullYear();
+    const fM = String(future.getMonth() + 1).padStart(2, "0");
+    const fD = String(future.getDate()).padStart(2, "0");
+    return `${fY}-${fM}-${fD}`;
+  });
+  const [occurrences, setOccurrences] = useState<number>(initialRecurrence?.occurrences ?? 13);
 
   const toggleDay = (dayIndex: number) => {
     setDaysOfWeek((prev) => {
       if (prev.includes(dayIndex)) {
-        if (prev.length === 1) return prev
-        return prev.filter((d) => d !== dayIndex)
+        if (prev.length === 1) return prev;
+        return prev.filter((d) => d !== dayIndex);
       }
-      return [...prev, dayIndex].sort((a, b) => a - b)
-    })
-  }
+      return [...prev, dayIndex].sort((a, b) => a - b);
+    });
+  };
 
   const handleSave = () => {
     const recurrenceData: HabitRecurrence = {
-      type: 'custom',
+      type: "custom",
       interval,
       unit,
-      daysOfWeek: unit === 'week' ? daysOfWeek : undefined,
+      daysOfWeek: unit === "week" ? daysOfWeek : undefined,
       endType,
-      endDate: endType === 'on_date' ? endDate : undefined,
-      occurrences: endType === 'after_occurrences' ? occurrences : undefined
-    }
-    onConfirm(recurrenceData)
-  }
+      endDate: endType === "on_date" ? endDate : undefined,
+      occurrences: endType === "after_occurrences" ? occurrences : undefined
+    };
+    onConfirm(recurrenceData);
+  };
 
   return (
     <Modal
@@ -96,13 +96,13 @@ export const CustomRecurrenceModal = ({
         },
         header: {
           backgroundColor: colors.graphite800,
-          borderBottom: 'none',
+          borderBottom: "none",
           paddingBottom: 4
         },
         title: {
           color: colors.white,
           fontWeight: 600,
-          fontSize: '1.15rem'
+          fontSize: "1.15rem"
         }
       }}
     >
@@ -113,7 +113,7 @@ export const CustomRecurrenceModal = ({
           </Text>
           <NumberInput
             value={interval}
-            onChange={(val) => setInterval(typeof val === 'number' && val > 0 ? val : 1)}
+            onChange={(val) => setInterval(typeof val === "number" && val > 0 ? val : 1)}
             min={1}
             max={99}
             w={70}
@@ -122,33 +122,33 @@ export const CustomRecurrenceModal = ({
                 backgroundColor: colors.graphite700,
                 borderColor: alpha(colors.white, 0.15),
                 color: colors.white,
-                textAlign: 'center'
+                textAlign: "center"
               }
             }}
           />
           <Box style={{ flex: 1 }}>
             <Select
               value={unit}
-              onChange={(e) => setUnit(e.target.value as 'day' | 'week' | 'month')}
+              onChange={(e) => setUnit(e.target.value as "day" | "week" | "month")}
               options={unitOptions}
             />
           </Box>
         </Group>
 
-        {unit === 'week' && (
+        {unit === "week" && (
           <Stack gap={8}>
             <Text size="sm" c={colors.mist300}>
               Repetir:
             </Text>
             <Group gap={6} justify="space-between">
               {dayLetters.map(({ dayIndex, label, full }) => {
-                const isSelected = daysOfWeek.includes(dayIndex)
+                const isSelected = daysOfWeek.includes(dayIndex);
                 return (
                   <ActionIcon
                     key={dayIndex}
                     size={36}
                     radius="xl"
-                    variant={isSelected ? 'filled' : 'subtle'}
+                    variant={isSelected ? "filled" : "subtle"}
                     onClick={() => toggleDay(dayIndex)}
                     title={full}
                     style={{
@@ -156,12 +156,12 @@ export const CustomRecurrenceModal = ({
                       color: isSelected ? colors.navy900 : colors.mist300,
                       fontWeight: 700,
                       fontSize: 13,
-                      border: isSelected ? 'none' : `1px solid ${alpha(colors.white, 0.1)}`
+                      border: isSelected ? "none" : `1px solid ${alpha(colors.white, 0.1)}`
                     }}
                   >
                     {label}
                   </ActionIcon>
-                )
+                );
               })}
             </Group>
           </Stack>
@@ -193,14 +193,14 @@ export const CustomRecurrenceModal = ({
                 <TextInput
                   type="date"
                   value={endDate}
-                  disabled={endType !== 'on_date'}
+                  disabled={endType !== "on_date"}
                   onChange={(e) => setEndDate(e.target.value)}
                   size="xs"
                   styles={{
                     input: {
-                      backgroundColor: endType === 'on_date' ? colors.graphite700 : alpha(colors.white, 0.04),
+                      backgroundColor: endType === "on_date" ? colors.graphite700 : alpha(colors.white, 0.04),
                       borderColor: alpha(colors.white, 0.15),
-                      color: endType === 'on_date' ? colors.white : colors.mist500,
+                      color: endType === "on_date" ? colors.white : colors.mist500,
                       maxWidth: 150
                     }
                   }}
@@ -217,22 +217,22 @@ export const CustomRecurrenceModal = ({
                 />
                 <NumberInput
                   value={occurrences}
-                  disabled={endType !== 'after_occurrences'}
-                  onChange={(val) => setOccurrences(typeof val === 'number' && val > 0 ? val : 1)}
+                  disabled={endType !== "after_occurrences"}
+                  onChange={(val) => setOccurrences(typeof val === "number" && val > 0 ? val : 1)}
                   min={1}
                   max={999}
                   w={75}
                   size="xs"
                   styles={{
                     input: {
-                      backgroundColor: endType === 'after_occurrences' ? colors.graphite700 : alpha(colors.white, 0.04),
+                      backgroundColor: endType === "after_occurrences" ? colors.graphite700 : alpha(colors.white, 0.04),
                       borderColor: alpha(colors.white, 0.15),
-                      color: endType === 'after_occurrences' ? colors.white : colors.mist500,
-                      textAlign: 'center'
+                      color: endType === "after_occurrences" ? colors.white : colors.mist500,
+                      textAlign: "center"
                     }
                   }}
                 />
-                <Text size="sm" c={endType === 'after_occurrences' ? colors.mist200 : colors.mist500}>
+                <Text size="sm" c={endType === "after_occurrences" ? colors.mist200 : colors.mist500}>
                   ocorrências
                 </Text>
               </Group>
@@ -261,7 +261,7 @@ export const CustomRecurrenceModal = ({
         </Group>
       </Stack>
     </Modal>
-  )
-}
+  );
+};
 
-export default CustomRecurrenceModal
+export default CustomRecurrenceModal;

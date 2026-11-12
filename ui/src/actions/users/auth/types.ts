@@ -1,18 +1,18 @@
-import type { AuthTokens } from '@utils/types/user'
+import type { AuthTokens } from "@utils/types/user";
 
 export interface SignUpPayload {
-  name: string
-  email: string
-  password: string
+  name: string;
+  email: string;
+  password: string;
 }
 
 export interface SignInPayload {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface RefreshTokenPayload {
-  refreshToken: string
+  refreshToken: string;
 }
 
-export type AuthResponse = AuthTokens
+export type AuthResponse = AuthTokens;

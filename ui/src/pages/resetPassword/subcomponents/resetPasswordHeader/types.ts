@@ -1,3 +1,3 @@
 export interface ResetPasswordHeaderProps {
-  subtitle: string
+  subtitle: string;
 }

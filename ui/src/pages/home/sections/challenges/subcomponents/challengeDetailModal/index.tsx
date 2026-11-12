@@ -1,25 +1,36 @@
-import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid, Checkbox, alpha } from '@mantine/core'
-import { TbFlame, TbTrophy, TbCalendar, TbTrash, TbEdit, TbAlertTriangle, TbCheck, TbQuote, TbNotes, TbListCheck } from 'react-icons/tb'
+import { Stack, Text, Group, Box, Badge, ThemeIcon, SimpleGrid, Checkbox, alpha } from "@mantine/core";
+import {
+  TbFlame,
+  TbTrophy,
+  TbCalendar,
+  TbTrash,
+  TbEdit,
+  TbAlertTriangle,
+  TbCheck,
+  TbQuote,
+  TbNotes,
+  TbListCheck
+} from "react-icons/tb";
 
-import Modal from '@components/modal'
-import Button from '@components/button'
-import ChallengeGrid from '../challengeGrid'
-import { calculateChallengeStats, formatDisplayDate } from '@utils/functions/challenges'
+import Modal from "@components/modal";
+import Button from "@components/button";
+import ChallengeGrid from "../challengeGrid";
+import { calculateChallengeStats, formatDisplayDate } from "@utils/functions/challenges";
 
-import type { Challenge } from '@actions/challenges/types'
-import { colors } from '@styles/theme'
+import type { Challenge } from "@actions/challenges/types";
+import { colors } from "@styles/theme";
 
 interface ChallengeDetailModalProps {
-  isOpen: boolean
-  challenge: Challenge | null
-  onClose: () => void
-  onToggleCheckin: (id: string, date?: string) => Promise<unknown>
-  onToggleFreeze?: (id: string, date?: string) => Promise<any>
-  onToggleChecklistItem?: (id: string, itemId: string) => Promise<unknown>
-  onOpenEdit: (challenge: Challenge) => void
-  onOpenSlip: (challenge: Challenge) => void
-  onRemove: (id: string) => Promise<void>
-  isLoading?: boolean
+  isOpen: boolean;
+  challenge: Challenge | null;
+  onClose: () => void;
+  onToggleCheckin: (id: string, date?: string) => Promise<unknown>;
+  onToggleFreeze?: (id: string, date?: string) => Promise<any>;
+  onToggleChecklistItem?: (id: string, itemId: string) => Promise<unknown>;
+  onOpenEdit: (challenge: Challenge) => void;
+  onOpenSlip: (challenge: Challenge) => void;
+  onRemove: (id: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export const ChallengeDetailModal = ({
@@ -34,30 +45,25 @@ export const ChallengeDetailModal = ({
   onRemove,
   isLoading = false
 }: ChallengeDetailModalProps) => {
-  if (!challenge) return null
+  if (!challenge) return null;
 
-  const stats = calculateChallengeStats(challenge)
-  const isCompleted = challenge.status === 'completed'
-  const isStreakMode = challenge.type === 'streak'
+  const stats = calculateChallengeStats(challenge);
+  const isCompleted = challenge.status === "completed";
+  const isStreakMode = challenge.type === "streak";
 
   const handleToggleSpecificDate = async (date: string) => {
-    await onToggleCheckin(challenge.id, date)
-  }
+    await onToggleCheckin(challenge.id, date);
+  };
 
   const handleDelete = async () => {
-    if (window.confirm('Tem certeza que deseja remover este desafio? O histórico será excluído.')) {
-      await onRemove(challenge.id)
-      onClose()
+    if (window.confirm("Tem certeza que deseja remover este desafio? O histórico será excluído.")) {
+      await onRemove(challenge.id);
+      onClose();
     }
-  }
+  };
 
   return (
-    <Modal
-      opened={isOpen}
-      onClose={onClose}
-      size="lg"
-      withCloseButton
-    >
+    <Modal opened={isOpen} onClose={onClose} size="lg" withCloseButton>
       <Stack gap="lg">
         {/* Cabeçalho */}
         <Group justify="space-between" align="flex-start" wrap="nowrap">
@@ -69,9 +75,9 @@ export const ChallengeDetailModal = ({
                 borderRadius: 14,
                 backgroundColor: alpha(colors.indigo500, 0.15),
                 border: `1px solid ${alpha(colors.indigo400, 0.3)}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 fontSize: 26
               }}
             >
@@ -88,7 +94,7 @@ export const ChallengeDetailModal = ({
                   </Badge>
                 ) : (
                   <Badge color="indigo" variant="light" size="sm">
-                    {isStreakMode ? '🔥 Ofensiva' : '🎯 Acumulativo'}
+                    {isStreakMode ? "🔥 Ofensiva" : "🎯 Acumulativo"}
                   </Badge>
                 )}
               </Group>
@@ -99,20 +105,10 @@ export const ChallengeDetailModal = ({
           </Group>
 
           <Group gap="xs">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onOpenEdit(challenge)}
-              leftIcon={<TbEdit size={14} />}
-            >
+            <Button size="sm" variant="ghost" onClick={() => onOpenEdit(challenge)} leftIcon={<TbEdit size={14} />}>
               Editar
             </Button>
-            <Button
-              size="sm"
-              variant="danger"
-              onClick={handleDelete}
-              leftIcon={<TbTrash size={14} />}
-            >
+            <Button size="sm" variant="danger" onClick={handleDelete} leftIcon={<TbTrash size={14} />}>
               Excluir
             </Button>
           </Group>
@@ -122,7 +118,7 @@ export const ChallengeDetailModal = ({
         {challenge.motivation && (
           <Box
             style={{
-              padding: '12px 16px',
+              padding: "12px 16px",
               borderRadius: 12,
               backgroundColor: alpha(colors.indigo500, 0.08),
               border: `1px solid ${alpha(colors.indigo400, 0.2)}`
@@ -133,10 +129,10 @@ export const ChallengeDetailModal = ({
                 <TbQuote size={14} />
               </ThemeIcon>
               <Box>
-                <Text size="11px" fw={700} c="indigo.3" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+                <Text size="11px" fw={700} c="indigo.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                   Por que comecei?
                 </Text>
-                <Text size="sm" c="white" style={{ fontStyle: 'italic', lineHeight: 1.4 }}>
+                <Text size="sm" c="white" style={{ fontStyle: "italic", lineHeight: 1.4 }}>
                   "{challenge.motivation}"
                 </Text>
               </Box>
@@ -148,7 +144,7 @@ export const ChallengeDetailModal = ({
         {challenge.notes && (
           <Box
             style={{
-              padding: '12px 16px',
+              padding: "12px 16px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.08)}`
@@ -158,11 +154,11 @@ export const ChallengeDetailModal = ({
               <ThemeIcon size="xs" radius="sm" color="cyan" variant="light">
                 <TbNotes size={13} />
               </ThemeIcon>
-              <Text size="11px" fw={700} c="cyan.3" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+              <Text size="11px" fw={700} c="cyan.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                 Anotações & Regras do Desafio
               </Text>
             </Group>
-            <Text size="sm" c="gray.2" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
+            <Text size="sm" c="gray.2" style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
               {challenge.notes}
             </Text>
           </Box>
@@ -172,7 +168,7 @@ export const ChallengeDetailModal = ({
         {challenge.checklist && challenge.checklist.length > 0 && (
           <Box
             style={{
-              padding: '14px 16px',
+              padding: "14px 16px",
               borderRadius: 12,
               backgroundColor: alpha(colors.emerald500, 0.04),
               border: `1px solid ${alpha(colors.emerald500, 0.2)}`
@@ -183,7 +179,7 @@ export const ChallengeDetailModal = ({
                 <ThemeIcon size="xs" radius="sm" color="teal" variant="light">
                   <TbListCheck size={14} />
                 </ThemeIcon>
-                <Text size="11px" fw={700} c="teal.3" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+                <Text size="11px" fw={700} c="teal.3" tt="uppercase" style={{ letterSpacing: "0.04em" }}>
                   Checklist do Desafio
                 </Text>
               </Group>
@@ -200,12 +196,14 @@ export const ChallengeDetailModal = ({
                   wrap="nowrap"
                   onClick={() => onToggleChecklistItem && onToggleChecklistItem(challenge.id, item.id)}
                   style={{
-                    padding: '8px 12px',
+                    padding: "8px 12px",
                     borderRadius: 8,
                     backgroundColor: item.completed ? alpha(colors.emerald500, 0.1) : alpha(colors.white, 0.02),
-                    border: item.completed ? `1px solid ${alpha(colors.emerald500, 0.3)}` : `1px solid ${alpha(colors.white, 0.06)}`,
-                    cursor: onToggleChecklistItem ? 'pointer' : 'default',
-                    transition: 'all 0.15s ease'
+                    border: item.completed
+                      ? `1px solid ${alpha(colors.emerald500, 0.3)}`
+                      : `1px solid ${alpha(colors.white, 0.06)}`,
+                    cursor: onToggleChecklistItem ? "pointer" : "default",
+                    transition: "all 0.15s ease"
                   }}
                 >
                   <Checkbox
@@ -214,15 +212,15 @@ export const ChallengeDetailModal = ({
                     size="xs"
                     color="teal"
                     styles={{
-                      input: { cursor: 'pointer' }
+                      input: { cursor: "pointer" }
                     }}
                   />
                   <Text
                     size="sm"
-                    c={item.completed ? 'dimmed' : 'white'}
+                    c={item.completed ? "dimmed" : "white"}
                     style={{
-                      textDecoration: item.completed ? 'line-through' : 'none',
-                      wordBreak: 'break-word',
+                      textDecoration: item.completed ? "line-through" : "none",
+                      wordBreak: "break-word",
                       flex: 1
                     }}
                   >
@@ -238,7 +236,7 @@ export const ChallengeDetailModal = ({
         <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs">
           <Box
             style={{
-              padding: '12px',
+              padding: "12px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.06)}`
@@ -257,7 +255,7 @@ export const ChallengeDetailModal = ({
 
           <Box
             style={{
-              padding: '12px',
+              padding: "12px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.06)}`
@@ -273,13 +271,13 @@ export const ChallengeDetailModal = ({
               {stats.streak} dias
             </Text>
             <Text size="xs" c="dimmed">
-              {stats.streak > 0 ? 'Sequência ativa 🔥' : 'Comece hoje!'}
+              {stats.streak > 0 ? "Sequência ativa 🔥" : "Comece hoje!"}
             </Text>
           </Box>
 
           <Box
             style={{
-              padding: '12px',
+              padding: "12px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.06)}`
@@ -298,7 +296,7 @@ export const ChallengeDetailModal = ({
 
           <Box
             style={{
-              padding: '12px',
+              padding: "12px",
               borderRadius: 12,
               backgroundColor: alpha(colors.white, 0.03),
               border: `1px solid ${alpha(colors.white, 0.06)}`
@@ -333,7 +331,7 @@ export const ChallengeDetailModal = ({
               borderColor: stats.isCompletedToday ? colors.emerald500 : undefined
             }}
           >
-            {stats.isCompletedToday ? '✓ Concluído Hoje (Clique para desmarcar)' : 'Concluir Hoje / Resisti Hoje ✓'}
+            {stats.isCompletedToday ? "✓ Concluído Hoje (Clique para desmarcar)" : "Concluir Hoje / Resisti Hoje ✓"}
           </Button>
 
           {isStreakMode && (
@@ -350,7 +348,7 @@ export const ChallengeDetailModal = ({
           {isStreakMode && stats.freezeDaysPerMonth > 0 && onToggleFreeze && (
             <Button
               size="md"
-              variant={stats.isFrozenToday ? 'primary' : 'secondary'}
+              variant={stats.isFrozenToday ? "primary" : "secondary"}
               onClick={() => onToggleFreeze(challenge.id)}
               isLoading={isLoading}
               style={{
@@ -359,7 +357,7 @@ export const ChallengeDetailModal = ({
               }}
             >
               {stats.isFrozenToday
-                ? '❄️ Hoje Congelado (Desfazer)'
+                ? "❄️ Hoje Congelado (Desfazer)"
                 : `Congelar Hoje ❄️ (${stats.freezesRemainingThisMonth} livres)`}
             </Button>
           )}
@@ -386,7 +384,7 @@ export const ChallengeDetailModal = ({
         </Box>
       </Stack>
     </Modal>
-  )
-}
+  );
+};
 
-export default ChallengeDetailModal
+export default ChallengeDetailModal;

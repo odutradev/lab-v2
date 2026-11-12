@@ -1,5 +1,5 @@
 export interface AuthHeaderProps {
-  title: string
-  subtitle: string
-  isResetMode?: boolean
+  title: string;
+  subtitle: string;
+  isResetMode?: boolean;
 }

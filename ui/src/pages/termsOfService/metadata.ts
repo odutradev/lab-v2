@@ -1,5 +1,5 @@
-import type { PageMetadata } from '@utils/types/layout'
+import type { PageMetadata } from "@utils/types/layout";
 
-const metadata: PageMetadata = { requiredPermissions: [] }
+const metadata: PageMetadata = { requiredPermissions: [] };
 
-export default metadata
+export default metadata;

@@ -1,16 +1,16 @@
-import { SegmentedControl as MantineSegmentedControl, alpha } from '@mantine/core'
+import { SegmentedControl as MantineSegmentedControl, alpha } from "@mantine/core";
 
-import type { SegmentedControlProps } from './types'
-import { colors } from '@styles/theme'
+import type { SegmentedControlProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const SegmentedControl = ({
   value,
   onChange,
   data,
-  size = 'sm',
+  size = "sm",
   height,
-  color = 'indigo',
-  radius = 'md',
+  color = "indigo",
+  radius = "md",
   fullWidth = false,
   disabled = false,
   className
@@ -32,19 +32,19 @@ export const SegmentedControl = ({
           border: `1px solid ${alpha(colors.white, 0.08)}`,
           ...(height !== undefined ? { height, minHeight: height } : {})
         },
-        control: height !== undefined ? { height: '100%' } : undefined,
+        control: height !== undefined ? { height: "100%" } : undefined,
         label:
           height !== undefined
             ? {
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }
             : undefined
       }}
     />
-  )
-}
+  );
+};
 
-export default SegmentedControl
+export default SegmentedControl;

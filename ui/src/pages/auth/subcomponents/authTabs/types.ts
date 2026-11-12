@@ -1,6 +1,6 @@
-import type { AuthMode } from '../../types'
+import type { AuthMode } from "../../types";
 
 export interface AuthTabsProps {
-  value: AuthMode
-  onChange: (value: string) => void
+  value: AuthMode;
+  onChange: (value: string) => void;
 }

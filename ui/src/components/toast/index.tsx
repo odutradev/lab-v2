@@ -1,40 +1,40 @@
-import { TbCheck, TbAlertCircle, TbAlertTriangle, TbInfoCircle } from 'react-icons/tb'
-import { Notification, Stack } from '@mantine/core'
+import { TbCheck, TbAlertCircle, TbAlertTriangle, TbInfoCircle } from "react-icons/tb";
+import { Notification, Stack } from "@mantine/core";
 
-import useToastStore from '@stores/toast'
+import useToastStore from "@stores/toast";
 
 export const ToastContainer = () => {
-  const { toasts, removeToast } = useToastStore()
+  const { toasts, removeToast } = useToastStore();
 
-  if (toasts.length === 0) return null
+  if (toasts.length === 0) return null;
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'success':
-        return <TbCheck size={18} />
-      case 'error':
-        return <TbAlertCircle size={18} />
-      case 'warning':
-        return <TbAlertTriangle size={18} />
-      case 'info':
+      case "success":
+        return <TbCheck size={18} />;
+      case "error":
+        return <TbAlertCircle size={18} />;
+      case "warning":
+        return <TbAlertTriangle size={18} />;
+      case "info":
       default:
-        return <TbInfoCircle size={18} />
+        return <TbInfoCircle size={18} />;
     }
-  }
+  };
 
   const getColor = (type: string) => {
     switch (type) {
-      case 'success':
-        return 'teal'
-      case 'error':
-        return 'red'
-      case 'warning':
-        return 'yellow'
-      case 'info':
+      case "success":
+        return "teal";
+      case "error":
+        return "red";
+      case "warning":
+        return "yellow";
+      case "info":
       default:
-        return 'indigo'
+        return "indigo";
     }
-  }
+  };
 
   return (
     <Stack
@@ -42,7 +42,7 @@ export const ToastContainer = () => {
       bottom={24}
       right={24}
       gap="sm"
-      style={{ zIndex: 1000, maxWidth: 380, width: 'calc(100% - 48px)' }}
+      style={{ zIndex: 1000, maxWidth: 380, width: "calc(100% - 48px)" }}
     >
       {toasts.map((toast) => (
         <Notification
@@ -58,7 +58,7 @@ export const ToastContainer = () => {
         </Notification>
       ))}
     </Stack>
-  )
-}
+  );
+};
 
-export default ToastContainer
+export default ToastContainer;

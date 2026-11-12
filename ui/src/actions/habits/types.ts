@@ -1,175 +1,174 @@
-export type HabitFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom' | 'none'
-export type HabitCategory = 'habit' | 'task' | 'schedule' | 'event'
+export type HabitFrequency = "daily" | "weekly" | "monthly" | "yearly" | "custom" | "none";
+export type HabitCategory = "habit" | "task" | "schedule" | "event";
 
 export interface HabitRecurrence {
-  type: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom'
-  interval?: number
-  unit?: 'day' | 'week' | 'month' | 'year'
-  daysOfWeek?: number[]
-  endType?: 'never' | 'on_date' | 'after_occurrences'
-  endDate?: string
-  occurrences?: number
+  type: "none" | "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  interval?: number;
+  unit?: "day" | "week" | "month" | "year";
+  daysOfWeek?: number[];
+  endType?: "never" | "on_date" | "after_occurrences";
+  endDate?: string;
+  occurrences?: number;
 }
 
-export type RecurrenceScopeMode = 'this' | 'following' | 'all'
+export type RecurrenceScopeMode = "this" | "following" | "all";
 
 export interface Habit {
-  id: string
-  userId: string
-  title: string
-  description?: string
-  category?: HabitCategory
-  frequency: HabitFrequency
-  startDate?: string
-  allDay?: boolean
-  startTime?: string | null
-  endTime?: string | null
-  recurrence?: HabitRecurrence
-  excludedDates?: string[]
-  active: boolean
-  createdAt?: string
-  updatedAt?: string
+  id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  category?: HabitCategory;
+  frequency: HabitFrequency;
+  startDate?: string;
+  allDay?: boolean;
+  startTime?: string | null;
+  endTime?: string | null;
+  recurrence?: HabitRecurrence;
+  excludedDates?: string[];
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateHabitPayload {
-  title: string
-  description?: string
-  category?: HabitCategory
-  frequency?: HabitFrequency
-  startDate?: string
-  allDay?: boolean
-  startTime?: string | null
-  endTime?: string | null
-  recurrence?: HabitRecurrence
-  excludedDates?: string[]
+  title: string;
+  description?: string;
+  category?: HabitCategory;
+  frequency?: HabitFrequency;
+  startDate?: string;
+  allDay?: boolean;
+  startTime?: string | null;
+  endTime?: string | null;
+  recurrence?: HabitRecurrence;
+  excludedDates?: string[];
 }
 
 export interface UpdateHabitPayload {
-  title?: string
-  description?: string
-  category?: HabitCategory
-  frequency?: HabitFrequency
-  startDate?: string
-  allDay?: boolean
-  startTime?: string | null
-  endTime?: string | null
-  recurrence?: HabitRecurrence
-  excludedDates?: string[]
-  active?: boolean
-  mode?: RecurrenceScopeMode
-  date?: string
+  title?: string;
+  description?: string;
+  category?: HabitCategory;
+  frequency?: HabitFrequency;
+  startDate?: string;
+  allDay?: boolean;
+  startTime?: string | null;
+  endTime?: string | null;
+  recurrence?: HabitRecurrence;
+  excludedDates?: string[];
+  active?: boolean;
+  mode?: RecurrenceScopeMode;
+  date?: string;
 }
 
 export interface RemoveHabitOptions {
-  mode?: RecurrenceScopeMode
-  date?: string
+  mode?: RecurrenceScopeMode;
+  date?: string;
 }
 
 export interface ListHabitsParams {
-  frequency?: HabitFrequency
-  category?: HabitCategory
-  active?: boolean
+  frequency?: HabitFrequency;
+  category?: HabitCategory;
+  active?: boolean;
 }
 
 export interface ScheduleHabitPayload {
-  habitId: string
-  date: string
+  habitId: string;
+  date: string;
 }
 
 export interface ToggleCheckinPayload {
-  habitId: string
-  date?: string
-  completed?: boolean
+  habitId: string;
+  date?: string;
+  completed?: boolean;
 }
 
 export interface ToggleCheckinResponse {
-  habitId: string
-  date: string
-  completed: boolean
+  habitId: string;
+  date: string;
+  completed: boolean;
 }
 
 export interface DaySummaryItem {
-  habitId: string
-  title: string
-  description?: string
-  category?: HabitCategory
-  frequency?: HabitFrequency
-  startDate?: string
-  allDay?: boolean
-  startTime: string | null
-  endTime?: string | null
-  completed: boolean
-  readOnly?: boolean
-  calendarId?: string
-  calendarName?: string
-  calendarColor?: string
+  habitId: string;
+  title: string;
+  description?: string;
+  category?: HabitCategory;
+  frequency?: HabitFrequency;
+  startDate?: string;
+  allDay?: boolean;
+  startTime: string | null;
+  endTime?: string | null;
+  completed: boolean;
+  readOnly?: boolean;
+  calendarId?: string;
+  calendarName?: string;
+  calendarColor?: string;
 }
 
 export interface DaySummaryResponse {
-  date: string
-  totalHabits: number
-  completedHabits: number
-  completionRate: number
-  items: DaySummaryItem[]
+  date: string;
+  totalHabits: number;
+  completedHabits: number;
+  completionRate: number;
+  items: DaySummaryItem[];
 }
 
 export interface RangeSummaryParams {
-  startDate: string
-  endDate: string
+  startDate: string;
+  endDate: string;
 }
 
 export interface HabitActionSuccessResponse {
-  id: string
+  id: string;
 }
 
 export interface PerformanceWeights {
-  habits: number
-  water: number
-  sleep: number
+  habits: number;
+  water: number;
+  sleep: number;
 }
 
 export interface MonthlyMetricsPayload {
-  month?: string
-  waterDailyMap?: Record<string, number>
-  waterGoalBottles?: number
-  waterExtraTargetMap?: Record<string, number>
-  sleepDailyMap?: Record<string, number>
-  sleepMinRecommendedHours?: number
-  performanceWeights?: PerformanceWeights
+  month?: string;
+  waterDailyMap?: Record<string, number>;
+  waterGoalBottles?: number;
+  waterExtraTargetMap?: Record<string, number>;
+  sleepDailyMap?: Record<string, number>;
+  sleepMinRecommendedHours?: number;
+  performanceWeights?: PerformanceWeights;
 }
 
 export interface MonthlyMetricsDayItem {
-  date: string
-  day: number
-  dayOfWeek: string
-  isToday: boolean
-  isFuture: boolean
-  totalHabits: number
-  completedHabits: number
-  habitRate: number
-  waterConsumedBottles: number
-  waterGoalBottles: number
-  waterGoalReached: boolean
-  waterRate: number
-  sleepHours: number
-  sleepGoalHours: number
-  sleepGoalReached: boolean
-  sleepRate: number
-  overallRate: number
+  date: string;
+  day: number;
+  dayOfWeek: string;
+  isToday: boolean;
+  isFuture: boolean;
+  totalHabits: number;
+  completedHabits: number;
+  habitRate: number;
+  waterConsumedBottles: number;
+  waterGoalBottles: number;
+  waterGoalReached: boolean;
+  waterRate: number;
+  sleepHours: number;
+  sleepGoalHours: number;
+  sleepGoalReached: boolean;
+  sleepRate: number;
+  overallRate: number;
 }
 
 export interface MonthlyMetricsResponse {
-  month: string
-  monthLabel: string
-  averageOverallRate: number
-  averageHabitRate: number
-  averageWaterRate: number
-  averageSleepRate: number
-  perfectDaysCount: number
-  trackedDaysCount: number
-  daysInMonth: number
-  formulaExplanation: string
-  performanceWeights?: PerformanceWeights
-  days: MonthlyMetricsDayItem[]
+  month: string;
+  monthLabel: string;
+  averageOverallRate: number;
+  averageHabitRate: number;
+  averageWaterRate: number;
+  averageSleepRate: number;
+  perfectDaysCount: number;
+  trackedDaysCount: number;
+  daysInMonth: number;
+  formulaExplanation: string;
+  performanceWeights?: PerformanceWeights;
+  days: MonthlyMetricsDayItem[];
 }
-

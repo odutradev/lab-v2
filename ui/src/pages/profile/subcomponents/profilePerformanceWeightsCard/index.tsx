@@ -1,69 +1,60 @@
-import { useState, useEffect } from 'react'
-import { Group, Stack, Text, Box, SimpleGrid, Slider, UnstyledButton, alpha } from '@mantine/core'
-import {
-  TbAdjustmentsHorizontal,
-  TbCheckbox,
-  TbDroplet,
-  TbMoonStars,
-  TbCheck,
-  TbAlertCircle
-} from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import { Group, Stack, Text, Box, SimpleGrid, Slider, UnstyledButton, alpha } from "@mantine/core";
+import { TbAdjustmentsHorizontal, TbCheckbox, TbDroplet, TbMoonStars, TbCheck, TbAlertCircle } from "react-icons/tb";
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
-import Button from '@components/button'
-import Badge from '@components/badge'
-import useHealthStore from '@stores/health'
-import useToastStore from '@stores/toast'
-import useAction from '@hooks/useAction'
-import { infoCardItemStyle } from '../../styles'
-import type { ProfilePerformanceWeightsCardProps } from './types'
-import { colors } from '@styles/theme'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
+import Button from "@components/button";
+import Badge from "@components/badge";
+import useHealthStore from "@stores/health";
+import useToastStore from "@stores/toast";
+import useAction from "@hooks/useAction";
+import { infoCardItemStyle } from "../../styles";
+import type { ProfilePerformanceWeightsCardProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceWeightsCardProps) => {
-  const { performanceWeights, updatePerformanceWeights } = useHealthStore()
-  const { showToast } = useToastStore()
-  const runAction = useAction()
+  const { performanceWeights, updatePerformanceWeights } = useHealthStore();
+  const { showToast } = useToastStore();
+  const runAction = useAction();
 
-  const [habits, setHabits] = useState<number>(performanceWeights.habits)
-  const [water, setWater] = useState<number>(performanceWeights.water)
-  const [sleep, setSleep] = useState<number>(performanceWeights.sleep)
-  const [isSaving, setIsSaving] = useState(false)
+  const [habits, setHabits] = useState<number>(performanceWeights.habits);
+  const [water, setWater] = useState<number>(performanceWeights.water);
+  const [sleep, setSleep] = useState<number>(performanceWeights.sleep);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setHabits(performanceWeights.habits)
-    setWater(performanceWeights.water)
-    setSleep(performanceWeights.sleep)
-  }, [performanceWeights.habits, performanceWeights.water, performanceWeights.sleep])
+    setHabits(performanceWeights.habits);
+    setWater(performanceWeights.water);
+    setSleep(performanceWeights.sleep);
+  }, [performanceWeights.habits, performanceWeights.water, performanceWeights.sleep]);
 
-  const total = habits + water + sleep
-  const isValid = total === 100
+  const total = habits + water + sleep;
+  const isValid = total === 100;
   const isChanged =
-    habits !== performanceWeights.habits ||
-    water !== performanceWeights.water ||
-    sleep !== performanceWeights.sleep
+    habits !== performanceWeights.habits || water !== performanceWeights.water || sleep !== performanceWeights.sleep;
 
   const applyPreset = (h: number, w: number, s: number) => {
-    setHabits(h)
-    setWater(w)
-    setSleep(s)
-  }
+    setHabits(h);
+    setWater(w);
+    setSleep(s);
+  };
 
   const handleSave = async () => {
     if (!isValid) {
-      showToast('A soma de todos os itens deve ser exatamente 100%.', 'error')
-      return
+      showToast("A soma de todos os itens deve ser exatamente 100%.", "error");
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     await runAction({
       action: () => updatePerformanceWeights({ habits, water, sleep }),
       toastMessages: {
-        success: 'Pesos do desempenho geral configurados com sucesso!',
-        error: 'Ocorreu um erro ao salvar os pesos no servidor.'
+        success: "Pesos do desempenho geral configurados com sucesso!",
+        error: "Ocorreu um erro ao salvar os pesos no servidor."
       }
-    })
-    setIsSaving(false)
-  }
+    });
+    setIsSaving(false);
+  };
 
   return (
     <Card id="profile-performance-weights-card" className={className}>
@@ -75,9 +66,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               Configure o quanto cada pilar vale no cálculo da sua constância diária (a soma deve ser 100%)
             </CardDescription>
           </Box>
-          <Badge variant={isValid ? 'success' : 'warning'}>
-            {isValid ? 'Total 100%' : `Total: ${total}%`}
-          </Badge>
+          <Badge variant={isValid ? "success" : "warning"}>{isValid ? "Total 100%" : `Total: ${total}%`}</Badge>
         </Group>
       </CardHeader>
 
@@ -119,8 +108,8 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               style={{
                 height: 12,
                 borderRadius: 999,
-                overflow: 'hidden',
-                display: 'flex',
+                overflow: "hidden",
+                display: "flex",
                 backgroundColor: alpha(colors.white, 0.05),
                 border: `1px solid ${alpha(colors.white, 0.08)}`
               }}
@@ -130,7 +119,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   style={{
                     width: `${habits}%`,
                     backgroundColor: colors.purple500,
-                    transition: 'width 0.2s ease'
+                    transition: "width 0.2s ease"
                   }}
                 />
               )}
@@ -139,7 +128,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   style={{
                     width: `${water}%`,
                     backgroundColor: colors.cyan500,
-                    transition: 'width 0.2s ease'
+                    transition: "width 0.2s ease"
                   }}
                 />
               )}
@@ -148,7 +137,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                   style={{
                     width: `${sleep}%`,
                     backgroundColor: colors.indigo500,
-                    transition: 'width 0.2s ease'
+                    transition: "width 0.2s ease"
                   }}
                 />
               )}
@@ -156,19 +145,19 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
 
             <Group justify="space-between" align="center" mt={6} wrap="wrap" gap="xs">
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.purple500 }} />
+                <Box w={8} h={8} style={{ borderRadius: "50%", backgroundColor: colors.purple500 }} />
                 <Text size="xs" c="dimmed">
                   Hábitos: <strong style={{ color: colors.white }}>{habits}%</strong>
                 </Text>
               </Group>
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.cyan500 }} />
+                <Box w={8} h={8} style={{ borderRadius: "50%", backgroundColor: colors.cyan500 }} />
                 <Text size="xs" c="dimmed">
                   Água: <strong style={{ color: colors.white }}>{water}%</strong>
                 </Text>
               </Group>
               <Group gap={4} align="center">
-                <Box w={8} h={8} style={{ borderRadius: '50%', backgroundColor: colors.indigo500 }} />
+                <Box w={8} h={8} style={{ borderRadius: "50%", backgroundColor: colors.indigo500 }} />
                 <Text size="xs" c="dimmed">
                   Sono: <strong style={{ color: colors.white }}>{sleep}%</strong>
                 </Text>
@@ -185,7 +174,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <UnstyledButton
                 onClick={() => applyPreset(50, 25, 25)}
                 style={{
-                  padding: '6px 12px',
+                  padding: "6px 12px",
                   borderRadius: 6,
                   fontSize: 12,
                   fontWeight: 600,
@@ -198,7 +187,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                     habits === 50 && water === 25 && sleep === 25
                       ? `1px solid ${alpha(colors.purple500, 0.4)}`
                       : `1px solid ${alpha(colors.white, 0.08)}`,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 Foco em Hábitos (50 / 25 / 25)
@@ -207,7 +196,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <UnstyledButton
                 onClick={() => applyPreset(34, 33, 33)}
                 style={{
-                  padding: '6px 12px',
+                  padding: "6px 12px",
                   borderRadius: 6,
                   fontSize: 12,
                   fontWeight: 600,
@@ -220,7 +209,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                     habits === 34 && water === 33 && sleep === 33
                       ? `1px solid ${alpha(colors.indigo500, 0.4)}`
                       : `1px solid ${alpha(colors.white, 0.08)}`,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 Equilibrado (34 / 33 / 33)
@@ -229,7 +218,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <UnstyledButton
                 onClick={() => applyPreset(30, 35, 35)}
                 style={{
-                  padding: '6px 12px',
+                  padding: "6px 12px",
                   borderRadius: 6,
                   fontSize: 12,
                   fontWeight: 600,
@@ -242,7 +231,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
                     habits === 30 && water === 35 && sleep === 35
                       ? `1px solid ${alpha(colors.cyan500, 0.4)}`
                       : `1px solid ${alpha(colors.white, 0.08)}`,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 Foco em Saúde (30 / 35 / 35)
@@ -268,15 +257,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Text size="11px" c="dimmed" mb="md" style={{ minHeight: 32 }}>
                 Peso das tarefas e rotinas cadastradas no dia
               </Text>
-              <Slider
-                value={habits}
-                onChange={setHabits}
-                min={0}
-                max={100}
-                step={5}
-                color="grape"
-                size="sm"
-              />
+              <Slider value={habits} onChange={setHabits} min={0} max={100} step={5} color="grape" size="sm" />
             </Box>
 
             {/* Água */}
@@ -295,15 +276,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Text size="11px" c="dimmed" mb="md" style={{ minHeight: 32 }}>
                 Peso do cumprimento da meta diária de água
               </Text>
-              <Slider
-                value={water}
-                onChange={setWater}
-                min={0}
-                max={100}
-                step={5}
-                color="cyan"
-                size="sm"
-              />
+              <Slider value={water} onChange={setWater} min={0} max={100} step={5} color="cyan" size="sm" />
             </Box>
 
             {/* Sono */}
@@ -322,15 +295,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
               <Text size="11px" c="dimmed" mb="md" style={{ minHeight: 32 }}>
                 Peso de atingir o mínimo recomendado de 7h
               </Text>
-              <Slider
-                value={sleep}
-                onChange={setSleep}
-                min={0}
-                max={100}
-                step={5}
-                color="indigo"
-                size="sm"
-              />
+              <Slider value={sleep} onChange={setSleep} min={0} max={100} step={5} color="indigo" size="sm" />
             </Box>
           </SimpleGrid>
 
@@ -350,7 +315,7 @@ export const ProfilePerformanceWeightsCard = ({ className }: ProfilePerformanceW
         </Stack>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProfilePerformanceWeightsCard
+export default ProfilePerformanceWeightsCard;

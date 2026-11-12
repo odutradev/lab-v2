@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 export interface PageContainerProps {
-  children: ReactNode
-  center?: boolean
-  className?: string
-  size?: string
+  children: ReactNode;
+  center?: boolean;
+  className?: string;
+  size?: string;
 }

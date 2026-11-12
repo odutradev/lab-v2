@@ -1,6 +1,6 @@
-import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
+import type { GoogleCalendarStatusResponse } from "@actions/google/calendar/types";
 
 export interface ProfileProgressCardProps {
-  calendarStatus?: GoogleCalendarStatusResponse
-  onConnectCalendar?: () => void
+  calendarStatus?: GoogleCalendarStatusResponse;
+  onConnectCalendar?: () => void;
 }

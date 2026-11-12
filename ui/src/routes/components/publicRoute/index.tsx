@@ -1,17 +1,17 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate } from "react-router-dom";
 
-import useAuthStore from '@stores/auth'
+import useAuthStore from "@stores/auth";
 
-import type { PublicRouteProps } from '@routes/components/publicRoute/types'
+import type { PublicRouteProps } from "@routes/components/publicRoute/types";
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated } = useAuthStore();
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default PublicRoute
+export default PublicRoute;

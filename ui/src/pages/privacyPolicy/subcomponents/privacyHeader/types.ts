@@ -1,4 +1,4 @@
 export interface PrivacyHeaderProps {
-  lastUpdated: string
-  onBack: () => void
+  lastUpdated: string;
+  onBack: () => void;
 }

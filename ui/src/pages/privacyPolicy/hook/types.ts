@@ -1,8 +1,8 @@
-import type { PrivacyPolicyPageProps } from '../types'
+import type { PrivacyPolicyPageProps } from "../types";
 
-export type UsePrivacyPolicyOptions = PrivacyPolicyPageProps
+export type UsePrivacyPolicyOptions = PrivacyPolicyPageProps;
 
 export interface UsePrivacyPolicyReturn {
-  lastUpdated: string
-  handleBack: () => void
+  lastUpdated: string;
+  handleBack: () => void;
 }

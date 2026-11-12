@@ -1,19 +1,19 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo } from "react";
 
-import { getMonthlyMetricsAction } from '@actions/habits'
-import useHealthStore from '@stores/health'
-import { calculateDailyWaterGoal } from '@utils/functions/health'
+import { getMonthlyMetricsAction } from "@actions/habits";
+import useHealthStore from "@stores/health";
+import { calculateDailyWaterGoal } from "@utils/functions/health";
 
-import type { MonthlyMetricsResponse } from '@actions/habits/types'
+import type { MonthlyMetricsResponse } from "@actions/habits/types";
 
 interface UseMonthlyMetricsOptions {
-  month: string
-  triggerRevision?: number
+  month: string;
+  triggerRevision?: number;
 }
 
 export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetricsOptions) => {
-  const [metrics, setMetrics] = useState<MonthlyMetricsResponse | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [metrics, setMetrics] = useState<MonthlyMetricsResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const {
     waterDailyMap,
@@ -24,17 +24,17 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
     waterTargetBottles,
     performanceWeights,
     profile
-  } = useHealthStore()
+  } = useHealthStore();
 
   const sleepDailyMap = useMemo(() => {
-    const map: Record<string, number> = {}
+    const map: Record<string, number> = {};
     sleepHistory.forEach((item) => {
-      map[item.date] = item.hours
-    })
-    return map
-  }, [sleepHistory])
+      map[item.date] = item.hours;
+    });
+    return map;
+  }, [sleepHistory]);
 
-  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
+  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined;
   const defaultWaterTargetBottles = calculateDailyWaterGoal(
     latestWeight,
     0,
@@ -42,10 +42,10 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
     waterTargetBottles,
     profile.age,
     profile.height
-  ).targetBottles
+  ).targetBottles;
 
   const loadMetrics = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const data = await getMonthlyMetricsAction({
         month,
@@ -55,24 +55,24 @@ export const useMonthlyMetrics = ({ month, triggerRevision = 0 }: UseMonthlyMetr
         sleepDailyMap,
         sleepMinRecommendedHours: 7,
         performanceWeights
-      })
-      setMetrics(data)
+      });
+      setMetrics(data);
     } catch (err) {
-      console.error('Failed to load monthly metrics:', err)
+      console.error("Failed to load monthly metrics:", err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap, sleepDailyMap, performanceWeights])
+  }, [month, waterDailyMap, defaultWaterTargetBottles, waterExtraTargetMap, sleepDailyMap, performanceWeights]);
 
   useEffect(() => {
-    loadMetrics()
-  }, [loadMetrics, triggerRevision])
+    loadMetrics();
+  }, [loadMetrics, triggerRevision]);
 
   return {
     metrics,
     isLoading,
     refreshMetrics: loadMetrics
-  }
-}
+  };
+};
 
-export default useMonthlyMetrics
+export default useMonthlyMetrics;

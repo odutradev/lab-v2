@@ -1,36 +1,36 @@
-import { Modal as MantineModal, Box, Title, Text, Group, Stack, ThemeIcon, UnstyledButton, alpha } from '@mantine/core'
-import { TbAlertTriangle, TbAlertCircle, TbCheck, TbInfoCircle, TbChevronRight } from 'react-icons/tb'
+import { Modal as MantineModal, Box, Title, Text, Group, Stack, ThemeIcon, UnstyledButton, alpha } from "@mantine/core";
+import { TbAlertTriangle, TbAlertCircle, TbCheck, TbInfoCircle, TbChevronRight } from "react-icons/tb";
 
-import Button from '@components/button'
+import Button from "@components/button";
 
-import type { ModalProps, ModalHeaderProps, ModalBodyProps, ModalFooterProps, ModalVariant } from './types'
-import { colors } from '@styles/theme'
+import type { ModalProps, ModalHeaderProps, ModalBodyProps, ModalFooterProps, ModalVariant } from "./types";
+import { colors } from "@styles/theme";
 
 const variantColors: Record<ModalVariant, string> = {
-  indigo: 'indigo',
-  danger: 'red',
-  warning: 'yellow',
-  info: 'blue',
-  success: 'teal'
-}
+  indigo: "indigo",
+  danger: "red",
+  warning: "yellow",
+  info: "blue",
+  success: "teal"
+};
 
 const renderVariantIcon = (variant: ModalVariant) => {
   switch (variant) {
-    case 'danger':
-      return <TbAlertCircle size={22} />
-    case 'warning':
-      return <TbAlertTriangle size={22} />
-    case 'success':
-      return <TbCheck size={22} />
-    case 'info':
-    case 'indigo':
+    case "danger":
+      return <TbAlertCircle size={22} />;
+    case "warning":
+      return <TbAlertTriangle size={22} />;
+    case "success":
+      return <TbCheck size={22} />;
+    case "info":
+    case "indigo":
     default:
-      return <TbInfoCircle size={22} />
+      return <TbInfoCircle size={22} />;
   }
-}
+};
 
-export const ModalHeader = ({ title, description, icon, variant = 'indigo' }: ModalHeaderProps) => {
-  const color = variantColors[variant]
+export const ModalHeader = ({ title, description, icon, variant = "indigo" }: ModalHeaderProps) => {
+  const color = variantColors[variant];
 
   return (
     <Box mb="md" pb="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.08)}` }}>
@@ -41,7 +41,7 @@ export const ModalHeader = ({ title, description, icon, variant = 'indigo' }: Mo
           </ThemeIcon>
         )}
         <Box style={{ flex: 1 }}>
-          {typeof title === 'string' ? (
+          {typeof title === "string" ? (
             <Title order={4} fw={600} c="white">
               {title}
             </Title>
@@ -56,12 +56,12 @@ export const ModalHeader = ({ title, description, icon, variant = 'indigo' }: Mo
         </Box>
       </Group>
     </Box>
-  )
-}
+  );
+};
 
 export const ModalBody = ({ children }: ModalBodyProps) => {
-  return <Box py="xs">{children}</Box>
-}
+  return <Box py="xs">{children}</Box>;
+};
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
   return (
@@ -70,20 +70,20 @@ export const ModalFooter = ({ children }: ModalFooterProps) => {
         {children}
       </Group>
     </Box>
-  )
-}
+  );
+};
 
 export const Modal = ({
   opened,
   onClose,
   title,
   description,
-  type = 'default',
-  variant = 'indigo',
-  size = 'md',
+  type = "default",
+  variant = "indigo",
+  size = "md",
   children,
-  confirmText = 'Confirmar',
-  cancelText = 'Cancelar',
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
   onConfirm,
   isConfirmLoading = false,
   actions = [],
@@ -94,7 +94,7 @@ export const Modal = ({
   withCloseButton = true,
   zIndex = 400
 }: ModalProps) => {
-  const buttonVariant = variant === 'danger' ? 'danger' : 'primary'
+  const buttonVariant = variant === "danger" ? "danger" : "primary";
 
   return (
     <MantineModal
@@ -112,11 +112,11 @@ export const Modal = ({
           border: `1px solid ${alpha(colors.white, 0.08)}`,
           borderRadius: 16,
           boxShadow: `0 20px 40px ${alpha(colors.black, 0.45)}`,
-          backdropFilter: 'blur(16px)',
-          padding: '24px'
+          backdropFilter: "blur(16px)",
+          padding: "24px"
         },
         header: {
-          background: 'transparent',
+          background: "transparent",
           padding: 0,
           marginBottom: title || description ? 16 : 0
         },
@@ -125,43 +125,31 @@ export const Modal = ({
         },
         close: {
           color: alpha(colors.white, 0.5),
-          transition: 'all 0.2s ease',
-          '&:hover': {
+          transition: "all 0.2s ease",
+          "&:hover": {
             color: colors.white,
             backgroundColor: alpha(colors.white, 0.08)
           }
         }
       }}
     >
-      {(title || description) && (
-        <ModalHeader
-          title={title}
-          description={description}
-          variant={variant}
-        />
-      )}
+      {(title || description) && <ModalHeader title={title} description={description} variant={variant} />}
 
-      {type === 'confirm' && (
+      {type === "confirm" && (
         <>
-          <ModalBody>
-            {children && <Box mb="md">{children}</Box>}
-          </ModalBody>
+          <ModalBody>{children && <Box mb="md">{children}</Box>}</ModalBody>
           <ModalFooter>
             <Button variant="ghost" onClick={onClose} disabled={isConfirmLoading}>
               {cancelText}
             </Button>
-            <Button
-              variant={buttonVariant}
-              onClick={onConfirm}
-              isLoading={isConfirmLoading}
-            >
+            <Button variant={buttonVariant} onClick={onConfirm} isLoading={isConfirmLoading}>
               {confirmText}
             </Button>
           </ModalFooter>
         </>
       )}
 
-      {type === 'actionChoice' && (
+      {type === "actionChoice" && (
         <>
           <ModalBody>
             {children && <Box mb="md">{children}</Box>}
@@ -172,18 +160,17 @@ export const Modal = ({
                   onClick={action.onClick}
                   disabled={action.disabled || action.isLoading}
                   style={{
-                    display: 'block',
-                    width: '100%',
-                    padding: '14px 16px',
+                    display: "block",
+                    width: "100%",
+                    padding: "14px 16px",
                     borderRadius: 12,
-                    background: action.variant === 'danger'
-                      ? alpha(colors.red500, 0.08)
-                      : alpha(colors.white, 0.03),
-                    border: action.variant === 'danger'
-                      ? `1px solid ${alpha(colors.red500, 0.25)}`
-                      : `1px solid ${alpha(colors.white, 0.08)}`,
-                    transition: 'all 0.2s ease',
-                    cursor: action.disabled ? 'not-allowed' : 'pointer',
+                    background: action.variant === "danger" ? alpha(colors.red500, 0.08) : alpha(colors.white, 0.03),
+                    border:
+                      action.variant === "danger"
+                        ? `1px solid ${alpha(colors.red500, 0.25)}`
+                        : `1px solid ${alpha(colors.white, 0.08)}`,
+                    transition: "all 0.2s ease",
+                    cursor: action.disabled ? "not-allowed" : "pointer",
                     opacity: action.disabled ? 0.6 : 1
                   }}
                 >
@@ -194,17 +181,13 @@ export const Modal = ({
                           size="lg"
                           radius="md"
                           variant="light"
-                          color={action.variant === 'danger' ? 'red' : 'indigo'}
+                          color={action.variant === "danger" ? "red" : "indigo"}
                         >
                           {action.icon}
                         </ThemeIcon>
                       )}
                       <Box style={{ flex: 1 }}>
-                        <Text
-                          size="sm"
-                          fw={600}
-                          c={action.variant === 'danger' ? 'red.4' : 'white'}
-                        >
+                        <Text size="sm" fw={600} c={action.variant === "danger" ? "red.4" : "white"}>
                           {action.title}
                         </Text>
                         {action.description && (
@@ -228,18 +211,18 @@ export const Modal = ({
         </>
       )}
 
-      {type === 'default' && (
+      {type === "default" && (
         <>
           <ModalBody>{children}</ModalBody>
           {footer && <ModalFooter>{footer}</ModalFooter>}
         </>
       )}
     </MantineModal>
-  )
-}
+  );
+};
 
-Modal.Header = ModalHeader
-Modal.Body = ModalBody
-Modal.Footer = ModalFooter
+Modal.Header = ModalHeader;
+Modal.Body = ModalBody;
+Modal.Footer = ModalFooter;
 
-export default Modal
+export default Modal;

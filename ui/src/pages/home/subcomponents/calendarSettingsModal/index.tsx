@@ -1,30 +1,19 @@
-import { useState, useEffect } from 'react'
-import { Modal, Stack, Group, Text, Box, Checkbox, Loader, Badge, UnstyledButton, alpha } from '@mantine/core'
-import {
-  TbCalendar,
-  TbChevronDown,
-  TbChevronUp,
-  TbInfoCircle,
-  TbBrandGoogle,
-  TbLock
-} from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import { Modal, Stack, Group, Text, Box, Checkbox, Loader, Badge, UnstyledButton, alpha } from "@mantine/core";
+import { TbCalendar, TbChevronDown, TbChevronUp, TbInfoCircle, TbBrandGoogle, TbLock } from "react-icons/tb";
 
-import Button from '@components/button'
-import useToastStore from '@stores/toast'
-import useAction from '@hooks/useAction'
-import useCalendarStore from '@stores/calendar'
+import Button from "@components/button";
+import useToastStore from "@stores/toast";
+import useAction from "@hooks/useAction";
+import useCalendarStore from "@stores/calendar";
 
-import type { GoogleCalendarItem } from '@actions/google/calendar/types'
-import type { CalendarSettingsModalProps } from './types'
-import { colors } from '@styles/theme'
+import type { GoogleCalendarItem } from "@actions/google/calendar/types";
+import type { CalendarSettingsModalProps } from "./types";
+import { colors } from "@styles/theme";
 
-export const CalendarSettingsModal = ({
-  isOpen,
-  onClose,
-  onSaved
-}: CalendarSettingsModalProps) => {
-  const { showToast } = useToastStore()
-  const runAction = useAction()
+export const CalendarSettingsModal = ({ isOpen, onClose, onSaved }: CalendarSettingsModalProps) => {
+  const { showToast } = useToastStore();
+  const runAction = useAction();
   const {
     calendars,
     selectedCalendarIds,
@@ -36,50 +25,50 @@ export const CalendarSettingsModal = ({
     toggleCalendar,
     saveSelectedCalendars,
     connectGoogle
-  } = useCalendarStore()
+  } = useCalendarStore();
 
-  const [isMyCalendarsOpen, setIsMyCalendarsOpen] = useState(true)
-  const [isOtherCalendarsOpen, setIsOtherCalendarsOpen] = useState(true)
+  const [isMyCalendarsOpen, setIsMyCalendarsOpen] = useState(true);
+  const [isOtherCalendarsOpen, setIsOtherCalendarsOpen] = useState(true);
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     fetchCalendars().catch(() => {
-      showToast('Não foi possível carregar as agendas do Google.', 'error')
-    })
-  }, [isOpen, fetchCalendars, showToast])
+      showToast("Não foi possível carregar as agendas do Google.", "error");
+    });
+  }, [isOpen, fetchCalendars, showToast]);
 
   const handleConnectGoogle = async () => {
     try {
-      await connectGoogle()
+      await connectGoogle();
     } catch {
-      showToast('Falha ao obter URL de autenticação do Google.', 'error')
+      showToast("Falha ao obter URL de autenticação do Google.", "error");
     }
-  }
+  };
 
   const handleSave = () =>
     runAction({
       action: saveSelectedCalendars,
       toastMessages: {
-        success: 'Preferências de agendas salvas com sucesso!',
-        error: 'Falha ao salvar preferências de agendas.'
+        success: "Preferências de agendas salvas com sucesso!",
+        error: "Falha ao salvar preferências de agendas."
       },
       callback: () => {
-        onSaved?.()
-        onClose()
+        onSaved?.();
+        onClose();
       }
-    })
+    });
 
   const myCalendars = calendars.filter(
-    (c) => c.isLabV2 || c.primary || c.accessRole === 'owner' || c.accessRole === 'writer'
-  )
+    (c) => c.isLabV2 || c.primary || c.accessRole === "owner" || c.accessRole === "writer"
+  );
   const otherCalendars = calendars.filter(
-    (c) => !c.isLabV2 && !c.primary && c.accessRole !== 'owner' && c.accessRole !== 'writer'
-  )
+    (c) => !c.isLabV2 && !c.primary && c.accessRole !== "owner" && c.accessRole !== "writer"
+  );
 
   const renderCalendarRow = (item: GoogleCalendarItem) => {
-    const isChecked = selectedCalendarIds.includes(item.id)
-    const color = item.backgroundColor || colors.indigo500
+    const isChecked = selectedCalendarIds.includes(item.id);
+    const color = item.backgroundColor || colors.indigo500;
 
     return (
       <Box
@@ -88,11 +77,11 @@ export const CalendarSettingsModal = ({
         onClick={() => toggleCalendar(item.id)}
         style={{
           borderRadius: 8,
-          backgroundColor: isChecked ? alpha(colors.white, 0.05) : 'transparent',
-          border: '1px solid',
-          borderColor: isChecked ? alpha(colors.indigo500, 0.35) : 'transparent',
-          transition: 'all 0.15s ease',
-          cursor: 'pointer'
+          backgroundColor: isChecked ? alpha(colors.white, 0.05) : "transparent",
+          border: "1px solid",
+          borderColor: isChecked ? alpha(colors.indigo500, 0.35) : "transparent",
+          transition: "all 0.15s ease",
+          cursor: "pointer"
         }}
       >
         <Group justify="space-between" align="center" wrap="nowrap" gap="sm">
@@ -104,7 +93,7 @@ export const CalendarSettingsModal = ({
               size="sm"
               styles={{
                 input: {
-                  cursor: 'pointer',
+                  cursor: "pointer",
                   borderColor: isChecked ? color : alpha(colors.white, 0.2)
                 }
               }}
@@ -114,7 +103,7 @@ export const CalendarSettingsModal = ({
               w={10}
               h={10}
               style={{
-                borderRadius: '50%',
+                borderRadius: "50%",
                 backgroundColor: color,
                 flexShrink: 0
               }}
@@ -123,11 +112,11 @@ export const CalendarSettingsModal = ({
             <Text
               size="sm"
               fw={item.isLabV2 ? 600 : 500}
-              c={isChecked ? 'white' : 'dimmed'}
+              c={isChecked ? "white" : "dimmed"}
               style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
               }}
             >
               {item.summary}
@@ -142,7 +131,7 @@ export const CalendarSettingsModal = ({
                 size="xs"
                 styles={{
                   root: {
-                    textTransform: 'none',
+                    textTransform: "none",
                     fontWeight: 600
                   }
                 }}
@@ -157,7 +146,7 @@ export const CalendarSettingsModal = ({
                 leftSection={<TbLock size={10} />}
                 styles={{
                   root: {
-                    textTransform: 'none',
+                    textTransform: "none",
                     fontWeight: 500,
                     opacity: 0.8
                   }
@@ -169,8 +158,8 @@ export const CalendarSettingsModal = ({
           </Box>
         </Group>
       </Box>
-    )
-  }
+    );
+  };
 
   return (
     <Modal
@@ -198,7 +187,7 @@ export const CalendarSettingsModal = ({
           border: `1px solid ${alpha(colors.white, 0.08)}`,
           boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
           color: colors.gray200,
-          padding: '20px 24px'
+          padding: "20px 24px"
         },
         header: {
           backgroundColor: colors.night800,
@@ -229,7 +218,8 @@ export const CalendarSettingsModal = ({
             <Group gap="xs" align="flex-start" wrap="nowrap">
               <TbInfoCircle size={18} color={colors.indigo400} style={{ flexShrink: 0, marginTop: 2 }} />
               <Text size="xs" c={colors.indigo200} lh={1.4}>
-                Apenas as metas e eventos do <strong>Lab V2</strong> são editáveis e marcáveis. As demais agendas aparecem somente para visualização de compromissos.
+                Apenas as metas e eventos do <strong>Lab V2</strong> são editáveis e marcáveis. As demais agendas
+                aparecem somente para visualização de compromissos.
               </Text>
             </Group>
           </Box>
@@ -250,7 +240,7 @@ export const CalendarSettingsModal = ({
                       w={10}
                       h={10}
                       style={{
-                        borderRadius: '50%',
+                        borderRadius: "50%",
                         backgroundColor: colors.teal400
                       }}
                     />
@@ -270,7 +260,7 @@ export const CalendarSettingsModal = ({
                   borderRadius: 10,
                   backgroundColor: alpha(colors.white, 0.03),
                   border: `1px dashed ${alpha(colors.white, 0.12)}`,
-                  textAlign: 'center'
+                  textAlign: "center"
                 }}
               >
                 <Text size="sm" c="dimmed" mb="xs">
@@ -294,10 +284,10 @@ export const CalendarSettingsModal = ({
                 <Box>
                   <UnstyledButton
                     onClick={() => setIsMyCalendarsOpen((prev) => !prev)}
-                    style={{ width: '100%', padding: '4px 0', cursor: 'pointer' }}
+                    style={{ width: "100%", padding: "4px 0", cursor: "pointer" }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: '0.5px' }}>
+                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
                         Minhas agendas
                       </Text>
                       {isMyCalendarsOpen ? (
@@ -321,10 +311,10 @@ export const CalendarSettingsModal = ({
                 <Box mt="xs">
                   <UnstyledButton
                     onClick={() => setIsOtherCalendarsOpen((prev) => !prev)}
-                    style={{ width: '100%', padding: '4px 0', cursor: 'pointer' }}
+                    style={{ width: "100%", padding: "4px 0", cursor: "pointer" }}
                   >
                     <Group justify="space-between" align="center">
-                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: '0.5px' }}>
+                      <Text size="xs" fw={700} c={colors.gray400} tt="uppercase" style={{ letterSpacing: "0.5px" }}>
                         Outras agendas
                       </Text>
                       {isOtherCalendarsOpen ? (
@@ -346,7 +336,13 @@ export const CalendarSettingsModal = ({
           )}
 
           {/* Botões do Rodapé */}
-          <Group justify="flex-end" gap="sm" mt="md" pt="sm" style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}>
+          <Group
+            justify="flex-end"
+            gap="sm"
+            mt="md"
+            pt="sm"
+            style={{ borderTop: `1px solid ${alpha(colors.white, 0.06)}` }}
+          >
             <Button variant="secondary" size="sm" onClick={onClose} disabled={isSaving}>
               Cancelar
             </Button>
@@ -359,7 +355,7 @@ export const CalendarSettingsModal = ({
         </Stack>
       )}
     </Modal>
-  )
-}
+  );
+};
 
-export default CalendarSettingsModal
+export default CalendarSettingsModal;

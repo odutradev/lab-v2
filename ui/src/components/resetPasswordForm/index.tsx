@@ -1,123 +1,123 @@
-import { TbMail, TbLock, TbKey, TbCheck, TbArrowLeft, TbSend, TbRefresh } from 'react-icons/tb'
-import { Stack, Box, Group, Text, ThemeIcon, Paper, alpha } from '@mantine/core'
-import { useState, type FormEvent } from 'react'
+import { TbMail, TbLock, TbKey, TbCheck, TbArrowLeft, TbSend, TbRefresh } from "react-icons/tb";
+import { Stack, Box, Group, Text, ThemeIcon, Paper, alpha } from "@mantine/core";
+import { useState, type FormEvent } from "react";
 
-import { requestCodeAction, verifyCodeAction } from '@actions/users/validation'
-import { resetPasswordAction } from '@actions/users/profile'
-import { resetEmailSchema, verificationCodeSchema, newPasswordSchema } from '@utils/validations/auth'
-import { getFormErrors } from '@utils/validations'
-import useAction from '@hooks/useAction'
-import Button from '@components/button'
-import Input from '@components/input'
+import { requestCodeAction, verifyCodeAction } from "@actions/users/validation";
+import { resetPasswordAction } from "@actions/users/profile";
+import { resetEmailSchema, verificationCodeSchema, newPasswordSchema } from "@utils/validations/auth";
+import { getFormErrors } from "@utils/validations";
+import useAction from "@hooks/useAction";
+import Button from "@components/button";
+import Input from "@components/input";
 
-import type { ResetPasswordFormProps, ResetPasswordStep } from './types'
-import { colors } from '@styles/theme'
+import type { ResetPasswordFormProps, ResetPasswordStep } from "./types";
+import { colors } from "@styles/theme";
 
 export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPasswordFormProps) => {
-  const runAction = useAction()
+  const runAction = useAction();
 
-  const [step, setStep] = useState<ResetPasswordStep>('email')
-  const [email, setEmail] = useState<string>(initialEmail || '')
-  const [code, setCode] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
-  const [resetToken, setResetToken] = useState<string>('')
+  const [step, setStep] = useState<ResetPasswordStep>("email");
+  const [email, setEmail] = useState<string>(initialEmail || "");
+  const [code, setCode] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [resetToken, setResetToken] = useState<string>("");
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [emailError, setEmailError] = useState<string | undefined>()
-  const [codeError, setCodeError] = useState<string | undefined>()
-  const [passwordError, setPasswordError] = useState<string | undefined>()
-  const [confirmPasswordError, setConfirmPasswordError] = useState<string | undefined>()
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<string | undefined>();
+  const [codeError, setCodeError] = useState<string | undefined>();
+  const [passwordError, setPasswordError] = useState<string | undefined>();
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | undefined>();
 
-  const isEmailPredefined = !!initialEmail
+  const isEmailPredefined = !!initialEmail;
 
   const handleRequestCode = async (e?: FormEvent) => {
-    if (e) e.preventDefault()
+    if (e) e.preventDefault();
 
-    const targetEmail = email.trim()
-    const { email: emailValidationError } = getFormErrors(resetEmailSchema, { email: targetEmail })
+    const targetEmail = email.trim();
+    const { email: emailValidationError } = getFormErrors(resetEmailSchema, { email: targetEmail });
     if (emailValidationError) {
-      setEmailError(emailValidationError)
-      return
+      setEmailError(emailValidationError);
+      return;
     }
 
-    setEmailError(undefined)
-    setIsLoading(true)
+    setEmailError(undefined);
+    setIsLoading(true);
 
     await runAction({
-      action: () => requestCodeAction('password_reset', { email: targetEmail }),
+      action: () => requestCodeAction("password_reset", { email: targetEmail }),
       toastMessages: {
-        success: 'Código de verificação enviado com sucesso!',
-        error: 'Falha ao solicitar código',
-        errorTitle: 'Erro na verificação',
+        success: "Código de verificação enviado com sucesso!",
+        error: "Falha ao solicitar código",
+        errorTitle: "Erro na verificação",
         preferApiErrorMessage: true
       },
-      callback: () => setStep('code')
-    })
+      callback: () => setStep("code")
+    });
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleVerifyCode = async (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const targetCode = code.trim()
-    const { code: codeValidationError } = getFormErrors(verificationCodeSchema, { code: targetCode })
+    const targetCode = code.trim();
+    const { code: codeValidationError } = getFormErrors(verificationCodeSchema, { code: targetCode });
     if (codeValidationError) {
-      setCodeError(codeValidationError)
-      return
+      setCodeError(codeValidationError);
+      return;
     }
 
-    setCodeError(undefined)
-    setIsLoading(true)
+    setCodeError(undefined);
+    setIsLoading(true);
 
     await runAction({
       action: async () => {
-        const response = await verifyCodeAction('password_reset', { email: email.trim(), code: targetCode })
-        if (!response.resetToken) throw new Error('Token de redefinição não retornado pelo servidor')
-        return response.resetToken
+        const response = await verifyCodeAction("password_reset", { email: email.trim(), code: targetCode });
+        if (!response.resetToken) throw new Error("Token de redefinição não retornado pelo servidor");
+        return response.resetToken;
       },
       toastMessages: {
-        success: 'Código verificado com sucesso!',
-        error: 'Código de verificação inválido ou expirado',
-        errorTitle: 'Erro na validação',
+        success: "Código verificado com sucesso!",
+        error: "Código de verificação inválido ou expirado",
+        errorTitle: "Erro na validação",
         preferApiErrorMessage: true
       },
       callback: (token) => {
-        setResetToken(token)
-        setStep('password')
+        setResetToken(token);
+        setStep("password");
       }
-    })
+    });
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const validationErrors = getFormErrors(newPasswordSchema, { password, confirmPassword })
-    setPasswordError(validationErrors.password)
-    setConfirmPasswordError(validationErrors.confirmPassword)
+    const validationErrors = getFormErrors(newPasswordSchema, { password, confirmPassword });
+    setPasswordError(validationErrors.password);
+    setConfirmPasswordError(validationErrors.confirmPassword);
 
-    if (validationErrors.password || validationErrors.confirmPassword) return
+    if (validationErrors.password || validationErrors.confirmPassword) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     await runAction({
       action: () => resetPasswordAction({ token: resetToken, password }),
       toastMessages: {
-        success: 'Senha redefinida com sucesso!',
-        error: 'Falha ao redefinir senha',
-        errorTitle: 'Erro na redefinição',
+        success: "Senha redefinida com sucesso!",
+        error: "Falha ao redefinir senha",
+        errorTitle: "Erro na redefinição",
         preferApiErrorMessage: true
       },
-      callback: () => setStep('success')
-    })
+      callback: () => setStep("success")
+    });
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
-  if (step === 'success') {
+  if (step === "success") {
     return (
       <Stack align="center" gap="lg" py="md" w="100%">
         <ThemeIcon size={64} radius="xl" color="teal" variant="light">
@@ -141,14 +141,20 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           </Box>
         )}
       </Stack>
-    )
+    );
   }
 
-  if (step === 'code') {
+  if (step === "code") {
     return (
-      <form onSubmit={handleVerifyCode} noValidate style={{ width: '100%' }}>
+      <form onSubmit={handleVerifyCode} noValidate style={{ width: "100%" }}>
         <Stack gap="md">
-          <Paper p="sm" radius="md" bg={alpha(colors.indigo500, 0.08)} withBorder style={{ borderColor: alpha(colors.indigo500, 0.2) }}>
+          <Paper
+            p="sm"
+            radius="md"
+            bg={alpha(colors.indigo500, 0.08)}
+            withBorder
+            style={{ borderColor: alpha(colors.indigo500, 0.2) }}
+          >
             <Text size="xs" c="indigo.2">
               Código de verificação enviado para <b>{email}</b>. Verifique sua caixa de entrada.
             </Text>
@@ -161,8 +167,8 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             placeholder="Digite o código de 6 dígitos"
             value={code}
             onChange={(e) => {
-              setCode(e.target.value)
-              if (codeError) setCodeError(undefined)
+              setCode(e.target.value);
+              if (codeError) setCodeError(undefined);
             }}
             error={codeError}
             leftIcon={<TbKey size={18} />}
@@ -200,7 +206,7 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setStep('email')}
+                onClick={() => setStep("email")}
                 disabled={isLoading}
                 leftIcon={<TbArrowLeft size={14} />}
               >
@@ -210,12 +216,12 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           </Group>
         </Stack>
       </form>
-    )
+    );
   }
 
-  if (step === 'password') {
+  if (step === "password") {
     return (
-      <form onSubmit={handleResetPassword} noValidate style={{ width: '100%' }}>
+      <form onSubmit={handleResetPassword} noValidate style={{ width: "100%" }}>
         <Stack gap="md">
           <Input
             label="Nova Senha"
@@ -224,8 +230,8 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             placeholder="No mínimo 8 caracteres"
             value={password}
             onChange={(e) => {
-              setPassword(e.target.value)
-              if (passwordError) setPasswordError(undefined)
+              setPassword(e.target.value);
+              if (passwordError) setPasswordError(undefined);
             }}
             error={passwordError}
             leftIcon={<TbLock size={18} />}
@@ -239,8 +245,8 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             placeholder="Confirme sua nova senha"
             value={confirmPassword}
             onChange={(e) => {
-              setConfirmPassword(e.target.value)
-              if (confirmPasswordError) setConfirmPasswordError(undefined)
+              setConfirmPassword(e.target.value);
+              if (confirmPasswordError) setConfirmPasswordError(undefined);
             }}
             error={confirmPasswordError}
             leftIcon={<TbLock size={18} />}
@@ -261,11 +267,11 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
           </Box>
         </Stack>
       </form>
-    )
+    );
   }
 
   return (
-    <form onSubmit={handleRequestCode} noValidate style={{ width: '100%' }}>
+    <form onSubmit={handleRequestCode} noValidate style={{ width: "100%" }}>
       <Stack gap="md">
         {isEmailPredefined ? (
           <Paper
@@ -297,8 +303,8 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             placeholder="seu.email@exemplo.com"
             value={email}
             onChange={(e) => {
-              setEmail(e.target.value)
-              if (emailError) setEmailError(undefined)
+              setEmail(e.target.value);
+              if (emailError) setEmailError(undefined);
             }}
             error={emailError}
             leftIcon={<TbMail size={18} />}
@@ -315,26 +321,20 @@ export const ResetPasswordForm = ({ initialEmail, onSuccess, onCancel }: ResetPa
             isLoading={isLoading}
             leftIcon={<TbSend size={18} />}
           >
-            {isEmailPredefined ? 'Enviar Código para Meu E-mail' : 'Enviar Código de Recuperação'}
+            {isEmailPredefined ? "Enviar Código para Meu E-mail" : "Enviar Código de Recuperação"}
           </Button>
         </Box>
 
         {onCancel && (
           <Box ta="center" mt="xs">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={onCancel}
-              leftIcon={<TbArrowLeft size={14} />}
-            >
+            <Button type="button" variant="ghost" size="sm" onClick={onCancel} leftIcon={<TbArrowLeft size={14} />}>
               Voltar
             </Button>
           </Box>
         )}
       </Stack>
     </form>
-  )
-}
+  );
+};
 
-export default ResetPasswordForm
+export default ResetPasswordForm;

@@ -1,3 +1,3 @@
 export interface ProfilePerformanceWeightsCardProps {
-  className?: string
+  className?: string;
 }

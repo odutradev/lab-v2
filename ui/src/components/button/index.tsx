@@ -1,29 +1,29 @@
-import { Button as MantineButton, type ButtonVariant as MantineVariant } from '@mantine/core'
+import { Button as MantineButton, type ButtonVariant as MantineVariant } from "@mantine/core";
 
-import type { ButtonProps, ButtonVariant } from './types'
+import type { ButtonProps, ButtonVariant } from "./types";
 
 const variantMap: Record<ButtonVariant, { variant: MantineVariant; color?: string }> = {
-  primary: { variant: 'filled', color: 'indigo' },
-  secondary: { variant: 'light', color: 'indigo' },
-  outline: { variant: 'outline', color: 'indigo' },
-  ghost: { variant: 'subtle', color: 'gray' },
-  danger: { variant: 'filled', color: 'red' }
-}
+  primary: { variant: "filled", color: "indigo" },
+  secondary: { variant: "light", color: "indigo" },
+  outline: { variant: "outline", color: "indigo" },
+  ghost: { variant: "subtle", color: "gray" },
+  danger: { variant: "filled", color: "red" }
+};
 
 export const Button = ({
   children,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   isLoading = false,
   leftIcon,
   rightIcon,
   fullWidth = false,
   disabled,
   className,
-  type = 'button',
+  type = "button",
   ...props
 }: ButtonProps) => {
-  const config = variantMap[variant]
+  const config = variantMap[variant];
 
   return (
     <MantineButton
@@ -46,7 +46,7 @@ export const Button = ({
     >
       {children}
     </MantineButton>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;

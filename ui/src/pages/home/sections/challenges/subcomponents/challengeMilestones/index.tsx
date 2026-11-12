@@ -1,33 +1,35 @@
-import { SimpleGrid, Box, Text, Group, ThemeIcon, Progress, alpha } from '@mantine/core'
-import { TbCheck } from 'react-icons/tb'
+import { SimpleGrid, Box, Text, Group, ThemeIcon, Progress, alpha } from "@mantine/core";
+import { TbCheck } from "react-icons/tb";
 
-import type { ChallengeMilestone } from '@utils/functions/challenges'
-import { colors } from '@styles/theme'
+import type { ChallengeMilestone } from "@utils/functions/challenges";
+import { colors } from "@styles/theme";
 
 interface ChallengeMilestonesProps {
-  milestones: ChallengeMilestone[]
-  completedDays: number
+  milestones: ChallengeMilestone[];
+  completedDays: number;
 }
 
 export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMilestonesProps) => {
   return (
     <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs">
       {milestones.map((m) => {
-        const isAchieved = m.achieved
-        const progressPct = Math.min(100, Math.round((completedDays / m.days) * 100))
+        const isAchieved = m.achieved;
+        const progressPct = Math.min(100, Math.round((completedDays / m.days) * 100));
 
         return (
           <Box
             key={m.days}
             style={{
-              padding: '12px',
+              padding: "12px",
               borderRadius: 12,
               backgroundColor: isAchieved ? alpha(colors.emerald500, 0.08) : alpha(colors.white, 0.03),
-              border: isAchieved ? `1px solid ${alpha(colors.emerald500, 0.3)}` : `1px solid ${alpha(colors.white, 0.08)}`,
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
+              border: isAchieved
+                ? `1px solid ${alpha(colors.emerald500, 0.3)}`
+                : `1px solid ${alpha(colors.white, 0.08)}`,
+              transition: "all 0.2s ease",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between"
             }}
           >
             <Group justify="space-between" align="center" mb={6}>
@@ -44,27 +46,19 @@ export const ChallengeMilestones = ({ milestones, completedDays }: ChallengeMile
             </Group>
 
             <Box>
-              <Text size="xs" fw={700} c={isAchieved ? 'teal.3' : 'white'} lineClamp={1}>
+              <Text size="xs" fw={700} c={isAchieved ? "teal.3" : "white"} lineClamp={1}>
                 {m.title}
               </Text>
               <Text size="10px" c="dimmed" mt={2}>
-                {isAchieved ? 'Conquistado! 🎉' : `Faltam ${m.remainingDays}d`}
+                {isAchieved ? "Conquistado! 🎉" : `Faltam ${m.remainingDays}d`}
               </Text>
-              {!isAchieved && (
-                <Progress
-                  value={progressPct}
-                  size="xs"
-                  mt={6}
-                  radius="xl"
-                  color="indigo"
-                />
-              )}
+              {!isAchieved && <Progress value={progressPct} size="xs" mt={6} radius="xl" color="indigo" />}
             </Box>
           </Box>
-        )
+        );
       })}
     </SimpleGrid>
-  )
-}
+  );
+};
 
-export default ChallengeMilestones
+export default ChallengeMilestones;

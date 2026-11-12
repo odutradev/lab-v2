@@ -1,47 +1,46 @@
-import { TbMail, TbLock, TbUser, TbUserPlus } from 'react-icons/tb'
-import { Stack, Box } from '@mantine/core'
+import { TbMail, TbLock, TbUser, TbUserPlus } from "react-icons/tb";
+import { Stack, Box } from "@mantine/core";
 
-import Button from '@components/button'
-import Input from '@components/input'
-import useAuthStore from '@stores/auth'
-import useAction from '@hooks/useAction'
-import { registerSchema } from '@utils/validations/auth'
-import useForm from '@hooks/useForm'
+import Button from "@components/button";
+import Input from "@components/input";
+import useAuthStore from "@stores/auth";
+import useAction from "@hooks/useAction";
+import { registerSchema } from "@utils/validations/auth";
+import useForm from "@hooks/useForm";
 
-import type { RegisterFormValues } from './types'
+import type { RegisterFormValues } from "./types";
 
 export const RegisterForm = () => {
-  const { register } = useAuthStore()
-  const runAction = useAction()
+  const { register } = useAuthStore();
+  const runAction = useAction();
 
-  const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } =
-    useForm<RegisterFormValues>({
-      initialValues: {
-        name: '',
-        email: '',
-        password: ''
-      },
-      schema: registerSchema,
-      onSubmit: async (formValues) => {
-        await runAction({
-          action: () =>
-            register({
-              name: formValues.name.trim(),
-              email: formValues.email.trim(),
-              password: formValues.password
-            }),
-          toastMessages: {
-            success: 'Conta criada com sucesso!',
-            error: 'Falha ao realizar cadastro',
-            errorTitle: 'Erro no cadastro',
-            preferApiErrorMessage: true
-          }
-        })
-      }
-    })
+  const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } = useForm<RegisterFormValues>({
+    initialValues: {
+      name: "",
+      email: "",
+      password: ""
+    },
+    schema: registerSchema,
+    onSubmit: async (formValues) => {
+      await runAction({
+        action: () =>
+          register({
+            name: formValues.name.trim(),
+            email: formValues.email.trim(),
+            password: formValues.password
+          }),
+        toastMessages: {
+          success: "Conta criada com sucesso!",
+          error: "Falha ao realizar cadastro",
+          errorTitle: "Erro no cadastro",
+          preferApiErrorMessage: true
+        }
+      });
+    }
+  });
 
   return (
-    <form onSubmit={handleSubmit} noValidate style={{ width: '100%' }}>
+    <form onSubmit={handleSubmit} noValidate style={{ width: "100%" }}>
       <Stack gap="md">
         <Input
           label="Nome Completo"
@@ -95,7 +94,7 @@ export const RegisterForm = () => {
         </Box>
       </Stack>
     </form>
-  )
-}
+  );
+};
 
-export default RegisterForm
+export default RegisterForm;

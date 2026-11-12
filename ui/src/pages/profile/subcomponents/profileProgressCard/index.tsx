@@ -1,79 +1,69 @@
-import { Group, Box, Text, Progress, SimpleGrid, ThemeIcon, alpha } from '@mantine/core'
-import {
-  TbRuler,
-  TbCalendarTime,
-  TbBrandGoogle,
-  TbCheck,
-  TbAlertCircle,
-  TbArrowDown
-} from 'react-icons/tb'
+import { Group, Box, Text, Progress, SimpleGrid, ThemeIcon, alpha } from "@mantine/core";
+import { TbRuler, TbCalendarTime, TbBrandGoogle, TbCheck, TbAlertCircle, TbArrowDown } from "react-icons/tb";
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
-import Badge from '@components/badge'
-import Button from '@components/button'
-import useHealthStore from '@stores/health'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
+import Badge from "@components/badge";
+import Button from "@components/button";
+import useHealthStore from "@stores/health";
 
-import type { ProfileProgressCardProps } from './types'
-import { colors } from '@styles/theme'
+import type { ProfileProgressCardProps } from "./types";
+import { colors } from "@styles/theme";
 
-export const ProfileProgressCard = ({
-  calendarStatus,
-  onConnectCalendar
-}: ProfileProgressCardProps) => {
-  const { profile } = useHealthStore()
+export const ProfileProgressCard = ({ calendarStatus, onConnectCalendar }: ProfileProgressCardProps) => {
+  const { profile } = useHealthStore();
 
-  const hasHeight = Boolean(profile.height && profile.height > 0)
-  const hasAge = Boolean(profile.age && profile.age > 0)
-  const hasCalendar = Boolean(calendarStatus?.connected && !calendarStatus?.calendarDeleted)
+  const hasHeight = Boolean(profile.height && profile.height > 0);
+  const hasAge = Boolean(profile.age && profile.age > 0);
+  const hasCalendar = Boolean(calendarStatus?.connected && !calendarStatus?.calendarDeleted);
 
   const steps = [
     {
-      key: 'height',
-      title: 'Altura',
+      key: "height",
+      title: "Altura",
       completed: hasHeight,
       valueText: profile.height ? `${(profile.height / 100).toFixed(2)} m` : undefined,
-      description: 'Necessária para cálculo do IMC e metas metabólicas',
+      description: "Necessária para cálculo do IMC e metas metabólicas",
       icon: TbRuler,
       iconColor: colors.sky400,
-      targetId: 'profile-physical-card'
+      targetId: "profile-physical-card"
     },
     {
-      key: 'age',
-      title: 'Idade',
+      key: "age",
+      title: "Idade",
       completed: hasAge,
       valueText: hasAge ? `${profile.age} anos` : undefined,
-      description: 'Necessária para calibrar taxa metabólica e hidratação',
+      description: "Necessária para calibrar taxa metabólica e hidratação",
       icon: TbCalendarTime,
       iconColor: colors.purple500,
-      targetId: 'profile-physical-card'
+      targetId: "profile-physical-card"
     },
     {
-      key: 'calendar',
-      title: 'Google Agenda',
+      key: "calendar",
+      title: "Google Agenda",
       completed: hasCalendar,
-      valueText: hasCalendar ? 'Sincronizado' : undefined,
-      description: 'Sincronize seus hábitos diretamente na sua agenda',
+      valueText: hasCalendar ? "Sincronizado" : undefined,
+      description: "Sincronize seus hábitos diretamente na sua agenda",
       icon: TbBrandGoogle,
       iconColor: colors.indigo400,
-      targetId: 'profile-security-card',
+      targetId: "profile-security-card",
       action: onConnectCalendar
     }
-  ]
+  ];
 
-  const totalSteps = steps.length
-  const completedSteps = steps.filter((s) => s.completed).length
-  const percentage = Math.round((completedSteps / totalSteps) * 100)
+  const totalSteps = steps.length;
+  const completedSteps = steps.filter((s) => s.completed).length;
+  const percentage = Math.round((completedSteps / totalSteps) * 100);
 
   if (completedSteps === totalSteps) {
-    return null
+    return null;
   }
 
   const handleScrollTo = (targetId: string) => {
-    const element = document.getElementById(targetId)
+    const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }
+  };
 
   return (
     <Card>
@@ -82,9 +72,7 @@ export const ProfileProgressCard = ({
           <Box>
             <Group gap="xs" align="center">
               <CardTitle>Complete seu Perfil</CardTitle>
-              <Badge variant={percentage >= 66 ? 'info' : 'warning'}>
-                {percentage}% concluído
-              </Badge>
+              <Badge variant={percentage >= 66 ? "info" : "warning"}>{percentage}% concluído</Badge>
             </Group>
             <CardDescription>
               Faltam {totalSteps - completedSteps} item(ns) para completar suas informações essenciais
@@ -101,7 +89,7 @@ export const ProfileProgressCard = ({
             value={percentage}
             size="md"
             radius="xl"
-            color={percentage >= 66 ? 'cyan' : 'indigo'}
+            color={percentage >= 66 ? "cyan" : "indigo"}
             animated={percentage > 0}
           />
         </Box>
@@ -110,24 +98,18 @@ export const ProfileProgressCard = ({
       <CardContent>
         <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
           {steps.map((step) => {
-            const Icon = step.icon
+            const Icon = step.icon;
             return (
               <Box
                 key={step.key}
                 p="md"
                 style={{
-                  borderRadius: '8px',
-                  backgroundColor: step.completed
-                    ? alpha(colors.green500, 0.05)
-                    : alpha(colors.white, 0.03),
-                  border: `1px solid ${
-                    step.completed
-                      ? alpha(colors.green500, 0.2)
-                      : alpha(colors.white, 0.08)
-                  }`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
+                  borderRadius: "8px",
+                  backgroundColor: step.completed ? alpha(colors.green500, 0.05) : alpha(colors.white, 0.03),
+                  border: `1px solid ${step.completed ? alpha(colors.green500, 0.2) : alpha(colors.white, 0.08)}`,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                   gap: 12
                 }}
               >
@@ -138,11 +120,9 @@ export const ProfileProgressCard = ({
                         size="md"
                         radius="md"
                         variant="light"
-                        color={step.completed ? 'teal' : 'gray'}
+                        color={step.completed ? "teal" : "gray"}
                         style={{
-                          backgroundColor: step.completed
-                            ? alpha(colors.green500, 0.15)
-                            : alpha(colors.white, 0.06)
+                          backgroundColor: step.completed ? alpha(colors.green500, 0.15) : alpha(colors.white, 0.06)
                         }}
                       >
                         <Icon size={18} color={step.completed ? colors.green400 : step.iconColor} />
@@ -152,11 +132,11 @@ export const ProfileProgressCard = ({
                       </Text>
                     </Group>
 
-                    <Badge variant={step.completed ? 'success' : 'warning'}>
+                    <Badge variant={step.completed ? "success" : "warning"}>
                       {step.completed ? (
                         <Group gap={4} align="center">
                           <TbCheck size={12} />
-                          <span>{step.valueText || 'Concluído'}</span>
+                          <span>{step.valueText || "Concluído"}</span>
                         </Group>
                       ) : (
                         <Group gap={4} align="center">
@@ -174,7 +154,7 @@ export const ProfileProgressCard = ({
 
                 {!step.completed && (
                   <Group justify="flex-end" pt={4}>
-                    {step.key === 'calendar' && step.action ? (
+                    {step.key === "calendar" && step.action ? (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -198,12 +178,12 @@ export const ProfileProgressCard = ({
                   </Group>
                 )}
               </Box>
-            )
+            );
           })}
         </SimpleGrid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProfileProgressCard
+export default ProfileProgressCard;

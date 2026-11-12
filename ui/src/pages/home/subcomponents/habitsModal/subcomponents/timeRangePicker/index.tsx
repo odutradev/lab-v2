@@ -1,38 +1,38 @@
-import { useState, useMemo, useRef } from 'react'
-import { Group, Text, Box, Checkbox, Popover, ScrollArea, alpha } from '@mantine/core'
-import { TbClock } from 'react-icons/tb'
+import { useState, useMemo, useRef } from "react";
+import { Group, Text, Box, Checkbox, Popover, ScrollArea, alpha } from "@mantine/core";
+import { TbClock } from "react-icons/tb";
 
-import type { TimeRangePickerProps } from './types'
-import { colors } from '@styles/theme'
+import type { TimeRangePickerProps } from "./types";
+import { colors } from "@styles/theme";
 
 const formatDurationLabel = (diffMinutes: number): string => {
   if (diffMinutes < 60) {
-    return `${diffMinutes} min`
+    return `${diffMinutes} min`;
   }
-  const hours = diffMinutes / 60
+  const hours = diffMinutes / 60;
   if (Number.isInteger(hours)) {
-    return `${hours} h`
+    return `${hours} h`;
   }
   if (diffMinutes % 30 === 0) {
-    return `${hours.toString().replace('.', ',')} h`
+    return `${hours.toString().replace(".", ",")} h`;
   }
-  const h = Math.floor(diffMinutes / 60)
-  const m = diffMinutes % 60
-  return `${h} h ${m} min`
-}
+  const h = Math.floor(diffMinutes / 60);
+  const m = diffMinutes % 60;
+  return `${h} h ${m} min`;
+};
 
 const parseTimeToMinutes = (timeStr: string): number => {
-  if (!timeStr) return 0
-  const [h, m] = timeStr.split(':').map(Number)
-  return (h || 0) * 60 + (m || 0)
-}
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
+};
 
 const minutesToTimeString = (totalMinutes: number): string => {
-  const normalized = ((totalMinutes % 1440) + 1440) % 1440
-  const h = Math.floor(normalized / 60)
-  const m = normalized % 60
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-}
+  const normalized = ((totalMinutes % 1440) + 1440) % 1440;
+  const h = Math.floor(normalized / 60);
+  const m = normalized % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+};
 
 export const TimeRangePicker = ({
   allDay,
@@ -42,64 +42,62 @@ export const TimeRangePicker = ({
   onStartTimeChange,
   onEndTimeChange
 }: TimeRangePickerProps) => {
-  const [isEndMenuOpen, setIsEndMenuOpen] = useState(false)
-  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
-  const endInputRef = useRef<HTMLInputElement>(null)
+  const [isEndMenuOpen, setIsEndMenuOpen] = useState(false);
+  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
+  const endInputRef = useRef<HTMLInputElement>(null);
 
   const startTimeOptions = useMemo(() => {
-    const list: string[] = []
+    const list: string[] = [];
     for (let m = 0; m < 1440; m += 30) {
-      list.push(minutesToTimeString(m))
+      list.push(minutesToTimeString(m));
     }
-    return list
-  }, [])
+    return list;
+  }, []);
 
   const endTimeOptions = useMemo(() => {
-    const baseMinutes = startTime ? parseTimeToMinutes(startTime) : 480
-    const options: { time: string; durationLabel: string; isSelected: boolean }[] = []
+    const baseMinutes = startTime ? parseTimeToMinutes(startTime) : 480;
+    const options: { time: string; durationLabel: string; isSelected: boolean }[] = [];
 
-    const minuteSteps = [
-      15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 210, 240, 300, 360, 420, 480, 540, 600, 720
-    ]
+    const minuteSteps = [15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 210, 240, 300, 360, 420, 480, 540, 600, 720];
 
     for (const step of minuteSteps) {
-      const targetMinutes = baseMinutes + step
-      const timeStr = minutesToTimeString(targetMinutes)
+      const targetMinutes = baseMinutes + step;
+      const timeStr = minutesToTimeString(targetMinutes);
       options.push({
         time: timeStr,
         durationLabel: formatDurationLabel(step),
         isSelected: endTime === timeStr
-      })
+      });
     }
 
-    return options
-  }, [startTime, endTime])
+    return options;
+  }, [startTime, endTime]);
 
   const handleSelectStartTime = (time: string) => {
-    onStartTimeChange(time)
-    setIsStartMenuOpen(false)
+    onStartTimeChange(time);
+    setIsStartMenuOpen(false);
 
-    const currentEndMin = endTime ? parseTimeToMinutes(endTime) : null
-    const newStartMin = parseTimeToMinutes(time)
+    const currentEndMin = endTime ? parseTimeToMinutes(endTime) : null;
+    const newStartMin = parseTimeToMinutes(time);
 
     if (currentEndMin === null || currentEndMin <= newStartMin) {
-      onEndTimeChange(minutesToTimeString(newStartMin + 60))
+      onEndTimeChange(minutesToTimeString(newStartMin + 60));
     }
-  }
+  };
 
   const handleSelectEndTime = (time: string) => {
-    onEndTimeChange(time)
-    setIsEndMenuOpen(false)
-  }
+    onEndTimeChange(time);
+    setIsEndMenuOpen(false);
+  };
 
   const currentDuration = useMemo(() => {
-    if (!startTime || !endTime) return null
-    const startMin = parseTimeToMinutes(startTime)
-    const endMin = parseTimeToMinutes(endTime)
-    let diff = endMin - startMin
-    if (diff <= 0) diff += 1440
-    return formatDurationLabel(diff)
-  }, [startTime, endTime])
+    if (!startTime || !endTime) return null;
+    const startMin = parseTimeToMinutes(startTime);
+    const endMin = parseTimeToMinutes(endTime);
+    let diff = endMin - startMin;
+    if (diff <= 0) diff += 1440;
+    return formatDurationLabel(diff);
+  }, [startTime, endTime]);
 
   return (
     <Box>
@@ -113,8 +111,8 @@ export const TimeRangePicker = ({
           checked={allDay}
           onChange={(e) => onAllDayChange(e.currentTarget.checked)}
           styles={{
-            label: { color: colors.gray400, fontSize: 12, cursor: 'pointer' },
-            input: { cursor: 'pointer' }
+            label: { color: colors.gray400, fontSize: 12, cursor: "pointer" },
+            input: { cursor: "pointer" }
           }}
         />
       </Group>
@@ -132,22 +130,22 @@ export const TimeRangePicker = ({
               <Box
                 onClick={() => setIsStartMenuOpen((o) => !o)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                   backgroundColor: alpha(colors.white, 0.04),
                   border: isStartMenuOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
                   borderRadius: 10,
-                  padding: '8px 12px',
-                  cursor: 'pointer',
+                  padding: "8px 12px",
+                  cursor: "pointer",
                   height: 42,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 <Group gap={8} wrap="nowrap">
                   <TbClock size={16} color={colors.gray400} />
                   <Text size="sm" fw={500} c={startTime ? colors.white : colors.gray400}>
-                    {startTime || '00:00'}
+                    {startTime || "00:00"}
                   </Text>
                 </Group>
                 <Text size="xs" c="dimmed" fw={400}>
@@ -166,7 +164,7 @@ export const TimeRangePicker = ({
             >
               <ScrollArea.Autosize mah={220} type="auto">
                 {startTimeOptions.map((time) => {
-                  const isSelected = time === startTime
+                  const isSelected = time === startTime;
                   return (
                     <Box
                       key={time}
@@ -175,20 +173,20 @@ export const TimeRangePicker = ({
                       py={6}
                       style={{
                         borderRadius: 6,
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                        cursor: "pointer",
+                        backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : "transparent",
                         color: isSelected ? colors.white : colors.gray300,
                         fontWeight: isSelected ? 600 : 400,
                         fontSize: 13,
-                        transition: 'background-color 0.1s ease',
-                        '&:hover': {
+                        transition: "background-color 0.1s ease",
+                        "&:hover": {
                           backgroundColor: alpha(colors.white, 0.08)
                         }
                       }}
                     >
                       {time}
                     </Box>
-                  )
+                  );
                 })}
               </ScrollArea.Autosize>
             </Popover.Dropdown>
@@ -206,21 +204,21 @@ export const TimeRangePicker = ({
                 ref={endInputRef}
                 onClick={() => setIsEndMenuOpen((o) => !o)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                   backgroundColor: alpha(colors.white, 0.04),
                   border: isEndMenuOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
                   borderRadius: 10,
-                  padding: '8px 12px',
-                  cursor: 'pointer',
+                  padding: "8px 12px",
+                  cursor: "pointer",
                   height: 42,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 <Group gap={8} wrap="nowrap">
                   <Text size="sm" fw={500} c={endTime ? colors.white : colors.gray400}>
-                    {endTime || (startTime ? minutesToTimeString(parseTimeToMinutes(startTime) + 60) : '01:00')}
+                    {endTime || (startTime ? minutesToTimeString(parseTimeToMinutes(startTime) + 60) : "01:00")}
                   </Text>
                   {currentDuration && (
                     <Text
@@ -228,7 +226,7 @@ export const TimeRangePicker = ({
                       c={colors.gray400}
                       style={{
                         backgroundColor: alpha(colors.white, 0.06),
-                        padding: '1px 6px',
+                        padding: "1px 6px",
                         borderRadius: 4,
                         fontSize: 11
                       }}
@@ -262,16 +260,16 @@ export const TimeRangePicker = ({
                       py={7}
                       style={{
                         borderRadius: 6,
-                        cursor: 'pointer',
-                        backgroundColor: opt.isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                        cursor: "pointer",
+                        backgroundColor: opt.isSelected ? alpha(colors.indigo500, 0.25) : "transparent",
                         color: opt.isSelected ? colors.white : colors.gray300,
                         fontSize: 13,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                         gap: 12,
-                        transition: 'background-color 0.1s ease',
-                        '&:hover': {
+                        transition: "background-color 0.1s ease",
+                        "&:hover": {
                           backgroundColor: alpha(colors.white, 0.08)
                         }
                       }}
@@ -283,7 +281,7 @@ export const TimeRangePicker = ({
                         ({opt.durationLabel})
                       </Text>
                     </Box>
-                  )
+                  );
                 })}
               </ScrollArea.Autosize>
             </Popover.Dropdown>
@@ -293,9 +291,9 @@ export const TimeRangePicker = ({
         <Box
           style={{
             height: 42,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             gap: 8,
             backgroundColor: alpha(colors.white, 0.02),
             borderRadius: 10,
@@ -309,7 +307,7 @@ export const TimeRangePicker = ({
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default TimeRangePicker
+export default TimeRangePicker;

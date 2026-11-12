@@ -1,8 +1,8 @@
-import type { TermsOfServicePageProps } from '../types'
+import type { TermsOfServicePageProps } from "../types";
 
-export type UseTermsOfServiceOptions = TermsOfServicePageProps
+export type UseTermsOfServiceOptions = TermsOfServicePageProps;
 
 export interface UseTermsOfServiceReturn {
-  lastUpdated: string
-  handleBack: () => void
+  lastUpdated: string;
+  handleBack: () => void;
 }

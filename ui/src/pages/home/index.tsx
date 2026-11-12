@@ -1,34 +1,34 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Stack, Box, Grid, Text, alpha } from '@mantine/core'
-import { TbRulerMeasure, TbUser } from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Stack, Box, Grid, Text, alpha } from "@mantine/core";
+import { TbRulerMeasure, TbUser } from "react-icons/tb";
 
-import Card from '@components/card'
-import Button from '@components/button'
-import useHealthStore from '@stores/health'
+import Card from "@components/card";
+import Button from "@components/button";
+import useHealthStore from "@stores/health";
 
-import HabitsCalendarToolbar from './subcomponents/habitsCalendarToolbar'
-import HabitsMonthView from './subcomponents/habitsMonthView'
-import HabitsWeekView from './subcomponents/habitsWeekView'
-import HabitsDayView from './subcomponents/habitsDayView'
-import HabitsModal from './subcomponents/habitsModal'
-import RecurringScopeModal from './subcomponents/recurringScopeModal'
-import CalendarSettingsModal from './subcomponents/calendarSettingsModal'
-import GeneralPerformanceCard from './subcomponents/generalPerformanceCard'
-import WeightImcCard from './subcomponents/weightImcCard'
-import SleepTrackerCard from './subcomponents/sleepTrackerCard'
-import CompactWaterCard from './subcomponents/compactWaterCard'
-import ChallengesSection from './sections/challenges'
-import { containerStyle } from './styles'
-import useHomePage from './hook'
-import useMonthlyMetrics from './hook/useMonthlyMetrics'
+import HabitsCalendarToolbar from "./subcomponents/habitsCalendarToolbar";
+import HabitsMonthView from "./subcomponents/habitsMonthView";
+import HabitsWeekView from "./subcomponents/habitsWeekView";
+import HabitsDayView from "./subcomponents/habitsDayView";
+import HabitsModal from "./subcomponents/habitsModal";
+import RecurringScopeModal from "./subcomponents/recurringScopeModal";
+import CalendarSettingsModal from "./subcomponents/calendarSettingsModal";
+import GeneralPerformanceCard from "./subcomponents/generalPerformanceCard";
+import WeightImcCard from "./subcomponents/weightImcCard";
+import SleepTrackerCard from "./subcomponents/sleepTrackerCard";
+import CompactWaterCard from "./subcomponents/compactWaterCard";
+import ChallengesSection from "./sections/challenges";
+import { containerStyle } from "./styles";
+import useHomePage from "./hook";
+import useMonthlyMetrics from "./hook/useMonthlyMetrics";
 
-import type { CreateHabitFormData } from './subcomponents/habitsModal/types'
-import type { RecurrenceScopeMode } from '@actions/habits/types'
-import { colors } from '@styles/theme'
+import type { CreateHabitFormData } from "./subcomponents/habitsModal/types";
+import type { RecurrenceScopeMode } from "@actions/habits/types";
+import { colors } from "@styles/theme";
 
 export const HomePage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     selectedDate,
     todayStr,
@@ -63,7 +63,7 @@ export const HomePage = () => {
     handleOpenSettingsModal,
     handleCloseSettingsModal,
     handleReloadCalendar
-  } = useHomePage()
+  } = useHomePage();
 
   const {
     profile: healthProfile,
@@ -78,306 +78,317 @@ export const HomePage = () => {
     addExtraWaterBottle: handleAddExtraWaterBottle,
     removeExtraWaterBottle: handleRemoveExtraWaterBottle,
     updateWaterSettings: handleUpdateWaterSettings
-  } = useHealthStore()
+  } = useHealthStore();
 
-  const [metricsRevision, setMetricsRevision] = useState(0)
-  const [hoveredDate, setHoveredDate] = useState<string | null>(null)
-  const [isMaximized, setIsMaximized] = useState(false)
-  const currentMonth = selectedDate.slice(0, 7)
+  const [metricsRevision, setMetricsRevision] = useState(0);
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const currentMonth = selectedDate.slice(0, 7);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMaximized) {
-        setIsMaximized(false)
+      if (event.key === "Escape" && isMaximized) {
+        setIsMaximized(false);
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isMaximized])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMaximized]);
 
   useEffect(() => {
     if (isMaximized) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ''
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isMaximized])
+      document.body.style.overflow = "";
+    };
+  }, [isMaximized]);
 
   const { metrics, isLoading: isMetricsLoading } = useMonthlyMetrics({
     month: currentMonth,
     triggerRevision: metricsRevision
-  })
+  });
 
   const isBioConfigured = Boolean(
-    healthProfile.height &&
-    healthProfile.age &&
-    healthProfile.height > 0 &&
-    healthProfile.age > 0
-  )
+    healthProfile.height && healthProfile.age && healthProfile.height > 0 && healthProfile.age > 0
+  );
 
-  const consumedWaterBottles = waterDailyMap[selectedDate] || 0
-  const extraWaterBottlesTarget = waterExtraTargetMap[selectedDate] || 0
-  const dayWeightRecord = weightHistory.find((r) => r.date === selectedDate)
-  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
-  const currentWeightForDay = dayWeightRecord?.weight || latestWeight
+  const consumedWaterBottles = waterDailyMap[selectedDate] || 0;
+  const extraWaterBottlesTarget = waterExtraTargetMap[selectedDate] || 0;
+  const dayWeightRecord = weightHistory.find((r) => r.date === selectedDate);
+  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined;
+  const currentWeightForDay = dayWeightRecord?.weight || latestWeight;
 
   const triggerMetricsRefresh = () => {
-    setMetricsRevision((prev) => prev + 1)
-  }
+    setMetricsRevision((prev) => prev + 1);
+  };
 
   const handleToggleCheckinWithMetrics = async (habitId: string, date?: string) => {
-    await handleToggleCheckin(habitId, date)
-    triggerMetricsRefresh()
-  }
+    await handleToggleCheckin(habitId, date);
+    triggerMetricsRefresh();
+  };
 
   const handleSaveHabitWithMetrics = async (data: CreateHabitFormData) => {
-    await handleSaveHabit(data)
-    triggerMetricsRefresh()
-  }
+    await handleSaveHabit(data);
+    triggerMetricsRefresh();
+  };
 
   const handleRemoveHabitWithMetrics = async (habitId: string, date?: string) => {
-    await handleRemoveHabit(habitId, date)
-    triggerMetricsRefresh()
-  }
+    await handleRemoveHabit(habitId, date);
+    triggerMetricsRefresh();
+  };
 
   const handleConfirmScopeActionWithMetrics = async (mode: RecurrenceScopeMode) => {
-    await handleConfirmScopeAction(mode)
-    triggerMetricsRefresh()
-  }
+    await handleConfirmScopeAction(mode);
+    triggerMetricsRefresh();
+  };
 
   const handleToggleWaterWithMetrics = (index: number) => {
-    handleToggleWaterBottle(index, selectedDate)
-    triggerMetricsRefresh()
-  }
+    handleToggleWaterBottle(index, selectedDate);
+    triggerMetricsRefresh();
+  };
 
   const handleAddExtraWaterWithMetrics = () => {
-    handleAddExtraWaterBottle(selectedDate)
-    triggerMetricsRefresh()
-  }
+    handleAddExtraWaterBottle(selectedDate);
+    triggerMetricsRefresh();
+  };
 
   const handleRemoveExtraWaterWithMetrics = () => {
-    handleRemoveExtraWaterBottle(selectedDate)
-    triggerMetricsRefresh()
-  }
+    handleRemoveExtraWaterBottle(selectedDate);
+    triggerMetricsRefresh();
+  };
 
   const handleSaveWeightWithMetrics = (weight: number, date?: string) => {
-    handleSaveWeight(weight, date || selectedDate)
-    triggerMetricsRefresh()
-  }
+    handleSaveWeight(weight, date || selectedDate);
+    triggerMetricsRefresh();
+  };
 
   const handleSaveSleepWithMetrics = (hours: number, quality: number, date?: string) => {
-    handleSaveSleep(hours, quality, date || selectedDate)
-    triggerMetricsRefresh()
-  }
+    handleSaveSleep(hours, quality, date || selectedDate);
+    triggerMetricsRefresh();
+  };
 
   const handleUpdateWaterSettingsWithMetrics = (settings: { bottleMl: number }) => {
-    handleUpdateWaterSettings(settings)
-    triggerMetricsRefresh()
-  }
+    handleUpdateWaterSettings(settings);
+    triggerMetricsRefresh();
+  };
 
   return (
     <Box style={containerStyle}>
-      <Stack gap="md" style={{ flex: 1, minWidth: 0, width: '100%' }}>
+      <Stack gap="md" style={{ flex: 1, minWidth: 0, width: "100%" }}>
         <Grid gap="md" align="stretch" style={{ flex: 1 }}>
-        <Grid.Col span={{ base: 12, lg: 7 }} style={{ display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%', maxWidth: '100%' }}>
-          <Card
-            p={isMaximized ? { base: 'sm', sm: 'md', md: 'xl' } : { base: 'xs', sm: 'md', md: 'xl' }}
-            style={
-              isMaximized
-                ? {
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    zIndex: 150,
-                    borderRadius: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: 0,
-                    minWidth: 0,
-                    backgroundColor: colors.night900,
-                    backgroundImage:
-                      `radial-gradient(ellipse 80% 50% at 50% -20%, ${alpha(colors.indigo500, 0.18)}, transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, ${alpha(colors.cyan500, 0.1)}, transparent 60%)`,
-                    border: 'none',
-                    boxShadow: 'none',
-                    overflow: 'hidden'
-                  }
-                : {
-                    height: '100%',
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: 0,
-                    minWidth: 0,
-                    width: '100%',
-                    maxWidth: '100%',
-                    overflow: 'hidden'
-                  }
-            }
+          <Grid.Col
+            span={{ base: 12, lg: 7 }}
+            style={{ display: "flex", flexDirection: "column", minWidth: 0, width: "100%", maxWidth: "100%" }}
           >
-            <Stack gap="md" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0, width: '100%', maxWidth: '100%' }}>
-              <HabitsCalendarToolbar
-                headerTitle={headerTitle}
-                viewMode={viewMode}
-                isToday={isToday}
-                isMaximized={isMaximized}
-                onToggleMaximize={() => setIsMaximized((prev) => !prev)}
-                onViewModeChange={setViewMode}
-                onPrevious={handlePreviousPeriod}
-                onNext={handleNextPeriod}
-                onToday={handleToday}
-                onOpenNewHabitModal={handleOpenModal}
-                onOpenSettingsModal={handleOpenSettingsModal}
+            <Card
+              p={isMaximized ? { base: "sm", sm: "md", md: "xl" } : { base: "xs", sm: "md", md: "xl" }}
+              style={
+                isMaximized
+                  ? {
+                      position: "fixed",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      width: "100vw",
+                      height: "100vh",
+                      zIndex: 150,
+                      borderRadius: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      minHeight: 0,
+                      minWidth: 0,
+                      backgroundColor: colors.night900,
+                      backgroundImage: `radial-gradient(ellipse 80% 50% at 50% -20%, ${alpha(colors.indigo500, 0.18)}, transparent 70%), radial-gradient(ellipse 60% 40% at 90% 80%, ${alpha(colors.cyan500, 0.1)}, transparent 60%)`,
+                      border: "none",
+                      boxShadow: "none",
+                      overflow: "hidden"
+                    }
+                  : {
+                      height: "100%",
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      minHeight: 0,
+                      minWidth: 0,
+                      width: "100%",
+                      maxWidth: "100%",
+                      overflow: "hidden"
+                    }
+              }
+            >
+              <Stack
+                gap="md"
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: 0,
+                  minWidth: 0,
+                  width: "100%",
+                  maxWidth: "100%"
+                }}
+              >
+                <HabitsCalendarToolbar
+                  headerTitle={headerTitle}
+                  viewMode={viewMode}
+                  isToday={isToday}
+                  isMaximized={isMaximized}
+                  onToggleMaximize={() => setIsMaximized((prev) => !prev)}
+                  onViewModeChange={setViewMode}
+                  onPrevious={handlePreviousPeriod}
+                  onNext={handleNextPeriod}
+                  onToday={handleToday}
+                  onOpenNewHabitModal={handleOpenModal}
+                  onOpenSettingsModal={handleOpenSettingsModal}
+                />
+
+                {viewMode === "month" && (
+                  <HabitsMonthView
+                    monthCells={monthCells}
+                    rangeSummariesMap={rangeSummariesMap}
+                    selectedDate={selectedDate}
+                    onSelectDate={handleSelectDate}
+                    onToggleCheckin={handleToggleCheckinWithMetrics}
+                    onEditItem={handleOpenEditModal}
+                  />
+                )}
+
+                {viewMode === "week" && (
+                  <HabitsWeekView
+                    weekDays={weekDays}
+                    todayStr={todayStr}
+                    rangeSummariesMap={rangeSummariesMap}
+                    selectedDate={selectedDate}
+                    togglingId={togglingId}
+                    onSelectDate={handleSelectDate}
+                    onToggleCheckin={handleToggleCheckinWithMetrics}
+                    onEditItem={handleOpenEditModal}
+                  />
+                )}
+
+                {viewMode === "day" && (
+                  <HabitsDayView
+                    selectedDate={selectedDate}
+                    isToday={isToday}
+                    daySummary={daySummary}
+                    isLoading={isLoading}
+                    togglingId={togglingId}
+                    onToggleCheckin={handleToggleCheckinWithMetrics}
+                    onEditItem={handleOpenEditModal}
+                    onRemoveItem={handleRemoveHabitWithMetrics}
+                  />
+                )}
+              </Stack>
+            </Card>
+          </Grid.Col>
+
+          <Grid.Col span={{ base: 12, lg: 5 }} style={{ display: "flex", flexDirection: "column" }}>
+            <Stack gap="md" style={{ flex: 1, justifyContent: "space-between" }}>
+              <GeneralPerformanceCard
+                metrics={metrics}
+                isLoading={isMetricsLoading}
+                selectedDate={selectedDate}
+                hoveredDate={hoveredDate}
+                onSelectDate={handleSelectDate}
+                onHoverDate={setHoveredDate}
               />
 
-              {viewMode === 'month' && (
-                <HabitsMonthView
-                  monthCells={monthCells}
-                  rangeSummariesMap={rangeSummariesMap}
-                  selectedDate={selectedDate}
-                  onSelectDate={handleSelectDate}
-                  onToggleCheckin={handleToggleCheckinWithMetrics}
-                  onEditItem={handleOpenEditModal}
-                />
-              )}
+              {isBioConfigured ? (
+                <>
+                  <WeightImcCard
+                    heightCm={healthProfile.height}
+                    weightHistory={weightHistory}
+                    selectedDate={selectedDate}
+                    hoveredDate={hoveredDate}
+                    onSaveWeight={handleSaveWeightWithMetrics}
+                    onHoverDate={setHoveredDate}
+                  />
 
-              {viewMode === 'week' && (
-                <HabitsWeekView
-                  weekDays={weekDays}
-                  todayStr={todayStr}
-                  rangeSummariesMap={rangeSummariesMap}
-                  selectedDate={selectedDate}
-                  togglingId={togglingId}
-                  onSelectDate={handleSelectDate}
-                  onToggleCheckin={handleToggleCheckinWithMetrics}
-                  onEditItem={handleOpenEditModal}
-                />
-              )}
+                  <SleepTrackerCard
+                    sleepHistory={sleepHistory}
+                    selectedDate={selectedDate}
+                    hoveredDate={hoveredDate}
+                    onSaveSleep={handleSaveSleepWithMetrics}
+                    onHoverDate={setHoveredDate}
+                  />
 
-              {viewMode === 'day' && (
-                <HabitsDayView
-                  selectedDate={selectedDate}
-                  isToday={isToday}
-                  daySummary={daySummary}
-                  isLoading={isLoading}
-                  togglingId={togglingId}
-                  onToggleCheckin={handleToggleCheckinWithMetrics}
-                  onEditItem={handleOpenEditModal}
-                  onRemoveItem={handleRemoveHabitWithMetrics}
-                />
-              )}
-            </Stack>
-          </Card>
-        </Grid.Col>
-
-        <Grid.Col span={{ base: 12, lg: 5 }} style={{ display: 'flex', flexDirection: 'column' }}>
-          <Stack gap="md" style={{ flex: 1, justifyContent: 'space-between' }}>
-            <GeneralPerformanceCard
-              metrics={metrics}
-              isLoading={isMetricsLoading}
-              selectedDate={selectedDate}
-              hoveredDate={hoveredDate}
-              onSelectDate={handleSelectDate}
-              onHoverDate={setHoveredDate}
-            />
-
-            {isBioConfigured ? (
-              <>
-                <WeightImcCard
-                  heightCm={healthProfile.height}
-                  weightHistory={weightHistory}
-                  selectedDate={selectedDate}
-                  hoveredDate={hoveredDate}
-                  onSaveWeight={handleSaveWeightWithMetrics}
-                  onHoverDate={setHoveredDate}
-                />
-
-                <SleepTrackerCard
-                  sleepHistory={sleepHistory}
-                  selectedDate={selectedDate}
-                  hoveredDate={hoveredDate}
-                  onSaveSleep={handleSaveSleepWithMetrics}
-                  onHoverDate={setHoveredDate}
-                />
-
-                <CompactWaterCard
-                  currentWeight={currentWeightForDay}
-                  currentAge={healthProfile.age}
-                  currentHeight={healthProfile.height}
-                  consumedBottles={consumedWaterBottles}
-                  extraBottlesTarget={extraWaterBottlesTarget}
-                  bottleMl={waterBottleMl}
-                  selectedDate={selectedDate}
-                  onToggleBottle={handleToggleWaterWithMetrics}
-                  onAddExtraBottle={handleAddExtraWaterWithMetrics}
-                  onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}
-                  onUpdateSettings={handleUpdateWaterSettingsWithMetrics}
-                />
-              </>
-            ) : (
-              <Card style={{ position: 'relative', overflow: 'hidden', padding: '24px 20px', textAlign: 'center' }}>
-                <Box
-                  style={{
-                    position: 'absolute',
-                    top: -24,
-                    right: -24,
-                    width: 110,
-                    height: 110,
-                    background: `radial-gradient(circle, ${alpha(colors.indigo500, 0.15)} 0%, transparent 70%)`,
-                    pointerEvents: 'none'
-                  }}
-                />
-                <Stack align="center" gap="sm">
+                  <CompactWaterCard
+                    currentWeight={currentWeightForDay}
+                    currentAge={healthProfile.age}
+                    currentHeight={healthProfile.height}
+                    consumedBottles={consumedWaterBottles}
+                    extraBottlesTarget={extraWaterBottlesTarget}
+                    bottleMl={waterBottleMl}
+                    selectedDate={selectedDate}
+                    onToggleBottle={handleToggleWaterWithMetrics}
+                    onAddExtraBottle={handleAddExtraWaterWithMetrics}
+                    onRemoveExtraBottle={handleRemoveExtraWaterWithMetrics}
+                    onUpdateSettings={handleUpdateWaterSettingsWithMetrics}
+                  />
+                </>
+              ) : (
+                <Card style={{ position: "relative", overflow: "hidden", padding: "24px 20px", textAlign: "center" }}>
                   <Box
                     style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      background: alpha(colors.indigo500, 0.12),
-                      border: `1px solid ${alpha(colors.indigo400, 0.3)}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: colors.indigo400
+                      position: "absolute",
+                      top: -24,
+                      right: -24,
+                      width: 110,
+                      height: 110,
+                      background: `radial-gradient(circle, ${alpha(colors.indigo500, 0.15)} 0%, transparent 70%)`,
+                      pointerEvents: "none"
                     }}
-                  >
-                    <TbRulerMeasure size={24} />
-                  </Box>
+                  />
+                  <Stack align="center" gap="sm">
+                    <Box
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "50%",
+                        background: alpha(colors.indigo500, 0.12),
+                        border: `1px solid ${alpha(colors.indigo400, 0.3)}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: colors.indigo400
+                      }}
+                    >
+                      <TbRulerMeasure size={24} />
+                    </Box>
 
-                  <Stack gap={4} align="center">
-                    <Text fw={700} size="sm" c="white">
-                      Altura e idade não configuradas
-                    </Text>
-                    <Text size="xs" c="dimmed" maw={340} ta="center" style={{ lineHeight: 1.5 }}>
-                      Configure sua altura e idade no seu perfil para habilitar o acompanhamento de Peso & IMC e a meta calculada de Hidratação.
-                    </Text>
+                    <Stack gap={4} align="center">
+                      <Text fw={700} size="sm" c="white">
+                        Altura e idade não configuradas
+                      </Text>
+                      <Text size="xs" c="dimmed" maw={340} ta="center" style={{ lineHeight: 1.5 }}>
+                        Configure sua altura e idade no seu perfil para habilitar o acompanhamento de Peso & IMC e a
+                        meta calculada de Hidratação.
+                      </Text>
+                    </Stack>
+
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => navigate("/profile")}
+                      leftIcon={<TbUser size={14} />}
+                      style={{ marginTop: 4 }}
+                    >
+                      Ir para o Perfil
+                    </Button>
                   </Stack>
+                </Card>
+              )}
+            </Stack>
+          </Grid.Col>
+        </Grid>
 
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    onClick={() => navigate('/profile')}
-                    leftIcon={<TbUser size={14} />}
-                    style={{ marginTop: 4 }}
-                  >
-                    Ir para o Perfil
-                  </Button>
-                </Stack>
-              </Card>
-            )}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-
-      <ChallengesSection />
+        <ChallengesSection />
       </Stack>
 
       <HabitsModal
@@ -404,8 +415,8 @@ export const HomePage = () => {
         onSaved={handleReloadCalendar}
       />
     </Box>
-  )
-}
+  );
+};
 
-export const HabitsPage = HomePage
-export default HomePage
+export const HabitsPage = HomePage;
+export default HomePage;

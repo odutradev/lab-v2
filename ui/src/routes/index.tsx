@@ -1,39 +1,39 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Center, Loader } from '@mantine/core'
-import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Center, Loader } from "@mantine/core";
+import { lazy, Suspense } from "react";
 
-import { ProtectedRoute, PublicRoute, AppLayout } from './components'
-import PageContainer from '@components/pageContainer'
-import termsOfServiceMetadata from '@pages/termsOfService/metadata'
-import privacyPolicyMetadata from '@pages/privacyPolicy/metadata'
-import resetPasswordMetadata from '@pages/resetPassword/metadata'
-import profileMetadata from '@pages/profile/metadata'
-import homeMetadata from '@pages/home/metadata'
-import authMetadata from '@pages/auth/metadata'
+import { ProtectedRoute, PublicRoute, AppLayout } from "./components";
+import PageContainer from "@components/pageContainer";
+import termsOfServiceMetadata from "@pages/termsOfService/metadata";
+import privacyPolicyMetadata from "@pages/privacyPolicy/metadata";
+import resetPasswordMetadata from "@pages/resetPassword/metadata";
+import profileMetadata from "@pages/profile/metadata";
+import homeMetadata from "@pages/home/metadata";
+import authMetadata from "@pages/auth/metadata";
 
-import type { RouteItem } from './types'
+import type { RouteItem } from "./types";
 
-const HomePage = lazy(() => import('@pages/home'))
-const ProfilePage = lazy(() => import('@pages/profile'))
-const AuthPage = lazy(() => import('@pages/auth'))
-const ResetPasswordPage = lazy(() => import('@pages/resetPassword'))
-const PrivacyPolicyPage = lazy(() => import('@pages/privacyPolicy'))
-const TermsOfServicePage = lazy(() => import('@pages/termsOfService'))
+const HomePage = lazy(() => import("@pages/home"));
+const ProfilePage = lazy(() => import("@pages/profile"));
+const AuthPage = lazy(() => import("@pages/auth"));
+const ResetPasswordPage = lazy(() => import("@pages/resetPassword"));
+const PrivacyPolicyPage = lazy(() => import("@pages/privacyPolicy"));
+const TermsOfServicePage = lazy(() => import("@pages/termsOfService"));
 
 const routes: RouteItem[] = [
-  { path: '/', component: HomePage, metadata: homeMetadata },
-  { path: '/profile', component: ProfilePage, metadata: profileMetadata },
-  { path: '/auth', component: AuthPage, metadata: authMetadata },
-  { path: '/reset-password', component: ResetPasswordPage, metadata: resetPasswordMetadata },
-  { path: '/privacy', component: PrivacyPolicyPage, metadata: privacyPolicyMetadata },
-  { path: '/terms', component: TermsOfServicePage, metadata: termsOfServiceMetadata }
-]
+  { path: "/", component: HomePage, metadata: homeMetadata },
+  { path: "/profile", component: ProfilePage, metadata: profileMetadata },
+  { path: "/auth", component: AuthPage, metadata: authMetadata },
+  { path: "/reset-password", component: ResetPasswordPage, metadata: resetPasswordMetadata },
+  { path: "/privacy", component: PrivacyPolicyPage, metadata: privacyPolicyMetadata },
+  { path: "/terms", component: TermsOfServicePage, metadata: termsOfServiceMetadata }
+];
 
 const pageFallback = (
   <Center h="60vh">
     <Loader color="indigo" size="lg" />
   </Center>
-)
+);
 
 const renderRouteElement = ({ component: Component, metadata }: RouteItem) => {
   const content = (
@@ -42,18 +42,18 @@ const renderRouteElement = ({ component: Component, metadata }: RouteItem) => {
         <Component />
       </Suspense>
     </PageContainer>
-  )
+  );
 
   if (metadata.isPrivate) {
-    return <ProtectedRoute requiredPermissions={metadata.requiredPermissions}>{content}</ProtectedRoute>
+    return <ProtectedRoute requiredPermissions={metadata.requiredPermissions}>{content}</ProtectedRoute>;
   }
 
   if (metadata.isPublicOnly) {
-    return <PublicRoute>{content}</PublicRoute>
+    return <PublicRoute>{content}</PublicRoute>;
   }
 
-  return content
-}
+  return content;
+};
 
 export const Router = () => {
   return (
@@ -71,7 +71,7 @@ export const Router = () => {
         </Routes>
       </AppLayout>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default Router
+export default Router;

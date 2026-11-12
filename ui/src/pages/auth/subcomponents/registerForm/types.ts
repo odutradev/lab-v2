@@ -1,1 +1,1 @@
-export type { RegisterFormValues } from '@utils/validations/auth'
+export type { RegisterFormValues } from "@utils/validations/auth";

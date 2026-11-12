@@ -1,21 +1,21 @@
-import type { UserProfile, UserHealth } from '@utils/types/user'
+import type { UserProfile, UserHealth } from "@utils/types/user";
 
 export interface UpdateProfilePayload {
-  name?: string
-  avatar?: string
-  health?: Partial<UserHealth>
+  name?: string;
+  avatar?: string;
+  health?: Partial<UserHealth>;
 }
 
-export type UpdateHealthPayload = Partial<UserHealth>
-export type HealthResponse = UserHealth
+export type UpdateHealthPayload = Partial<UserHealth>;
+export type HealthResponse = UserHealth;
 
 export interface ResetPasswordPayload {
-  token: string
-  password: string
+  token: string;
+  password: string;
 }
 
 export interface ResetPasswordResponse {
-  id: string
+  id: string;
 }
 
-export type ProfileResponse = UserProfile
+export type ProfileResponse = UserProfile;

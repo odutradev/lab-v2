@@ -1,15 +1,15 @@
-export type ValidationPurpose = 'email_verification' | 'password_reset'
+export type ValidationPurpose = "email_verification" | "password_reset";
 
 export interface RequestCodePayload {
-  email: string
+  email: string;
 }
 
 export interface VerifyCodePayload {
-  email: string
-  code: string
+  email: string;
+  code: string;
 }
 
 export interface VerificationResponse {
-  id?: string
-  resetToken?: string
+  id?: string;
+  resetToken?: string;
 }

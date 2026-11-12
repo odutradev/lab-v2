@@ -1,21 +1,21 @@
-import { Group, Text, Box, Tooltip, alpha } from '@mantine/core'
-import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings, TbMaximize, TbMinimize } from 'react-icons/tb'
+import { Group, Text, Box, Tooltip, alpha } from "@mantine/core";
+import { TbChevronLeft, TbChevronRight, TbPlus, TbSettings, TbMaximize, TbMinimize } from "react-icons/tb";
 
-import Button from '@components/button'
-import ActionIcon from '@components/actionIcon'
-import SegmentedControl from '@components/segmentedControl'
+import Button from "@components/button";
+import ActionIcon from "@components/actionIcon";
+import SegmentedControl from "@components/segmentedControl";
 
-import type { HabitsCalendarToolbarProps } from './types'
-import type { CalendarViewMode } from '../../types'
-import { colors } from '@styles/theme'
+import type { HabitsCalendarToolbarProps } from "./types";
+import type { CalendarViewMode } from "../../types";
+import { colors } from "@styles/theme";
 
-const TOOLBAR_CONTROL_HEIGHT = 34
+const TOOLBAR_CONTROL_HEIGHT = 34;
 
 const viewModeOptions = [
-  { label: 'Diário', value: 'day' },
-  { label: 'Semanal', value: 'week' },
-  { label: 'Mensal', value: 'month' }
-]
+  { label: "Diário", value: "day" },
+  { label: "Semanal", value: "week" },
+  { label: "Mensal", value: "month" }
+];
 
 export const HabitsCalendarToolbar = ({
   headerTitle,
@@ -35,27 +35,16 @@ export const HabitsCalendarToolbar = ({
       pb="md"
       style={{
         borderBottom: `1px solid ${alpha(colors.white, 0.06)}`,
-        width: '100%',
+        width: "100%",
         minWidth: 0,
-        overflowX: 'auto',
-        scrollbarWidth: 'none'
+        overflowX: "auto",
+        scrollbarWidth: "none"
       }}
     >
-      <Group
-        justify="space-between"
-        align="center"
-        wrap="nowrap"
-        gap="xs"
-        style={{ width: '100%', minWidth: 0 }}
-      >
-        <Group
-          gap="xs"
-          align="center"
-          wrap="nowrap"
-          style={{ minWidth: 0, flexShrink: 1, overflow: 'hidden' }}
-        >
+      <Group justify="space-between" align="center" wrap="nowrap" gap="xs" style={{ width: "100%", minWidth: 0 }}>
+        <Group gap="xs" align="center" wrap="nowrap" style={{ minWidth: 0, flexShrink: 1, overflow: "hidden" }}>
           <Button
-            variant={isToday ? 'outline' : 'secondary'}
+            variant={isToday ? "outline" : "secondary"}
             size="sm"
             h={TOOLBAR_CONTROL_HEIGHT}
             onClick={onToday}
@@ -96,9 +85,9 @@ export const HabitsCalendarToolbar = ({
             c="white"
             ml={4}
             style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
               minWidth: 0
             }}
           >
@@ -106,12 +95,7 @@ export const HabitsCalendarToolbar = ({
           </Text>
         </Group>
 
-        <Group
-          gap="xs"
-          align="center"
-          wrap="nowrap"
-          style={{ flexShrink: 0 }}
-        >
+        <Group gap="xs" align="center" wrap="nowrap" style={{ flexShrink: 0 }}>
           <Box style={{ flexShrink: 0 }}>
             <SegmentedControl
               value={viewMode}
@@ -140,18 +124,18 @@ export const HabitsCalendarToolbar = ({
 
           {onToggleMaximize && (
             <Tooltip
-              label={isMaximized ? 'Restaurar visualização (Esc)' : 'Maximizar calendário (Modo foco)'}
+              label={isMaximized ? "Restaurar visualização (Esc)" : "Maximizar calendário (Modo foco)"}
               withArrow
               position="bottom"
             >
               <ActionIcon
-                variant={isMaximized ? 'secondary' : 'subtle'}
+                variant={isMaximized ? "secondary" : "subtle"}
                 size="md"
                 h={TOOLBAR_CONTROL_HEIGHT}
                 w={TOOLBAR_CONTROL_HEIGHT}
                 radius="md"
                 onClick={onToggleMaximize}
-                aria-label={isMaximized ? 'Restaurar visualização' : 'Maximizar calendário'}
+                aria-label={isMaximized ? "Restaurar visualização" : "Maximizar calendário"}
                 style={{ flexShrink: 0 }}
               >
                 {isMaximized ? <TbMinimize size={18} /> : <TbMaximize size={18} />}
@@ -172,7 +156,7 @@ export const HabitsCalendarToolbar = ({
         </Group>
       </Group>
     </Box>
-  )
-}
+  );
+};
 
-export default HabitsCalendarToolbar
+export default HabitsCalendarToolbar;

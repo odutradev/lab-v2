@@ -1,92 +1,89 @@
-import { useState, useEffect } from 'react'
-import { Group, Stack, Text, NumberInput, SimpleGrid, Box, alpha } from '@mantine/core'
-import { TbRuler, TbCalendarTime, TbHeartRateMonitor, TbScale } from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import { Group, Stack, Text, NumberInput, SimpleGrid, Box, alpha } from "@mantine/core";
+import { TbRuler, TbCalendarTime, TbHeartRateMonitor, TbScale } from "react-icons/tb";
 
-import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '@components/card'
-import Button from '@components/button'
-import Badge from '@components/badge'
-import useHealthStore from '@stores/health'
-import useToastStore from '@stores/toast'
-import useAction from '@hooks/useAction'
-import { parseDecimalNumber, roundToOneDecimal } from '@utils/functions/health'
-import { infoCardItemStyle } from '../../styles'
-import { colors } from '@styles/theme'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from "@components/card";
+import Button from "@components/button";
+import Badge from "@components/badge";
+import useHealthStore from "@stores/health";
+import useToastStore from "@stores/toast";
+import useAction from "@hooks/useAction";
+import { parseDecimalNumber, roundToOneDecimal } from "@utils/functions/health";
+import { infoCardItemStyle } from "../../styles";
+import { colors } from "@styles/theme";
 
 export const ProfilePhysicalCard = () => {
-  const { profile, updateProfile, weightHistory, saveWeightRecord } = useHealthStore()
-  const { showToast } = useToastStore()
-  const runAction = useAction()
+  const { profile, updateProfile, weightHistory, saveWeightRecord } = useHealthStore();
+  const { showToast } = useToastStore();
+  const runAction = useAction();
 
-  const latestWeight =
-    weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined
+  const latestWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : undefined;
 
-  const [height, setHeight] = useState<number | string>(
-    profile.height ? (profile.height / 100).toFixed(2) : ''
-  )
+  const [height, setHeight] = useState<number | string>(profile.height ? (profile.height / 100).toFixed(2) : "");
   const [weight, setWeight] = useState<number | string>(
-    latestWeight !== undefined ? roundToOneDecimal(latestWeight).toFixed(1) : ''
-  )
-  const [age, setAge] = useState<number | string>(profile.age ?? '')
-  const [isSaving, setIsSaving] = useState(false)
+    latestWeight !== undefined ? roundToOneDecimal(latestWeight).toFixed(1) : ""
+  );
+  const [age, setAge] = useState<number | string>(profile.age ?? "");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (profile.height !== undefined) {
-      setHeight((profile.height / 100).toFixed(2))
+      setHeight((profile.height / 100).toFixed(2));
     }
-  }, [profile.height])
+  }, [profile.height]);
 
   useEffect(() => {
     if (latestWeight !== undefined) {
-      setWeight(roundToOneDecimal(latestWeight).toFixed(1))
+      setWeight(roundToOneDecimal(latestWeight).toFixed(1));
     }
-  }, [latestWeight])
+  }, [latestWeight]);
 
   useEffect(() => {
     if (profile.age !== undefined && profile.age !== age) {
-      setAge(profile.age)
+      setAge(profile.age);
     }
-  }, [profile.age, age])
+  }, [profile.age, age]);
 
-  const isConfigured = Boolean(profile.height && profile.age)
+  const isConfigured = Boolean(profile.height && profile.age);
 
   const handleSave = async () => {
-    const heightM = parseDecimalNumber(height)
-    const weightVal = parseDecimalNumber(weight)
-    const ageNum = Number(age)
+    const heightM = parseDecimalNumber(height);
+    const weightVal = parseDecimalNumber(weight);
+    const ageNum = Number(age);
 
     if (height && (isNaN(heightM) || heightM < 0.5 || heightM > 2.5)) {
-      showToast('Por favor, informe uma altura válida entre 0,50 m e 2,50 m (ex: 1,75 m).', 'error')
-      return
+      showToast("Por favor, informe uma altura válida entre 0,50 m e 2,50 m (ex: 1,75 m).", "error");
+      return;
     }
 
     if (weight && (isNaN(weightVal) || weightVal < 20 || weightVal > 350)) {
-      showToast('Por favor, informe um peso válido entre 20 kg e 350 kg (ex: 75,0 kg).', 'error')
-      return
+      showToast("Por favor, informe um peso válido entre 20 kg e 350 kg (ex: 75,0 kg).", "error");
+      return;
     }
 
     if (age && (isNaN(ageNum) || ageNum < 5 || ageNum > 120)) {
-      showToast('Por favor, informe uma idade válida entre 5 e 120 anos.', 'error')
-      return
+      showToast("Por favor, informe uma idade válida entre 5 e 120 anos.", "error");
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     await runAction({
       action: async () => {
-        const heightCm = heightM > 0 ? Math.round(heightM * 100) : undefined
+        const heightCm = heightM > 0 ? Math.round(heightM * 100) : undefined;
         await updateProfile({
           height: heightCm,
           age: ageNum > 0 ? ageNum : undefined
-        })
+        });
 
-        if (weightVal > 0) await saveWeightRecord(roundToOneDecimal(weightVal))
+        if (weightVal > 0) await saveWeightRecord(roundToOneDecimal(weightVal));
       },
       toastMessages: {
-        success: 'Dados biofísicos salvos com sucesso na sua conta!',
-        error: 'Ocorreu um erro ao salvar os dados no servidor.'
+        success: "Dados biofísicos salvos com sucesso na sua conta!",
+        error: "Ocorreu um erro ao salvar os dados no servidor."
       }
-    })
-    setIsSaving(false)
-  }
+    });
+    setIsSaving(false);
+  };
 
   return (
     <Card id="profile-physical-card">
@@ -98,9 +95,7 @@ export const ProfilePhysicalCard = () => {
               Sua altura, peso e idade são utilizados para calibrar suas métricas e rotina de hidratação
             </CardDescription>
           </Box>
-          <Badge variant={isConfigured ? 'success' : 'warning'}>
-            {isConfigured ? 'Configurado' : 'Pendente'}
-          </Badge>
+          <Badge variant={isConfigured ? "success" : "warning"}>{isConfigured ? "Configurado" : "Pendente"}</Badge>
         </Group>
       </CardHeader>
 
@@ -124,12 +119,12 @@ export const ProfilePhysicalCard = () => {
                 step={0.01}
                 decimalScale={2}
                 fixedDecimalScale
-                allowedDecimalSeparators={['.', ',']}
+                allowedDecimalSeparators={[".", ","]}
                 suffix=" m"
                 description={
                   height && parseDecimalNumber(height) > 0
                     ? `Equivalente a ${Math.round(parseDecimalNumber(height) * 100)} cm`
-                    : 'Necessário para cálculo de IMC e índice metabólico'
+                    : "Necessário para cálculo de IMC e índice metabólico"
                 }
                 styles={{
                   input: {
@@ -159,12 +154,12 @@ export const ProfilePhysicalCard = () => {
                 step={0.1}
                 decimalScale={1}
                 fixedDecimalScale
-                allowedDecimalSeparators={['.', ',']}
+                allowedDecimalSeparators={[".", ","]}
                 suffix=" kg"
                 description={
                   weight && parseDecimalNumber(weight) > 0
-                    ? 'Sempre ajustado para 1 casa decimal'
-                    : 'Necessário para monitorar sua evolução'
+                    ? "Sempre ajustado para 1 casa decimal"
+                    : "Necessário para monitorar sua evolução"
                 }
                 styles={{
                   input: {
@@ -220,8 +215,7 @@ export const ProfilePhysicalCard = () => {
         </Stack>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProfilePhysicalCard
-
+export default ProfilePhysicalCard;

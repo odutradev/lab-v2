@@ -1,57 +1,57 @@
 export interface UserProfile {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-  superAdmin?: boolean
-  emailVerified?: boolean
-  accountStatus?: 'active' | 'blocked'
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  superAdmin?: boolean;
+  emailVerified?: boolean;
+  accountStatus?: "active" | "blocked";
   integrations?: {
     googleCalendar?: {
-      connected: boolean
-      email?: string
-      calendarId?: string
-      calendarName?: string
-      calendarUrl?: string
-      connectedAt?: string
-    }
-  }
-  health?: UserHealth
-  createdAt?: string
-  updatedAt?: string
+      connected: boolean;
+      email?: string;
+      calendarId?: string;
+      calendarName?: string;
+      calendarUrl?: string;
+      connectedAt?: string;
+    };
+  };
+  health?: UserHealth;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserWeightRecord {
-  date: string
-  weight: number
+  date: string;
+  weight: number;
 }
 
 export interface UserSleepRecord {
-  date: string
-  hours: number
-  quality: number
+  date: string;
+  hours: number;
+  quality: number;
 }
 
 export interface PerformanceWeights {
-  habits: number
-  water: number
-  sleep: number
+  habits: number;
+  water: number;
+  sleep: number;
 }
 
 export interface UserHealth {
-  height?: number
-  age?: number
-  characterId?: string
-  performanceWeights?: PerformanceWeights
-  weightHistory?: UserWeightRecord[]
-  sleepHistory?: UserSleepRecord[]
-  waterDailyMap?: Record<string, number>
-  waterExtraTargetMap?: Record<string, number>
-  waterBottleMl?: number
-  waterTargetBottles?: number
+  height?: number;
+  age?: number;
+  characterId?: string;
+  performanceWeights?: PerformanceWeights;
+  weightHistory?: UserWeightRecord[];
+  sleepHistory?: UserSleepRecord[];
+  waterDailyMap?: Record<string, number>;
+  waterExtraTargetMap?: Record<string, number>;
+  waterBottleMl?: number;
+  waterTargetBottles?: number;
 }
 
 export interface AuthTokens {
-  token: string
-  refreshToken: string
+  token: string;
+  refreshToken: string;
 }

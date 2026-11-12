@@ -1,3 +1,3 @@
 export interface ResetPasswordPageProps {
-  onBack?: () => void
+  onBack?: () => void;
 }

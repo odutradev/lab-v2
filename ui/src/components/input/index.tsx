@@ -1,7 +1,7 @@
-import { TextInput, PasswordInput } from '@mantine/core'
-import { forwardRef } from 'react'
+import { TextInput, PasswordInput } from "@mantine/core";
+import { forwardRef } from "react";
 
-import type { InputProps } from './types'
+import type { InputProps } from "./types";
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -11,7 +11,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       helperText,
       leftIcon,
       rightIcon,
-      type = 'text',
+      type = "text",
       required,
       className,
       id,
@@ -28,20 +28,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       description: helperText,
       leftSection: leftIcon,
       required,
-      size: 'md' as const,
-      radius: 'md' as const,
+      size: "md" as const,
+      radius: "md" as const,
       className,
       ...props
+    };
+
+    if (type === "password") {
+      return <PasswordInput {...commonProps} />;
     }
 
-    if (type === 'password') {
-      return <PasswordInput {...commonProps} />
-    }
-
-    return <TextInput type={type} rightSection={rightIcon} {...commonProps} />
+    return <TextInput type={type} rightSection={rightIcon} {...commonProps} />;
   }
-)
+);
 
-Input.displayName = 'Input'
+Input.displayName = "Input";
 
-export default Input
+export default Input;

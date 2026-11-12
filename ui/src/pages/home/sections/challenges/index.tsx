@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
-import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip, alpha } from '@mantine/core'
-import { TbTrophy, TbPlus, TbChevronDown, TbChevronUp, TbFlame } from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import { Box, Group, Stack, Text, SimpleGrid, ThemeIcon, ActionIcon, Tooltip, alpha } from "@mantine/core";
+import { TbTrophy, TbPlus, TbChevronDown, TbChevronUp, TbFlame } from "react-icons/tb";
 
-import Button from '@components/button'
-import ChallengeCard from './subcomponents/challengeCard'
-import ChallengeDetailModal from './subcomponents/challengeDetailModal'
-import ChallengeFormModal from './subcomponents/challengeFormModal'
-import ChallengeSlipModal from './subcomponents/challengeSlipModal'
-import useChallengesStore from '@stores/challenges'
+import Button from "@components/button";
+import ChallengeCard from "./subcomponents/challengeCard";
+import ChallengeDetailModal from "./subcomponents/challengeDetailModal";
+import ChallengeFormModal from "./subcomponents/challengeFormModal";
+import ChallengeSlipModal from "./subcomponents/challengeSlipModal";
+import useChallengesStore from "@stores/challenges";
 
-import type { Challenge, CreateChallengePayload } from '@actions/challenges/types'
-import { colors } from '@styles/theme'
+import type { Challenge, CreateChallengePayload } from "@actions/challenges/types";
+import { colors } from "@styles/theme";
 
 export const ChallengesSection = () => {
   const {
@@ -25,102 +25,102 @@ export const ChallengesSection = () => {
     recordSlip,
     toggleFreeze,
     toggleChecklistItem
-  } = useChallengesStore()
+  } = useChallengesStore();
 
-  const [isSectionOpen, setIsSectionOpen] = useState(true)
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [isSlipOpen, setIsSlipOpen] = useState(false)
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null)
-  const [editingChallenge, setEditingChallenge] = useState<Challenge | null>(null)
-  const [slipTargetChallenge, setSlipTargetChallenge] = useState<Challenge | null>(null)
+  const [isSectionOpen, setIsSectionOpen] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isSlipOpen, setIsSlipOpen] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [editingChallenge, setEditingChallenge] = useState<Challenge | null>(null);
+  const [slipTargetChallenge, setSlipTargetChallenge] = useState<Challenge | null>(null);
 
   useEffect(() => {
-    fetchChallenges()
-  }, [fetchChallenges])
+    fetchChallenges();
+  }, [fetchChallenges]);
 
-  const activeChallenges = challenges.filter((c) => c.status === 'active')
-  const completedChallenges = challenges.filter((c) => c.status === 'completed')
+  const activeChallenges = challenges.filter((c) => c.status === "active");
+  const completedChallenges = challenges.filter((c) => c.status === "completed");
 
   const handleOpenNew = () => {
-    setEditingChallenge(null)
-    setIsFormOpen(true)
-  }
+    setEditingChallenge(null);
+    setIsFormOpen(true);
+  };
 
   const handleOpenEdit = (challenge: Challenge) => {
-    setEditingChallenge(challenge)
-    setIsFormOpen(true)
-  }
+    setEditingChallenge(challenge);
+    setIsFormOpen(true);
+  };
 
   const handleOpenDetails = (challenge: Challenge) => {
-    setSelectedChallenge(challenge)
-  }
+    setSelectedChallenge(challenge);
+  };
 
   const handleOpenSlip = (challenge: Challenge) => {
-    setSlipTargetChallenge(challenge)
-    setIsSlipOpen(true)
-  }
+    setSlipTargetChallenge(challenge);
+    setIsSlipOpen(true);
+  };
 
   const handleFormSubmit = async (data: CreateChallengePayload) => {
     if (editingChallenge) {
-      const updated = await updateChallenge(editingChallenge.id, data)
+      const updated = await updateChallenge(editingChallenge.id, data);
       if (selectedChallenge?.id === updated.id) {
-        setSelectedChallenge(updated)
+        setSelectedChallenge(updated);
       }
     } else {
-      await createChallenge(data)
+      await createChallenge(data);
     }
-  }
+  };
 
   const handleToggleCheckin = async (id: string, date?: string) => {
-    const res = await toggleCheckin(id, date)
+    const res = await toggleCheckin(id, date);
     if (selectedChallenge?.id === id) {
-      setSelectedChallenge(res.challenge)
+      setSelectedChallenge(res.challenge);
     }
-  }
+  };
 
   const handleSlipConfirm = async (resetStreak: boolean) => {
-    if (!slipTargetChallenge) return
-    const updated = await recordSlip(slipTargetChallenge.id, { resetCheckins: resetStreak })
+    if (!slipTargetChallenge) return;
+    const updated = await recordSlip(slipTargetChallenge.id, { resetCheckins: resetStreak });
     if (selectedChallenge?.id === updated.id) {
-      setSelectedChallenge(updated)
+      setSelectedChallenge(updated);
     }
-    setIsSlipOpen(false)
-  }
+    setIsSlipOpen(false);
+  };
 
   const handleToggleFreeze = async (id: string, date?: string) => {
-    const res = await toggleFreeze(id, date)
+    const res = await toggleFreeze(id, date);
     if (res.error) {
-      alert(res.error)
+      alert(res.error);
     }
     if (selectedChallenge?.id === id) {
-      setSelectedChallenge(res.challenge)
+      setSelectedChallenge(res.challenge);
     }
-    return res
-  }
+    return res;
+  };
 
   const handleRemove = async (id: string) => {
-    await removeChallenge(id)
+    await removeChallenge(id);
     if (selectedChallenge?.id === id) {
-      setSelectedChallenge(null)
+      setSelectedChallenge(null);
     }
-  }
+  };
 
   const handleToggleChecklistItem = async (id: string, itemId: string) => {
-    const updated = await toggleChecklistItem(id, itemId)
+    const updated = await toggleChecklistItem(id, itemId);
     if (selectedChallenge?.id === id) {
-      setSelectedChallenge(updated)
+      setSelectedChallenge(updated);
     }
-  }
+  };
 
   return (
     <Box
       style={{
         backgroundColor: alpha(colors.slate900, 0.45),
-        backdropFilter: 'blur(12px)',
+        backdropFilter: "blur(12px)",
         border: `1px solid ${alpha(colors.white, 0.08)}`,
         borderRadius: 16,
-        padding: '16px 20px',
-        width: '100%'
+        padding: "16px 20px",
+        width: "100%"
       }}
     >
       {/* Cabeçalho da Seção */}
@@ -128,15 +128,10 @@ export const ChallengesSection = () => {
         <Group
           gap="xs"
           align="center"
-          style={{ cursor: 'pointer', userSelect: 'none' }}
+          style={{ cursor: "pointer", userSelect: "none" }}
           onClick={() => setIsSectionOpen((prev) => !prev)}
         >
-          <ThemeIcon
-            size="md"
-            radius="md"
-            variant="gradient"
-            gradient={{ from: 'orange', to: 'pink' }}
-          >
+          <ThemeIcon size="md" radius="md" variant="gradient" gradient={{ from: "orange", to: "pink" }}>
             <TbFlame size={18} />
           </ThemeIcon>
           <Box>
@@ -151,12 +146,12 @@ export const ChallengesSection = () => {
                   style={{
                     backgroundColor: alpha(colors.orange500, 0.2),
                     color: colors.orange400,
-                    padding: '2px 8px',
+                    padding: "2px 8px",
                     borderRadius: 10,
                     border: `1px solid ${alpha(colors.orange500, 0.4)}`
                   }}
                 >
-                  {activeChallenges.length} {activeChallenges.length === 1 ? 'ativo' : 'ativos'}
+                  {activeChallenges.length} {activeChallenges.length === 1 ? "ativo" : "ativos"}
                 </Text>
               )}
             </Group>
@@ -167,21 +162,11 @@ export const ChallengesSection = () => {
         </Group>
 
         <Group gap="xs">
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={handleOpenNew}
-            leftIcon={<TbPlus size={14} />}
-          >
+          <Button size="sm" variant="primary" onClick={handleOpenNew} leftIcon={<TbPlus size={14} />}>
             Novo Desafio
           </Button>
-          <Tooltip label={isSectionOpen ? 'Recolher seção' : 'Expandir seção'} withArrow>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="sm"
-              onClick={() => setIsSectionOpen((prev) => !prev)}
-            >
+          <Tooltip label={isSectionOpen ? "Recolher seção" : "Expandir seção"} withArrow>
+            <ActionIcon variant="subtle" color="gray" size="sm" onClick={() => setIsSectionOpen((prev) => !prev)}>
               {isSectionOpen ? <TbChevronUp size={16} /> : <TbChevronDown size={16} />}
             </ActionIcon>
           </Tooltip>
@@ -194,8 +179,8 @@ export const ChallengesSection = () => {
           {challenges.length === 0 ? (
             <Box
               style={{
-                padding: '24px 20px',
-                textAlign: 'center',
+                padding: "24px 20px",
+                textAlign: "center",
                 backgroundColor: alpha(colors.white, 0.02),
                 borderRadius: 14,
                 border: `1px dashed ${alpha(colors.white, 0.1)}`
@@ -206,12 +191,12 @@ export const ChallengesSection = () => {
                   style={{
                     width: 44,
                     height: 44,
-                    borderRadius: '50%',
+                    borderRadius: "50%",
                     backgroundColor: alpha(colors.orange500, 0.12),
                     border: `1px solid ${alpha(colors.orange500, 0.3)}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     color: colors.orange400
                   }}
                 >
@@ -221,7 +206,8 @@ export const ChallengesSection = () => {
                   Nenhum desafio em andamento
                 </Text>
                 <Text size="xs" c="dimmed" maw={400} ta="center" style={{ lineHeight: 1.5 }}>
-                  Crie seu primeiro desafio de constância! Estabeleça uma meta numérica de dias (ex: 90 dias sem refrigerante, 30 dias de treinos) e sinta o poder da disciplina diária.
+                  Crie seu primeiro desafio de constância! Estabeleça uma meta numérica de dias (ex: 90 dias sem
+                  refrigerante, 30 dias de treinos) e sinta o poder da disciplina diária.
                 </Text>
                 <Button
                   size="sm"
@@ -250,7 +236,10 @@ export const ChallengesSection = () => {
 
               {completedChallenges.length > 0 && (
                 <Text size="xs" c="dimmed" ta="right">
-                  🏆 {completedChallenges.length} {completedChallenges.length === 1 ? 'desafio concluído com vitória!' : 'desafios concluídos com vitória!'}
+                  🏆 {completedChallenges.length}{" "}
+                  {completedChallenges.length === 1
+                    ? "desafio concluído com vitória!"
+                    : "desafios concluídos com vitória!"}
                 </Text>
               )}
             </Stack>
@@ -282,13 +271,13 @@ export const ChallengesSection = () => {
 
       <ChallengeSlipModal
         isOpen={isSlipOpen}
-        challengeTitle={slipTargetChallenge?.title || ''}
+        challengeTitle={slipTargetChallenge?.title || ""}
         onClose={() => setIsSlipOpen(false)}
         onConfirm={handleSlipConfirm}
         isLoading={isActionLoading}
       />
     </Box>
-  )
-}
+  );
+};
 
-export default ChallengesSection
+export default ChallengesSection;

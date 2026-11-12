@@ -1,10 +1,10 @@
-import { ActionIcon, Stack, Group, Text, Box, Loader, alpha } from '@mantine/core'
-import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent, TbLock } from 'react-icons/tb'
+import { ActionIcon, Stack, Group, Text, Box, Loader, alpha } from "@mantine/core";
+import { TbCheck, TbCircle, TbClock, TbPencil, TbTrash, TbCalendarEvent, TbLock } from "react-icons/tb";
 
-import Badge from '@components/badge'
+import Badge from "@components/badge";
 
-import type { HabitsDayViewProps } from './types'
-import { colors } from '@styles/theme'
+import type { HabitsDayViewProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const HabitsDayView = ({
   selectedDate,
@@ -16,58 +16,63 @@ export const HabitsDayView = ({
   onEditItem,
   onRemoveItem
 }: HabitsDayViewProps) => {
-  const items = daySummary?.items ?? []
-  const totalHabits = daySummary?.totalHabits ?? 0
-  const completedHabits = daySummary?.completedHabits ?? 0
-  const completionRate = daySummary?.completionRate ?? 0
+  const items = daySummary?.items ?? [];
+  const totalHabits = daySummary?.totalHabits ?? 0;
+  const completedHabits = daySummary?.completedHabits ?? 0;
+  const completionRate = daySummary?.completionRate ?? 0;
 
   const getItemTypeBadge = (category?: string) => {
     switch (category) {
-      case 'task':
-        return <Badge variant="info">Tarefa</Badge>
-      case 'schedule':
-        return <Badge variant="warning">Agenda</Badge>
+      case "task":
+        return <Badge variant="info">Tarefa</Badge>;
+      case "schedule":
+        return <Badge variant="warning">Agenda</Badge>;
       default:
-        return <Badge variant="primary">Hábito</Badge>
+        return <Badge variant="primary">Hábito</Badge>;
     }
-  }
+  };
 
   const getFrequencyBadge = (freq: string) => {
     switch (freq) {
-      case 'daily':
-        return <Badge variant="primary">Diária</Badge>
-      case 'weekly':
-        return <Badge variant="info">Semanal</Badge>
-      case 'monthly':
-        return <Badge variant="warning">Mensal</Badge>
-      case 'yearly':
-        return <Badge variant="success">Anual</Badge>
+      case "daily":
+        return <Badge variant="primary">Diária</Badge>;
+      case "weekly":
+        return <Badge variant="info">Semanal</Badge>;
+      case "monthly":
+        return <Badge variant="warning">Mensal</Badge>;
+      case "yearly":
+        return <Badge variant="success">Anual</Badge>;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
-    <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <Group justify="space-between" align="center" pb="sm" wrap="wrap" gap="xs" style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}>
+    <Box style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+      <Group
+        justify="space-between"
+        align="center"
+        pb="sm"
+        wrap="wrap"
+        gap="xs"
+        style={{ borderBottom: `1px solid ${alpha(colors.white, 0.06)}` }}
+      >
         <Group gap="xs" wrap="wrap">
           <TbCalendarEvent size={20} color={colors.indigo400} />
           <Text fw={700} size="md" c="white">
             Programação do Dia
           </Text>
-          {isToday && (
-            <Badge variant="primary">Hoje</Badge>
-          )}
+          {isToday && <Badge variant="primary">Hoje</Badge>}
         </Group>
 
         {totalHabits > 0 && (
-          <Badge variant={completionRate === 100 ? 'success' : completionRate >= 80 ? 'primary' : 'warning'}>
+          <Badge variant={completionRate === 100 ? "success" : completionRate >= 80 ? "primary" : "warning"}>
             {completedHabits}/{totalHabits} concluídos • {completionRate}%
           </Badge>
         )}
       </Group>
 
-      <Box pt="md" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+      <Box pt="md" style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
         {isLoading && items.length === 0 ? (
           <Group justify="center" py="xl">
             <Loader color="indigo" size="sm" />
@@ -81,9 +86,9 @@ export const HabitsDayView = ({
         ) : (
           <Stack gap="xs">
             {items.map((item) => {
-              const isToggling = togglingId === item.habitId
-              const isReadOnly = !!item.readOnly
-              const itemColor = item.calendarColor || colors.indigo500
+              const isToggling = togglingId === item.habitId;
+              const isReadOnly = !!item.readOnly;
+              const itemColor = item.calendarColor || colors.indigo500;
 
               return (
                 <Box
@@ -101,30 +106,30 @@ export const HabitsDayView = ({
                         ? `1px solid ${alpha(colors.teal400, 0.25)}`
                         : `1px solid ${alpha(colors.white, 0.06)}`,
                     borderRadius: 10,
-                    transition: 'all 0.15s ease'
+                    transition: "all 0.15s ease"
                   }}
                 >
                   <Group justify="space-between" align="center" wrap="wrap" gap="xs">
-                    <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 'min(100%, 180px)' }}>
+                    <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: "min(100%, 180px)" }}>
                       {isReadOnly ? (
                         <Box
                           w={14}
                           h={14}
                           style={{
-                            borderRadius: '50%',
+                            borderRadius: "50%",
                             backgroundColor: itemColor,
                             flexShrink: 0,
-                            margin: '0 6px 0 2px'
+                            margin: "0 6px 0 2px"
                           }}
                         />
                       ) : (
                         <ActionIcon
                           size="md"
                           variant="subtle"
-                          color={item.completed ? 'teal' : 'gray'}
+                          color={item.completed ? "teal" : "gray"}
                           loading={isToggling}
                           onClick={() => onToggleCheckin(item.habitId, selectedDate)}
-                          aria-label={item.completed ? 'Desmarcar conclusão' : 'Marcar conclusão'}
+                          aria-label={item.completed ? "Desmarcar conclusão" : "Marcar conclusão"}
                         >
                           {item.completed ? <TbCheck size={18} color={colors.teal400} /> : <TbCircle size={18} />}
                         </ActionIcon>
@@ -134,12 +139,12 @@ export const HabitsDayView = ({
                         <Text
                           size="sm"
                           fw={600}
-                          c={item.completed ? 'dimmed' : 'white'}
+                          c={item.completed ? "dimmed" : "white"}
                           style={{
-                            textDecoration: item.completed ? 'line-through' : 'none',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
+                            textDecoration: item.completed ? "line-through" : "none",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
                           }}
                         >
                           {item.title}
@@ -148,7 +153,8 @@ export const HabitsDayView = ({
                           <Group gap={4} mt={2}>
                             <TbClock size={12} color={colors.blue300} />
                             <Text size="xs" fw={600} c={colors.blue300}>
-                              {item.startTime}{item.endTime ? ` – ${item.endTime}` : ''}
+                              {item.startTime}
+                              {item.endTime ? ` – ${item.endTime}` : ""}
                             </Text>
                           </Group>
                         ) : null}
@@ -158,11 +164,7 @@ export const HabitsDayView = ({
                     <Group gap="xs" wrap="wrap" style={{ flexShrink: 0 }}>
                       {isReadOnly ? (
                         <>
-                          {item.calendarName && (
-                            <Badge variant="primary">
-                              {item.calendarName}
-                            </Badge>
-                          )}
+                          {item.calendarName && <Badge variant="primary">{item.calendarName}</Badge>}
                           <Badge variant="warning">
                             <Group gap={4} wrap="nowrap" align="center">
                               <TbLock size={11} />
@@ -173,7 +175,7 @@ export const HabitsDayView = ({
                       ) : (
                         <>
                           {getItemTypeBadge(item.category)}
-                          {getFrequencyBadge(item.frequency || 'daily')}
+                          {getFrequencyBadge(item.frequency || "daily")}
 
                           {onEditItem && (
                             <ActionIcon
@@ -203,13 +205,13 @@ export const HabitsDayView = ({
                     </Group>
                   </Group>
                 </Box>
-              )
+              );
             })}
           </Stack>
         )}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default HabitsDayView
+export default HabitsDayView;

@@ -1,6 +1,6 @@
-import type { Permission } from '@utils/types/layout'
+import type { Permission } from "@utils/types/layout";
 
 export interface SystemState {
-  getPermissions: () => Permission[]
-  hasPermissions: (requiredPermissions?: Permission[]) => boolean
+  getPermissions: () => Permission[];
+  hasPermissions: (requiredPermissions?: Permission[]) => boolean;
 }

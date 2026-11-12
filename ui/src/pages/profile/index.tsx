@@ -1,13 +1,13 @@
-import { Stack, Box, Text } from '@mantine/core'
+import { Stack, Box, Text } from "@mantine/core";
 
-import ProfileHeader from './subcomponents/profileHeader'
-import ProfileProgressCard from './subcomponents/profileProgressCard'
-import ProfileInfoCard from './subcomponents/profileInfoCard'
-import ProfilePhysicalCard from './subcomponents/profilePhysicalCard'
-import ProfilePerformanceWeightsCard from './subcomponents/profilePerformanceWeightsCard'
-import ProfileSecurityCard from './subcomponents/profileSecurityCard'
-import { containerStyle } from './styles'
-import useProfile from './hook'
+import ProfileHeader from "./subcomponents/profileHeader";
+import ProfileProgressCard from "./subcomponents/profileProgressCard";
+import ProfileInfoCard from "./subcomponents/profileInfoCard";
+import ProfilePhysicalCard from "./subcomponents/profilePhysicalCard";
+import ProfilePerformanceWeightsCard from "./subcomponents/profilePerformanceWeightsCard";
+import ProfileSecurityCard from "./subcomponents/profileSecurityCard";
+import { containerStyle } from "./styles";
+import useProfile from "./hook";
 
 export const ProfilePage = () => {
   const {
@@ -39,30 +39,20 @@ export const ProfilePage = () => {
     closeClearCacheModal,
     handleClearCache,
     formatDate
-  } = useProfile()
+  } = useProfile();
 
   if (!user) {
-    return null
+    return null;
   }
 
   return (
     <Box style={containerStyle}>
       <Stack gap="lg">
-        <ProfileHeader
-          user={user}
-          initials={initials}
-          onBack={handleNavigateHome}
-        />
+        <ProfileHeader user={user} initials={initials} onBack={handleNavigateHome} />
 
-        <ProfileProgressCard
-          calendarStatus={calendarStatus}
-          onConnectCalendar={handleConnectGoogleCalendar}
-        />
+        <ProfileProgressCard calendarStatus={calendarStatus} onConnectCalendar={handleConnectGoogleCalendar} />
 
-        <ProfileInfoCard
-          user={user}
-          formatDate={formatDate}
-        />
+        <ProfileInfoCard user={user} formatDate={formatDate} />
 
         <ProfilePhysicalCard />
 
@@ -100,7 +90,7 @@ export const ProfilePage = () => {
         </Text>
       </Stack>
     </Box>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

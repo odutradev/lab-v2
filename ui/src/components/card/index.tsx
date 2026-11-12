@@ -1,7 +1,7 @@
-import { Paper, Title, Text, Box, alpha } from '@mantine/core'
+import { Paper, Title, Text, Box, alpha } from "@mantine/core";
 
-import type { CardProps } from './types'
-import { colors } from '@styles/theme'
+import type { CardProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const CardHeader = ({ children, className, ...props }: CardProps) => {
   return (
@@ -14,32 +14,32 @@ export const CardHeader = ({ children, className, ...props }: CardProps) => {
     >
       {children}
     </Box>
-  )
-}
+  );
+};
 
 export const CardTitle = ({ children, className, ...props }: CardProps) => {
   return (
     <Title order={4} fw={600} c="white" className={className} {...props}>
       {children}
     </Title>
-  )
-}
+  );
+};
 
 export const CardDescription = ({ children, className, ...props }: CardProps) => {
   return (
     <Text size="sm" c="dimmed" mt={4} className={className} {...props}>
       {children}
     </Text>
-  )
-}
+  );
+};
 
 export const CardContent = ({ children, className, ...props }: CardProps) => {
   return (
     <Box className={className} {...props}>
       {children}
     </Box>
-  )
-}
+  );
+};
 
 export const CardFooter = ({ children, className, ...props }: CardProps) => {
   return (
@@ -52,10 +52,10 @@ export const CardFooter = ({ children, className, ...props }: CardProps) => {
     >
       {children}
     </Box>
-  )
-}
+  );
+};
 
-export const Card = ({ children, className, p = 'xl', ...props }: CardProps) => {
+export const Card = ({ children, className, p = "xl", ...props }: CardProps) => {
   return (
     <Paper
       p={p}
@@ -64,18 +64,18 @@ export const Card = ({ children, className, p = 'xl', ...props }: CardProps) => 
       shadow="md"
       bg={alpha(colors.gray900, 0.7)}
       className={className}
-      style={{ backdropFilter: 'blur(16px)' }}
+      style={{ backdropFilter: "blur(16px)" }}
       {...props}
     >
       {children}
     </Paper>
-  )
-}
+  );
+};
 
-Card.Header = CardHeader
-Card.Title = CardTitle
-Card.Description = CardDescription
-Card.Content = CardContent
-Card.Footer = CardFooter
+Card.Header = CardHeader;
+Card.Title = CardTitle;
+Card.Description = CardDescription;
+Card.Content = CardContent;
+Card.Footer = CardFooter;
 
-export default Card
+export default Card;

@@ -1,27 +1,35 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
-import { listChallengesAction, createChallengeAction, updateChallengeAction, removeChallengeAction, checkinChallengeAction, slipChallengeAction, freezeChallengeAction } from '@actions/challenges'
-import { getTodayDateString } from '@utils/functions/challenges'
+import {
+  listChallengesAction,
+  createChallengeAction,
+  updateChallengeAction,
+  removeChallengeAction,
+  checkinChallengeAction,
+  slipChallengeAction,
+  freezeChallengeAction
+} from "@actions/challenges";
+import { getTodayDateString } from "@utils/functions/challenges";
 
 import type {
   Challenge,
   CreateChallengePayload,
   UpdateChallengePayload,
   SlipChallengePayload
-} from '@actions/challenges/types'
+} from "@actions/challenges/types";
 
 interface ChallengesState {
-  challenges: Challenge[]
-  isLoading: boolean
-  isActionLoading: boolean
-  fetchChallenges: () => Promise<void>
-  createChallenge: (payload: CreateChallengePayload) => Promise<Challenge>
-  updateChallenge: (id: string, payload: UpdateChallengePayload) => Promise<Challenge>
-  removeChallenge: (id: string) => Promise<void>
-  toggleCheckin: (id: string, date?: string) => Promise<{ completedToday: boolean; challenge: Challenge }>
-  recordSlip: (id: string, payload?: SlipChallengePayload) => Promise<Challenge>
-  toggleFreeze: (id: string, date?: string) => Promise<{ frozen: boolean; challenge: Challenge; error?: string }>
-  toggleChecklistItem: (id: string, itemId: string) => Promise<Challenge>
+  challenges: Challenge[];
+  isLoading: boolean;
+  isActionLoading: boolean;
+  fetchChallenges: () => Promise<void>;
+  createChallenge: (payload: CreateChallengePayload) => Promise<Challenge>;
+  updateChallenge: (id: string, payload: UpdateChallengePayload) => Promise<Challenge>;
+  removeChallenge: (id: string) => Promise<void>;
+  toggleCheckin: (id: string, date?: string) => Promise<{ completedToday: boolean; challenge: Challenge }>;
+  recordSlip: (id: string, payload?: SlipChallengePayload) => Promise<Challenge>;
+  toggleFreeze: (id: string, date?: string) => Promise<{ frozen: boolean; challenge: Challenge; error?: string }>;
+  toggleChecklistItem: (id: string, itemId: string) => Promise<Challenge>;
 }
 
 export const useChallengesStore = create<ChallengesState>((set, get) => ({
@@ -30,161 +38,159 @@ export const useChallengesStore = create<ChallengesState>((set, get) => ({
   isActionLoading: false,
 
   fetchChallenges: async () => {
-    set({ isLoading: true })
+    set({ isLoading: true });
     try {
-      const items = await listChallengesAction()
-      set({ challenges: items, isLoading: false })
+      const items = await listChallengesAction();
+      set({ challenges: items, isLoading: false });
     } catch (err) {
-      console.error('Failed to fetch challenges', err)
-      set({ isLoading: false })
+      console.error("Failed to fetch challenges", err);
+      set({ isLoading: false });
     }
   },
 
   createChallenge: async (payload: CreateChallengePayload) => {
-    set({ isActionLoading: true })
+    set({ isActionLoading: true });
     try {
-      const created = await createChallengeAction(payload)
+      const created = await createChallengeAction(payload);
       set((state) => ({
         challenges: [created, ...state.challenges],
         isActionLoading: false
-      }))
-      return created
+      }));
+      return created;
     } catch (err) {
-      set({ isActionLoading: false })
-      throw err
+      set({ isActionLoading: false });
+      throw err;
     }
   },
 
   updateChallenge: async (id: string, payload: UpdateChallengePayload) => {
-    set({ isActionLoading: true })
+    set({ isActionLoading: true });
     try {
-      const updated = await updateChallengeAction(id, payload)
+      const updated = await updateChallengeAction(id, payload);
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? updated : c)),
         isActionLoading: false
-      }))
-      return updated
+      }));
+      return updated;
     } catch (err) {
-      set({ isActionLoading: false })
-      throw err
+      set({ isActionLoading: false });
+      throw err;
     }
   },
 
   removeChallenge: async (id: string) => {
-    set({ isActionLoading: true })
+    set({ isActionLoading: true });
     try {
-      await removeChallengeAction(id)
+      await removeChallengeAction(id);
       set((state) => ({
         challenges: state.challenges.filter((c) => c.id !== id),
         isActionLoading: false
-      }))
+      }));
     } catch (err) {
-      set({ isActionLoading: false })
-      throw err
+      set({ isActionLoading: false });
+      throw err;
     }
   },
 
   toggleCheckin: async (id: string, date?: string) => {
-    const targetDate = date || getTodayDateString()
-    const currentChallenge = get().challenges.find((c) => c.id === id)
+    const targetDate = date || getTodayDateString();
+    const currentChallenge = get().challenges.find((c) => c.id === id);
 
     // Otimistic update
     if (currentChallenge) {
-      const exists = currentChallenge.checkins.includes(targetDate)
+      const exists = currentChallenge.checkins.includes(targetDate);
       const nextCheckins = exists
         ? currentChallenge.checkins.filter((d) => d !== targetDate)
-        : [...currentChallenge.checkins, targetDate].sort()
+        : [...currentChallenge.checkins, targetDate].sort();
 
-      const optimisticStatus = nextCheckins.length >= currentChallenge.targetDays ? 'completed' : 'active'
+      const optimisticStatus = nextCheckins.length >= currentChallenge.targetDays ? "completed" : "active";
 
       set((state) => ({
         challenges: state.challenges.map((c) =>
           c.id === id ? { ...c, checkins: nextCheckins, status: optimisticStatus } : c
         )
-      }))
+      }));
     }
 
     try {
-      const response = await checkinChallengeAction(id, { date: targetDate })
+      const response = await checkinChallengeAction(id, { date: targetDate });
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? response.challenge : c))
-      }))
-      return response
+      }));
+      return response;
     } catch (err) {
       // Revert if error
       if (currentChallenge) {
         set((state) => ({
           challenges: state.challenges.map((c) => (c.id === id ? currentChallenge : c))
-        }))
+        }));
       }
-      throw err
+      throw err;
     }
   },
 
   recordSlip: async (id: string, payload?: SlipChallengePayload) => {
-    set({ isActionLoading: true })
+    set({ isActionLoading: true });
     try {
-      const updated = await slipChallengeAction(id, payload)
+      const updated = await slipChallengeAction(id, payload);
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? updated : c)),
         isActionLoading: false
-      }))
-      return updated
+      }));
+      return updated;
     } catch (err) {
-      set({ isActionLoading: false })
-      throw err
+      set({ isActionLoading: false });
+      throw err;
     }
   },
 
   toggleFreeze: async (id: string, date?: string) => {
-    const targetDate = date || getTodayDateString()
-    set({ isActionLoading: true })
+    const targetDate = date || getTodayDateString();
+    set({ isActionLoading: true });
     try {
-      const response = await freezeChallengeAction(id, { date: targetDate })
+      const response = await freezeChallengeAction(id, { date: targetDate });
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? response.challenge : c)),
         isActionLoading: false
-      }))
-      return response
+      }));
+      return response;
     } catch (err) {
-      set({ isActionLoading: false })
-      throw err
+      set({ isActionLoading: false });
+      throw err;
     }
   },
 
   toggleChecklistItem: async (id: string, itemId: string) => {
-    const current = get().challenges.find((c) => c.id === id)
+    const current = get().challenges.find((c) => c.id === id);
     if (!current || !current.checklist) {
-      throw new Error('Challenge or checklist not found')
+      throw new Error("Challenge or checklist not found");
     }
 
     const updatedChecklist = current.checklist.map((item) =>
       item.id === itemId ? { ...item, completed: !item.completed } : item
-    )
+    );
 
     // Optimistic update
     set((state) => ({
-      challenges: state.challenges.map((c) =>
-        c.id === id ? { ...c, checklist: updatedChecklist } : c
-      )
-    }))
+      challenges: state.challenges.map((c) => (c.id === id ? { ...c, checklist: updatedChecklist } : c))
+    }));
 
     try {
       const updated = await updateChallengeAction(id, {
         checklist: updatedChecklist
-      })
+      });
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? updated : c))
-      }))
-      return updated
+      }));
+      return updated;
     } catch (err) {
       // Revert on error
       set((state) => ({
         challenges: state.challenges.map((c) => (c.id === id ? current : c))
-      }))
-      throw err
+      }));
+      throw err;
     }
   }
-}))
+}));
 
-export default useChallengesStore
+export default useChallengesStore;

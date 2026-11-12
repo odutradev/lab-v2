@@ -1,83 +1,83 @@
-import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton, alpha } from '@mantine/core'
-import { useState, useEffect } from 'react'
-import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from 'react-icons/tb'
+import { Modal, Stack, Group, Text, TextInput, Textarea, Box, UnstyledButton, alpha } from "@mantine/core";
+import { useState, useEffect } from "react";
+import { TbCalendar, TbTrash, TbRepeat, TbChecklist, TbCalendarTime } from "react-icons/tb";
 
-import Button from '@components/button'
-import TimeRangePicker from './subcomponents/timeRangePicker'
-import RecurrenceSelect from './subcomponents/recurrenceSelect'
+import Button from "@components/button";
+import TimeRangePicker from "./subcomponents/timeRangePicker";
+import RecurrenceSelect from "./subcomponents/recurrenceSelect";
 
-import type { HabitsModalProps } from './types'
-import type { HabitCategory, HabitFrequency, HabitRecurrence } from '@actions/habits/types'
-import { colors } from '@styles/theme'
+import type { HabitsModalProps } from "./types";
+import type { HabitCategory, HabitFrequency, HabitRecurrence } from "@actions/habits/types";
+import { colors } from "@styles/theme";
 
 const getTodayString = (): string => {
-  const now = new Date()
-  const yyyy = now.getFullYear()
-  const mm = String(now.getMonth() + 1).padStart(2, '0')
-  const dd = String(now.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-}
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
 
 interface ItemTypeConfig {
-  value: HabitCategory
-  label: string
-  titleNew: string
-  titleEdit: string
-  nameLabel: string
-  namePlaceholder: string
-  submitText: string
-  icon: typeof TbRepeat
-  desc: string
+  value: HabitCategory;
+  label: string;
+  titleNew: string;
+  titleEdit: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  submitText: string;
+  icon: typeof TbRepeat;
+  desc: string;
 }
 
 const itemTypeConfigs: Record<HabitCategory, ItemTypeConfig> = {
   habit: {
-    value: 'habit',
-    label: 'Hábito',
-    titleNew: 'Novo Hábito',
-    titleEdit: 'Editar Hábito',
-    nameLabel: 'Nome do hábito',
-    namePlaceholder: 'Ex: Meditar 15 min, Ler 20 páginas, Treino diário...',
-    submitText: 'Criar Hábito',
+    value: "habit",
+    label: "Hábito",
+    titleNew: "Novo Hábito",
+    titleEdit: "Editar Hábito",
+    nameLabel: "Nome do hábito",
+    namePlaceholder: "Ex: Meditar 15 min, Ler 20 páginas, Treino diário...",
+    submitText: "Criar Hábito",
     icon: TbRepeat,
-    desc: 'Atividades frequentes para construir consistência e rotina'
+    desc: "Atividades frequentes para construir consistência e rotina"
   },
   task: {
-    value: 'task',
-    label: 'Tarefa',
-    titleNew: 'Nova Tarefa',
-    titleEdit: 'Editar Tarefa',
-    nameLabel: 'Título da tarefa',
-    namePlaceholder: 'Ex: Enviar relatório trimestral, Pagar fatura do cartão...',
-    submitText: 'Criar Tarefa',
+    value: "task",
+    label: "Tarefa",
+    titleNew: "Nova Tarefa",
+    titleEdit: "Editar Tarefa",
+    nameLabel: "Título da tarefa",
+    namePlaceholder: "Ex: Enviar relatório trimestral, Pagar fatura do cartão...",
+    submitText: "Criar Tarefa",
     icon: TbChecklist,
-    desc: 'Itens e pendências pontuais a serem concluídos'
+    desc: "Itens e pendências pontuais a serem concluídos"
   },
   schedule: {
-    value: 'schedule',
-    label: 'Agenda',
-    titleNew: 'Novo Compromisso',
-    titleEdit: 'Editar Compromisso',
-    nameLabel: 'Título do compromisso',
-    namePlaceholder: 'Ex: Reunião com diretoria, Consulta médica, Alinhamento...',
-    submitText: 'Criar Compromisso',
+    value: "schedule",
+    label: "Agenda",
+    titleNew: "Novo Compromisso",
+    titleEdit: "Editar Compromisso",
+    nameLabel: "Título do compromisso",
+    namePlaceholder: "Ex: Reunião com diretoria, Consulta médica, Alinhamento...",
+    submitText: "Criar Compromisso",
     icon: TbCalendarTime,
-    desc: 'Compromissos, reuniões e eventos com horário definido'
+    desc: "Compromissos, reuniões e eventos com horário definido"
   },
   event: {
-    value: 'event',
-    label: 'Agenda',
-    titleNew: 'Novo Compromisso',
-    titleEdit: 'Editar Compromisso',
-    nameLabel: 'Título do compromisso',
-    namePlaceholder: 'Ex: Reunião com diretoria, Consulta médica, Alinhamento...',
-    submitText: 'Criar Compromisso',
+    value: "event",
+    label: "Agenda",
+    titleNew: "Novo Compromisso",
+    titleEdit: "Editar Compromisso",
+    nameLabel: "Título do compromisso",
+    namePlaceholder: "Ex: Reunião com diretoria, Consulta médica, Alinhamento...",
+    submitText: "Criar Compromisso",
     icon: TbCalendarTime,
-    desc: 'Compromissos, reuniões e eventos com horário definido'
+    desc: "Compromissos, reuniões e eventos com horário definido"
   }
-}
+};
 
-const availableCategories: HabitCategory[] = ['habit', 'task', 'schedule']
+const availableCategories: HabitCategory[] = ["habit", "task", "schedule"];
 
 export const HabitsModal = ({
   isOpen,
@@ -89,87 +89,89 @@ export const HabitsModal = ({
   onDelete
 }: HabitsModalProps) => {
   const normalizeCategory = (cat?: string): HabitCategory => {
-    if (cat === 'task') return 'task'
-    if (cat === 'schedule') return 'schedule'
-    return 'habit'
-  }
+    if (cat === "task") return "task";
+    if (cat === "schedule") return "schedule";
+    return "habit";
+  };
 
-  const [category, setCategory] = useState<HabitCategory>('habit')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [startDate, setStartDate] = useState(getTodayString())
-  const [allDay, setAllDay] = useState(false)
-  const [startTime, setStartTime] = useState('')
-  const [endTime, setEndTime] = useState('')
-  const [recurrence, setRecurrence] = useState<HabitRecurrence>({ type: 'daily', interval: 1 })
-  const [error, setError] = useState('')
+  const [category, setCategory] = useState<HabitCategory>("habit");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState(getTodayString());
+  const [allDay, setAllDay] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [recurrence, setRecurrence] = useState<HabitRecurrence>({ type: "daily", interval: 1 });
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     if (initialHabit) {
-      const cat = normalizeCategory(initialHabit.category)
-      setCategory(cat)
-      setTitle(initialHabit.title || '')
-      setDescription(initialHabit.description || '')
-      setStartDate(initialHabit.startDate || initialDate || getTodayString())
-      setAllDay(Boolean(initialHabit.allDay))
-      setStartTime(initialHabit.startTime || '')
-      setEndTime(initialHabit.endTime || '')
+      const cat = normalizeCategory(initialHabit.category);
+      setCategory(cat);
+      setTitle(initialHabit.title || "");
+      setDescription(initialHabit.description || "");
+      setStartDate(initialHabit.startDate || initialDate || getTodayString());
+      setAllDay(Boolean(initialHabit.allDay));
+      setStartTime(initialHabit.startTime || "");
+      setEndTime(initialHabit.endTime || "");
 
       if (initialHabit.recurrence && initialHabit.recurrence.type) {
-        setRecurrence(initialHabit.recurrence)
-      } else if (initialHabit.frequency && initialHabit.frequency !== 'none') {
-        setRecurrence({ type: initialHabit.frequency as HabitRecurrence['type'], interval: 1 })
+        setRecurrence(initialHabit.recurrence);
+      } else if (initialHabit.frequency && initialHabit.frequency !== "none") {
+        setRecurrence({ type: initialHabit.frequency as HabitRecurrence["type"], interval: 1 });
       } else {
-        setRecurrence({ type: 'none' })
+        setRecurrence({ type: "none" });
       }
     } else {
-      setCategory('habit')
-      setTitle('')
-      setDescription('')
-      const defaultDate = initialDate || getTodayString()
-      setStartDate(defaultDate)
-      setAllDay(false)
-      setStartTime('')
-      setEndTime('')
-      setRecurrence({ type: 'daily', interval: 1 })
-      setError('')
+      setCategory("habit");
+      setTitle("");
+      setDescription("");
+      const defaultDate = initialDate || getTodayString();
+      setStartDate(defaultDate);
+      setAllDay(false);
+      setStartTime("");
+      setEndTime("");
+      setRecurrence({ type: "daily", interval: 1 });
+      setError("");
     }
-  }, [initialHabit, initialDate, isOpen])
+  }, [initialHabit, initialDate, isOpen]);
 
   const handleCategoryChange = (newCat: HabitCategory) => {
-    setCategory(newCat)
+    setCategory(newCat);
     if (!initialHabit) {
-      if (newCat === 'habit') {
-        setRecurrence({ type: 'daily', interval: 1 })
+      if (newCat === "habit") {
+        setRecurrence({ type: "daily", interval: 1 });
       } else {
-        setRecurrence({ type: 'none' })
+        setRecurrence({ type: "none" });
       }
     }
-  }
+  };
 
   const handleClose = () => {
-    setError('')
-    onClose()
-  }
+    setError("");
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!title.trim()) {
-      setError(`Informe o ${category === 'habit' ? 'nome do hábito' : category === 'task' ? 'título da tarefa' : 'título do compromisso'}`)
-      return
+      setError(
+        `Informe o ${category === "habit" ? "nome do hábito" : category === "task" ? "título da tarefa" : "título do compromisso"}`
+      );
+      return;
     }
 
-    const cleanStartTime = !allDay && startTime && startTime.trim() ? startTime.trim() : null
-    const cleanEndTime = !allDay && endTime && endTime.trim() ? endTime.trim() : null
+    const cleanStartTime = !allDay && startTime && startTime.trim() ? startTime.trim() : null;
+    const cleanEndTime = !allDay && endTime && endTime.trim() ? endTime.trim() : null;
 
-    let frequency: HabitFrequency = 'none'
-    if (recurrence.type === 'daily') frequency = 'daily'
-    else if (recurrence.type === 'weekly') frequency = 'weekly'
-    else if (recurrence.type === 'monthly') frequency = 'monthly'
-    else if (recurrence.type === 'yearly') frequency = 'yearly'
-    else if (recurrence.type === 'custom') frequency = 'custom'
+    let frequency: HabitFrequency = "none";
+    if (recurrence.type === "daily") frequency = "daily";
+    else if (recurrence.type === "weekly") frequency = "weekly";
+    else if (recurrence.type === "monthly") frequency = "monthly";
+    else if (recurrence.type === "yearly") frequency = "yearly";
+    else if (recurrence.type === "custom") frequency = "custom";
 
     await onSubmit({
       title: title.trim(),
@@ -181,12 +183,12 @@ export const HabitsModal = ({
       startTime: cleanStartTime,
       endTime: cleanEndTime,
       recurrence
-    })
+    });
 
-    handleClose()
-  }
+    handleClose();
+  };
 
-  const currentType = itemTypeConfigs[category] || itemTypeConfigs.habit
+  const currentType = itemTypeConfigs[category] || itemTypeConfigs.habit;
 
   return (
     <Modal
@@ -211,7 +213,7 @@ export const HabitsModal = ({
           border: `1px solid ${alpha(colors.white, 0.08)}`,
           boxShadow: `0 24px 48px -12px ${alpha(colors.black, 0.7)}`,
           color: colors.gray200,
-          padding: '22px 26px'
+          padding: "22px 26px"
         },
         header: {
           backgroundColor: colors.night800,
@@ -229,8 +231,8 @@ export const HabitsModal = ({
             </Text>
             <Box
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
                 gap: 4,
                 backgroundColor: alpha(colors.white, 0.03),
                 border: `1px solid ${alpha(colors.white, 0.07)}`,
@@ -239,35 +241,35 @@ export const HabitsModal = ({
               }}
             >
               {availableCategories.map((key) => {
-                const item = itemTypeConfigs[key]
-                const isSelected = item.value === category
-                const IconComponent = item.icon
+                const item = itemTypeConfigs[key];
+                const isSelected = item.value === category;
+                const IconComponent = item.icon;
                 return (
                   <UnstyledButton
                     key={item.value}
                     type="button"
                     onClick={() => handleCategoryChange(item.value)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       gap: 8,
                       height: 38,
                       borderRadius: 8,
-                      backgroundColor: isSelected ? alpha(colors.white, 0.10) : 'transparent',
-                      border: isSelected ? `1px solid ${alpha(colors.white, 0.12)}` : '1px solid transparent',
+                      backgroundColor: isSelected ? alpha(colors.white, 0.1) : "transparent",
+                      border: isSelected ? `1px solid ${alpha(colors.white, 0.12)}` : "1px solid transparent",
                       color: isSelected ? colors.white : colors.gray400,
-                      boxShadow: isSelected ? `0 2px 6px ${alpha(colors.black, 0.25)}` : 'none',
+                      boxShadow: isSelected ? `0 2px 6px ${alpha(colors.black, 0.25)}` : "none",
                       fontWeight: isSelected ? 600 : 500,
                       fontSize: 13,
-                      transition: 'all 0.15s ease',
-                      cursor: 'pointer'
+                      transition: "all 0.15s ease",
+                      cursor: "pointer"
                     }}
                   >
                     <IconComponent size={16} color={isSelected ? colors.indigo300 : colors.gray500} />
                     <span>{item.label}</span>
                   </UnstyledButton>
-                )
+                );
               })}
             </Box>
           </Box>
@@ -278,8 +280,8 @@ export const HabitsModal = ({
               placeholder={currentType.namePlaceholder}
               value={title}
               onChange={(e) => {
-                setTitle(e.target.value)
-                if (error) setError('')
+                setTitle(e.target.value);
+                if (error) setError("");
               }}
               error={error}
               size="sm"
@@ -292,7 +294,7 @@ export const HabitsModal = ({
                   fontSize: 14,
                   height: 42,
                   borderRadius: 10,
-                  '&:focus': {
+                  "&:focus": {
                     borderColor: colors.indigo500
                   }
                 },
@@ -323,7 +325,7 @@ export const HabitsModal = ({
                     fontSize: 14,
                     height: 42,
                     borderRadius: 10,
-                    colorScheme: 'dark'
+                    colorScheme: "dark"
                   },
                   label: {
                     color: colors.gray300,
@@ -336,11 +338,7 @@ export const HabitsModal = ({
             </Box>
 
             <Box>
-              <RecurrenceSelect
-                startDate={startDate}
-                recurrence={recurrence}
-                onChange={setRecurrence}
-              />
+              <RecurrenceSelect startDate={startDate} recurrence={recurrence} onChange={setRecurrence} />
             </Box>
           </Group>
 
@@ -416,14 +414,14 @@ export const HabitsModal = ({
                   paddingRight: 22
                 }}
               >
-                {initialHabit ? 'Salvar alterações' : currentType.submitText}
+                {initialHabit ? "Salvar alterações" : currentType.submitText}
               </Button>
             </Group>
           </Group>
         </Stack>
       </form>
     </Modal>
-  )
-}
+  );
+};
 
-export default HabitsModal
+export default HabitsModal;

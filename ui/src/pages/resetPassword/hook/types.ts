@@ -1,10 +1,10 @@
 export interface UseResetPasswordOptions {
-  onBack?: () => void
+  onBack?: () => void;
 }
 
 export interface UseResetPasswordReturn {
-  isAuthenticated: boolean
-  initialEmail: string | undefined
-  subtitle: string
-  handleBack: () => void
+  isAuthenticated: boolean;
+  initialEmail: string | undefined;
+  subtitle: string;
+  handleBack: () => void;
 }

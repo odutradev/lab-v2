@@ -1,25 +1,25 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-import { storageKeys } from '@assets/config'
-import { signInAction, signUpAction } from '@actions/users/auth'
-import { getProfileAction, updateHealthAction } from '@actions/users/profile'
-import { createRawPersistStorage, readJson } from '@utils/functions/storage'
-import useHealthStore from '@stores/health'
+import { storageKeys } from "@assets/config";
+import { signInAction, signUpAction } from "@actions/users/auth";
+import { getProfileAction, updateHealthAction } from "@actions/users/profile";
+import { createRawPersistStorage, readJson } from "@utils/functions/storage";
+import useHealthStore from "@stores/health";
 
-import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
-import type { UserProfile } from '@utils/types/user'
-import type { AuthState } from '@stores/auth/types'
+import type { SignInPayload, SignUpPayload } from "@actions/users/auth/types";
+import type { UserProfile } from "@utils/types/user";
+import type { AuthState } from "@stores/auth/types";
 
-type PersistedAuthState = Pick<AuthState, 'token' | 'refreshToken' | 'user'>
+type PersistedAuthState = Pick<AuthState, "token" | "refreshToken" | "user">;
 
 const writeOrRemove = (key: string, value: string | null): void => {
   if (value) {
-    localStorage.setItem(key, value)
-    return
+    localStorage.setItem(key, value);
+    return;
   }
-  localStorage.removeItem(key)
-}
+  localStorage.removeItem(key);
+};
 
 const authStorage = createRawPersistStorage<PersistedAuthState>({
   read: () => ({
@@ -28,24 +28,24 @@ const authStorage = createRawPersistStorage<PersistedAuthState>({
     user: readJson<UserProfile>(storageKeys.user)
   }),
   write: (state) => {
-    writeOrRemove(storageKeys.token, state.token)
-    writeOrRemove(storageKeys.refreshToken, state.refreshToken)
-    writeOrRemove(storageKeys.user, state.user ? JSON.stringify(state.user) : null)
+    writeOrRemove(storageKeys.token, state.token);
+    writeOrRemove(storageKeys.refreshToken, state.refreshToken);
+    writeOrRemove(storageKeys.user, state.user ? JSON.stringify(state.user) : null);
   },
   clear: () => {
-    localStorage.removeItem(storageKeys.token)
-    localStorage.removeItem(storageKeys.refreshToken)
-    localStorage.removeItem(storageKeys.user)
+    localStorage.removeItem(storageKeys.token);
+    localStorage.removeItem(storageKeys.refreshToken);
+    localStorage.removeItem(storageKeys.user);
   }
-})
+});
 
 const syncProfileHealth = (profile: UserProfile) => {
   if (profile.health) {
-    useHealthStore.getState().syncFromApi(profile.health)
-    return
+    useHealthStore.getState().syncFromApi(profile.health);
+    return;
   }
 
-  const local = useHealthStore.getState()
+  const local = useHealthStore.getState();
   if (local.profile.height || local.profile.age || local.weightHistory.length > 0) {
     updateHealthAction({
       height: local.profile.height,
@@ -56,9 +56,9 @@ const syncProfileHealth = (profile: UserProfile) => {
       waterExtraTargetMap: local.waterExtraTargetMap,
       waterBottleMl: local.waterBottleMl,
       waterTargetBottles: local.waterTargetBottles
-    }).catch(() => {})
+    }).catch(() => {});
   }
-}
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -76,68 +76,68 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
           isLoading: false
-        })
+        });
       },
 
       initializeAuth: async () => {
-        const storedToken = get().token
+        const storedToken = get().token;
         if (!storedToken) {
-          set({ token: null, user: null, isAuthenticated: false, isLoading: false })
-          return
+          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+          return;
         }
 
         try {
-          const profile = await getProfileAction()
-          syncProfileHealth(profile)
+          const profile = await getProfileAction();
+          syncProfileHealth(profile);
           set({
             token: storedToken,
             user: profile,
             isAuthenticated: true,
             isLoading: false
-          })
+          });
         } catch {
-          get().logout()
+          get().logout();
         }
       },
 
       login: async (credentials: SignInPayload) => {
-        const response = await signInAction(credentials)
-        set({ token: response.token, refreshToken: response.refreshToken })
+        const response = await signInAction(credentials);
+        set({ token: response.token, refreshToken: response.refreshToken });
 
-        const profile = await getProfileAction()
-        syncProfileHealth(profile)
+        const profile = await getProfileAction();
+        syncProfileHealth(profile);
 
         set({
           token: response.token,
           user: profile,
           isAuthenticated: true
-        })
+        });
       },
 
       register: async (data: SignUpPayload) => {
-        const response = await signUpAction(data)
-        set({ token: response.token, refreshToken: response.refreshToken })
+        const response = await signUpAction(data);
+        set({ token: response.token, refreshToken: response.refreshToken });
 
-        const profile = await getProfileAction()
-        syncProfileHealth(profile)
+        const profile = await getProfileAction();
+        syncProfileHealth(profile);
 
         set({
           token: response.token,
           user: profile,
           isAuthenticated: true
-        })
+        });
       },
 
       refreshUser: async () => {
-        const { token, logout } = get()
-        if (!token) return
+        const { token, logout } = get();
+        if (!token) return;
 
         try {
-          const profile = await getProfileAction()
-          syncProfileHealth(profile)
-          set({ user: profile, isAuthenticated: true })
+          const profile = await getProfileAction();
+          syncProfileHealth(profile);
+          set({ user: profile, isAuthenticated: true });
         } catch {
-          logout()
+          logout();
         }
       }
     }),
@@ -146,16 +146,16 @@ export const useAuthStore = create<AuthState>()(
       storage: authStorage,
       partialize: (state) => ({ token: state.token, refreshToken: state.refreshToken, user: state.user }),
       merge: (persistedState, currentState) => {
-        const persisted = persistedState as PersistedAuthState
+        const persisted = persistedState as PersistedAuthState;
         return {
           ...currentState,
           ...persisted,
           isAuthenticated: !!persisted.token && !!persisted.user,
           isLoading: !!persisted.token
-        }
+        };
       }
     }
   )
-)
+);
 
-export default useAuthStore
+export default useAuthStore;

@@ -1,24 +1,42 @@
-import { useState, useEffect } from 'react'
-import { Stack, Text, Group, Box, TextInput, Textarea, NumberInput, SegmentedControl, Switch, UnstyledButton, ActionIcon, alpha } from '@mantine/core'
-import { TbTarget, TbFlame, TbTrophy, TbPlus, TbTrash, TbListCheck, TbNotes } from 'react-icons/tb'
+import { useState, useEffect } from "react";
+import {
+  Stack,
+  Text,
+  Group,
+  Box,
+  TextInput,
+  Textarea,
+  NumberInput,
+  SegmentedControl,
+  Switch,
+  UnstyledButton,
+  ActionIcon,
+  alpha
+} from "@mantine/core";
+import { TbTarget, TbFlame, TbTrophy, TbPlus, TbTrash, TbListCheck, TbNotes } from "react-icons/tb";
 
-import Modal from '@components/modal'
-import Button from '@components/button'
-import { getTodayDateString } from '@utils/functions/challenges'
+import Modal from "@components/modal";
+import Button from "@components/button";
+import { getTodayDateString } from "@utils/functions/challenges";
 
-import type { Challenge, ChallengeType, CreateChallengePayload, ChallengeChecklistItem } from '@actions/challenges/types'
-import { colors } from '@styles/theme'
+import type {
+  Challenge,
+  ChallengeType,
+  CreateChallengePayload,
+  ChallengeChecklistItem
+} from "@actions/challenges/types";
+import { colors } from "@styles/theme";
 
 interface ChallengeFormModalProps {
-  isOpen: boolean
-  initialChallenge?: Challenge | null
-  onClose: () => void
-  onSubmit: (data: CreateChallengePayload) => Promise<void>
-  isLoading?: boolean
+  isOpen: boolean;
+  initialChallenge?: Challenge | null;
+  onClose: () => void;
+  onSubmit: (data: CreateChallengePayload) => Promise<void>;
+  isLoading?: boolean;
 }
 
-const EMOJI_PRESETS = ['🥤', '🚫', '🏃', '📚', '🧘', '🚭', '🍬', '💧', '💻', '🎯', '🔥', '🥗', '📱', '🏋️']
-const TARGET_DAYS_PRESETS = [21, 30, 60, 90, 100]
+const EMOJI_PRESETS = ["🥤", "🚫", "🏃", "📚", "🧘", "🚭", "🍬", "💧", "💻", "🎯", "🔥", "🥗", "📱", "🏋️"];
+const TARGET_DAYS_PRESETS = [21, 30, 60, 90, 100];
 
 export const ChallengeFormModal = ({
   isOpen,
@@ -27,80 +45,82 @@ export const ChallengeFormModal = ({
   onSubmit,
   isLoading = false
 }: ChallengeFormModalProps) => {
-  const isEditing = Boolean(initialChallenge)
-  const [emoji, setEmoji] = useState('🥤')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [motivation, setMotivation] = useState('')
-  const [notes, setNotes] = useState('')
-  const [checklist, setChecklist] = useState<ChallengeChecklistItem[]>([])
-  const [newChecklistText, setNewChecklistText] = useState('')
-  const [targetDays, setTargetDays] = useState<number | string>(90)
-  const [startDate, setStartDate] = useState(getTodayDateString())
-  const [type, setType] = useState<ChallengeType>('streak')
-  const [resetOnMiss, setResetOnMiss] = useState(false)
-  const [freezeDaysPerMonth, setFreezeDaysPerMonth] = useState<number>(2)
-  const [error, setError] = useState<string | null>(null)
+  const isEditing = Boolean(initialChallenge);
+  const [emoji, setEmoji] = useState("🥤");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [motivation, setMotivation] = useState("");
+  const [notes, setNotes] = useState("");
+  const [checklist, setChecklist] = useState<ChallengeChecklistItem[]>([]);
+  const [newChecklistText, setNewChecklistText] = useState("");
+  const [targetDays, setTargetDays] = useState<number | string>(90);
+  const [startDate, setStartDate] = useState(getTodayDateString());
+  const [type, setType] = useState<ChallengeType>("streak");
+  const [resetOnMiss, setResetOnMiss] = useState(false);
+  const [freezeDaysPerMonth, setFreezeDaysPerMonth] = useState<number>(2);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialChallenge) {
-      setEmoji(initialChallenge.emoji || '🎯')
-      setTitle(initialChallenge.title || '')
-      setDescription(initialChallenge.description || '')
-      setMotivation(initialChallenge.motivation || '')
-      setNotes(initialChallenge.notes || '')
-      setChecklist(initialChallenge.checklist ? [...initialChallenge.checklist] : [])
-      setTargetDays(initialChallenge.targetDays || 90)
-      setStartDate(initialChallenge.startDate || getTodayDateString())
-      setType(initialChallenge.type || 'streak')
-      setResetOnMiss(Boolean(initialChallenge.resetOnMiss))
-      setFreezeDaysPerMonth(typeof initialChallenge.freezeDaysPerMonth === 'number' ? initialChallenge.freezeDaysPerMonth : 2)
+      setEmoji(initialChallenge.emoji || "🎯");
+      setTitle(initialChallenge.title || "");
+      setDescription(initialChallenge.description || "");
+      setMotivation(initialChallenge.motivation || "");
+      setNotes(initialChallenge.notes || "");
+      setChecklist(initialChallenge.checklist ? [...initialChallenge.checklist] : []);
+      setTargetDays(initialChallenge.targetDays || 90);
+      setStartDate(initialChallenge.startDate || getTodayDateString());
+      setType(initialChallenge.type || "streak");
+      setResetOnMiss(Boolean(initialChallenge.resetOnMiss));
+      setFreezeDaysPerMonth(
+        typeof initialChallenge.freezeDaysPerMonth === "number" ? initialChallenge.freezeDaysPerMonth : 2
+      );
     } else {
-      setEmoji('🥤')
-      setTitle('')
-      setDescription('')
-      setMotivation('')
-      setNotes('')
-      setChecklist([])
-      setTargetDays(90)
-      setStartDate(getTodayDateString())
-      setType('streak')
-      setResetOnMiss(false)
-      setFreezeDaysPerMonth(2)
+      setEmoji("🥤");
+      setTitle("");
+      setDescription("");
+      setMotivation("");
+      setNotes("");
+      setChecklist([]);
+      setTargetDays(90);
+      setStartDate(getTodayDateString());
+      setType("streak");
+      setResetOnMiss(false);
+      setFreezeDaysPerMonth(2);
     }
-    setNewChecklistText('')
-    setError(null)
-  }, [initialChallenge, isOpen])
+    setNewChecklistText("");
+    setError(null);
+  }, [initialChallenge, isOpen]);
 
   const handleAddChecklistItem = () => {
-    const text = newChecklistText.trim()
-    if (!text) return
+    const text = newChecklistText.trim();
+    if (!text) return;
     const newItem: ChallengeChecklistItem = {
       id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       text,
       completed: false
-    }
-    setChecklist((prev) => [...prev, newItem])
-    setNewChecklistText('')
-  }
+    };
+    setChecklist((prev) => [...prev, newItem]);
+    setNewChecklistText("");
+  };
 
   const handleRemoveChecklistItem = (itemId: string) => {
-    setChecklist((prev) => prev.filter((item) => item.id !== itemId))
-  }
+    setChecklist((prev) => prev.filter((item) => item.id !== itemId));
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      setError('Informe um título para o desafio')
-      return
+      setError("Informe um título para o desafio");
+      return;
     }
 
-    const numDays = Number(targetDays)
+    const numDays = Number(targetDays);
     if (!numDays || numDays < 1) {
-      setError('A meta de dias deve ser de pelo menos 1 dia')
-      return
+      setError("A meta de dias deve ser de pelo menos 1 dia");
+      return;
     }
 
-    setError(null)
+    setError(null);
     try {
       await onSubmit({
         title: title.trim(),
@@ -108,24 +128,24 @@ export const ChallengeFormModal = ({
         motivation: motivation.trim() || undefined,
         notes: notes.trim() || undefined,
         checklist: checklist.length > 0 ? checklist : undefined,
-        emoji: emoji || '🎯',
+        emoji: emoji || "🎯",
         targetDays: numDays,
         startDate: startDate || getTodayDateString(),
         type,
         resetOnMiss,
         freezeDaysPerMonth: Number(freezeDaysPerMonth)
-      })
-      onClose()
+      });
+      onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Falha ao salvar o desafio')
+      setError(err instanceof Error ? err.message : "Falha ao salvar o desafio");
     }
-  }
+  };
 
   return (
     <Modal
       opened={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Editar Desafio de Constância' : 'Novo Desafio de Constância'}
+      title={isEditing ? "Editar Desafio de Constância" : "Novo Desafio de Constância"}
       description="Metas de resistência ou vitórias com contagem regressiva e conquista final."
       size="lg"
     >
@@ -145,12 +165,12 @@ export const ChallengeFormModal = ({
                   height: 38,
                   borderRadius: 10,
                   fontSize: 20,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   backgroundColor: emoji === item ? alpha(colors.indigo500, 0.25) : alpha(colors.white, 0.04),
                   border: emoji === item ? `2px solid ${colors.indigo400}` : `1px solid ${alpha(colors.white, 0.08)}`,
-                  transition: 'all 0.15s ease'
+                  transition: "all 0.15s ease"
                 }}
               >
                 {item}
@@ -170,7 +190,7 @@ export const ChallengeFormModal = ({
             input: {
               backgroundColor: alpha(colors.white, 0.04),
               borderColor: alpha(colors.white, 0.1),
-              color: 'white'
+              color: "white"
             }
           }}
         />
@@ -186,7 +206,7 @@ export const ChallengeFormModal = ({
             input: {
               backgroundColor: alpha(colors.white, 0.04),
               borderColor: alpha(colors.white, 0.1),
-              color: 'white'
+              color: "white"
             }
           }}
         />
@@ -207,7 +227,7 @@ export const ChallengeFormModal = ({
             input: {
               backgroundColor: alpha(colors.white, 0.04),
               borderColor: alpha(colors.white, 0.1),
-              color: 'white'
+              color: "white"
             }
           }}
         />
@@ -234,9 +254,9 @@ export const ChallengeFormModal = ({
               value={newChecklistText}
               onChange={(e) => setNewChecklistText(e.currentTarget.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleAddChecklistItem()
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddChecklistItem();
                 }
               }}
               style={{ flex: 1 }}
@@ -244,16 +264,11 @@ export const ChallengeFormModal = ({
                 input: {
                   backgroundColor: alpha(colors.white, 0.04),
                   borderColor: alpha(colors.white, 0.1),
-                  color: 'white'
+                  color: "white"
                 }
               }}
             />
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={handleAddChecklistItem}
-              leftIcon={<TbPlus size={15} />}
-            >
+            <Button size="sm" variant="secondary" onClick={handleAddChecklistItem} leftIcon={<TbPlus size={15} />}>
               Adicionar
             </Button>
           </Group>
@@ -266,13 +281,13 @@ export const ChallengeFormModal = ({
                   justify="space-between"
                   align="center"
                   style={{
-                    padding: '8px 12px',
+                    padding: "8px 12px",
                     borderRadius: 8,
                     backgroundColor: alpha(colors.white, 0.03),
                     border: `1px solid ${alpha(colors.white, 0.06)}`
                   }}
                 >
-                  <Text size="sm" c="gray.2" style={{ wordBreak: 'break-word', flex: 1 }}>
+                  <Text size="sm" c="gray.2" style={{ wordBreak: "break-word", flex: 1 }}>
                     • {item.text}
                   </Text>
                   <ActionIcon
@@ -300,7 +315,7 @@ export const ChallengeFormModal = ({
               <Button
                 key={d}
                 size="sm"
-                variant={Number(targetDays) === d ? 'primary' : 'secondary'}
+                variant={Number(targetDays) === d ? "primary" : "secondary"}
                 onClick={() => setTargetDays(d)}
               >
                 {d} dias
@@ -316,7 +331,7 @@ export const ChallengeFormModal = ({
               input: {
                 backgroundColor: alpha(colors.white, 0.04),
                 borderColor: alpha(colors.white, 0.1),
-                color: 'white'
+                color: "white"
               }
             }}
           />
@@ -333,7 +348,7 @@ export const ChallengeFormModal = ({
             fullWidth
             data={[
               {
-                value: 'streak',
+                value: "streak",
                 label: (
                   <Group gap={6} justify="center">
                     <TbFlame size={16} />
@@ -342,7 +357,7 @@ export const ChallengeFormModal = ({
                 )
               },
               {
-                value: 'accumulative',
+                value: "accumulative",
                 label: (
                   <Group gap={6} justify="center">
                     <TbTrophy size={16} />
@@ -353,14 +368,14 @@ export const ChallengeFormModal = ({
             ]}
           />
           <Text size="xs" c="dimmed" mt={4}>
-            {type === 'streak'
-              ? 'Foco em não quebrar dias seguidos (ideal para abstinência, jejum, sem açúcar, sem redes sociais).'
-              : 'Foco em somar dias com vitória até atingir a meta total (ideal para treinos, leitura, estudos).'}
+            {type === "streak"
+              ? "Foco em não quebrar dias seguidos (ideal para abstinência, jejum, sem açúcar, sem redes sociais)."
+              : "Foco em somar dias com vitória até atingir a meta total (ideal para treinos, leitura, estudos)."}
           </Text>
         </Box>
 
         {/* Regra de reinício (apenas se streak) */}
-        {type === 'streak' && (
+        {type === "streak" && (
           <Switch
             label="Reiniciar a contagem do zero se houver um deslize"
             checked={resetOnMiss}
@@ -373,7 +388,7 @@ export const ChallengeFormModal = ({
         <Box>
           <Group justify="space-between" align="center" mb={6}>
             <Text size="xs" fw={600} c="dimmed">
-              Dias Livres (Freeze ❄️) por Mês: {freezeDaysPerMonth} {freezeDaysPerMonth === 1 ? 'dia' : 'dias'}
+              Dias Livres (Freeze ❄️) por Mês: {freezeDaysPerMonth} {freezeDaysPerMonth === 1 ? "dia" : "dias"}
             </Text>
             <Text size="11px" c="cyan.4" fw={600}>
               Até 7 dias / mês
@@ -384,10 +399,10 @@ export const ChallengeFormModal = ({
               <Button
                 key={num}
                 size="sm"
-                variant={Number(freezeDaysPerMonth) === num ? 'primary' : 'secondary'}
+                variant={Number(freezeDaysPerMonth) === num ? "primary" : "secondary"}
                 onClick={() => setFreezeDaysPerMonth(num)}
               >
-                {num === 0 ? 'Nenhum' : `${num}d`}
+                {num === 0 ? "Nenhum" : `${num}d`}
               </Button>
             ))}
           </Group>
@@ -406,7 +421,7 @@ export const ChallengeFormModal = ({
             input: {
               backgroundColor: alpha(colors.white, 0.04),
               borderColor: alpha(colors.white, 0.1),
-              color: 'white'
+              color: "white"
             }
           }}
         />
@@ -421,18 +436,13 @@ export const ChallengeFormModal = ({
           <Button variant="ghost" onClick={onClose} disabled={isLoading}>
             Cancelar
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            isLoading={isLoading}
-            leftIcon={<TbTarget size={16} />}
-          >
-            {isEditing ? 'Salvar Alterações' : 'Criar Desafio'}
+          <Button variant="primary" onClick={handleSubmit} isLoading={isLoading} leftIcon={<TbTarget size={16} />}>
+            {isEditing ? "Salvar Alterações" : "Criar Desafio"}
           </Button>
         </Group>
       </Stack>
     </Modal>
-  )
-}
+  );
+};
 
-export default ChallengeFormModal
+export default ChallengeFormModal;

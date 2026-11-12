@@ -1,16 +1,16 @@
-import { useState, useMemo } from 'react'
-import { Group, Stack, Progress, Box, Badge as MantineBadge, Text, alpha } from '@mantine/core'
-import { TbDropletFilled, TbPencil, TbTrophy } from 'react-icons/tb'
+import { useState, useMemo } from "react";
+import { Group, Stack, Progress, Box, Badge as MantineBadge, Text, alpha } from "@mantine/core";
+import { TbDropletFilled, TbPencil, TbTrophy } from "react-icons/tb";
 
-import Card from '@components/card'
-import ActionIcon from '@components/actionIcon'
-import useToastStore from '@stores/toast'
-import { calculateDailyWaterGoal, getTodayDateString, formatDateDisplay } from '@utils/functions/health'
-import { CompactBottleItem, AddBottleButton } from './subcomponents/compactBottleItem'
-import EditWaterModal from './subcomponents/editWaterModal'
+import Card from "@components/card";
+import ActionIcon from "@components/actionIcon";
+import useToastStore from "@stores/toast";
+import { calculateDailyWaterGoal, getTodayDateString, formatDateDisplay } from "@utils/functions/health";
+import { CompactBottleItem, AddBottleButton } from "./subcomponents/compactBottleItem";
+import EditWaterModal from "./subcomponents/editWaterModal";
 
-import type { CompactWaterCardProps } from './types'
-import { colors } from '@styles/theme'
+import type { CompactWaterCardProps } from "./types";
+import { colors } from "@styles/theme";
 
 export const CompactWaterCard = ({
   currentWeight,
@@ -25,62 +25,55 @@ export const CompactWaterCard = ({
   onRemoveExtraBottle,
   onUpdateSettings
 }: CompactWaterCardProps) => {
-  const { showToast } = useToastStore()
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const todayStr = getTodayDateString()
-  const activeDate = selectedDate || todayStr
-  const isViewingToday = activeDate === todayStr
+  const { showToast } = useToastStore();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const todayStr = getTodayDateString();
+  const activeDate = selectedDate || todayStr;
+  const isViewingToday = activeDate === todayStr;
 
   const { targetBottles, standardBottles } = useMemo(() => {
-    return calculateDailyWaterGoal(
-      currentWeight,
-      extraBottlesTarget,
-      bottleMl,
-      undefined,
-      currentAge,
-      currentHeight
-    )
-  }, [currentWeight, extraBottlesTarget, bottleMl, currentAge, currentHeight])
+    return calculateDailyWaterGoal(currentWeight, extraBottlesTarget, bottleMl, undefined, currentAge, currentHeight);
+  }, [currentWeight, extraBottlesTarget, bottleMl, currentAge, currentHeight]);
 
-  const totalConsumedMl = consumedBottles * bottleMl
-  const standardMl = standardBottles * bottleMl
-  const extraTargetMl = extraBottlesTarget * bottleMl
-  const isGoalReached = totalConsumedMl >= standardMl && standardMl > 0
-  const progressPercent = Math.min(100, Math.round((totalConsumedMl / standardMl) * 100))
+  const totalConsumedMl = consumedBottles * bottleMl;
+  const standardMl = standardBottles * bottleMl;
+  const extraTargetMl = extraBottlesTarget * bottleMl;
+  const isGoalReached = totalConsumedMl >= standardMl && standardMl > 0;
+  const progressPercent = Math.min(100, Math.round((totalConsumedMl / standardMl) * 100));
 
   const handleBottleClick = (index: number) => {
-    onToggleBottle(index)
-    const nextConsumed = (consumedBottles === index + 1 ? index : index + 1) * bottleMl
-    const dateLabel = isViewingToday ? 'hoje' : formatDateDisplay(activeDate)
+    onToggleBottle(index);
+    const nextConsumed = (consumedBottles === index + 1 ? index : index + 1) * bottleMl;
+    const dateLabel = isViewingToday ? "hoje" : formatDateDisplay(activeDate);
     if (nextConsumed >= standardMl && totalConsumedMl < standardMl) {
-      showToast(`🎉 Parabéns! Você bateu a meta de água (${dateLabel})!`, 'success')
+      showToast(`🎉 Parabéns! Você bateu a meta de água (${dateLabel})!`, "success");
     }
-  }
+  };
 
   const handleAddExtra = () => {
-    onAddExtraBottle()
-    const dateLabel = isViewingToday ? 'hoje' : formatDateDisplay(activeDate)
-    showToast(`+1 garrafa (${bottleMl}ml) adicionada à meta (${dateLabel})!`, 'info')
-  }
+    onAddExtraBottle();
+    const dateLabel = isViewingToday ? "hoje" : formatDateDisplay(activeDate);
+    showToast(`+1 garrafa (${bottleMl}ml) adicionada à meta (${dateLabel})!`, "info");
+  };
 
   const handleRemoveExtra = () => {
     if (onRemoveExtraBottle) {
-      onRemoveExtraBottle()
-      const dateLabel = isViewingToday ? 'hoje' : formatDateDisplay(activeDate)
-      showToast(`Garrafa extra removida da meta (${dateLabel})`, 'info')
+      onRemoveExtraBottle();
+      const dateLabel = isViewingToday ? "hoje" : formatDateDisplay(activeDate);
+      showToast(`Garrafa extra removida da meta (${dateLabel})`, "info");
     }
-  }
+  };
 
   const handleSaveSettings = (settings: { bottleMl: number }) => {
     if (onUpdateSettings) {
-      onUpdateSettings(settings)
-      showToast('Tamanho da garrafa atualizado!', 'success')
+      onUpdateSettings(settings);
+      showToast("Tamanho da garrafa atualizado!", "success");
     }
-  }
+  };
 
   return (
     <>
-      <Card style={{ padding: '10px 14px' }}>
+      <Card style={{ padding: "10px 14px" }}>
         <Stack gap={8}>
           <Group justify="space-between" align="center" wrap="wrap" gap="xs">
             <Group gap={6} align="center" wrap="wrap">
@@ -93,11 +86,11 @@ export const CompactWaterCard = ({
               </Text>
               <MantineBadge
                 size="xs"
-                variant={isViewingToday ? 'light' : 'gradient'}
-                gradient={!isViewingToday ? { from: 'grape', to: 'violet' } : undefined}
-                color={isViewingToday ? 'cyan' : undefined}
+                variant={isViewingToday ? "light" : "gradient"}
+                gradient={!isViewingToday ? { from: "grape", to: "violet" } : undefined}
+                color={isViewingToday ? "cyan" : undefined}
               >
-                {isViewingToday ? 'Hoje' : formatDateDisplay(activeDate)}
+                {isViewingToday ? "Hoje" : formatDateDisplay(activeDate)}
               </MantineBadge>
             </Group>
 
@@ -105,10 +98,10 @@ export const CompactWaterCard = ({
               {isGoalReached ? (
                 <MantineBadge
                   variant="gradient"
-                  gradient={{ from: 'grape', to: 'violet' }}
+                  gradient={{ from: "grape", to: "violet" }}
                   size="xs"
                   leftSection={<TbTrophy size={10} />}
-                  styles={{ root: { height: 18, padding: '0 6px', fontSize: 10 } }}
+                  styles={{ root: { height: 18, padding: "0 6px", fontSize: 10 } }}
                 >
                   Meta Atingida!
                 </MantineBadge>
@@ -151,23 +144,23 @@ export const CompactWaterCard = ({
               },
               section: {
                 background: `linear-gradient(90deg, ${colors.purple600} 0%, ${colors.purple400} 100%)`,
-                transition: 'none'
+                transition: "none"
               }
             }}
           />
 
           <Box
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               gap: 6,
-              overflowX: 'auto',
-              padding: '2px 0',
-              scrollbarWidth: 'none'
+              overflowX: "auto",
+              padding: "2px 0",
+              scrollbarWidth: "none"
             }}
           >
             {Array.from({ length: targetBottles }).map((_, index) => {
-              const isExtra = index >= standardBottles
+              const isExtra = index >= standardBottles;
               return (
                 <CompactBottleItem
                   key={index}
@@ -178,7 +171,7 @@ export const CompactWaterCard = ({
                   onClick={() => handleBottleClick(index)}
                   onRemove={isExtra ? handleRemoveExtra : undefined}
                 />
-              )
+              );
             })}
 
             <AddBottleButton bottleMl={bottleMl} onClick={handleAddExtra} />
@@ -196,7 +189,7 @@ export const CompactWaterCard = ({
         onSave={handleSaveSettings}
       />
     </>
-  )
-}
+  );
+};
 
-export default CompactWaterCard
+export default CompactWaterCard;

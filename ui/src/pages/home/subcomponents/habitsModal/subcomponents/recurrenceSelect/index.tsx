@@ -1,61 +1,57 @@
-import { useState, useMemo } from 'react'
-import { Group, Text, Box, Popover, UnstyledButton, alpha } from '@mantine/core'
-import { TbChevronDown, TbChevronUp } from 'react-icons/tb'
+import { useState, useMemo } from "react";
+import { Group, Text, Box, Popover, UnstyledButton, alpha } from "@mantine/core";
+import { TbChevronDown, TbChevronUp } from "react-icons/tb";
 
-import CustomRecurrenceModal from '../customRecurrenceModal'
-import type { HabitRecurrence } from '@actions/habits/types'
+import CustomRecurrenceModal from "../customRecurrenceModal";
+import type { HabitRecurrence } from "@actions/habits/types";
 
-import type { RecurrenceSelectProps } from './types'
-import { colors } from '@styles/theme'
+import type { RecurrenceSelectProps } from "./types";
+import { colors } from "@styles/theme";
 
 const weekdayNames = [
-  'domingo',
-  'segunda-feira',
-  'terça-feira',
-  'quarta-feira',
-  'quinta-feira',
-  'sexta-feira',
-  'sábado'
-]
+  "domingo",
+  "segunda-feira",
+  "terça-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+  "sábado"
+];
 
 const monthNames = [
-  'janeiro',
-  'fevereiro',
-  'março',
-  'abril',
-  'maio',
-  'junho',
-  'julho',
-  'agosto',
-  'setembro',
-  'outubro',
-  'novembro',
-  'dezembro'
-]
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro"
+];
 
 const getOrdinalWeek = (dayOfMonth: number): string => {
-  if (dayOfMonth <= 7) return 'primeiro(a)'
-  if (dayOfMonth <= 14) return 'segundo(a)'
-  if (dayOfMonth <= 21) return 'terceiro(a)'
-  if (dayOfMonth <= 28) return 'quarto(a)'
-  return 'último(a)'
-}
+  if (dayOfMonth <= 7) return "primeiro(a)";
+  if (dayOfMonth <= 14) return "segundo(a)";
+  if (dayOfMonth <= 21) return "terceiro(a)";
+  if (dayOfMonth <= 28) return "quarto(a)";
+  return "último(a)";
+};
 
-export const RecurrenceSelect = ({
-  startDate,
-  recurrence,
-  onChange
-}: RecurrenceSelectProps) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false)
+export const RecurrenceSelect = ({ startDate, recurrence, onChange }: RecurrenceSelectProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   const dateInfo = useMemo(() => {
-    const [y, m, d] = (startDate || '2026-01-01').split('-').map(Number)
-    const dateObj = new Date(y, m - 1, d)
-    const dayOfWeek = dateObj.getDay()
-    const weekdayName = weekdayNames[dayOfWeek]
-    const ordinal = getOrdinalWeek(d)
-    const monthName = monthNames[m - 1]
+    const [y, m, d] = (startDate || "2026-01-01").split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    const dayOfWeek = dateObj.getDay();
+    const weekdayName = weekdayNames[dayOfWeek];
+    const ordinal = getOrdinalWeek(d);
+    const monthName = monthNames[m - 1];
 
     return {
       dayOfWeek,
@@ -63,107 +59,107 @@ export const RecurrenceSelect = ({
       ordinal,
       monthName,
       dayNumber: d
-    }
-  }, [startDate])
+    };
+  }, [startDate]);
 
   const presetOptions = useMemo(() => {
     return [
       {
-        id: 'none',
-        label: 'Não se repete',
-        recurrence: { type: 'none' as const }
+        id: "none",
+        label: "Não se repete",
+        recurrence: { type: "none" as const }
       },
       {
-        id: 'daily',
-        label: 'Todos os dias',
-        recurrence: { type: 'daily' as const, interval: 1 }
+        id: "daily",
+        label: "Todos os dias",
+        recurrence: { type: "daily" as const, interval: 1 }
       },
       {
-        id: 'weekly',
+        id: "weekly",
         label: `Semanal: cada ${dateInfo.weekdayName}`,
         recurrence: {
-          type: 'weekly' as const,
+          type: "weekly" as const,
           interval: 1,
           daysOfWeek: [dateInfo.dayOfWeek]
         }
       },
       {
-        id: 'monthly',
+        id: "monthly",
         label: `Mensal no(a) ${dateInfo.ordinal} ${dateInfo.weekdayName}`,
-        recurrence: { type: 'monthly' as const, interval: 1 }
+        recurrence: { type: "monthly" as const, interval: 1 }
       },
       {
-        id: 'yearly',
+        id: "yearly",
         label: `Anual em ${dateInfo.monthName} ${dateInfo.dayNumber}`,
-        recurrence: { type: 'yearly' as const, interval: 1 }
+        recurrence: { type: "yearly" as const, interval: 1 }
       },
       {
-        id: 'weekdays',
-        label: 'Todos os dias da semana (segunda a sexta-feira)',
+        id: "weekdays",
+        label: "Todos os dias da semana (segunda a sexta-feira)",
         recurrence: {
-          type: 'weekly' as const,
+          type: "weekly" as const,
           interval: 1,
           daysOfWeek: [1, 2, 3, 4, 5]
         }
       }
-    ]
-  }, [dateInfo])
+    ];
+  }, [dateInfo]);
 
   const currentLabel = useMemo(() => {
-    if (!recurrence || recurrence.type === 'none') {
-      return 'Não se repete'
+    if (!recurrence || recurrence.type === "none") {
+      return "Não se repete";
     }
 
-    if (recurrence.type === 'custom') {
+    if (recurrence.type === "custom") {
       const unitLabel =
-        recurrence.unit === 'day'
-          ? 'dias'
-          : recurrence.unit === 'month'
-            ? 'meses'
-            : recurrence.unit === 'year'
-              ? 'anos'
-              : 'semanas'
-      const interval = recurrence.interval ?? 1
-      return `Personalizado: a cada ${interval} ${unitLabel}`
+        recurrence.unit === "day"
+          ? "dias"
+          : recurrence.unit === "month"
+            ? "meses"
+            : recurrence.unit === "year"
+              ? "anos"
+              : "semanas";
+      const interval = recurrence.interval ?? 1;
+      return `Personalizado: a cada ${interval} ${unitLabel}`;
     }
 
-    if (recurrence.type === 'daily') {
-      return 'Todos os dias'
+    if (recurrence.type === "daily") {
+      return "Todos os dias";
     }
 
-    if (recurrence.type === 'weekly') {
-      const days = recurrence.daysOfWeek || []
+    if (recurrence.type === "weekly") {
+      const days = recurrence.daysOfWeek || [];
       if (days.length === 5 && [1, 2, 3, 4, 5].every((d) => days.includes(d))) {
-        return 'Todos os dias da semana (segunda a sexta-feira)'
+        return "Todos os dias da semana (segunda a sexta-feira)";
       }
-      return `Semanal: cada ${dateInfo.weekdayName}`
+      return `Semanal: cada ${dateInfo.weekdayName}`;
     }
 
-    if (recurrence.type === 'monthly') {
-      return `Mensal no(a) ${dateInfo.ordinal} ${dateInfo.weekdayName}`
+    if (recurrence.type === "monthly") {
+      return `Mensal no(a) ${dateInfo.ordinal} ${dateInfo.weekdayName}`;
     }
 
-    if (recurrence.type === 'yearly') {
-      return `Anual em ${dateInfo.monthName} ${dateInfo.dayNumber}`
+    if (recurrence.type === "yearly") {
+      return `Anual em ${dateInfo.monthName} ${dateInfo.dayNumber}`;
     }
 
-    return 'Não se repete'
-  }, [recurrence, dateInfo])
+    return "Não se repete";
+  }, [recurrence, dateInfo]);
 
   const handleSelectPreset = (rec: HabitRecurrence) => {
-    onChange(rec)
-    setIsOpen(false)
-  }
+    onChange(rec);
+    setIsOpen(false);
+  };
 
   const handleOpenCustom = () => {
-    setIsOpen(false)
-    setIsCustomModalOpen(true)
-  }
+    setIsOpen(false);
+    setIsCustomModalOpen(true);
+  };
 
   const handleSaveCustom = (customRec: HabitRecurrence) => {
-    onChange(customRec)
-    setIsCustomModalOpen(false)
-  }
+    onChange(customRec);
+    setIsCustomModalOpen(false);
+  };
 
   return (
     <Box>
@@ -171,34 +167,37 @@ export const RecurrenceSelect = ({
         Repetição
       </Text>
 
-      <Popover
-        opened={isOpen}
-        onChange={setIsOpen}
-        position="bottom-start"
-        shadow="xl"
-        width="target"
-      >
+      <Popover opened={isOpen} onChange={setIsOpen} position="bottom-start" shadow="xl" width="target">
         <Popover.Target>
           <UnstyledButton
             onClick={() => setIsOpen((o) => !o)}
             style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
               backgroundColor: alpha(colors.white, 0.04),
               border: isOpen ? `1px solid ${colors.indigo500}` : `1px solid ${alpha(colors.white, 0.1)}`,
               borderRadius: 10,
-              padding: '8px 12px',
-              cursor: 'pointer',
+              padding: "8px 12px",
+              cursor: "pointer",
               height: 42,
-              transition: 'all 0.15s ease'
+              transition: "all 0.15s ease"
             }}
           >
-            <Text size="sm" fw={500} c={colors.white} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <Text
+              size="sm"
+              fw={500}
+              c={colors.white}
+              style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+            >
               {currentLabel}
             </Text>
-            {isOpen ? <TbChevronUp size={16} color={colors.gray400} /> : <TbChevronDown size={16} color={colors.gray400} />}
+            {isOpen ? (
+              <TbChevronUp size={16} color={colors.gray400} />
+            ) : (
+              <TbChevronDown size={16} color={colors.gray400} />
+            )}
           </UnstyledButton>
         </Popover.Target>
 
@@ -212,9 +211,9 @@ export const RecurrenceSelect = ({
             minWidth: 280
           }}
         >
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {presetOptions.map((opt) => {
-              const isSelected = currentLabel === opt.label
+              const isSelected = currentLabel === opt.label;
               return (
                 <Box
                   key={opt.id}
@@ -223,13 +222,13 @@ export const RecurrenceSelect = ({
                   py={8}
                   style={{
                     borderRadius: 6,
-                    cursor: 'pointer',
-                    backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : 'transparent',
+                    cursor: "pointer",
+                    backgroundColor: isSelected ? alpha(colors.indigo500, 0.25) : "transparent",
                     color: isSelected ? colors.white : colors.gray300,
                     fontSize: 13,
                     fontWeight: isSelected ? 600 : 400,
-                    transition: 'background-color 0.1s ease',
-                    '&:hover': {
+                    transition: "background-color 0.1s ease",
+                    "&:hover": {
                       backgroundColor: alpha(colors.white, 0.08)
                     }
                   }}
@@ -238,7 +237,7 @@ export const RecurrenceSelect = ({
                     {opt.label}
                   </Text>
                 </Box>
-              )
+              );
             })}
 
             <Box
@@ -255,13 +254,13 @@ export const RecurrenceSelect = ({
               py={8}
               style={{
                 borderRadius: 6,
-                cursor: 'pointer',
-                backgroundColor: recurrence?.type === 'custom' ? alpha(colors.indigo500, 0.25) : 'transparent',
-                color: recurrence?.type === 'custom' ? colors.indigo400 : colors.gray300,
+                cursor: "pointer",
+                backgroundColor: recurrence?.type === "custom" ? alpha(colors.indigo500, 0.25) : "transparent",
+                color: recurrence?.type === "custom" ? colors.indigo400 : colors.gray300,
                 fontSize: 13,
                 fontWeight: 500,
-                transition: 'background-color 0.1s ease',
-                '&:hover': {
+                transition: "background-color 0.1s ease",
+                "&:hover": {
                   backgroundColor: alpha(colors.white, 0.08)
                 }
               }}
@@ -284,7 +283,7 @@ export const RecurrenceSelect = ({
         onConfirm={handleSaveCustom}
       />
     </Box>
-  )
-}
+  );
+};
 
-export default RecurrenceSelect
+export default RecurrenceSelect;
