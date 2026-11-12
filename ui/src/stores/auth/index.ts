@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 
-import { STORAGE_KEYS } from '@api/config'
+import { STORAGE_KEYS } from '@assets/config'
 import { signInAction, signUpAction } from '@actions/users/auth'
 import { getProfileAction, updateHealthAction } from '@actions/users/profile'
 import useHealthStore from '@stores/health'
 
 import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
-import type { UserProfile } from '@projectTypes/user'
-import type { AuthState } from './types'
+import type { UserProfile } from '@utils/types/user'
+import type { AuthState } from '@stores/auth/types'
 
 const syncProfileHealth = (profile: UserProfile) => {
   if (profile.health) {

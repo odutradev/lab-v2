@@ -1,6 +1,6 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
-import type { SignInPayload, SignUpPayload, RefreshTokenPayload, AuthResponse } from './types'
+import type { SignInPayload, SignUpPayload, RefreshTokenPayload, AuthResponse } from '@actions/users/auth/types'
 
 export const signUpAction = async (payload: SignUpPayload): Promise<AuthResponse> => {
   return apiClient.post<AuthResponse>('/users/signup', payload, { skipAuth: true })

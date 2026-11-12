@@ -1,6 +1,6 @@
 import { useState, useCallback, type ChangeEvent, type FormEvent } from 'react'
 
-import type { UseFormOptions, UseFormReturn } from './types'
+import type { UseFormOptions, UseFormReturn } from '@hooks/useForm/types'
 
 const useForm = <T extends object>({
   initialValues,

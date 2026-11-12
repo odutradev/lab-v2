@@ -1,4 +1,4 @@
-import type { AuthTokens } from '../../../types/user'
+import type { AuthTokens } from '@utils/types/user'
 
 export interface SignUpPayload {
   name: string

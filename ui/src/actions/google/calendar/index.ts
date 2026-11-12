@@ -1,4 +1,4 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
 import type {
   GoogleCalendarAuthUrlResponse,
@@ -11,7 +11,7 @@ import type {
   ListGoogleCalendarsResponse,
   UpdateSelectedGoogleCalendarsPayload,
   UpdateSelectedGoogleCalendarsResponse
-} from './types'
+} from '@actions/google/calendar/types'
 
 export const getGoogleCalendarAuthUrlAction = async (originUrl?: string): Promise<GoogleCalendarAuthUrlResponse> => {
   const currentOrigin = originUrl || (typeof window !== 'undefined' ? window.location.origin : '')

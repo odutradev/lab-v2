@@ -1,12 +1,12 @@
 import { Box, Group, Text, Anchor } from '@mantine/core'
 import { Link } from 'react-router-dom'
 
-import ResetPasswordForm from '@components/shared/resetPasswordForm'
-import Card, { CardContent } from '@components/ui/card'
-import AuthHeader from './components/authHeader'
-import AuthTabs from './components/authTabs'
-import LoginForm from './components/loginForm'
-import RegisterForm from './components/registerForm'
+import ResetPasswordForm from '@components/resetPasswordForm'
+import Card, { CardContent } from '@components/card'
+import AuthHeader from './subcomponents/authHeader'
+import AuthTabs from './subcomponents/authTabs'
+import LoginForm from './subcomponents/loginForm'
+import RegisterForm from './subcomponents/registerForm'
 import { containerStyle } from './styles'
 import useAuthPage from './hook'
 

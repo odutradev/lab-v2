@@ -1,6 +1,6 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
-import type { RequestCodePayload, VerifyCodePayload, VerificationResponse, ValidationPurpose } from './types'
+import type { RequestCodePayload, VerifyCodePayload, VerificationResponse, ValidationPurpose } from '@actions/users/validation/types'
 
 export const requestCodeAction = async (
   purpose: ValidationPurpose,

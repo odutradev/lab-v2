@@ -1,7 +1,7 @@
 import { Box, Stack, Title, Text } from '@mantine/core'
 
-import Card, { CardContent } from '@components/ui/card'
-import TermsHeader from './components/termsHeader'
+import Card, { CardContent } from '@components/card'
+import TermsHeader from './subcomponents/termsHeader'
 import {
   containerStyle,
   sectionTitleStyle,

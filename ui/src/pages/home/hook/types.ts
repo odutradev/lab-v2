@@ -1,7 +1,7 @@
-import type { RecurringActionType } from '@pages/home/components/recurringScopeModal/types'
+import type { RecurringActionType } from '../subcomponents/recurringScopeModal/types'
 import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from '@actions/habits/types'
-import type { CreateHabitFormData } from '@pages/home/components/habitsModal/types'
-import type { CalendarViewMode, CalendarDayCell } from '@pages/home/types'
+import type { CreateHabitFormData } from '../subcomponents/habitsModal/types'
+import type { CalendarViewMode, CalendarDayCell } from '../types'
 
 export interface UseHomePageReturn {
   selectedDate: string

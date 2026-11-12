@@ -1,4 +1,4 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
 import type {
   UpdateProfilePayload,
@@ -7,7 +7,7 @@ import type {
   ResetPasswordResponse,
   UpdateHealthPayload,
   HealthResponse
-} from './types'
+} from '@actions/users/profile/types'
 
 export const getProfileAction = async (): Promise<ProfileResponse> => {
   return apiClient.get<ProfileResponse>('/users/profile/details')

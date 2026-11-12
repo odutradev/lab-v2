@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 
-import { STORAGE_KEYS } from '@api/config'
+import { STORAGE_KEYS } from '@assets/config'
 import { updateHealthAction } from '@actions/users/profile'
-import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord, PerformanceWeights } from './types'
-import type { UserHealth } from '@projectTypes/user'
-import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords, sortSleepRecords } from './utils'
+import type { HealthProfile, HealthStoreState, WeightRecord, SleepRecord, PerformanceWeights } from '@stores/health/types'
+import type { UserHealth } from '@utils/types/user'
+import { calculateDailyWaterGoal, getTodayDateString, sortWeightRecords, sortSleepRecords } from '@utils/functions/health'
 
 const HEALTH_STORAGE_KEY = 'lab_health_metrics_v1'
 

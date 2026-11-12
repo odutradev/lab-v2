@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom'
 
 import useAuthStore from '@stores/auth'
 
-import type { PublicRouteProps } from './types'
+import type { PublicRouteProps } from '@routes/components/publicRoute/types'
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
   const { isAuthenticated } = useAuthStore()

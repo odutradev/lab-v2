@@ -1,12 +1,11 @@
 import { Stack, Box, Text } from '@mantine/core'
-import packageJson from '@package'
 
-import ProfileHeader from './components/profileHeader'
-import ProfileProgressCard from './components/profileProgressCard'
-import ProfileInfoCard from './components/profileInfoCard'
-import ProfilePhysicalCard from './components/profilePhysicalCard'
-import ProfilePerformanceWeightsCard from './components/profilePerformanceWeightsCard'
-import ProfileSecurityCard from './components/profileSecurityCard'
+import ProfileHeader from './subcomponents/profileHeader'
+import ProfileProgressCard from './subcomponents/profileProgressCard'
+import ProfileInfoCard from './subcomponents/profileInfoCard'
+import ProfilePhysicalCard from './subcomponents/profilePhysicalCard'
+import ProfilePerformanceWeightsCard from './subcomponents/profilePerformanceWeightsCard'
+import ProfileSecurityCard from './subcomponents/profileSecurityCard'
 import { containerStyle } from './styles'
 import useProfile from './hook'
 
@@ -97,7 +96,7 @@ export const ProfilePage = () => {
         />
 
         <Text size="xs" c="dimmed" ta="center" pb="sm">
-          Versão {packageJson.version}
+          Versão {__APP_VERSION__}
         </Text>
       </Stack>
     </Box>

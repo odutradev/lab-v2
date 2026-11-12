@@ -5,7 +5,7 @@ import {
   updateSelectedGoogleCalendarsAction,
   getGoogleCalendarAuthUrlAction
 } from '@actions/google/calendar'
-import type { CalendarStoreState } from './types'
+import type { CalendarStoreState } from '@stores/calendar/types'
 
 const CALENDAR_STORAGE_KEY = 'lab_calendar_selected_ids_v1'
 

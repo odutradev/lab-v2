@@ -1,4 +1,4 @@
-import type { UserProfile } from '@projectTypes/user'
+import type { UserProfile } from '@utils/types/user'
 import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
 
 export interface UseProfileReturn {

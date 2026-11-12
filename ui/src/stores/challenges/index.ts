@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import challengesActions from '@actions/challenges'
-import { getTodayDateString } from './utils'
+import { getTodayDateString } from '@utils/functions/challenges'
 
 import type {
   Challenge,

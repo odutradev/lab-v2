@@ -1,4 +1,4 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
 import type {
   Challenge,
@@ -11,7 +11,7 @@ import type {
   FreezeChallengeResponse,
   ChallengeActionSuccessResponse,
   ListChallengesParams
-} from './types'
+} from '@actions/challenges/types'
 
 export const createChallengeAction = async (payload: CreateChallengePayload): Promise<Challenge> => {
   return apiClient.post<Challenge>('/challenges/create', payload)

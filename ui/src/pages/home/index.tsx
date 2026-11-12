@@ -3,27 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { Stack, Box, Grid, Text } from '@mantine/core'
 import { TbRulerMeasure, TbUser } from 'react-icons/tb'
 
-import Card from '@components/ui/card'
-import Button from '@components/ui/button'
+import Card from '@components/card'
+import Button from '@components/button'
 import useHealthStore from '@stores/health'
 
-import HabitsCalendarToolbar from './components/habitsCalendarToolbar'
-import HabitsMonthView from './components/habitsMonthView'
-import HabitsWeekView from './components/habitsWeekView'
-import HabitsDayView from './components/habitsDayView'
-import HabitsModal from './components/habitsModal'
-import RecurringScopeModal from './components/recurringScopeModal'
-import CalendarSettingsModal from './components/calendarSettingsModal'
-import GeneralPerformanceCard from './components/generalPerformanceCard'
-import CompactWeightCard from './components/compactWeightCard'
-import CompactSleepCard from './components/compactSleepCard'
-import CompactWaterCard from './components/compactWaterCard'
-import ChallengesSection from './components/challenges'
+import HabitsCalendarToolbar from './subcomponents/habitsCalendarToolbar'
+import HabitsMonthView from './subcomponents/habitsMonthView'
+import HabitsWeekView from './subcomponents/habitsWeekView'
+import HabitsDayView from './subcomponents/habitsDayView'
+import HabitsModal from './subcomponents/habitsModal'
+import RecurringScopeModal from './subcomponents/recurringScopeModal'
+import CalendarSettingsModal from './subcomponents/calendarSettingsModal'
+import GeneralPerformanceCard from './subcomponents/generalPerformanceCard'
+import WeightImcCard from './subcomponents/weightImcCard'
+import SleepTrackerCard from './subcomponents/sleepTrackerCard'
+import CompactWaterCard from './subcomponents/compactWaterCard'
+import ChallengesSection from './sections/challenges'
 import { containerStyle } from './styles'
 import useHomePage from './hook'
 import useMonthlyMetrics from './hook/useMonthlyMetrics'
 
-import type { CreateHabitFormData } from './components/habitsModal/types'
+import type { CreateHabitFormData } from './subcomponents/habitsModal/types'
 import type { RecurrenceScopeMode } from '@actions/habits/types'
 
 export const HomePage = () => {
@@ -290,7 +290,7 @@ export const HomePage = () => {
 
             {isBioConfigured ? (
               <>
-                <CompactWeightCard
+                <WeightImcCard
                   heightCm={healthProfile.height}
                   weightHistory={weightHistory}
                   selectedDate={selectedDate}
@@ -299,7 +299,7 @@ export const HomePage = () => {
                   onHoverDate={setHoveredDate}
                 />
 
-                <CompactSleepCard
+                <SleepTrackerCard
                   sleepHistory={sleepHistory}
                   selectedDate={selectedDate}
                   hoveredDate={hoveredDate}

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 
 import { getMonthlyMetricsAction } from '@actions/habits'
 import useHealthStore from '@stores/health'
-import { calculateDailyWaterGoal } from '@stores/health/utils'
+import { calculateDailyWaterGoal } from '@utils/functions/health'
 
 import type { MonthlyMetricsResponse } from '@actions/habits/types'
 

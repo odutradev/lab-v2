@@ -1,4 +1,4 @@
-import type { UserProfile, UserHealth } from '@projectTypes/user'
+import type { UserProfile, UserHealth } from '@utils/types/user'
 
 export interface UpdateProfilePayload {
   name?: string

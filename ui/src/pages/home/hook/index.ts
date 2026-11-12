@@ -3,10 +3,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getRangeSummaryAction, scheduleHabitAction, createHabitAction, updateHabitAction, toggleCheckinAction, removeHabitAction, listHabitsAction } from '@actions/habits'
 import useToastStore from '@stores/toast'
 
-import type { RecurringActionType } from '@pages/home/components/recurringScopeModal/types'
+import type { RecurringActionType } from '../subcomponents/recurringScopeModal/types'
 import type { DaySummaryResponse, Habit, RecurrenceScopeMode } from '@actions/habits/types'
-import type { CreateHabitFormData } from '@pages/home/components/habitsModal/types'
-import type { CalendarViewMode, CalendarDayCell } from '@pages/home/types'
+import type { CreateHabitFormData } from '../subcomponents/habitsModal/types'
+import type { CalendarViewMode, CalendarDayCell } from '../types'
 import type { UseHomePageReturn } from './types'
 
 const formatDateToString = (date: Date): string => {

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import { ProtectedRoute, PublicRoute, AppLayout } from './components'
-import PageContainer from '@components/layout/pageContainer'
+import { ProtectedRoute, PublicRoute, AppLayout } from '@routes/components'
+import PageContainer from '@components/pageContainer'
 import TermsOfServicePage from '@pages/termsOfService'
 import PrivacyPolicyPage from '@pages/privacyPolicy'
 import ResetPasswordPage from '@pages/resetPassword'
@@ -9,7 +9,7 @@ import ProfilePage from '@pages/profile'
 import HomePage from '@pages/home'
 import AuthPage from '@pages/auth'
 
-import type { RouteItem } from './types'
+import type { RouteItem } from '@routes/types'
 
 const routes: RouteItem[] = [
   {

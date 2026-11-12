@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
@@ -5,12 +6,24 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 const envDir = fileURLToPath(new URL('..', import.meta.url))
 
+const readAppVersion = (): string => {
+  try {
+    const rootPackage = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8')) as { version?: string }
+    return rootPackage.version ?? '0.0.0'
+  } catch {
+    return '0.0.0'
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, envDir, '')
   const port = Number(env.FRONTEND_PORT || process.env.FRONTEND_PORT) || 8080
 
   return {
     envDir,
+    define: {
+      __APP_VERSION__: JSON.stringify(readAppVersion())
+    },
     plugins: [
       react(),
       VitePWA({
@@ -60,14 +73,11 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@package': fileURLToPath(new URL('../package.json', import.meta.url)),
-        '@rootPackage': fileURLToPath(new URL('../package.json', import.meta.url)),
         '@actions': fileURLToPath(new URL('./src/actions', import.meta.url)),
+        '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
         '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
         '@hooks': fileURLToPath(new URL('./src/hooks', import.meta.url)),
         '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
-        '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
-        '@projectTypes': fileURLToPath(new URL('./src/types', import.meta.url)),
         '@pages': fileURLToPath(new URL('./src/pages', import.meta.url)),
         '@routes': fileURLToPath(new URL('./src/routes', import.meta.url)),
         '@styles': fileURLToPath(new URL('./src/styles', import.meta.url)),

@@ -1,5 +1,5 @@
 import type { SignInPayload, SignUpPayload } from '@actions/users/auth/types'
-import type { UserProfile } from '@projectTypes/user'
+import type { UserProfile } from '@utils/types/user'
 
 export interface AuthState {
   user: UserProfile | null

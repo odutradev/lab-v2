@@ -1,6 +1,6 @@
-import apiClient from '@api/client'
+import apiClient from '@utils/api'
 
-import type { RemoveHabitOptions, HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, RangeSummaryParams, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit, MonthlyMetricsPayload, MonthlyMetricsResponse } from './types'
+import type { RemoveHabitOptions, HabitActionSuccessResponse, ToggleCheckinResponse, ScheduleHabitPayload, ToggleCheckinPayload, RangeSummaryParams, CreateHabitPayload, UpdateHabitPayload, DaySummaryResponse, ListHabitsParams, Habit, MonthlyMetricsPayload, MonthlyMetricsResponse } from '@actions/habits/types'
 
 export const createHabitAction = async (payload: CreateHabitPayload): Promise<Habit> => {
   return apiClient.post<Habit>('/habits/create', payload)

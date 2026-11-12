@@ -10,8 +10,8 @@ import {
 } from '@actions/google/calendar'
 import useToastStore from '@stores/toast'
 import useAuthStore from '@stores/auth'
-import { STORAGE_KEYS } from '@api/config'
-import { getInitials } from '@utils/string'
+import { STORAGE_KEYS } from '@assets/config'
+import { getInitials } from '@utils/functions/string'
 
 import type { GoogleCalendarStatusResponse } from '@actions/google/calendar/types'
 import type { UseProfileReturn } from './types'

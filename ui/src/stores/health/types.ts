@@ -1,4 +1,4 @@
-import type { UserHealth, PerformanceWeights } from '@projectTypes/user'
+import type { UserHealth, PerformanceWeights } from '@utils/types/user'
 
 export type { PerformanceWeights }
 
