@@ -166,7 +166,7 @@ export const ChallengesSection = () => {
             Novo Desafio
           </Button>
           <Tooltip label={isSectionOpen ? "Recolher seção" : "Expandir seção"} withArrow>
-            <ActionIcon variant="subtle" color="gray" size="sm" onClick={() => setIsSectionOpen((prev) => !prev)}>
+            <ActionIcon aria-label={isSectionOpen ? "Recolher desafios" : "Expandir desafios"} variant="subtle" color="gray" size="sm" onClick={() => setIsSectionOpen((prev) => !prev)}>
               {isSectionOpen ? <TbChevronUp size={16} /> : <TbChevronDown size={16} />}
             </ActionIcon>
           </Tooltip>

@@ -9,7 +9,7 @@ import type { HabitsCalendarToolbarProps } from "./types";
 import type { CalendarViewMode } from "../../types";
 import { colors } from "@styles/theme";
 
-const TOOLBAR_CONTROL_HEIGHT = 34;
+const toolbarControlHeight = 34;
 
 const viewModeOptions = [
   { label: "Diário", value: "day" },
@@ -46,7 +46,7 @@ export const HabitsCalendarToolbar = ({
           <Button
             variant={isToday ? "outline" : "secondary"}
             size="sm"
-            h={TOOLBAR_CONTROL_HEIGHT}
+            h={toolbarControlHeight}
             onClick={onToday}
             style={{ flexShrink: 0 }}
           >
@@ -57,8 +57,8 @@ export const HabitsCalendarToolbar = ({
             <ActionIcon
               variant="subtle"
               size="md"
-              h={TOOLBAR_CONTROL_HEIGHT}
-              w={TOOLBAR_CONTROL_HEIGHT}
+              h={toolbarControlHeight}
+              w={toolbarControlHeight}
               radius="md"
               onClick={onPrevious}
               aria-label="Período anterior"
@@ -69,8 +69,8 @@ export const HabitsCalendarToolbar = ({
             <ActionIcon
               variant="subtle"
               size="md"
-              h={TOOLBAR_CONTROL_HEIGHT}
-              w={TOOLBAR_CONTROL_HEIGHT}
+              h={toolbarControlHeight}
+              w={toolbarControlHeight}
               radius="md"
               onClick={onNext}
               aria-label="Próximo período"
@@ -102,7 +102,7 @@ export const HabitsCalendarToolbar = ({
               onChange={(val) => onViewModeChange(val as CalendarViewMode)}
               data={viewModeOptions}
               size="sm"
-              height={TOOLBAR_CONTROL_HEIGHT}
+              height={toolbarControlHeight}
               radius="md"
             />
           </Box>
@@ -111,8 +111,8 @@ export const HabitsCalendarToolbar = ({
             <ActionIcon
               variant="subtle"
               size="md"
-              h={TOOLBAR_CONTROL_HEIGHT}
-              w={TOOLBAR_CONTROL_HEIGHT}
+              h={toolbarControlHeight}
+              w={toolbarControlHeight}
               radius="md"
               onClick={onOpenSettingsModal}
               aria-label="Configurar agendas"
@@ -131,8 +131,8 @@ export const HabitsCalendarToolbar = ({
               <ActionIcon
                 variant={isMaximized ? "secondary" : "subtle"}
                 size="md"
-                h={TOOLBAR_CONTROL_HEIGHT}
-                w={TOOLBAR_CONTROL_HEIGHT}
+                h={toolbarControlHeight}
+                w={toolbarControlHeight}
                 radius="md"
                 onClick={onToggleMaximize}
                 aria-label={isMaximized ? "Restaurar visualização" : "Maximizar calendário"}
@@ -146,7 +146,7 @@ export const HabitsCalendarToolbar = ({
           <Button
             variant="primary"
             size="sm"
-            h={TOOLBAR_CONTROL_HEIGHT}
+            h={toolbarControlHeight}
             leftIcon={<TbPlus size={16} />}
             onClick={onOpenNewHabitModal}
             style={{ flexShrink: 0 }}

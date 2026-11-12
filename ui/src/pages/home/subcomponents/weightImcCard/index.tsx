@@ -154,7 +154,7 @@ export const WeightImcCard = ({
                 ]}
               />
 
-              <ActionIcon
+              <ActionIcon aria-label="Registrar peso"
                 size="sm"
                 radius="md"
                 variant="outline"

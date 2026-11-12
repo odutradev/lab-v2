@@ -35,8 +35,8 @@ interface ChallengeFormModalProps {
   isLoading?: boolean;
 }
 
-const EMOJI_PRESETS = ["🥤", "🚫", "🏃", "📚", "🧘", "🚭", "🍬", "💧", "💻", "🎯", "🔥", "🥗", "📱", "🏋️"];
-const TARGET_DAYS_PRESETS = [21, 30, 60, 90, 100];
+const emojiPresets = ["🥤", "🚫", "🏃", "📚", "🧘", "🚭", "🍬", "💧", "💻", "🎯", "🔥", "🥗", "📱", "🏋️"];
+const targetDaysPresets = [21, 30, 60, 90, 100];
 
 export const ChallengeFormModal = ({
   isOpen,
@@ -156,7 +156,7 @@ export const ChallengeFormModal = ({
             Ícone / Emoji do Desafio
           </Text>
           <Group gap="xs" wrap="wrap">
-            {EMOJI_PRESETS.map((item) => (
+            {emojiPresets.map((item) => (
               <UnstyledButton
                 key={item}
                 onClick={() => setEmoji(item)}
@@ -290,7 +290,7 @@ export const ChallengeFormModal = ({
                   <Text size="sm" c="gray.2" style={{ wordBreak: "break-word", flex: 1 }}>
                     • {item.text}
                   </Text>
-                  <ActionIcon
+                  <ActionIcon aria-label="Remover item"
                     size="sm"
                     variant="subtle"
                     color="red"
@@ -311,7 +311,7 @@ export const ChallengeFormModal = ({
             Meta de Dias
           </Text>
           <Group gap="xs" mb="xs">
-            {TARGET_DAYS_PRESETS.map((d) => (
+            {targetDaysPresets.map((d) => (
               <Button
                 key={d}
                 size="sm"

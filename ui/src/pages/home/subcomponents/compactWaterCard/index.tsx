@@ -118,7 +118,7 @@ export const CompactWaterCard = ({
               )}
 
               {onUpdateSettings && (
-                <ActionIcon
+                <ActionIcon aria-label="Editar configurações de água"
                   variant="subtle"
                   size="xs"
                   onClick={() => setIsEditModalOpen(true)}

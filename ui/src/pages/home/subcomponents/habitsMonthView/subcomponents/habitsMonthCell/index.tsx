@@ -8,9 +8,9 @@ import type { DaySummaryItem } from "@actions/habits/types";
 import type { HabitsMonthCellProps } from "./types";
 import { colors } from "@styles/theme";
 
-const ITEM_GAP = 2;
-const DEFAULT_ITEM_HEIGHT = 22;
-const MORE_INDICATOR_HEIGHT = 16;
+const itemGap = 2;
+const defaultItemHeight = 22;
+const moreIndicatorHeight = 16;
 const EMPTY_ITEMS: DaySummaryItem[] = [];
 
 export const HabitsMonthCell = ({
@@ -57,10 +57,10 @@ export const HabitsMonthCell = ({
       return { visibleItems: [], remainingCount: 0 };
     }
 
-    const itemHeight = typeof window !== "undefined" && window.innerWidth < 768 ? 20 : DEFAULT_ITEM_HEIGHT;
+    const itemHeight = typeof window !== "undefined" && window.innerWidth < 768 ? 20 : defaultItemHeight;
 
     // Altura necessária se renderizarmos todos os itens sem o indicador
-    const heightNeededForAll = items.length * itemHeight + (items.length - 1) * ITEM_GAP;
+    const heightNeededForAll = items.length * itemHeight + (items.length - 1) * itemGap;
 
     // Se cabem todos os itens no espaço disponível, exibe todos sem o chip
     if (heightNeededForAll <= availableHeight) {
@@ -68,8 +68,8 @@ export const HabitsMonthCell = ({
     }
 
     // Se não cabem todos, reserva espaço para o indicador "+X mais"
-    const availableForItems = availableHeight - MORE_INDICATOR_HEIGHT - ITEM_GAP;
-    const maxItems = Math.floor((availableForItems + ITEM_GAP) / (itemHeight + ITEM_GAP));
+    const availableForItems = availableHeight - moreIndicatorHeight - itemGap;
+    const maxItems = Math.floor((availableForItems + itemGap) / (itemHeight + itemGap));
     const count = Math.max(1, Math.min(items.length - 1, maxItems));
 
     return {
@@ -185,7 +185,7 @@ export const HabitsMonthCell = ({
         )}
       </Group>
 
-      <Stack ref={containerRef} gap={ITEM_GAP} style={{ flex: 1, overflow: "hidden", minWidth: 0, width: "100%" }}>
+      <Stack ref={containerRef} gap={itemGap} style={{ flex: 1, overflow: "hidden", minWidth: 0, width: "100%" }}>
         {visibleItems.map((item) => {
           const isReadOnly = !!item.readOnly;
           const itemColor = item.calendarColor || colors.indigo500;

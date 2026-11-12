@@ -140,7 +140,7 @@ export const SleepTrackerCard = ({
                 </MantineBadge>
               )}
 
-              <ActionIcon
+              <ActionIcon aria-label="Registrar sono"
                 size="sm"
                 radius="md"
                 variant="outline"

@@ -10,7 +10,7 @@ import { calculateIdealWaterMl } from "@utils/functions/health";
 import type { EditWaterModalProps } from "./types";
 import { colors } from "@styles/theme";
 
-const PRESET_BOTTLE_SIZES = [500, 600, 750, 1000];
+const presetBottleSizes = [500, 600, 750, 1000];
 
 interface EditWaterFormProps {
   currentWeight?: number;
@@ -98,7 +98,7 @@ const EditWaterForm = ({
         />
 
         <Group gap={6} mt={8}>
-          {PRESET_BOTTLE_SIZES.map((size) => {
+          {presetBottleSizes.map((size) => {
             const isSelected = bottleMl === size;
             return (
               <UnstyledButton

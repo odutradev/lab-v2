@@ -25,7 +25,7 @@ interface ChallengeDetailModalProps {
   challenge: Challenge | null;
   onClose: () => void;
   onToggleCheckin: (id: string, date?: string) => Promise<unknown>;
-  onToggleFreeze?: (id: string, date?: string) => Promise<any>;
+  onToggleFreeze?: (id: string, date?: string) => Promise<unknown>;
   onToggleChecklistItem?: (id: string, itemId: string) => Promise<unknown>;
   onOpenEdit: (challenge: Challenge) => void;
   onOpenSlip: (challenge: Challenge) => void;
