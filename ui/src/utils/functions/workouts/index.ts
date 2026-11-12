@@ -69,3 +69,7 @@ export const formatWeekDays = (weekDays: number[]): string => {
   if (weekDays.length === 7) return "Todos os dias";
   return weekDays.map((day) => weekDayShortLabels[day]).join(", ");
 };
+
+// Inputs numéricos do Mantine devolvem string vazia quando o campo é limpo.
+export const toOptionalNumber = (value: string | number): number | undefined =>
+  typeof value === "number" ? value : undefined;
