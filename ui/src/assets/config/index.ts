@@ -1,4 +1,14 @@
-export const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Normaliza a URL com o parser do navegador (ex.: "http:/host" vira "http://host"),
+// mantendo a mesma tolerância que o cliente fetch anterior tinha.
+const normalizeBaseUrl = (url: string): string => {
+  try {
+    return new URL(url).toString().replace(/\/$/, "");
+  } catch {
+    return url;
+  }
+};
+
+export const apiBaseUrl = normalizeBaseUrl(import.meta.env.VITE_API_URL || "http://localhost:5000");
 
 export const storageKeys = {
   token: "lab_auth_token",
