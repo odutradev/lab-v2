@@ -19,6 +19,13 @@ export interface UserWeightRecord {
   weight: number
 }
 
+export interface UserBodyMetrics {
+  weight?: number
+  height?: number
+  age?: number
+  weightHistory: UserWeightRecord[]
+}
+
 export interface UserSleepRecord {
   date: string
   hours: number

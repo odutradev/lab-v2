@@ -1,6 +1,6 @@
 import { UserModel } from '@domains/users/repositories/user/model'
 
-import type { UserModelTypeWithPassword, CreateUserPayload, UpdateUserPayload, UserModelType, FindAllUsersParams, UserStatsResponse } from '@domains/users/repositories/user/types'
+import type { UserModelTypeWithPassword, CreateUserPayload, UpdateUserPayload, UserModelType, FindAllUsersParams, UserStatsResponse, UserBodyMetrics } from '@domains/users/repositories/user/types'
 import type { PaginatedData } from '@factories/pagination/types'
 
 const userRepository = {
@@ -19,6 +19,17 @@ const userRepository = {
       return { ...query, ...Object.fromEntries(healthEntries) }
     }, {})
     return UserModel.findByIdAndUpdate(id, { $set: updateQuery }, { new: true })
+  },
+  findBodyMetrics: async (id: string): Promise<UserBodyMetrics | null> => {
+    const user = await UserModel.findById(id).select('health.height health.age health.weightHistory').lean()
+    if (!user) return null
+    const weightHistory = [...(user.health?.weightHistory || [])].sort((first, second) => first.date.localeCompare(second.date))
+    return {
+      weight: weightHistory.at(-1)?.weight,
+      height: user.health?.height,
+      age: user.health?.age,
+      weightHistory
+    }
   },
   updatePassword: async (id: string, password: string): Promise<UserModelType | null> => {
     return UserModel.findByIdAndUpdate(id, { password }, { new: true })
